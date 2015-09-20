@@ -48,6 +48,10 @@ float SubsystemNull::get_scanlines_intensity() {
 
 void SubsystemNull::set_scanlines_intensity(float v) { }
 
+void SubsystemNull::set_deadzone_horizontal(int v) { }
+
+void SubsystemNull::set_deadzone_vertical(int v) { }
+
 TileGraphic *SubsystemNull::create_tilegraphic(int width, int height) {
     return new TileGraphicNull(width, height, keep_pictures);
 }

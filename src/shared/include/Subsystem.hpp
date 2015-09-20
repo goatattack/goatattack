@@ -123,6 +123,8 @@ public:
     virtual void set_scanlines(bool state) = 0;
     virtual void set_scanlines_intensity(float v) = 0;
     virtual float get_scanlines_intensity() = 0;
+    virtual void set_deadzone_horizontal(int v) = 0;
+    virtual void set_deadzone_vertical(int v) = 0;
 
     virtual TileGraphic *create_tilegraphic(int width, int height) = 0;
     virtual Audio *create_audio() = 0;

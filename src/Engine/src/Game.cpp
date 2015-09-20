@@ -32,6 +32,8 @@ void Game::run(const std::string& parm) {
     subsystem.set_scanlines_intensity(config.get_int("scanlines_intensity") / 100.0f);
     subsystem.set_music_volume(config.get_int("music_volume"));
     subsystem.set_sound_volume(config.get_int("sfx_volume"));
+    subsystem.set_deadzone_horizontal(config.get_int("deadzone_horizontal"));
+    subsystem.set_deadzone_vertical(config.get_int("deadzone_vertical"));
 
     MainMenu menu(resources, subsystem, config);
     menu.run();

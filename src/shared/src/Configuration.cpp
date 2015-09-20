@@ -64,6 +64,9 @@ Configuration::Configuration(const std::string& directory,
     cdef("bind_up_device", "0");
     cdef("bind_up_param", "1073741906");
 
+    cdef("deadzone_horizontal", "3200");
+    cdef("deadzone_vertical", "3200");
+
     /* extract -> ready for quick access */
     extract();
 }

@@ -28,6 +28,8 @@ public:
     virtual void set_scanlines(bool state);
     virtual void set_scanlines_intensity(float v);
     virtual float get_scanlines_intensity();
+    virtual void set_deadzone_horizontal(int v);
+    virtual void set_deadzone_vertical(int v);
 
     virtual TileGraphic *create_tilegraphic(int width, int height);
     virtual Audio *create_audio();
@@ -78,6 +80,8 @@ private:
     bool fullscreen;
     bool draw_scanlines;
     float scanlines_intensity;
+    int deadzone_horizontal;
+    int deadzone_vertical;
 
     SDL_GLContext glcontext;
     SDL_Event event;

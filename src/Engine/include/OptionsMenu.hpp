@@ -45,8 +45,10 @@ private:
     GuiTextbox *ck_stats;
     GuiTextbox *ck_escape;
     GuiTextbox *ck_selected;
+    GuiTextbox *ck_dz_h;
+    GuiTextbox *ck_dz_v;
 
-    GuiTextbox *create_mapping_field(GuiWindow *parent, int x, int y,
+    GuiTextbox *create_field(GuiWindow *parent, int x, int y,
         const std::string& text, GuiButton::OnClick on_click);
     void capture_key(GuiTextbox *ck_selected);
 
@@ -83,6 +85,9 @@ private:
     static void static_toggle_fullscreen_click(GuiCheckbox *sender, void *data, bool state);
     static void static_toggle_scanlines_click(GuiCheckbox *sender, void *data, bool state);
 
+    static void static_close_capture_window_click(GuiButton *sender, void *data);
+
+    void close_capture_window_click();
     void close_options_click();
     void back_click();
     void close_window_click();

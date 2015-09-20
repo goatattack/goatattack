@@ -1,5 +1,7 @@
 #include "OptionsMenu.hpp"
 
+#include <cstdlib>
+
 OptionsMenu::OptionsMenu(Gui& gui, Resources& resources, Subsystem& subsystem,
     Configuration& config, bool in_game)
     : gui(gui), resources(resources), subsystem(subsystem), config(config),
@@ -206,32 +208,64 @@ void OptionsMenu::controller_and_keyboard_click() {
     int vw = subsystem.get_view_width();
     int vh = subsystem.get_view_height();
     int ww = 335;
-    int wh = 183;
+    int wh = 203;
     int bw = 140;
     GuiWindow *window = gui.push_window(vw / 2 - ww / 2, vh / 2- wh / 2, ww, wh, "Controller And Keyboard");
 
-    ck_up = create_mapping_field(window, 15, 15, "up:", static_capture_up_click);
-    ck_down = create_mapping_field(window, 175, 15, "down:", static_capture_down_click);
-    ck_left = create_mapping_field(window, 15, 35, "left:", static_capture_left_click);
-    ck_right = create_mapping_field(window, 175, 35, "right:", static_capture_right_click);
-    ck_jump = create_mapping_field(window, 15, 55, "jump:", static_capture_jump_click);
-    ck_fire = create_mapping_field(window, 175, 55, "fire:", static_capture_fire_click);
-    ck_drop1 = create_mapping_field(window, 15, 75, "grenade:", static_capture_drop1_click);
-    ck_drop2 = create_mapping_field(window, 175, 75, "bomb:", static_capture_drop2_click);
-    ck_drop3 = create_mapping_field(window, 15, 95, "frog:", static_capture_drop3_click);
-    ck_chat = create_mapping_field(window, 175, 95, "chat:", static_capture_chat_click);
-    ck_stats = create_mapping_field(window, 15, 115, "stats:", static_capture_stats_click);
-    ck_escape = create_mapping_field(window, 175, 115, "esc:", static_capture_escape_click);
+    ck_up = create_field(window, 15, 15, "up:", static_capture_up_click);
+    ck_down = create_field(window, 175, 15, "down:", static_capture_down_click);
+    ck_left = create_field(window, 15, 35, "left:", static_capture_left_click);
+    ck_right = create_field(window, 175, 35, "right:", static_capture_right_click);
+    ck_jump = create_field(window, 15, 55, "jump:", static_capture_jump_click);
+    ck_fire = create_field(window, 175, 55, "fire:", static_capture_fire_click);
+    ck_drop1 = create_field(window, 15, 75, "grenade:", static_capture_drop1_click);
+    ck_drop2 = create_field(window, 175, 75, "bomb:", static_capture_drop2_click);
+    ck_drop3 = create_field(window, 15, 95, "frog:", static_capture_drop3_click);
+    ck_chat = create_field(window, 175, 95, "chat:", static_capture_chat_click);
+    ck_stats = create_field(window, 15, 115, "stats:", static_capture_stats_click);
+    ck_escape = create_field(window, 175, 115, "esc:", static_capture_escape_click);
     ck_selected = 0;
-
     capture_draw();
 
+    ck_dz_h = create_field(window, 15, 135, "dz horz.:", 0);
+    ck_dz_h->set_text(config.get_string("deadzone_horizontal"));
+    ck_dz_v = create_field(window, 175, 135, "dz vert.:", 0);
+    ck_dz_v->set_text(config.get_string("deadzone_vertical"));
+
     bw = 55;
-    gui.create_button(window, ww / 2 - bw / 2, wh - 43, bw, 18, "Close", static_close_window_click, this);
+    gui.create_button(window, ww / 2 - bw / 2, wh - 43, bw, 18, "Close", static_close_capture_window_click, this);
     gui.create_button(window, Gui::Spc, wh - 43, 110, 18, "Rescan Joysticks", static_capture_rescan_click, this);
 }
 
-GuiTextbox *OptionsMenu::create_mapping_field(GuiWindow *parent, int x, int y,
+void OptionsMenu::static_close_capture_window_click(GuiButton *sender, void *data) {
+    (reinterpret_cast<OptionsMenu *>(data))->close_capture_window_click();
+}
+
+void OptionsMenu::close_capture_window_click() {
+    int dzh = atoi(ck_dz_h->get_text().c_str());
+    int dzv = atoi(ck_dz_v->get_text().c_str());
+    GuiTextbox *focus_tb = 0;
+
+    if (dzh < 0) {
+        focus_tb = ck_dz_h;
+    } else if (dzv < 0) {
+        focus_tb = ck_dz_v;
+    }
+
+    if (focus_tb) {
+        gui.show_messagebox(Gui::MessageBoxIconExclamation, "Error", "Choose a positive number.");
+        focus_tb->set_focus();
+        return;
+    }
+    config.set_int("deadzone_horizontal", dzh);
+    config.set_int("deadzone_vertical", dzv);
+    subsystem.set_deadzone_horizontal(dzh);
+    subsystem.set_deadzone_vertical(dzv);
+
+    close_window_click();
+}
+
+GuiTextbox *OptionsMenu::create_field(GuiWindow *parent, int x, int y,
     const std::string& text, GuiButton::OnClick on_click)
 {
     Icon *select = resources.get_icon("select");
@@ -241,11 +275,15 @@ GuiTextbox *OptionsMenu::create_mapping_field(GuiWindow *parent, int x, int y,
 
     gui.create_label(parent, x, y, text);
     GuiTextbox *tb = gui.create_textbox(parent, x + 50, y, 80, "");
-    tb->set_locked(true);
+    tb->set_locked(on_click != 0);
     int tbh = tb->get_height();
-    GuiButton *btn = gui.create_button(parent, x + 129, y, tbh, tbh, "", on_click, this);
-    btn->show_bolts(false);
-    gui.create_picture(btn, tbh / 2 - iw / 2, tbh / 2 - ih / 2, stg);
+    if (on_click) {
+        GuiButton *btn = gui.create_button(parent, x + 129, y, tbh, tbh, "", on_click, this);
+        btn->show_bolts(false);
+        gui.create_picture(btn, tbh / 2 - iw / 2, tbh / 2 - ih / 2, stg);
+    } else {
+        tb->set_width(tb->get_width() + tbh - 1);
+    }
 
     return tb;
 }

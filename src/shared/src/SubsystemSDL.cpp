@@ -239,6 +239,14 @@ float SubsystemSDL::get_scanlines_intensity() {
     return scanlines_intensity;
 }
 
+void SubsystemSDL::set_deadzone_horizontal(int v) {
+    deadzone_horizontal = v;
+}
+
+void SubsystemSDL::set_deadzone_vertical(int v) {
+    deadzone_vertical = v;
+}
+
 TileGraphic *SubsystemSDL::create_tilegraphic(int width, int height) {
     return new TileGraphicGL(width, height, keep_pictures);
 }
@@ -563,10 +571,10 @@ bool SubsystemSDL::get_input(InputData& input) {
                 input.param1 = joyaxis;
                 if (event.jaxis.axis == 0) {
                     /* horizontal */
-                    if (event.jaxis.value < -3200) {
+                    if (event.jaxis.value < -deadzone_horizontal) {
                         input.param1 |= InputData::InputJoyDirectionLeft;
                         input.param1 &= ~InputData::InputJoyDirectionRight;
-                    } else if (event.jaxis.value > 3200) {
+                    } else if (event.jaxis.value > deadzone_horizontal) {
                         input.param1 |= InputData::InputJoyDirectionRight;
                         input.param1 &= ~InputData::InputJoyDirectionLeft;
                     } else {
@@ -575,10 +583,10 @@ bool SubsystemSDL::get_input(InputData& input) {
                 }
                 if (event.jaxis.axis == 1) {
                     /* vertical */
-                    if (event.jaxis.value < -3200) {
+                    if (event.jaxis.value < -deadzone_vertical) {
                         input.param1 |= InputData::InputJoyDirectionUp;
                         input.param1 &= ~InputData::InputJoyDirectionDown;
-                    } else if (event.jaxis.value > 3200) {
+                    } else if (event.jaxis.value > deadzone_vertical) {
                         input.param1 |= InputData::InputJoyDirectionDown;
                         input.param1 &= ~InputData::InputJoyDirectionUp;
                     } else {
