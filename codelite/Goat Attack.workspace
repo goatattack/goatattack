@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeLite_Workspace Name="Goat Attack" Database="" SWTLW="No">
+  <Project Name="GoatAttack" Path="GoatAttack/GoatAttack.project" Active="Yes"/>
+  <Project Name="MapEditor" Path="MapEditor/MapEditor.project" Active="No"/>
+  <Project Name="MasterServer" Path="MasterServer/MasterServer.project" Active="No"/>
+  <BuildMatrix>
+    <WorkspaceConfiguration Name="Debug" Selected="yes">
+      <Project Name="MasterServer" ConfigName="Debug"/>
+      <Project Name="MapEditor" ConfigName="Debug"/>
+      <Project Name="GoatAttack" ConfigName="Debug"/>
+    </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="Release" Selected="no">
+      <Project Name="GoatAttack" ConfigName="Release"/>
+      <Project Name="MapEditor" ConfigName="Release"/>
+      <Project Name="MasterServer" ConfigName="Release"/>
+    </WorkspaceConfiguration>
+  </BuildMatrix>
+</CodeLite_Workspace>

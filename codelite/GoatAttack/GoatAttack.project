@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeLite_Project Name="GoatAttack" InternalType="Console">
+  <Plugins>
+    <Plugin Name="qmake">
+      <![CDATA[00070001N0018*Debug (dedicated)0000000000000001N0020*Release (dedicated)0000000000000001N0005Debug0000000000000001N0017Debug (dedicated)0000000000000001N0007Release0000000000000001N0015Release (32bit)0000000000000001N0019Release (dedicated)000000000000]]>
+    </Plugin>
+    <Plugin Name="CMakePlugin">
+      <![CDATA[[{
+  "name": "*Debug (dedicated)",
+  "enabled": false,
+  "buildDirectory": "build",
+  "sourceDirectory": "$(ProjectPath)",
+  "generator": "",
+  "buildType": "",
+  "arguments": [],
+  "parentProject": ""
+ }, {
+  "name": "*Release (dedicated)",
+  "enabled": false,
+  "buildDirectory": "build",
+  "sourceDirectory": "$(ProjectPath)",
+  "generator": "",
+  "buildType": "",
+  "arguments": [],
+  "parentProject": ""
+ }, {
+  "name": "Debug",
+  "enabled": false,
+  "buildDirectory": "build",
+  "sourceDirectory": "$(ProjectPath)",
+  "generator": "",
+  "buildType": "",
+  "arguments": [],
+  "parentProject": ""
+ }, {
+  "name": "Debug (dedicated)",
+  "enabled": false,
+  "buildDirectory": "build",
+  "sourceDirectory": "$(ProjectPath)",
+  "generator": "",
+  "buildType": "",
+  "arguments": [],
+  "parentProject": ""
+ }, {
+  "name": "Release",
+  "enabled": false,
+  "buildDirectory": "build",
+  "sourceDirectory": "$(ProjectPath)",
+  "generator": "",
+  "buildType": "",
+  "arguments": [],
+  "parentProject": ""
+ }, {
+  "name": "Release (32bit)",
+  "enabled": false,
+  "buildDirectory": "build",
+  "sourceDirectory": "$(ProjectPath)",
+  "generator": "",
+  "buildType": "",
+  "arguments": [],
+  "parentProject": ""
+ }, {
+  "name": "Release (dedicated)",
+  "enabled": false,
+  "buildDirectory": "build",
+  "sourceDirectory": "$(ProjectPath)",
+  "generator": "",
+  "buildType": "",
+  "arguments": [],
+  "parentProject": ""
+ }]]]>
+    </Plugin>
+  </Plugins>
+  <VirtualDirectory Name="shared">
+    <VirtualDirectory Name="zlib">
+      <File Name="../../src/shared/zlib/inffast.c"/>
+      <File Name="../../src/shared/zlib/inffixed.h"/>
+      <File Name="../../src/shared/zlib/gzguts.h"/>
+      <File Name="../../src/shared/zlib/adler32.c"/>
+      <File Name="../../src/shared/zlib/crc32.h"/>
+      <File Name="../../src/shared/zlib/crc32.c"/>
+      <File Name="../../src/shared/zlib/zutil.h"/>
+      <File Name="../../src/shared/zlib/inftrees.c"/>
+      <File Name="../../src/shared/zlib/inffast.h"/>
+      <File Name="../../src/shared/zlib/zutil.c"/>
+      <File Name="../../src/shared/zlib/inflate.c"/>
+      <File Name="../../src/shared/zlib/inflate.h"/>
+      <File Name="../../src/shared/zlib/zconf.h"/>
+      <File Name="../../src/shared/zlib/zlib.h"/>
+      <File Name="../../src/shared/zlib/inftrees.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="include">
+      <File Name="../../src/shared/include/TileGraphicGL.hpp"/>
+      <File Name="../../src/shared/include/Movable.hpp"/>
+      <File Name="../../src/shared/include/Utils.hpp"/>
+      <File Name="../../src/shared/include/Animation.hpp"/>
+      <File Name="../../src/shared/include/Tileset.hpp"/>
+      <File Name="../../src/shared/include/ScopeCollector.hpp"/>
+      <File Name="../../src/shared/include/Sound.hpp"/>
+      <File Name="../../src/shared/include/SubsystemSDL.hpp"/>
+      <File Name="../../src/shared/include/Map.hpp"/>
+      <File Name="../../src/shared/include/Gui.hpp"/>
+      <File Name="../../src/shared/include/Thread.hpp"/>
+      <File Name="../../src/shared/include/Resources.hpp"/>
+      <File Name="../../src/shared/include/UDPSocket.hpp"/>
+      <File Name="../../src/shared/include/Properties.hpp"/>
+      <File Name="../../src/shared/include/TileGraphicNull.hpp"/>
+      <File Name="../../src/shared/include/Characterset.hpp"/>
+      <File Name="../../src/shared/include/Timing.hpp"/>
+      <File Name="../../src/shared/include/Audio.hpp"/>
+      <File Name="../../src/shared/include/TCPSocket.hpp"/>
+      <File Name="../../src/shared/include/Mutex.hpp"/>
+      <File Name="../../src/shared/include/PNG.hpp"/>
+      <File Name="../../src/shared/include/Music.hpp"/>
+      <File Name="../../src/shared/include/AABB.hpp"/>
+      <File Name="../../src/shared/include/Font.hpp"/>
+      <File Name="../../src/shared/include/KeyValue.hpp"/>
+      <File Name="../../src/shared/include/Tile.hpp"/>
+      <File Name="../../src/shared/include/TileGraphic.hpp"/>
+      <File Name="../../src/shared/include/AudioNull.hpp"/>
+      <File Name="../../src/shared/include/AudioSDL.hpp"/>
+      <File Name="../../src/shared/include/Exception.hpp"/>
+      <File Name="../../src/shared/include/Configuration.hpp"/>
+      <File Name="../../src/shared/include/Globals.hpp"/>
+      <File Name="../../src/shared/include/GuiObject.hpp"/>
+      <File Name="../../src/shared/include/ScopeAllocator.hpp"/>
+      <File Name="../../src/shared/include/Lightmap.hpp"/>
+      <File Name="../../src/shared/include/Icon.hpp"/>
+      <File Name="../../src/shared/include/Object.hpp"/>
+      <File Name="../../src/shared/include/NPC.hpp"/>
+      <File Name="../../src/shared/include/Subsystem.hpp"/>
+      <File Name="../../src/shared/include/Background.hpp"/>
+      <File Name="../../src/shared/include/SubsystemNull.hpp"/>
+      <File Name="../../src/shared/include/Directory.hpp"/>
+      <File Name="../../src/shared/include/ZipReader.hpp"/>
+      <File Name="../../src/shared/include/SHA256.hpp"/>
+      <File Name="../../src/shared/include/Zip.hpp"/>
+      <File Name="../../src/shared/include/ZipWriter.hpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="src">
+      <File Name="../../src/shared/src/GuiObject.cpp"/>
+      <File Name="../../src/shared/src/SubsystemNull.cpp"/>
+      <File Name="../../src/shared/src/PNG.cpp"/>
+      <File Name="../../src/shared/src/TileGraphicNull.cpp"/>
+      <File Name="../../src/shared/src/Font.cpp"/>
+      <File Name="../../src/shared/src/Movable.cpp"/>
+      <File Name="../../src/shared/src/NPC.cpp"/>
+      <File Name="../../src/shared/src/Globals.cpp"/>
+      <File Name="../../src/shared/src/Tileset.cpp"/>
+      <File Name="../../src/shared/src/Resources.cpp"/>
+      <File Name="../../src/shared/src/Thread.cpp"/>
+      <File Name="../../src/shared/src/Directory.cpp"/>
+      <File Name="../../src/shared/src/KeyValue.cpp"/>
+      <File Name="../../src/shared/src/Icon.cpp"/>
+      <File Name="../../src/shared/src/UDPSocket.cpp"/>
+      <File Name="../../src/shared/src/SubsystemSDL.cpp"/>
+      <File Name="../../src/shared/src/AudioSDL.cpp"/>
+      <File Name="../../src/shared/src/Background.cpp"/>
+      <File Name="../../src/shared/src/TileGraphicGL.cpp"/>
+      <File Name="../../src/shared/src/Characterset.cpp"/>
+      <File Name="../../src/shared/src/Music.cpp"/>
+      <File Name="../../src/shared/src/Configuration.cpp"/>
+      <File Name="../../src/shared/src/Gui.cpp"/>
+      <File Name="../../src/shared/src/Timing.cpp"/>
+      <File Name="../../src/shared/src/Subsystem.cpp"/>
+      <File Name="../../src/shared/src/TCPSocket.cpp"/>
+      <File Name="../../src/shared/src/Mutex.cpp"/>
+      <File Name="../../src/shared/src/Sound.cpp"/>
+      <File Name="../../src/shared/src/Tile.cpp"/>
+      <File Name="../../src/shared/src/Animation.cpp"/>
+      <File Name="../../src/shared/src/Exception.cpp"/>
+      <File Name="../../src/shared/src/Audio.cpp"/>
+      <File Name="../../src/shared/src/AudioNull.cpp"/>
+      <File Name="../../src/shared/src/Map.cpp"/>
+      <File Name="../../src/shared/src/TileGraphic.cpp"/>
+      <File Name="../../src/shared/src/Lightmap.cpp"/>
+      <File Name="../../src/shared/src/AABB.cpp"/>
+      <File Name="../../src/shared/src/Utils.cpp"/>
+      <File Name="../../src/shared/src/Object.cpp"/>
+      <File Name="../../src/shared/src/Properties.cpp"/>
+      <File Name="../../src/shared/src/ZipReader.cpp"/>
+      <File Name="../../src/shared/src/SHA256.cpp"/>
+      <File Name="../../src/shared/src/Zip.cpp"/>
+      <File Name="../../src/shared/src/ZipWriter.cpp"/>
+    </VirtualDirectory>
+  </VirtualDirectory>
+  <VirtualDirectory Name="Engine">
+    <VirtualDirectory Name="include">
+      <File Name="../../src/Engine/include/ClientServer.hpp"/>
+      <File Name="../../src/Engine/include/LANBroadcaster.hpp"/>
+      <File Name="../../src/Engine/include/MainMenu.hpp"/>
+      <File Name="../../src/Engine/include/TournamentTDM.hpp"/>
+      <File Name="../../src/Engine/include/Client.hpp"/>
+      <File Name="../../src/Engine/include/Server.hpp"/>
+      <File Name="../../src/Engine/include/MessageSequencer.hpp"/>
+      <File Name="../../src/Engine/include/KeyBinding.hpp"/>
+      <File Name="../../src/Engine/include/TournamentCTF.hpp"/>
+      <File Name="../../src/Engine/include/Player.hpp"/>
+      <File Name="../../src/Engine/include/Game.hpp"/>
+      <File Name="../../src/Engine/include/TournamentDM.hpp"/>
+      <File Name="../../src/Engine/include/Tournament.hpp"/>
+      <File Name="../../src/Engine/include/TournamentFactory.hpp"/>
+      <File Name="../../src/Engine/include/MasterQueryClient.hpp"/>
+      <File Name="../../src/Engine/include/Protocol.hpp"/>
+      <File Name="../../src/Engine/include/MasterQuery.hpp"/>
+      <File Name="../../src/Engine/include/TournamentTeam.hpp"/>
+      <File Name="../../src/Engine/include/OptionsMenu.hpp"/>
+      <File Name="../../src/Engine/include/GameProtocol.hpp"/>
+      <File Name="../../src/Engine/include/TournamentSR.hpp"/>
+      <File Name="../../src/Engine/include/TournamentCTC.hpp"/>
+      <File Name="../../src/Engine/include/TournamentGOH.hpp"/>
+      <File Name="../../src/Engine/include/ServerInformation.hpp"/>
+      <File Name="../../src/Engine/include/ServerLogger.hpp"/>
+      <File Name="../../src/Engine/include/ButtonNavigator.hpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="src">
+      <File Name="../../src/Engine/src/TournamentFactory.cpp"/>
+      <File Name="../../src/Engine/src/MasterQuery.cpp"/>
+      <File Name="../../src/Engine/src/TournamentTDM.cpp"/>
+      <File Name="../../src/Engine/src/LANBroadcaster.cpp"/>
+      <File Name="../../src/Engine/src/Server.cpp"/>
+      <File Name="../../src/Engine/src/TournamentPhysics.cpp"/>
+      <File Name="../../src/Engine/src/KeyBinding.cpp"/>
+      <File Name="../../src/Engine/src/TournamentCTF.cpp"/>
+      <File Name="../../src/Engine/src/OptionsMenu.cpp"/>
+      <File Name="../../src/Engine/src/MasterQueryClient.cpp"/>
+      <File Name="../../src/Engine/src/Player.cpp"/>
+      <File Name="../../src/Engine/src/TournamentWeapons.cpp"/>
+      <File Name="../../src/Engine/src/TournamentStates.cpp"/>
+      <File Name="../../src/Engine/src/MainMenu.cpp"/>
+      <File Name="../../src/Engine/src/ClientServer.cpp"/>
+      <File Name="../../src/Engine/src/Game.cpp"/>
+      <File Name="../../src/Engine/src/TournamentDM.cpp"/>
+      <File Name="../../src/Engine/src/TournamentDraw.cpp"/>
+      <File Name="../../src/Engine/src/MessageSequencer.cpp"/>
+      <File Name="../../src/Engine/src/Client.cpp"/>
+      <File Name="../../src/Engine/src/TournamentSpectator.cpp"/>
+      <File Name="../../src/Engine/src/TournamentTeam.cpp"/>
+      <File Name="../../src/Engine/src/ClientEvent.cpp"/>
+      <File Name="../../src/Engine/src/Tournament.cpp"/>
+      <File Name="../../src/Engine/src/TournamentNPC.cpp"/>
+      <File Name="../../src/Engine/src/TournamentSR.cpp"/>
+      <File Name="../../src/Engine/src/TournamentCTC.cpp"/>
+      <File Name="../../src/Engine/src/TournamentGOH.cpp"/>
+      <File Name="../../src/Engine/src/ServerInformation.cpp"/>
+      <File Name="../../src/Engine/src/ServerLogger.cpp"/>
+      <File Name="../../src/Engine/src/ButtonNavigator.cpp"/>
+    </VirtualDirectory>
+    <File Name="../../src/Engine/main.cpp"/>
+  </VirtualDirectory>
+  <Description/>
+  <Dependencies/>
+  <Dependencies Name="Debug"/>
+  <Dependencies Name="Release"/>
+  <Settings Type="Executable">
+    <GlobalSettings>
+      <Compiler Options="-pedantic;-Wno-unused-result" C_Options="-pedantic;-Wno-unused-result" Assembler="">
+        <IncludePath Value="."/>
+        <IncludePath Value="../../src/Engine/include"/>
+        <IncludePath Value="../../src/shared/include"/>
+        <IncludePath Value="../../src/shared/zlib"/>
+        <Preprocessor Value="__unix__"/>
+      </Compiler>
+      <Linker Options="">
+        <LibraryPath Value="."/>
+        <Library Value="png"/>
+        <Library Value="pthread"/>
+        <Library Value="rt"/>
+        <Library Value="SDL2"/>
+        <Library Value="SDL2_mixer"/>
+        <Library Value="GL"/>
+      </Linker>
+      <ResourceCompiler Options=""/>
+    </GlobalSettings>
+    <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="-g;-O0;-Wall" C_Options="-g;-O0;-Wall" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
+        <Preprocessor Value="DATA_DIRECTORY=${HOME}/Programming/goatattack/data"/>
+      </Compiler>
+      <Linker Options="" Required="yes"/>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="./$(ProjectName)" CommandArguments="/home/flynn/Programming/goatattack/server_dm.conf" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
+        <![CDATA[]]>
+      </Environment>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="" IsExtended="no">
+        <DebuggerSearchPaths/>
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <RebuildCommand/>
+        <CleanCommand/>
+        <BuildCommand/>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+      <Completion EnableCpp11="no" EnableCpp14="no">
+        <ClangCmpFlagsC/>
+        <ClangCmpFlags/>
+        <ClangPP/>
+        <SearchPaths/>
+      </Completion>
+    </Configuration>
+    <Configuration Name="Release" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="-O2;-Wall" C_Options="-O2;-Wall" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
+        <IncludePath Value="."/>
+        <Preprocessor Value="NDEBUG"/>
+        <Preprocessor Value="DATA_DIRECTORY=/usr/share/goatattack"/>
+      </Compiler>
+      <Linker Options="" Required="yes"/>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Release" Command="./$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
+        <![CDATA[]]>
+      </Environment>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="" IsExtended="yes">
+        <DebuggerSearchPaths/>
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <RebuildCommand/>
+        <CleanCommand/>
+        <BuildCommand/>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+      <Completion EnableCpp11="no" EnableCpp14="no">
+        <ClangCmpFlagsC/>
+        <ClangCmpFlags/>
+        <ClangPP/>
+        <SearchPaths/>
+      </Completion>
+    </Configuration>
+  </Settings>
+</CodeLite_Project>

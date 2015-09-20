@@ -1,0 +1,62 @@
+0.4.1
+- servers listbox, sorting bug fixed
+- missing log entry type "LogTypeJoin"
+- missing log entry type "LogTypePlayerNameChange"
+
+0.4.0
+- server log shows complete stats when game is over
+- test and release
+
+0.3.9:
+- new ButtonNavigator class
+- navigate thru menus without mouse (joystick only)
+
+0.3.8.2:
+- keyboard sliding bug fixed
+- ZIP class renamed to ZipReader
+- wrong ping fixed, shows correct ping rate now
+- clientside works now async to handle pak downloads w/o disconnects
+- changed protocol version to 2
+- sorting server list by clicking listbox headers
+- complete the dedicated server output for log stats (with timestamps) (thanks to dev)
+- new dedicated server option (logfile=XYZ) to specify log output
+- join request bug fixed: after warmup, tournament recreation and request window is still open
+- some minor bugs fixed in maps
+
+0.3.8.1:
+- fixed Makefile script to support AUR packages (thanks to thor77)
+
+0.3.8:
+- zip/pak support
+- controller sliding bug fixed
+- new maps added
+- map editor can now run with unelevated rights
+
+0.3.7:
+- minor bugfixes in tilesets and maps
+- create_generic_data() memory leak fixed
+- speed race -> time measuring bug fixed
+
+0.3.6:
+- clan server, remote team names
+- mouse hot spot
+- flag can be dropped by player now
+
+0.3.5:
+- map rotation fixed
+- password login
+
+0.3.4:
+- new game mode goat of the hill
+
+0.3.3:
+- new game modes speed race, catch the coin
+
+0.3.2:
+- map editor save map/lightmap exception handling
+
+0.3.1:
+- lightmap added
+
+0.3.0:
+- first local release

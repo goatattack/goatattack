@@ -1,0 +1,228 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{2B8DF22A-DCDE-4ADC-9489-C90560EB7320}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>MapEditor</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level2</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;NOMINMAX;DATA_DIRECTORY=C:\\prg\\goatattack\\data;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\prg\goatattack\src\MapEditor\include;C:\prg\goatattack\src\shared\include;C:\prg\goatattack\src\shared\zlib;C:\prg\goatattack\windows;C:\prg\goatattack\windows\Libraries\libpng\include;C:\prg\goatattack\windows\Libraries\SDL2\include;C:\prg\goatattack\windows\Libraries\SDL2_mixer\include;C:\prg\goatattack\windows\Libraries\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>libpng16.lib;zlib.lib;SDL2.lib;SDL2main.lib;SDL2_mixer.lib;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\prg\goatattack\windows\Libraries\libpng\lib\Debug;C:\prg\goatattack\windows\Libraries\SDL2\lib\x86;C:\prg\goatattack\windows\Libraries\SDL2_mixer\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <UACExecutionLevel>AsInvoker</UACExecutionLevel>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level2</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;NOMINMAX;DATA_DIRECTORY=data;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\prg\goatattack\src\MapEditor\include;C:\prg\goatattack\src\shared\include;C:\prg\goatattack\src\shared\zlib;C:\prg\goatattack\windows;C:\prg\goatattack\windows\Libraries\libpng\include;C:\prg\goatattack\windows\Libraries\SDL2\include;C:\prg\goatattack\windows\Libraries\SDL2_mixer\include;C:\prg\goatattack\windows\Libraries\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>libpng16.lib;zlib.lib;SDL2.lib;SDL2main.lib;SDL2_mixer.lib;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\prg\goatattack\windows\Libraries\libpng\lib\Release;C:\prg\goatattack\windows\Libraries\SDL2\lib\x86;C:\prg\goatattack\windows\Libraries\SDL2_mixer\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <UACExecutionLevel>AsInvoker</UACExecutionLevel>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\src\MapEditor\main.cpp" />
+    <ClCompile Include="..\..\..\src\MapEditor\src\CompileThread.cpp" />
+    <ClCompile Include="..\..\..\src\MapEditor\src\CompileThreadBlock.cpp" />
+    <ClCompile Include="..\..\..\src\MapEditor\src\CompileThreadPixel.cpp" />
+    <ClCompile Include="..\..\..\src\MapEditor\src\EditableLight.cpp" />
+    <ClCompile Include="..\..\..\src\MapEditor\src\EditableMap.cpp" />
+    <ClCompile Include="..\..\..\src\MapEditor\src\EditableObject.cpp" />
+    <ClCompile Include="..\..\..\src\MapEditor\src\MapEditor.cpp" />
+    <ClCompile Include="..\..\..\src\MapEditor\src\MapEditorLightmap.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\AABB.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\Animation.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\Audio.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\AudioNull.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\AudioSDL.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\Background.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\Characterset.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\Configuration.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\Directory.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\Exception.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\Font.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\Globals.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\Gui.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\GuiObject.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\Icon.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\KeyValue.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\Lightmap.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\Map.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\Movable.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\Music.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\Mutex.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\NPC.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\Object.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\PNG.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\Properties.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\Resources.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\SHA256.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\Sound.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\Subsystem.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\SubsystemNull.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\SubsystemSDL.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\TCPSocket.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\Thread.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\Tile.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\TileGraphic.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\TileGraphicGL.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\TileGraphicNull.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\Tileset.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\Timing.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\UDPSocket.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\Utils.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\ZIP.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\ZipReader.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\ZipWriter.cpp" />
+    <ClCompile Include="..\..\..\src\shared\zlib\adler32.c" />
+    <ClCompile Include="..\..\..\src\shared\zlib\crc32.c" />
+    <ClCompile Include="..\..\..\src\shared\zlib\inffast.c" />
+    <ClCompile Include="..\..\..\src\shared\zlib\inflate.c" />
+    <ClCompile Include="..\..\..\src\shared\zlib\inftrees.c" />
+    <ClCompile Include="..\..\..\src\shared\zlib\zutil.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\src\MapEditor\include\CompileThread.hpp" />
+    <ClInclude Include="..\..\..\src\MapEditor\include\CompileThreadBlock.hpp" />
+    <ClInclude Include="..\..\..\src\MapEditor\include\CompileThreadPixel.hpp" />
+    <ClInclude Include="..\..\..\src\MapEditor\include\EditableLight.hpp" />
+    <ClInclude Include="..\..\..\src\MapEditor\include\EditableMap.hpp" />
+    <ClInclude Include="..\..\..\src\MapEditor\include\EditableObject.hpp" />
+    <ClInclude Include="..\..\..\src\MapEditor\include\MapEditor.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\AABB.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\Animation.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\Audio.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\AudioNull.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\AudioSDL.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\Background.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\Characterset.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\Configuration.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\Directory.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\Exception.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\Font.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\Globals.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\Gui.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\GuiObject.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\Icon.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\KeyValue.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\Lightmap.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\Map.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\Movable.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\Music.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\Mutex.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\NPC.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\Object.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\PNG.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\Properties.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\Resources.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\ScopeAllocator.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\ScopeCollector.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\SHA256.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\Sound.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\Subsystem.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\SubsystemNull.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\SubsystemSDL.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\TCPSocket.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\Thread.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\Tile.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\TileGraphic.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\TileGraphicGL.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\TileGraphicNull.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\Tileset.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\Timing.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\UDPSocket.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\Utils.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\ZIP.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\ZipReader.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\ZipWriter.hpp" />
+    <ClInclude Include="..\..\..\src\shared\zlib\crc32.h" />
+    <ClInclude Include="..\..\..\src\shared\zlib\gzguts.h" />
+    <ClInclude Include="..\..\..\src\shared\zlib\inffast.h" />
+    <ClInclude Include="..\..\..\src\shared\zlib\inffixed.h" />
+    <ClInclude Include="..\..\..\src\shared\zlib\inflate.h" />
+    <ClInclude Include="..\..\..\src\shared\zlib\inftrees.h" />
+    <ClInclude Include="..\..\..\src\shared\zlib\zconf.h" />
+    <ClInclude Include="..\..\..\src\shared\zlib\zlib.h" />
+    <ClInclude Include="..\..\..\src\shared\zlib\zutil.h" />
+    <ClInclude Include="..\..\Win.hpp" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="MapEditor.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\icon.ico" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -1,0 +1,15 @@
+Package: goatattack
+Priority: optional
+Section: universe/games
+Installed-Size: 6940
+Maintainer: Philippe Widmer <pw@earthwave.ch>
+Architecture: amd64
+Version: 0.3.9
+Depends: libsdl2-2.0-0 (>= 2.0.0), libsdl2-mixer-2.0-0 (>= 2.0.0), libpng12-0 (>= 1.2.0)
+Homepage: http://www.goatattack.net
+Description: Goat Attack Multiplayer Game
+ Goat Attack is a multiplayer 2D platformer pixel art shooter game for Linux, OS X and Windows.
+ You can play it in a local network or over the Internet. This project is splitted three
+ subprojects. The game itself, its map editor and a master server. Six gameplay modes are
+ supported. deathmatch, team deathmatch, capture the flag, speed race, catch the coin
+ and goat of the hill. In this package, the game and its map editor will be installed.

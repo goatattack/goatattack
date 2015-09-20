@@ -1,0 +1,74 @@
+WORKING ON:
+
+
+PENDING:
+* spectator mode -> following other players
+* server filter (sort out full or protected server)
+* map editor, add packetizer (ZipWriter class)
+* speed up rendering, using texture atlas, working with vbo
+* ded server: sending clan badges png files via udp
+* map voting
+* switch team
+* client server handshake to prevent clientside cheating
+* editor: map shifter
+* ipv6 support
+
+
+WISHES:
+* integrated collision detection of characters (by dev)
+
+
+DONE:
+* write tiny man page
+* complete "make install"
+* port for mac osx
+* create windows installer
+* OSX: active edges -> scrambles game
+* OSX: if leaving game in fullscreen mode -> new window opens for a short time
+* MapEditor Save Map / Lightmap exception handling (read only directory)
+* mouse hot spot
+* map rotation, avoid same map in cycle
+* cleanup data directory
+* hud_icon for speed race
+* game + editor: new game mode -> speed race
+* password login
+* flag can be dropped by press fire
+* shuffling map rotation, after each completion
+* clan configuration
+* sr: initial send of all records
+* sr: show lead time
+* sr: reset time after warmup
+* ctc: send initial stats
+* general: shot at left map border -> wrong animation position
+* catch the coin -> if coin falls out of stage -> coin jitters at origin
+* catch the coin badge icon
+* goh, sounds
+* server config file, if no type is set, take map type
+* player->flag_pick_refused (period_f not int)
+* ZIP support: create data.pak and readout with ZIP class
+* speed race -> time measuring wrong
+* CTC: create_generic_data() -> memory leak (check SR and GOH also)
+* castle tileset -> some flowers are blocking
+* website with forum and download links
+* controller mode: when changing d-pad directions quickly, the movement of the player starts hanging.
+* keyboard mode: when pressing left and right simultaneously, the movement of the player hangs while sliding.
+* rename ZIP class to ZipReader
+* working on SHA256 class for verifying server and client paks
+* threads for communications
+* working on client server deferred sync. (introduced broadcast_synced)
+* ping time is wrong (includes vsync time)
+* udp pak file downloader from server
+* prevent base.pak syncing with client. check sha256 only, quit connection if needed
+* optimization: MasterQuery, LANBroadcaster, stopping threads while playing
+* GuiListbox: rename OnHeaderSelected to OnTitlebarClicked
+* sorting server list by clicking listbox headers
+* complete the dedicated server output for log stats (with timestamps) (thanks to dev)
+* join request bug fixed: after warmup, tournament recreation and request window is still open
+* navigate thru menus without mouse (joystick only)
+* servers listbox, sorting bug fixed
+* missing log entry type "LogTypeJoin"
+* missing log entry type "LogTypePlayerNameChange"
+
+
+DEFERRED:
+* OSX: too short filename buffer -> hardegger bug (not reproducable)
