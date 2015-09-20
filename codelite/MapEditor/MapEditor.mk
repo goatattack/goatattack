@@ -2,18 +2,18 @@
 ## Auto Generated makefile by CodeLite IDE
 ## any manual changes will be erased      
 ##
-## Release
+## Debug
 ProjectName            :=MapEditor
-ConfigurationName      :=Release
+ConfigurationName      :=Debug
 WorkspacePath          := "/home/flynn/Programming/goatattack/codelite"
 ProjectPath            := "/home/flynn/Programming/goatattack/codelite/MapEditor"
-IntermediateDirectory  :=./Release
+IntermediateDirectory  :=./Debug
 OutDir                 := $(IntermediateDirectory)
 CurrentFileName        :=
 CurrentFilePath        :=
 CurrentFileFullPath    :=
 User                   :=Philippe Widmer
-Date                   :=19/09/15
+Date                   :=20/09/15
 CodeLitePath           :="/home/flynn/.codelite"
 LinkerName             :=/usr/bin/g++
 SharedObjectLinkerName :=/usr/bin/g++ -shared -fPIC
@@ -28,7 +28,7 @@ LibraryPathSwitch      :=-L
 PreprocessorSwitch     :=-D
 SourceSwitch           :=-c 
 OutputFile             :=$(IntermediateDirectory)/$(ProjectName)
-Preprocessors          :=$(PreprocessorSwitch)__unix__ $(PreprocessorSwitch)NDEBUG $(PreprocessorSwitch)DATA_DIRECTORY=/usr/share/goatattack 
+Preprocessors          :=$(PreprocessorSwitch)__unix__ $(PreprocessorSwitch)DATA_DIRECTORY=${HOME}/Programming/goatattack/data 
 ObjectSwitch           :=-o 
 ArchiveOutputSwitch    := 
 PreprocessOnlySwitch   :=-E
@@ -50,8 +50,8 @@ LibPath                := $(LibraryPathSwitch).
 AR       := /usr/bin/ar rcu
 CXX      := /usr/bin/g++
 CC       := /usr/bin/gcc
-CXXFLAGS := -pedantic -Wno-unused-result -O3 -Wall $(Preprocessors)
-CFLAGS   :=  -O3 -Wall $(Preprocessors)
+CXXFLAGS := -pedantic -Wno-unused-result -g -O0 -Wall $(Preprocessors)
+CFLAGS   :=  -g -O0 -Wall $(Preprocessors)
 ASFLAGS  := 
 AS       := /usr/bin/as
 
@@ -87,11 +87,11 @@ $(OutputFile): $(IntermediateDirectory)/.d $(Objects)
 	$(LinkerName) $(OutputSwitch)$(OutputFile) @$(ObjectsFileList) $(LibPath) $(Libs) $(LinkOptions)
 
 MakeIntermediateDirs:
-	@test -d ./Release || $(MakeDirCommand) ./Release
+	@test -d ./Debug || $(MakeDirCommand) ./Debug
 
 
 $(IntermediateDirectory)/.d:
-	@test -d ./Release || $(MakeDirCommand) ./Release
+	@test -d ./Debug || $(MakeDirCommand) ./Debug
 
 PreBuild:
 
@@ -577,6 +577,6 @@ $(IntermediateDirectory)/zlib_zutil.c$(PreprocessSuffix): ../../src/shared/zlib/
 ## Clean
 ##
 clean:
-	$(RM) -r ./Release/
+	$(RM) -r ./Debug/
 
 

@@ -209,9 +209,9 @@
       <File Name="../../src/Engine/include/TournamentSR.hpp"/>
       <File Name="../../src/Engine/include/TournamentCTC.hpp"/>
       <File Name="../../src/Engine/include/TournamentGOH.hpp"/>
-      <File Name="../../src/Engine/include/ServerInformation.hpp"/>
       <File Name="../../src/Engine/include/ServerLogger.hpp"/>
       <File Name="../../src/Engine/include/ButtonNavigator.hpp"/>
+      <File Name="../../src/Engine/include/GameserverInformation.hpp"/>
     </VirtualDirectory>
     <VirtualDirectory Name="src">
       <File Name="../../src/Engine/src/TournamentFactory.cpp"/>
@@ -242,9 +242,9 @@
       <File Name="../../src/Engine/src/TournamentSR.cpp"/>
       <File Name="../../src/Engine/src/TournamentCTC.cpp"/>
       <File Name="../../src/Engine/src/TournamentGOH.cpp"/>
-      <File Name="../../src/Engine/src/ServerInformation.cpp"/>
       <File Name="../../src/Engine/src/ServerLogger.cpp"/>
       <File Name="../../src/Engine/src/ButtonNavigator.cpp"/>
+      <File Name="../../src/Engine/src/GameserverInformation.cpp"/>
     </VirtualDirectory>
     <File Name="../../src/Engine/main.cpp"/>
   </VirtualDirectory>

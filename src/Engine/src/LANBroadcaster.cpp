@@ -46,7 +46,7 @@ void LANBroadcaster::event_status(hostaddr_t host, hostport_t port,
     const std::string& name, int max_clients, int cur_clients, ms_t ping_time,
     bool secured, int protocol_version) throw (Exception)
 {
-    ServerInformation *info = 0;
+    GameserverInformation *info = 0;
     bool found = false;
 
     /* find in list */
@@ -60,7 +60,7 @@ void LANBroadcaster::event_status(hostaddr_t host, hostport_t port,
 
     /* add/update information */
     if (!found) {
-        info = new ServerInformation;
+        info = new GameserverInformation;
         hosts.push_back(info);
     }
     info->server_name = name;

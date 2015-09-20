@@ -69,8 +69,8 @@ Objects0=$(IntermediateDirectory)/Engine_main.cpp$(ObjectSuffix) $(IntermediateD
 Objects1=$(IntermediateDirectory)/src_Object.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_Properties.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_ZipReader.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_SHA256.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_Zip.cpp$(ObjectSuffix) \
 	$(IntermediateDirectory)/src_ZipWriter.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_TournamentFactory.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_MasterQuery.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_TournamentTDM.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_LANBroadcaster.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_Server.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_TournamentPhysics.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_KeyBinding.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_TournamentCTF.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_OptionsMenu.cpp$(ObjectSuffix) \
 	$(IntermediateDirectory)/src_MasterQueryClient.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_Player.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_TournamentWeapons.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_TournamentStates.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_MainMenu.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_ClientServer.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_Game.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_TournamentDM.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_TournamentDraw.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_MessageSequencer.cpp$(ObjectSuffix) \
-	$(IntermediateDirectory)/src_Client.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_TournamentSpectator.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_TournamentTeam.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_ClientEvent.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_Tournament.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_TournamentNPC.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_TournamentSR.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_TournamentCTC.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_TournamentGOH.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_ServerInformation.cpp$(ObjectSuffix) \
-	$(IntermediateDirectory)/src_ServerLogger.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_ButtonNavigator.cpp$(ObjectSuffix) 
+	$(IntermediateDirectory)/src_Client.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_TournamentSpectator.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_TournamentTeam.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_ClientEvent.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_Tournament.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_TournamentNPC.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_TournamentSR.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_TournamentCTC.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_TournamentGOH.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_ServerLogger.cpp$(ObjectSuffix) \
+	$(IntermediateDirectory)/src_ButtonNavigator.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_GameserverInformation.cpp$(ObjectSuffix) 
 
 
 
@@ -734,14 +734,6 @@ $(IntermediateDirectory)/src_TournamentGOH.cpp$(DependSuffix): ../../src/Engine/
 $(IntermediateDirectory)/src_TournamentGOH.cpp$(PreprocessSuffix): ../../src/Engine/src/TournamentGOH.cpp
 	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/src_TournamentGOH.cpp$(PreprocessSuffix) "../../src/Engine/src/TournamentGOH.cpp"
 
-$(IntermediateDirectory)/src_ServerInformation.cpp$(ObjectSuffix): ../../src/Engine/src/ServerInformation.cpp $(IntermediateDirectory)/src_ServerInformation.cpp$(DependSuffix)
-	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/flynn/Programming/goatattack/src/Engine/src/ServerInformation.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/src_ServerInformation.cpp$(ObjectSuffix) $(IncludePath)
-$(IntermediateDirectory)/src_ServerInformation.cpp$(DependSuffix): ../../src/Engine/src/ServerInformation.cpp
-	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/src_ServerInformation.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/src_ServerInformation.cpp$(DependSuffix) -MM "../../src/Engine/src/ServerInformation.cpp"
-
-$(IntermediateDirectory)/src_ServerInformation.cpp$(PreprocessSuffix): ../../src/Engine/src/ServerInformation.cpp
-	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/src_ServerInformation.cpp$(PreprocessSuffix) "../../src/Engine/src/ServerInformation.cpp"
-
 $(IntermediateDirectory)/src_ServerLogger.cpp$(ObjectSuffix): ../../src/Engine/src/ServerLogger.cpp $(IntermediateDirectory)/src_ServerLogger.cpp$(DependSuffix)
 	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/flynn/Programming/goatattack/src/Engine/src/ServerLogger.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/src_ServerLogger.cpp$(ObjectSuffix) $(IncludePath)
 $(IntermediateDirectory)/src_ServerLogger.cpp$(DependSuffix): ../../src/Engine/src/ServerLogger.cpp
@@ -757,6 +749,14 @@ $(IntermediateDirectory)/src_ButtonNavigator.cpp$(DependSuffix): ../../src/Engin
 
 $(IntermediateDirectory)/src_ButtonNavigator.cpp$(PreprocessSuffix): ../../src/Engine/src/ButtonNavigator.cpp
 	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/src_ButtonNavigator.cpp$(PreprocessSuffix) "../../src/Engine/src/ButtonNavigator.cpp"
+
+$(IntermediateDirectory)/src_GameserverInformation.cpp$(ObjectSuffix): ../../src/Engine/src/GameserverInformation.cpp $(IntermediateDirectory)/src_GameserverInformation.cpp$(DependSuffix)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/flynn/Programming/goatattack/src/Engine/src/GameserverInformation.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/src_GameserverInformation.cpp$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/src_GameserverInformation.cpp$(DependSuffix): ../../src/Engine/src/GameserverInformation.cpp
+	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/src_GameserverInformation.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/src_GameserverInformation.cpp$(DependSuffix) -MM "../../src/Engine/src/GameserverInformation.cpp"
+
+$(IntermediateDirectory)/src_GameserverInformation.cpp$(PreprocessSuffix): ../../src/Engine/src/GameserverInformation.cpp
+	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/src_GameserverInformation.cpp$(PreprocessSuffix) "../../src/Engine/src/GameserverInformation.cpp"
 
 
 -include $(IntermediateDirectory)/*$(DependSuffix)

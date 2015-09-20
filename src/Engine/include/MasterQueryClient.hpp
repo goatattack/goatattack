@@ -2,11 +2,11 @@
 #define MASTERQUERYCLIENT_HPP
 
 #include "MessageSequencer.hpp"
-#include "ServerInformation.hpp"
+#include "GameserverInformation.hpp"
 
 class MasterQuery;
 
-class MasterQueryClient : public ServerInformation, public MessageSequencer {
+class MasterQueryClient : public GameserverInformation, public MessageSequencer {
 public:
     MasterQueryClient(MasterQuery& master_query, hostaddr_t host, hostport_t port) throw (Exception);
     virtual ~MasterQueryClient();

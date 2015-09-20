@@ -5,7 +5,7 @@
 #include "MessageSequencer.hpp"
 #include "Thread.hpp"
 #include "Mutex.hpp"
-#include "ServerInformation.hpp"
+#include "GameserverInformation.hpp"
 
 class LANBroadcasterException : public Exception {
 public:

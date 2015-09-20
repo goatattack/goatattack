@@ -101,7 +101,7 @@ void MainMenu::idle() throw (Exception) {
         for (Hosts::const_iterator it = hosts.begin();
             it != hosts.end(); it++)
         {
-            const ServerInformation *info = *it;
+            const GameserverInformation *info = *it;
             GuiListboxEntry *entry = play_lan_list->add_entry(info->server_name);
             entry->add_column((info->secured ? "\x7f" : ""), 8);
             sprintf(buffer, "%d/%d", info->cur_clients, info->max_clients);
@@ -298,7 +298,7 @@ void MainMenu::play_connect_lan_click() {
     int sz = static_cast<int>(hosts.size());
 
     if (index >= 0 && index < sz) {
-        const ServerInformation *info = hosts[index];
+        const GameserverInformation *info = hosts[index];
         hostaddr_t host = info->host;
         hostport_t port = info->port;
         std::string pwd;

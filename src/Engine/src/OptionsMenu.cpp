@@ -246,14 +246,14 @@ void OptionsMenu::close_capture_window_click() {
     int dzv = atoi(ck_dz_v->get_text().c_str());
     GuiTextbox *focus_tb = 0;
 
-    if (dzh < 0) {
+    if (dzh < 0 || dzh > 16000) {
         focus_tb = ck_dz_h;
-    } else if (dzv < 0) {
+    } else if (dzv < 0 || dzv > 16000) {
         focus_tb = ck_dz_v;
     }
 
     if (focus_tb) {
-        gui.show_messagebox(Gui::MessageBoxIconExclamation, "Error", "Choose a positive number.");
+        gui.show_messagebox(Gui::MessageBoxIconExclamation, "Error", "Choose a value between 0 and 16000.");
         focus_tb->set_focus();
         return;
     }

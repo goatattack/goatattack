@@ -1,8 +1,8 @@
 .PHONY: clean All
 
 All:
-	@echo "----------Building project:[ GoatAttack - Debug ]----------"
-	@cd "GoatAttack" && $(MAKE) -f  "GoatAttack.mk"
+	@echo "----------Building project:[ MapEditor - Debug ]----------"
+	@cd "MapEditor" && $(MAKE) -f  "MapEditor.mk"
 clean:
-	@echo "----------Cleaning project:[ GoatAttack - Debug ]----------"
-	@cd "GoatAttack" && $(MAKE) -f  "GoatAttack.mk" clean
+	@echo "----------Cleaning project:[ MapEditor - Debug ]----------"
+	@cd "MapEditor" && $(MAKE) -f  "MapEditor.mk" clean
