@@ -13,6 +13,7 @@
 #include <sys/stat.h>
 #include <netdb.h>
 #include <sys/socket.h>
+#include <SDL2/SDL.h>
 #elif _WIN32
 #include "Win.hpp"
 #endif
@@ -33,10 +34,8 @@ const char *name_syllables[] = {
 };
 
 void create_directory(const std::string& directory, const std::string& in) throw (UtilsException) {
-    std::string dir;
-
-    dir = in + dir_separator + directory;
 #ifdef __unix__
+
     int rv = mkdir(dir.c_str(), S_IRWXU);
     if (rv && errno != EEXIST) {
         throw UtilsException(strerror(errno));
@@ -58,13 +57,11 @@ bool is_directory(const std::string& path) {
 
 std::string get_home_directory() throw (UtilsException) {
 #ifdef __unix__
-    struct passwd *pw;
-    pw = getpwuid(geteuid());
-    if (!pw) {
-        throw UtilsException("Function getpwuid() failed.");
-    }
-
-    return std::string(pw->pw_dir);
+  char * base_path = SDL_GetPrefPath("GoatAttack", "GoatAttack"); // ends with path sep
+  if (base_path == NULL) {
+    throw UtilsException("No base path available");
+  }
+  return std::string(base_path);
 #elif _WIN32
     char path[MAX_PATH];
     if (!(SHGetFolderPathA(NULL, CSIDL_PROFILE, NULL, 0, path) == S_OK)) {
