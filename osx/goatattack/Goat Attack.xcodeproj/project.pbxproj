@@ -16,9 +16,6 @@
 		524E10511B33757A00AF62C4 /* libpng16.16.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 524E10501B33757A00AF62C4 /* libpng16.16.dylib */; };
 		524E10521B33758A00AF62C4 /* libpng16.16.dylib in Copy libraries to to bundle */ = {isa = PBXBuildFile; fileRef = 524E10501B33757A00AF62C4 /* libpng16.16.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		524E12131B33768400AF62C4 /* data in Resources */ = {isa = PBXBuildFile; fileRef = 524E12121B33768400AF62C4 /* data */; };
-		525C03EB1BAD885F00BA31BE /* ButtonNavigator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 525C03E81BAD885F00BA31BE /* ButtonNavigator.cpp */; };
-		525C03EC1BAD885F00BA31BE /* ServerInformation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 525C03E91BAD885F00BA31BE /* ServerInformation.cpp */; };
-		525C03ED1BAD885F00BA31BE /* ServerLogger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 525C03EA1BAD885F00BA31BE /* ServerLogger.cpp */; };
 		5268D6AE1BA0A38E00399464 /* AABB.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5268D6821BA0A38E00399464 /* AABB.cpp */; };
 		5268D6AF1BA0A38E00399464 /* Animation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5268D6831BA0A38E00399464 /* Animation.cpp */; };
 		5268D6B01BA0A38E00399464 /* Audio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5268D6841BA0A38E00399464 /* Audio.cpp */; };
@@ -64,35 +61,38 @@
 		5268D6D81BA0A38E00399464 /* ZipReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5268D6AC1BA0A38E00399464 /* ZipReader.cpp */; };
 		5268D6D91BA0A38E00399464 /* ZipWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5268D6AD1BA0A38E00399464 /* ZipWriter.cpp */; };
 		528B25E61B33584000849A91 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 528B25E51B33584000849A91 /* Cocoa.framework */; };
+		52924E631BAF5D1000A29D80 /* ButtonNavigator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52924E441BAF5D1000A29D80 /* ButtonNavigator.cpp */; };
+		52924E641BAF5D1000A29D80 /* Client.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52924E451BAF5D1000A29D80 /* Client.cpp */; };
+		52924E651BAF5D1000A29D80 /* ClientEvent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52924E461BAF5D1000A29D80 /* ClientEvent.cpp */; };
+		52924E661BAF5D1000A29D80 /* ClientServer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52924E471BAF5D1000A29D80 /* ClientServer.cpp */; };
+		52924E671BAF5D1000A29D80 /* Game.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52924E481BAF5D1000A29D80 /* Game.cpp */; };
+		52924E681BAF5D1000A29D80 /* GameserverInformation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52924E491BAF5D1000A29D80 /* GameserverInformation.cpp */; };
+		52924E691BAF5D1000A29D80 /* KeyBinding.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52924E4A1BAF5D1000A29D80 /* KeyBinding.cpp */; };
+		52924E6A1BAF5D1000A29D80 /* LANBroadcaster.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52924E4B1BAF5D1000A29D80 /* LANBroadcaster.cpp */; };
+		52924E6B1BAF5D1000A29D80 /* MainMenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52924E4C1BAF5D1000A29D80 /* MainMenu.cpp */; };
+		52924E6C1BAF5D1000A29D80 /* MasterQuery.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52924E4D1BAF5D1000A29D80 /* MasterQuery.cpp */; };
+		52924E6D1BAF5D1000A29D80 /* MasterQueryClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52924E4E1BAF5D1000A29D80 /* MasterQueryClient.cpp */; };
+		52924E6E1BAF5D1000A29D80 /* MessageSequencer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52924E4F1BAF5D1000A29D80 /* MessageSequencer.cpp */; };
+		52924E6F1BAF5D1000A29D80 /* OptionsMenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52924E501BAF5D1000A29D80 /* OptionsMenu.cpp */; };
+		52924E701BAF5D1000A29D80 /* Player.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52924E511BAF5D1000A29D80 /* Player.cpp */; };
+		52924E711BAF5D1000A29D80 /* Server.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52924E521BAF5D1000A29D80 /* Server.cpp */; };
+		52924E721BAF5D1000A29D80 /* ServerLogger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52924E531BAF5D1000A29D80 /* ServerLogger.cpp */; };
+		52924E731BAF5D1000A29D80 /* Tournament.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52924E541BAF5D1000A29D80 /* Tournament.cpp */; };
+		52924E741BAF5D1000A29D80 /* TournamentCTC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52924E551BAF5D1000A29D80 /* TournamentCTC.cpp */; };
+		52924E751BAF5D1000A29D80 /* TournamentCTF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52924E561BAF5D1000A29D80 /* TournamentCTF.cpp */; };
+		52924E761BAF5D1000A29D80 /* TournamentDM.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52924E571BAF5D1000A29D80 /* TournamentDM.cpp */; };
+		52924E771BAF5D1000A29D80 /* TournamentDraw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52924E581BAF5D1000A29D80 /* TournamentDraw.cpp */; };
+		52924E781BAF5D1000A29D80 /* TournamentFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52924E591BAF5D1000A29D80 /* TournamentFactory.cpp */; };
+		52924E791BAF5D1000A29D80 /* TournamentGOH.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52924E5A1BAF5D1000A29D80 /* TournamentGOH.cpp */; };
+		52924E7A1BAF5D1000A29D80 /* TournamentNPC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52924E5B1BAF5D1000A29D80 /* TournamentNPC.cpp */; };
+		52924E7B1BAF5D1000A29D80 /* TournamentPhysics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52924E5C1BAF5D1000A29D80 /* TournamentPhysics.cpp */; };
+		52924E7C1BAF5D1000A29D80 /* TournamentSpectator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52924E5D1BAF5D1000A29D80 /* TournamentSpectator.cpp */; };
+		52924E7D1BAF5D1000A29D80 /* TournamentSR.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52924E5E1BAF5D1000A29D80 /* TournamentSR.cpp */; };
+		52924E7E1BAF5D1000A29D80 /* TournamentStates.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52924E5F1BAF5D1000A29D80 /* TournamentStates.cpp */; };
+		52924E7F1BAF5D1000A29D80 /* TournamentTDM.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52924E601BAF5D1000A29D80 /* TournamentTDM.cpp */; };
+		52924E801BAF5D1000A29D80 /* TournamentTeam.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52924E611BAF5D1000A29D80 /* TournamentTeam.cpp */; };
+		52924E811BAF5D1000A29D80 /* TournamentWeapons.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52924E621BAF5D1000A29D80 /* TournamentWeapons.cpp */; };
 		52B463A01B3365BC00C36A94 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52B4639F1B3365BC00C36A94 /* OpenGL.framework */; };
-		52C389F61BA0A299002208C5 /* Client.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52C389DA1BA0A299002208C5 /* Client.cpp */; };
-		52C389F71BA0A299002208C5 /* ClientEvent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52C389DB1BA0A299002208C5 /* ClientEvent.cpp */; };
-		52C389F81BA0A299002208C5 /* ClientServer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52C389DC1BA0A299002208C5 /* ClientServer.cpp */; };
-		52C389F91BA0A299002208C5 /* Game.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52C389DD1BA0A299002208C5 /* Game.cpp */; };
-		52C389FA1BA0A299002208C5 /* KeyBinding.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52C389DE1BA0A299002208C5 /* KeyBinding.cpp */; };
-		52C389FB1BA0A299002208C5 /* LANBroadcaster.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52C389DF1BA0A299002208C5 /* LANBroadcaster.cpp */; };
-		52C389FC1BA0A299002208C5 /* MainMenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52C389E01BA0A299002208C5 /* MainMenu.cpp */; };
-		52C389FD1BA0A299002208C5 /* MasterQuery.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52C389E11BA0A299002208C5 /* MasterQuery.cpp */; };
-		52C389FE1BA0A299002208C5 /* MasterQueryClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52C389E21BA0A299002208C5 /* MasterQueryClient.cpp */; };
-		52C389FF1BA0A299002208C5 /* MessageSequencer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52C389E31BA0A299002208C5 /* MessageSequencer.cpp */; };
-		52C38A001BA0A299002208C5 /* OptionsMenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52C389E41BA0A299002208C5 /* OptionsMenu.cpp */; };
-		52C38A011BA0A299002208C5 /* Player.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52C389E51BA0A299002208C5 /* Player.cpp */; };
-		52C38A021BA0A299002208C5 /* Server.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52C389E61BA0A299002208C5 /* Server.cpp */; };
-		52C38A031BA0A299002208C5 /* Tournament.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52C389E71BA0A299002208C5 /* Tournament.cpp */; };
-		52C38A041BA0A299002208C5 /* TournamentCTC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52C389E81BA0A299002208C5 /* TournamentCTC.cpp */; };
-		52C38A051BA0A299002208C5 /* TournamentCTF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52C389E91BA0A299002208C5 /* TournamentCTF.cpp */; };
-		52C38A061BA0A299002208C5 /* TournamentDM.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52C389EA1BA0A299002208C5 /* TournamentDM.cpp */; };
-		52C38A071BA0A299002208C5 /* TournamentDraw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52C389EB1BA0A299002208C5 /* TournamentDraw.cpp */; };
-		52C38A081BA0A299002208C5 /* TournamentFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52C389EC1BA0A299002208C5 /* TournamentFactory.cpp */; };
-		52C38A091BA0A299002208C5 /* TournamentGOH.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52C389ED1BA0A299002208C5 /* TournamentGOH.cpp */; };
-		52C38A0A1BA0A299002208C5 /* TournamentNPC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52C389EE1BA0A299002208C5 /* TournamentNPC.cpp */; };
-		52C38A0B1BA0A299002208C5 /* TournamentPhysics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52C389EF1BA0A299002208C5 /* TournamentPhysics.cpp */; };
-		52C38A0C1BA0A299002208C5 /* TournamentSpectator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52C389F01BA0A299002208C5 /* TournamentSpectator.cpp */; };
-		52C38A0D1BA0A299002208C5 /* TournamentSR.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52C389F11BA0A299002208C5 /* TournamentSR.cpp */; };
-		52C38A0E1BA0A299002208C5 /* TournamentStates.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52C389F21BA0A299002208C5 /* TournamentStates.cpp */; };
-		52C38A0F1BA0A299002208C5 /* TournamentTDM.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52C389F31BA0A299002208C5 /* TournamentTDM.cpp */; };
-		52C38A101BA0A299002208C5 /* TournamentTeam.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52C389F41BA0A299002208C5 /* TournamentTeam.cpp */; };
-		52C38A111BA0A299002208C5 /* TournamentWeapons.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52C389F51BA0A299002208C5 /* TournamentWeapons.cpp */; };
 		52C38A131BA0A2A4002208C5 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52C38A121BA0A2A4002208C5 /* main.cpp */; };
 		EC850B471B34323100D90F2A /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 524E104B1B33753A00AF62C4 /* SDL2.framework */; };
 		EC850B481B34323100D90F2A /* SDL2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 524E104B1B33753A00AF62C4 /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -150,12 +150,6 @@
 		524E104B1B33753A00AF62C4 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../frameworks/sdl2/SDL2.framework; sourceTree = "<group>"; };
 		524E10501B33757A00AF62C4 /* libpng16.16.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpng16.16.dylib; path = ../frameworks/libpng/libpng16.16.dylib; sourceTree = "<group>"; };
 		524E12121B33768400AF62C4 /* data */ = {isa = PBXFileReference; lastKnownFileType = folder; name = data; path = ../../data; sourceTree = "<group>"; };
-		525C03E81BAD885F00BA31BE /* ButtonNavigator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ButtonNavigator.cpp; path = ../../../src/Engine/src/ButtonNavigator.cpp; sourceTree = "<group>"; };
-		525C03E91BAD885F00BA31BE /* ServerInformation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ServerInformation.cpp; path = ../../../src/Engine/src/ServerInformation.cpp; sourceTree = "<group>"; };
-		525C03EA1BAD885F00BA31BE /* ServerLogger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ServerLogger.cpp; path = ../../../src/Engine/src/ServerLogger.cpp; sourceTree = "<group>"; };
-		525C03EE1BAD887100BA31BE /* ButtonNavigator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ButtonNavigator.hpp; path = ../../../src/Engine/include/ButtonNavigator.hpp; sourceTree = "<group>"; };
-		525C03EF1BAD887100BA31BE /* ServerInformation.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ServerInformation.hpp; path = ../../../src/Engine/include/ServerInformation.hpp; sourceTree = "<group>"; };
-		525C03F01BAD887100BA31BE /* ServerLogger.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ServerLogger.hpp; path = ../../../src/Engine/include/ServerLogger.hpp; sourceTree = "<group>"; };
 		5268D6821BA0A38E00399464 /* AABB.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AABB.cpp; sourceTree = "<group>"; };
 		5268D6831BA0A38E00399464 /* Animation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Animation.cpp; sourceTree = "<group>"; };
 		5268D6841BA0A38E00399464 /* Audio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Audio.cpp; sourceTree = "<group>"; };
@@ -254,58 +248,64 @@
 		528B25EF1B33584000849A91 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		528B25F31B33584000849A91 /* Goat Attack-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Goat Attack-Prefix.pch"; sourceTree = "<group>"; };
 		528B25FD1B33584000849A91 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		52924E2A1BAF5CFF00A29D80 /* ButtonNavigator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ButtonNavigator.hpp; path = ../../../src/Engine/include/ButtonNavigator.hpp; sourceTree = "<group>"; };
+		52924E2B1BAF5CFF00A29D80 /* Client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Client.hpp; path = ../../../src/Engine/include/Client.hpp; sourceTree = "<group>"; };
+		52924E2C1BAF5CFF00A29D80 /* ClientServer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ClientServer.hpp; path = ../../../src/Engine/include/ClientServer.hpp; sourceTree = "<group>"; };
+		52924E2D1BAF5CFF00A29D80 /* Game.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Game.hpp; path = ../../../src/Engine/include/Game.hpp; sourceTree = "<group>"; };
+		52924E2E1BAF5CFF00A29D80 /* GameProtocol.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GameProtocol.hpp; path = ../../../src/Engine/include/GameProtocol.hpp; sourceTree = "<group>"; };
+		52924E2F1BAF5CFF00A29D80 /* GameserverInformation.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GameserverInformation.hpp; path = ../../../src/Engine/include/GameserverInformation.hpp; sourceTree = "<group>"; };
+		52924E301BAF5CFF00A29D80 /* KeyBinding.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = KeyBinding.hpp; path = ../../../src/Engine/include/KeyBinding.hpp; sourceTree = "<group>"; };
+		52924E311BAF5CFF00A29D80 /* LANBroadcaster.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = LANBroadcaster.hpp; path = ../../../src/Engine/include/LANBroadcaster.hpp; sourceTree = "<group>"; };
+		52924E321BAF5CFF00A29D80 /* MainMenu.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = MainMenu.hpp; path = ../../../src/Engine/include/MainMenu.hpp; sourceTree = "<group>"; };
+		52924E331BAF5CFF00A29D80 /* MasterQuery.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = MasterQuery.hpp; path = ../../../src/Engine/include/MasterQuery.hpp; sourceTree = "<group>"; };
+		52924E341BAF5CFF00A29D80 /* MasterQueryClient.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = MasterQueryClient.hpp; path = ../../../src/Engine/include/MasterQueryClient.hpp; sourceTree = "<group>"; };
+		52924E351BAF5CFF00A29D80 /* MessageSequencer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = MessageSequencer.hpp; path = ../../../src/Engine/include/MessageSequencer.hpp; sourceTree = "<group>"; };
+		52924E361BAF5CFF00A29D80 /* OptionsMenu.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = OptionsMenu.hpp; path = ../../../src/Engine/include/OptionsMenu.hpp; sourceTree = "<group>"; };
+		52924E371BAF5CFF00A29D80 /* Player.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Player.hpp; path = ../../../src/Engine/include/Player.hpp; sourceTree = "<group>"; };
+		52924E381BAF5CFF00A29D80 /* Protocol.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Protocol.hpp; path = ../../../src/Engine/include/Protocol.hpp; sourceTree = "<group>"; };
+		52924E391BAF5CFF00A29D80 /* Server.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Server.hpp; path = ../../../src/Engine/include/Server.hpp; sourceTree = "<group>"; };
+		52924E3A1BAF5CFF00A29D80 /* ServerLogger.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ServerLogger.hpp; path = ../../../src/Engine/include/ServerLogger.hpp; sourceTree = "<group>"; };
+		52924E3B1BAF5CFF00A29D80 /* Tournament.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Tournament.hpp; path = ../../../src/Engine/include/Tournament.hpp; sourceTree = "<group>"; };
+		52924E3C1BAF5CFF00A29D80 /* TournamentCTC.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = TournamentCTC.hpp; path = ../../../src/Engine/include/TournamentCTC.hpp; sourceTree = "<group>"; };
+		52924E3D1BAF5CFF00A29D80 /* TournamentCTF.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = TournamentCTF.hpp; path = ../../../src/Engine/include/TournamentCTF.hpp; sourceTree = "<group>"; };
+		52924E3E1BAF5CFF00A29D80 /* TournamentDM.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = TournamentDM.hpp; path = ../../../src/Engine/include/TournamentDM.hpp; sourceTree = "<group>"; };
+		52924E3F1BAF5CFF00A29D80 /* TournamentFactory.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = TournamentFactory.hpp; path = ../../../src/Engine/include/TournamentFactory.hpp; sourceTree = "<group>"; };
+		52924E401BAF5CFF00A29D80 /* TournamentGOH.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = TournamentGOH.hpp; path = ../../../src/Engine/include/TournamentGOH.hpp; sourceTree = "<group>"; };
+		52924E411BAF5CFF00A29D80 /* TournamentSR.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = TournamentSR.hpp; path = ../../../src/Engine/include/TournamentSR.hpp; sourceTree = "<group>"; };
+		52924E421BAF5CFF00A29D80 /* TournamentTDM.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = TournamentTDM.hpp; path = ../../../src/Engine/include/TournamentTDM.hpp; sourceTree = "<group>"; };
+		52924E431BAF5CFF00A29D80 /* TournamentTeam.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = TournamentTeam.hpp; path = ../../../src/Engine/include/TournamentTeam.hpp; sourceTree = "<group>"; };
+		52924E441BAF5D1000A29D80 /* ButtonNavigator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ButtonNavigator.cpp; path = ../../../src/Engine/src/ButtonNavigator.cpp; sourceTree = "<group>"; };
+		52924E451BAF5D1000A29D80 /* Client.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Client.cpp; path = ../../../src/Engine/src/Client.cpp; sourceTree = "<group>"; };
+		52924E461BAF5D1000A29D80 /* ClientEvent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ClientEvent.cpp; path = ../../../src/Engine/src/ClientEvent.cpp; sourceTree = "<group>"; };
+		52924E471BAF5D1000A29D80 /* ClientServer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ClientServer.cpp; path = ../../../src/Engine/src/ClientServer.cpp; sourceTree = "<group>"; };
+		52924E481BAF5D1000A29D80 /* Game.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Game.cpp; path = ../../../src/Engine/src/Game.cpp; sourceTree = "<group>"; };
+		52924E491BAF5D1000A29D80 /* GameserverInformation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GameserverInformation.cpp; path = ../../../src/Engine/src/GameserverInformation.cpp; sourceTree = "<group>"; };
+		52924E4A1BAF5D1000A29D80 /* KeyBinding.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = KeyBinding.cpp; path = ../../../src/Engine/src/KeyBinding.cpp; sourceTree = "<group>"; };
+		52924E4B1BAF5D1000A29D80 /* LANBroadcaster.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LANBroadcaster.cpp; path = ../../../src/Engine/src/LANBroadcaster.cpp; sourceTree = "<group>"; };
+		52924E4C1BAF5D1000A29D80 /* MainMenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MainMenu.cpp; path = ../../../src/Engine/src/MainMenu.cpp; sourceTree = "<group>"; };
+		52924E4D1BAF5D1000A29D80 /* MasterQuery.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MasterQuery.cpp; path = ../../../src/Engine/src/MasterQuery.cpp; sourceTree = "<group>"; };
+		52924E4E1BAF5D1000A29D80 /* MasterQueryClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MasterQueryClient.cpp; path = ../../../src/Engine/src/MasterQueryClient.cpp; sourceTree = "<group>"; };
+		52924E4F1BAF5D1000A29D80 /* MessageSequencer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MessageSequencer.cpp; path = ../../../src/Engine/src/MessageSequencer.cpp; sourceTree = "<group>"; };
+		52924E501BAF5D1000A29D80 /* OptionsMenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OptionsMenu.cpp; path = ../../../src/Engine/src/OptionsMenu.cpp; sourceTree = "<group>"; };
+		52924E511BAF5D1000A29D80 /* Player.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Player.cpp; path = ../../../src/Engine/src/Player.cpp; sourceTree = "<group>"; };
+		52924E521BAF5D1000A29D80 /* Server.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Server.cpp; path = ../../../src/Engine/src/Server.cpp; sourceTree = "<group>"; };
+		52924E531BAF5D1000A29D80 /* ServerLogger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ServerLogger.cpp; path = ../../../src/Engine/src/ServerLogger.cpp; sourceTree = "<group>"; };
+		52924E541BAF5D1000A29D80 /* Tournament.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Tournament.cpp; path = ../../../src/Engine/src/Tournament.cpp; sourceTree = "<group>"; };
+		52924E551BAF5D1000A29D80 /* TournamentCTC.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TournamentCTC.cpp; path = ../../../src/Engine/src/TournamentCTC.cpp; sourceTree = "<group>"; };
+		52924E561BAF5D1000A29D80 /* TournamentCTF.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TournamentCTF.cpp; path = ../../../src/Engine/src/TournamentCTF.cpp; sourceTree = "<group>"; };
+		52924E571BAF5D1000A29D80 /* TournamentDM.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TournamentDM.cpp; path = ../../../src/Engine/src/TournamentDM.cpp; sourceTree = "<group>"; };
+		52924E581BAF5D1000A29D80 /* TournamentDraw.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TournamentDraw.cpp; path = ../../../src/Engine/src/TournamentDraw.cpp; sourceTree = "<group>"; };
+		52924E591BAF5D1000A29D80 /* TournamentFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TournamentFactory.cpp; path = ../../../src/Engine/src/TournamentFactory.cpp; sourceTree = "<group>"; };
+		52924E5A1BAF5D1000A29D80 /* TournamentGOH.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TournamentGOH.cpp; path = ../../../src/Engine/src/TournamentGOH.cpp; sourceTree = "<group>"; };
+		52924E5B1BAF5D1000A29D80 /* TournamentNPC.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TournamentNPC.cpp; path = ../../../src/Engine/src/TournamentNPC.cpp; sourceTree = "<group>"; };
+		52924E5C1BAF5D1000A29D80 /* TournamentPhysics.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TournamentPhysics.cpp; path = ../../../src/Engine/src/TournamentPhysics.cpp; sourceTree = "<group>"; };
+		52924E5D1BAF5D1000A29D80 /* TournamentSpectator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TournamentSpectator.cpp; path = ../../../src/Engine/src/TournamentSpectator.cpp; sourceTree = "<group>"; };
+		52924E5E1BAF5D1000A29D80 /* TournamentSR.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TournamentSR.cpp; path = ../../../src/Engine/src/TournamentSR.cpp; sourceTree = "<group>"; };
+		52924E5F1BAF5D1000A29D80 /* TournamentStates.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TournamentStates.cpp; path = ../../../src/Engine/src/TournamentStates.cpp; sourceTree = "<group>"; };
+		52924E601BAF5D1000A29D80 /* TournamentTDM.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TournamentTDM.cpp; path = ../../../src/Engine/src/TournamentTDM.cpp; sourceTree = "<group>"; };
+		52924E611BAF5D1000A29D80 /* TournamentTeam.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TournamentTeam.cpp; path = ../../../src/Engine/src/TournamentTeam.cpp; sourceTree = "<group>"; };
+		52924E621BAF5D1000A29D80 /* TournamentWeapons.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TournamentWeapons.cpp; path = ../../../src/Engine/src/TournamentWeapons.cpp; sourceTree = "<group>"; };
 		52B4639F1B3365BC00C36A94 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
-		52C389C31BA0A27E002208C5 /* Client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Client.hpp; path = ../../../src/Engine/include/Client.hpp; sourceTree = "<group>"; };
-		52C389C41BA0A27E002208C5 /* ClientServer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ClientServer.hpp; path = ../../../src/Engine/include/ClientServer.hpp; sourceTree = "<group>"; };
-		52C389C51BA0A27E002208C5 /* Game.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Game.hpp; path = ../../../src/Engine/include/Game.hpp; sourceTree = "<group>"; };
-		52C389C61BA0A27E002208C5 /* GameProtocol.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GameProtocol.hpp; path = ../../../src/Engine/include/GameProtocol.hpp; sourceTree = "<group>"; };
-		52C389C71BA0A27E002208C5 /* KeyBinding.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = KeyBinding.hpp; path = ../../../src/Engine/include/KeyBinding.hpp; sourceTree = "<group>"; };
-		52C389C81BA0A27E002208C5 /* LANBroadcaster.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = LANBroadcaster.hpp; path = ../../../src/Engine/include/LANBroadcaster.hpp; sourceTree = "<group>"; };
-		52C389C91BA0A27E002208C5 /* MainMenu.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = MainMenu.hpp; path = ../../../src/Engine/include/MainMenu.hpp; sourceTree = "<group>"; };
-		52C389CA1BA0A27E002208C5 /* MasterQuery.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = MasterQuery.hpp; path = ../../../src/Engine/include/MasterQuery.hpp; sourceTree = "<group>"; };
-		52C389CB1BA0A27E002208C5 /* MasterQueryClient.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = MasterQueryClient.hpp; path = ../../../src/Engine/include/MasterQueryClient.hpp; sourceTree = "<group>"; };
-		52C389CC1BA0A27E002208C5 /* MessageSequencer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = MessageSequencer.hpp; path = ../../../src/Engine/include/MessageSequencer.hpp; sourceTree = "<group>"; };
-		52C389CD1BA0A27E002208C5 /* OptionsMenu.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = OptionsMenu.hpp; path = ../../../src/Engine/include/OptionsMenu.hpp; sourceTree = "<group>"; };
-		52C389CE1BA0A27E002208C5 /* Player.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Player.hpp; path = ../../../src/Engine/include/Player.hpp; sourceTree = "<group>"; };
-		52C389CF1BA0A27E002208C5 /* Protocol.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Protocol.hpp; path = ../../../src/Engine/include/Protocol.hpp; sourceTree = "<group>"; };
-		52C389D01BA0A27E002208C5 /* Server.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Server.hpp; path = ../../../src/Engine/include/Server.hpp; sourceTree = "<group>"; };
-		52C389D11BA0A27E002208C5 /* Tournament.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Tournament.hpp; path = ../../../src/Engine/include/Tournament.hpp; sourceTree = "<group>"; };
-		52C389D21BA0A27E002208C5 /* TournamentCTC.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = TournamentCTC.hpp; path = ../../../src/Engine/include/TournamentCTC.hpp; sourceTree = "<group>"; };
-		52C389D31BA0A27E002208C5 /* TournamentCTF.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = TournamentCTF.hpp; path = ../../../src/Engine/include/TournamentCTF.hpp; sourceTree = "<group>"; };
-		52C389D41BA0A27E002208C5 /* TournamentDM.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = TournamentDM.hpp; path = ../../../src/Engine/include/TournamentDM.hpp; sourceTree = "<group>"; };
-		52C389D51BA0A27E002208C5 /* TournamentFactory.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = TournamentFactory.hpp; path = ../../../src/Engine/include/TournamentFactory.hpp; sourceTree = "<group>"; };
-		52C389D61BA0A27E002208C5 /* TournamentGOH.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = TournamentGOH.hpp; path = ../../../src/Engine/include/TournamentGOH.hpp; sourceTree = "<group>"; };
-		52C389D71BA0A27E002208C5 /* TournamentSR.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = TournamentSR.hpp; path = ../../../src/Engine/include/TournamentSR.hpp; sourceTree = "<group>"; };
-		52C389D81BA0A27E002208C5 /* TournamentTDM.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = TournamentTDM.hpp; path = ../../../src/Engine/include/TournamentTDM.hpp; sourceTree = "<group>"; };
-		52C389D91BA0A27E002208C5 /* TournamentTeam.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = TournamentTeam.hpp; path = ../../../src/Engine/include/TournamentTeam.hpp; sourceTree = "<group>"; };
-		52C389DA1BA0A299002208C5 /* Client.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Client.cpp; path = ../../../src/Engine/src/Client.cpp; sourceTree = "<group>"; };
-		52C389DB1BA0A299002208C5 /* ClientEvent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ClientEvent.cpp; path = ../../../src/Engine/src/ClientEvent.cpp; sourceTree = "<group>"; };
-		52C389DC1BA0A299002208C5 /* ClientServer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ClientServer.cpp; path = ../../../src/Engine/src/ClientServer.cpp; sourceTree = "<group>"; };
-		52C389DD1BA0A299002208C5 /* Game.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Game.cpp; path = ../../../src/Engine/src/Game.cpp; sourceTree = "<group>"; };
-		52C389DE1BA0A299002208C5 /* KeyBinding.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = KeyBinding.cpp; path = ../../../src/Engine/src/KeyBinding.cpp; sourceTree = "<group>"; };
-		52C389DF1BA0A299002208C5 /* LANBroadcaster.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LANBroadcaster.cpp; path = ../../../src/Engine/src/LANBroadcaster.cpp; sourceTree = "<group>"; };
-		52C389E01BA0A299002208C5 /* MainMenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MainMenu.cpp; path = ../../../src/Engine/src/MainMenu.cpp; sourceTree = "<group>"; };
-		52C389E11BA0A299002208C5 /* MasterQuery.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MasterQuery.cpp; path = ../../../src/Engine/src/MasterQuery.cpp; sourceTree = "<group>"; };
-		52C389E21BA0A299002208C5 /* MasterQueryClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MasterQueryClient.cpp; path = ../../../src/Engine/src/MasterQueryClient.cpp; sourceTree = "<group>"; };
-		52C389E31BA0A299002208C5 /* MessageSequencer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MessageSequencer.cpp; path = ../../../src/Engine/src/MessageSequencer.cpp; sourceTree = "<group>"; };
-		52C389E41BA0A299002208C5 /* OptionsMenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OptionsMenu.cpp; path = ../../../src/Engine/src/OptionsMenu.cpp; sourceTree = "<group>"; };
-		52C389E51BA0A299002208C5 /* Player.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Player.cpp; path = ../../../src/Engine/src/Player.cpp; sourceTree = "<group>"; };
-		52C389E61BA0A299002208C5 /* Server.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Server.cpp; path = ../../../src/Engine/src/Server.cpp; sourceTree = "<group>"; };
-		52C389E71BA0A299002208C5 /* Tournament.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Tournament.cpp; path = ../../../src/Engine/src/Tournament.cpp; sourceTree = "<group>"; };
-		52C389E81BA0A299002208C5 /* TournamentCTC.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TournamentCTC.cpp; path = ../../../src/Engine/src/TournamentCTC.cpp; sourceTree = "<group>"; };
-		52C389E91BA0A299002208C5 /* TournamentCTF.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TournamentCTF.cpp; path = ../../../src/Engine/src/TournamentCTF.cpp; sourceTree = "<group>"; };
-		52C389EA1BA0A299002208C5 /* TournamentDM.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TournamentDM.cpp; path = ../../../src/Engine/src/TournamentDM.cpp; sourceTree = "<group>"; };
-		52C389EB1BA0A299002208C5 /* TournamentDraw.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TournamentDraw.cpp; path = ../../../src/Engine/src/TournamentDraw.cpp; sourceTree = "<group>"; };
-		52C389EC1BA0A299002208C5 /* TournamentFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TournamentFactory.cpp; path = ../../../src/Engine/src/TournamentFactory.cpp; sourceTree = "<group>"; };
-		52C389ED1BA0A299002208C5 /* TournamentGOH.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TournamentGOH.cpp; path = ../../../src/Engine/src/TournamentGOH.cpp; sourceTree = "<group>"; };
-		52C389EE1BA0A299002208C5 /* TournamentNPC.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TournamentNPC.cpp; path = ../../../src/Engine/src/TournamentNPC.cpp; sourceTree = "<group>"; };
-		52C389EF1BA0A299002208C5 /* TournamentPhysics.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TournamentPhysics.cpp; path = ../../../src/Engine/src/TournamentPhysics.cpp; sourceTree = "<group>"; };
-		52C389F01BA0A299002208C5 /* TournamentSpectator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TournamentSpectator.cpp; path = ../../../src/Engine/src/TournamentSpectator.cpp; sourceTree = "<group>"; };
-		52C389F11BA0A299002208C5 /* TournamentSR.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TournamentSR.cpp; path = ../../../src/Engine/src/TournamentSR.cpp; sourceTree = "<group>"; };
-		52C389F21BA0A299002208C5 /* TournamentStates.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TournamentStates.cpp; path = ../../../src/Engine/src/TournamentStates.cpp; sourceTree = "<group>"; };
-		52C389F31BA0A299002208C5 /* TournamentTDM.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TournamentTDM.cpp; path = ../../../src/Engine/src/TournamentTDM.cpp; sourceTree = "<group>"; };
-		52C389F41BA0A299002208C5 /* TournamentTeam.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TournamentTeam.cpp; path = ../../../src/Engine/src/TournamentTeam.cpp; sourceTree = "<group>"; };
-		52C389F51BA0A299002208C5 /* TournamentWeapons.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TournamentWeapons.cpp; path = ../../../src/Engine/src/TournamentWeapons.cpp; sourceTree = "<group>"; };
 		52C38A121BA0A2A4002208C5 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../../../src/Engine/main.cpp; sourceTree = "<group>"; };
 		EC7CFF6A1B345BCC001F3D45 /* Goat Attack.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Goat Attack.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		EC850B4C1B34446500D90F2A /* frederic.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = frederic.icns; sourceTree = "<group>"; };
@@ -543,32 +543,32 @@
 		52C389C11BA0A26A002208C5 /* include */ = {
 			isa = PBXGroup;
 			children = (
-				525C03EE1BAD887100BA31BE /* ButtonNavigator.hpp */,
-				525C03EF1BAD887100BA31BE /* ServerInformation.hpp */,
-				525C03F01BAD887100BA31BE /* ServerLogger.hpp */,
-				52C389C31BA0A27E002208C5 /* Client.hpp */,
-				52C389C41BA0A27E002208C5 /* ClientServer.hpp */,
-				52C389C51BA0A27E002208C5 /* Game.hpp */,
-				52C389C61BA0A27E002208C5 /* GameProtocol.hpp */,
-				52C389C71BA0A27E002208C5 /* KeyBinding.hpp */,
-				52C389C81BA0A27E002208C5 /* LANBroadcaster.hpp */,
-				52C389C91BA0A27E002208C5 /* MainMenu.hpp */,
-				52C389CA1BA0A27E002208C5 /* MasterQuery.hpp */,
-				52C389CB1BA0A27E002208C5 /* MasterQueryClient.hpp */,
-				52C389CC1BA0A27E002208C5 /* MessageSequencer.hpp */,
-				52C389CD1BA0A27E002208C5 /* OptionsMenu.hpp */,
-				52C389CE1BA0A27E002208C5 /* Player.hpp */,
-				52C389CF1BA0A27E002208C5 /* Protocol.hpp */,
-				52C389D01BA0A27E002208C5 /* Server.hpp */,
-				52C389D11BA0A27E002208C5 /* Tournament.hpp */,
-				52C389D21BA0A27E002208C5 /* TournamentCTC.hpp */,
-				52C389D31BA0A27E002208C5 /* TournamentCTF.hpp */,
-				52C389D41BA0A27E002208C5 /* TournamentDM.hpp */,
-				52C389D51BA0A27E002208C5 /* TournamentFactory.hpp */,
-				52C389D61BA0A27E002208C5 /* TournamentGOH.hpp */,
-				52C389D71BA0A27E002208C5 /* TournamentSR.hpp */,
-				52C389D81BA0A27E002208C5 /* TournamentTDM.hpp */,
-				52C389D91BA0A27E002208C5 /* TournamentTeam.hpp */,
+				52924E2A1BAF5CFF00A29D80 /* ButtonNavigator.hpp */,
+				52924E2B1BAF5CFF00A29D80 /* Client.hpp */,
+				52924E2C1BAF5CFF00A29D80 /* ClientServer.hpp */,
+				52924E2D1BAF5CFF00A29D80 /* Game.hpp */,
+				52924E2E1BAF5CFF00A29D80 /* GameProtocol.hpp */,
+				52924E2F1BAF5CFF00A29D80 /* GameserverInformation.hpp */,
+				52924E301BAF5CFF00A29D80 /* KeyBinding.hpp */,
+				52924E311BAF5CFF00A29D80 /* LANBroadcaster.hpp */,
+				52924E321BAF5CFF00A29D80 /* MainMenu.hpp */,
+				52924E331BAF5CFF00A29D80 /* MasterQuery.hpp */,
+				52924E341BAF5CFF00A29D80 /* MasterQueryClient.hpp */,
+				52924E351BAF5CFF00A29D80 /* MessageSequencer.hpp */,
+				52924E361BAF5CFF00A29D80 /* OptionsMenu.hpp */,
+				52924E371BAF5CFF00A29D80 /* Player.hpp */,
+				52924E381BAF5CFF00A29D80 /* Protocol.hpp */,
+				52924E391BAF5CFF00A29D80 /* Server.hpp */,
+				52924E3A1BAF5CFF00A29D80 /* ServerLogger.hpp */,
+				52924E3B1BAF5CFF00A29D80 /* Tournament.hpp */,
+				52924E3C1BAF5CFF00A29D80 /* TournamentCTC.hpp */,
+				52924E3D1BAF5CFF00A29D80 /* TournamentCTF.hpp */,
+				52924E3E1BAF5CFF00A29D80 /* TournamentDM.hpp */,
+				52924E3F1BAF5CFF00A29D80 /* TournamentFactory.hpp */,
+				52924E401BAF5CFF00A29D80 /* TournamentGOH.hpp */,
+				52924E411BAF5CFF00A29D80 /* TournamentSR.hpp */,
+				52924E421BAF5CFF00A29D80 /* TournamentTDM.hpp */,
+				52924E431BAF5CFF00A29D80 /* TournamentTeam.hpp */,
 			);
 			name = include;
 			sourceTree = "<group>";
@@ -576,37 +576,37 @@
 		52C389C21BA0A26F002208C5 /* src */ = {
 			isa = PBXGroup;
 			children = (
-				525C03E81BAD885F00BA31BE /* ButtonNavigator.cpp */,
-				525C03E91BAD885F00BA31BE /* ServerInformation.cpp */,
-				525C03EA1BAD885F00BA31BE /* ServerLogger.cpp */,
-				52C389DA1BA0A299002208C5 /* Client.cpp */,
-				52C389DB1BA0A299002208C5 /* ClientEvent.cpp */,
-				52C389DC1BA0A299002208C5 /* ClientServer.cpp */,
-				52C389DD1BA0A299002208C5 /* Game.cpp */,
-				52C389DE1BA0A299002208C5 /* KeyBinding.cpp */,
-				52C389DF1BA0A299002208C5 /* LANBroadcaster.cpp */,
-				52C389E01BA0A299002208C5 /* MainMenu.cpp */,
-				52C389E11BA0A299002208C5 /* MasterQuery.cpp */,
-				52C389E21BA0A299002208C5 /* MasterQueryClient.cpp */,
-				52C389E31BA0A299002208C5 /* MessageSequencer.cpp */,
-				52C389E41BA0A299002208C5 /* OptionsMenu.cpp */,
-				52C389E51BA0A299002208C5 /* Player.cpp */,
-				52C389E61BA0A299002208C5 /* Server.cpp */,
-				52C389E71BA0A299002208C5 /* Tournament.cpp */,
-				52C389E81BA0A299002208C5 /* TournamentCTC.cpp */,
-				52C389E91BA0A299002208C5 /* TournamentCTF.cpp */,
-				52C389EA1BA0A299002208C5 /* TournamentDM.cpp */,
-				52C389EB1BA0A299002208C5 /* TournamentDraw.cpp */,
-				52C389EC1BA0A299002208C5 /* TournamentFactory.cpp */,
-				52C389ED1BA0A299002208C5 /* TournamentGOH.cpp */,
-				52C389EE1BA0A299002208C5 /* TournamentNPC.cpp */,
-				52C389EF1BA0A299002208C5 /* TournamentPhysics.cpp */,
-				52C389F01BA0A299002208C5 /* TournamentSpectator.cpp */,
-				52C389F11BA0A299002208C5 /* TournamentSR.cpp */,
-				52C389F21BA0A299002208C5 /* TournamentStates.cpp */,
-				52C389F31BA0A299002208C5 /* TournamentTDM.cpp */,
-				52C389F41BA0A299002208C5 /* TournamentTeam.cpp */,
-				52C389F51BA0A299002208C5 /* TournamentWeapons.cpp */,
+				52924E441BAF5D1000A29D80 /* ButtonNavigator.cpp */,
+				52924E451BAF5D1000A29D80 /* Client.cpp */,
+				52924E461BAF5D1000A29D80 /* ClientEvent.cpp */,
+				52924E471BAF5D1000A29D80 /* ClientServer.cpp */,
+				52924E481BAF5D1000A29D80 /* Game.cpp */,
+				52924E491BAF5D1000A29D80 /* GameserverInformation.cpp */,
+				52924E4A1BAF5D1000A29D80 /* KeyBinding.cpp */,
+				52924E4B1BAF5D1000A29D80 /* LANBroadcaster.cpp */,
+				52924E4C1BAF5D1000A29D80 /* MainMenu.cpp */,
+				52924E4D1BAF5D1000A29D80 /* MasterQuery.cpp */,
+				52924E4E1BAF5D1000A29D80 /* MasterQueryClient.cpp */,
+				52924E4F1BAF5D1000A29D80 /* MessageSequencer.cpp */,
+				52924E501BAF5D1000A29D80 /* OptionsMenu.cpp */,
+				52924E511BAF5D1000A29D80 /* Player.cpp */,
+				52924E521BAF5D1000A29D80 /* Server.cpp */,
+				52924E531BAF5D1000A29D80 /* ServerLogger.cpp */,
+				52924E541BAF5D1000A29D80 /* Tournament.cpp */,
+				52924E551BAF5D1000A29D80 /* TournamentCTC.cpp */,
+				52924E561BAF5D1000A29D80 /* TournamentCTF.cpp */,
+				52924E571BAF5D1000A29D80 /* TournamentDM.cpp */,
+				52924E581BAF5D1000A29D80 /* TournamentDraw.cpp */,
+				52924E591BAF5D1000A29D80 /* TournamentFactory.cpp */,
+				52924E5A1BAF5D1000A29D80 /* TournamentGOH.cpp */,
+				52924E5B1BAF5D1000A29D80 /* TournamentNPC.cpp */,
+				52924E5C1BAF5D1000A29D80 /* TournamentPhysics.cpp */,
+				52924E5D1BAF5D1000A29D80 /* TournamentSpectator.cpp */,
+				52924E5E1BAF5D1000A29D80 /* TournamentSR.cpp */,
+				52924E5F1BAF5D1000A29D80 /* TournamentStates.cpp */,
+				52924E601BAF5D1000A29D80 /* TournamentTDM.cpp */,
+				52924E611BAF5D1000A29D80 /* TournamentTeam.cpp */,
+				52924E621BAF5D1000A29D80 /* TournamentWeapons.cpp */,
 			);
 			name = src;
 			sourceTree = "<group>";
@@ -677,88 +677,88 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				52C38A081BA0A299002208C5 /* TournamentFactory.cpp in Sources */,
-				52C38A041BA0A299002208C5 /* TournamentCTC.cpp in Sources */,
+				52924E731BAF5D1000A29D80 /* Tournament.cpp in Sources */,
 				5268D6B41BA0A38E00399464 /* Characterset.cpp in Sources */,
-				52C38A0F1BA0A299002208C5 /* TournamentTDM.cpp in Sources */,
+				52924E6F1BAF5D1000A29D80 /* OptionsMenu.cpp in Sources */,
+				52924E791BAF5D1000A29D80 /* TournamentGOH.cpp in Sources */,
+				52924E721BAF5D1000A29D80 /* ServerLogger.cpp in Sources */,
 				5268D6BC1BA0A38E00399464 /* Icon.cpp in Sources */,
 				5268D6D51BA0A38E00399464 /* UDPSocket.cpp in Sources */,
-				52C389FF1BA0A299002208C5 /* MessageSequencer.cpp in Sources */,
 				524E10441B33747D00AF62C4 /* inflate.c in Sources */,
 				5268D6CE1BA0A38E00399464 /* Thread.cpp in Sources */,
 				5268D6C51BA0A38E00399464 /* PNG.cpp in Sources */,
 				5268D6D41BA0A38E00399464 /* Timing.cpp in Sources */,
-				52C38A0D1BA0A299002208C5 /* TournamentSR.cpp in Sources */,
 				5268D6CC1BA0A38E00399464 /* SubsystemSDL.cpp in Sources */,
-				52C38A071BA0A299002208C5 /* TournamentDraw.cpp in Sources */,
-				52C389FA1BA0A299002208C5 /* KeyBinding.cpp in Sources */,
-				52C38A091BA0A299002208C5 /* TournamentGOH.cpp in Sources */,
 				5268D6BE1BA0A38E00399464 /* Lightmap.cpp in Sources */,
+				52924E711BAF5D1000A29D80 /* Server.cpp in Sources */,
+				52924E6A1BAF5D1000A29D80 /* LANBroadcaster.cpp in Sources */,
 				5268D6CA1BA0A38E00399464 /* Subsystem.cpp in Sources */,
 				524E10431B33747D00AF62C4 /* inffast.c in Sources */,
 				5268D6B21BA0A38E00399464 /* AudioSDL.cpp in Sources */,
 				524E10411B33747D00AF62C4 /* adler32.c in Sources */,
 				5268D6B71BA0A38E00399464 /* Exception.cpp in Sources */,
-				52C38A0A1BA0A299002208C5 /* TournamentNPC.cpp in Sources */,
-				52C38A021BA0A299002208C5 /* Server.cpp in Sources */,
 				5268D6BB1BA0A38E00399464 /* GuiObject.cpp in Sources */,
+				52924E651BAF5D1000A29D80 /* ClientEvent.cpp in Sources */,
 				5268D6C61BA0A38E00399464 /* Properties.cpp in Sources */,
+				52924E691BAF5D1000A29D80 /* KeyBinding.cpp in Sources */,
+				52924E6B1BAF5D1000A29D80 /* MainMenu.cpp in Sources */,
 				5268D6C71BA0A38E00399464 /* Resources.cpp in Sources */,
 				5268D6D61BA0A38E00399464 /* Utils.cpp in Sources */,
-				52C38A011BA0A299002208C5 /* Player.cpp in Sources */,
-				52C389FD1BA0A299002208C5 /* MasterQuery.cpp in Sources */,
 				5268D6D21BA0A38E00399464 /* TileGraphicNull.cpp in Sources */,
-				52C389F71BA0A299002208C5 /* ClientEvent.cpp in Sources */,
-				52C38A031BA0A299002208C5 /* Tournament.cpp in Sources */,
 				5268D6CD1BA0A38E00399464 /* TCPSocket.cpp in Sources */,
 				5268D6D01BA0A38E00399464 /* TileGraphic.cpp in Sources */,
-				52C389F61BA0A299002208C5 /* Client.cpp in Sources */,
-				52C389FB1BA0A299002208C5 /* LANBroadcaster.cpp in Sources */,
-				52C38A111BA0A299002208C5 /* TournamentWeapons.cpp in Sources */,
-				52C38A0B1BA0A299002208C5 /* TournamentPhysics.cpp in Sources */,
 				5268D6C31BA0A38E00399464 /* NPC.cpp in Sources */,
 				5268D6B81BA0A38E00399464 /* Font.cpp in Sources */,
-				52C38A0C1BA0A299002208C5 /* TournamentSpectator.cpp in Sources */,
-				52C389FC1BA0A299002208C5 /* MainMenu.cpp in Sources */,
+				52924E6D1BAF5D1000A29D80 /* MasterQueryClient.cpp in Sources */,
+				52924E7E1BAF5D1000A29D80 /* TournamentStates.cpp in Sources */,
+				52924E631BAF5D1000A29D80 /* ButtonNavigator.cpp in Sources */,
 				5268D6BF1BA0A38E00399464 /* Map.cpp in Sources */,
-				525C03ED1BAD885F00BA31BE /* ServerLogger.cpp in Sources */,
 				524E10451B33747D00AF62C4 /* inftrees.c in Sources */,
+				52924E671BAF5D1000A29D80 /* Game.cpp in Sources */,
 				5268D6D31BA0A38E00399464 /* Tileset.cpp in Sources */,
+				52924E701BAF5D1000A29D80 /* Player.cpp in Sources */,
 				5268D6B01BA0A38E00399464 /* Audio.cpp in Sources */,
 				5268D6B61BA0A38E00399464 /* Directory.cpp in Sources */,
-				52C389F91BA0A299002208C5 /* Game.cpp in Sources */,
-				52C38A101BA0A299002208C5 /* TournamentTeam.cpp in Sources */,
+				52924E661BAF5D1000A29D80 /* ClientServer.cpp in Sources */,
 				524E10461B33747D00AF62C4 /* zutil.c in Sources */,
+				52924E751BAF5D1000A29D80 /* TournamentCTF.cpp in Sources */,
 				5268D6C21BA0A38E00399464 /* Mutex.cpp in Sources */,
 				5268D6D81BA0A38E00399464 /* ZipReader.cpp in Sources */,
 				5268D6AE1BA0A38E00399464 /* AABB.cpp in Sources */,
+				52924E761BAF5D1000A29D80 /* TournamentDM.cpp in Sources */,
+				52924E641BAF5D1000A29D80 /* Client.cpp in Sources */,
+				52924E6E1BAF5D1000A29D80 /* MessageSequencer.cpp in Sources */,
 				5268D6B91BA0A38E00399464 /* Globals.cpp in Sources */,
+				52924E7F1BAF5D1000A29D80 /* TournamentTDM.cpp in Sources */,
 				5268D6B11BA0A38E00399464 /* AudioNull.cpp in Sources */,
+				52924E7A1BAF5D1000A29D80 /* TournamentNPC.cpp in Sources */,
 				5268D6C41BA0A38E00399464 /* Object.cpp in Sources */,
 				5268D6BD1BA0A38E00399464 /* KeyValue.cpp in Sources */,
+				52924E7D1BAF5D1000A29D80 /* TournamentSR.cpp in Sources */,
 				5268D6D91BA0A38E00399464 /* ZipWriter.cpp in Sources */,
-				525C03EB1BAD885F00BA31BE /* ButtonNavigator.cpp in Sources */,
-				52C389FE1BA0A299002208C5 /* MasterQueryClient.cpp in Sources */,
+				52924E771BAF5D1000A29D80 /* TournamentDraw.cpp in Sources */,
 				5268D6C01BA0A38E00399464 /* Movable.cpp in Sources */,
+				52924E7B1BAF5D1000A29D80 /* TournamentPhysics.cpp in Sources */,
+				52924E741BAF5D1000A29D80 /* TournamentCTC.cpp in Sources */,
+				52924E6C1BAF5D1000A29D80 /* MasterQuery.cpp in Sources */,
+				52924E811BAF5D1000A29D80 /* TournamentWeapons.cpp in Sources */,
 				5268D6B51BA0A38E00399464 /* Configuration.cpp in Sources */,
-				52C38A0E1BA0A299002208C5 /* TournamentStates.cpp in Sources */,
 				5268D6CB1BA0A38E00399464 /* SubsystemNull.cpp in Sources */,
 				5268D6C11BA0A38E00399464 /* Music.cpp in Sources */,
-				52C38A001BA0A299002208C5 /* OptionsMenu.cpp in Sources */,
 				5268D6C91BA0A38E00399464 /* Sound.cpp in Sources */,
-				52C38A051BA0A299002208C5 /* TournamentCTF.cpp in Sources */,
 				5268D6AF1BA0A38E00399464 /* Animation.cpp in Sources */,
+				52924E801BAF5D1000A29D80 /* TournamentTeam.cpp in Sources */,
+				52924E681BAF5D1000A29D80 /* GameserverInformation.cpp in Sources */,
 				5268D6D71BA0A38E00399464 /* Zip.cpp in Sources */,
 				5268D6B31BA0A38E00399464 /* Background.cpp in Sources */,
 				5268D6D11BA0A38E00399464 /* TileGraphicGL.cpp in Sources */,
 				524E10421B33747D00AF62C4 /* crc32.c in Sources */,
-				52C389F81BA0A299002208C5 /* ClientServer.cpp in Sources */,
-				525C03EC1BAD885F00BA31BE /* ServerInformation.cpp in Sources */,
+				52924E781BAF5D1000A29D80 /* TournamentFactory.cpp in Sources */,
 				5268D6BA1BA0A38E00399464 /* Gui.cpp in Sources */,
 				52C38A131BA0A2A4002208C5 /* main.cpp in Sources */,
+				52924E7C1BAF5D1000A29D80 /* TournamentSpectator.cpp in Sources */,
 				5268D6CF1BA0A38E00399464 /* Tile.cpp in Sources */,
 				5268D6C81BA0A38E00399464 /* SHA256.cpp in Sources */,
-				52C38A061BA0A299002208C5 /* TournamentDM.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
