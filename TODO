@@ -1,5 +1,5 @@
 WORKING ON:
-* configurable deadzone for gamepads
+
 
 
 PENDING:
@@ -69,6 +69,7 @@ DONE:
 * servers listbox, sorting bug fixed
 * missing log entry type "LogTypeJoin"
 * missing log entry type "LogTypePlayerNameChange"
+* configurable deadzone for gamepads
 
 
 DEFERRED:

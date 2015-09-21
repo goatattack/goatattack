@@ -2,6 +2,7 @@
 - servers listbox, sorting bug fixed
 - missing log entry type "LogTypeJoin"
 - missing log entry type "LogTypePlayerNameChange"
+- configurable deadzone for gamepads
 
 0.4.0
 - server log shows complete stats when game is over
