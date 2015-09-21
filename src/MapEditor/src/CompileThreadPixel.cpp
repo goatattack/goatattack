@@ -38,9 +38,9 @@ void CompileThreadPixel::thread() {
         int ly = lights[i]->y;
         Point p2(static_cast<float>(lx * tw + (tw / 2)), static_cast<float>(ly * th + (th / 2)));
         int lsx = static_cast<int>(p2.x) - r;
-		int lsy = static_cast<int>(p2.y) - r;
-		int lex = static_cast<int>(p2.x) + r;
-		int ley = static_cast<int>(p2.y) + r;
+        int lsy = static_cast<int>(p2.y) - r;
+        int lex = static_cast<int>(p2.x) + r;
+        int ley = static_cast<int>(p2.y) + r;
         if (lsx < 0) lsx = 0;
         if (lsy < 0) lsy = 0;
         if (lex > w) lex = w;
@@ -58,7 +58,7 @@ void CompileThreadPixel::thread() {
                     lightmap[y][x * 4 + 3] = 0;
                 } else {
                     bool contact = false;
-					Point p1(static_cast<float>(x), static_cast<float>(y));
+                    Point p1(static_cast<float>(x), static_cast<float>(y));
                     float xd = p2.x - p1.x;
                     float yd = p2.y - p1.y;
                     float dist = xd * xd + yd * yd;

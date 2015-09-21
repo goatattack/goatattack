@@ -41,24 +41,24 @@ int TileGraphicGL::get_bytes_per_pixel(int index) {
 void TileGraphicGL::add_tile(int bytes_per_pixel, const void *pic, bool desc, bool linear) {
     GLuint tex;
 
-	glGenTextures(1, &tex);
-	glBindTexture(GL_TEXTURE_2D, tex);
-	if (linear) {
+    glGenTextures(1, &tex);
+    glBindTexture(GL_TEXTURE_2D, tex);
+    if (linear) {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	} else {
+    } else {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	}
-	glTexImage2D(GL_TEXTURE_2D, 0, bytes_per_pixel, width, height, 0,
+    }
+    glTexImage2D(GL_TEXTURE_2D, 0, bytes_per_pixel, width, height, 0,
         (bytes_per_pixel == 4 ? GL_RGBA : GL_RGB), GL_UNSIGNED_BYTE, pic);
 
     if (desc) {
         textures.push_front(tex);
     } else {
-	    textures.push_back(tex);
+        textures.push_back(tex);
     }
-	sz = textures.size();
+    sz = textures.size();
 }
 
 void TileGraphicGL::punch_out_tile(PNG& png, int tilex, int tiley, bool desc, bool linear) {

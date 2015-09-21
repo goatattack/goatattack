@@ -38,8 +38,8 @@ private:
 #ifdef __unix__
     DIR *dir;
 #elif _WIN32
-	HANDLE dir;
-	WIN32_FIND_DATAA ffd;
+    HANDLE dir;
+    WIN32_FIND_DATAA ffd;
 #endif
 };
 

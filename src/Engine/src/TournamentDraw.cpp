@@ -81,7 +81,7 @@ void Tournament::draw_decoration() {
     ty = -top / tile_height;
     cy = top % tile_height;
 
-	float dbr = static_cast<float>(decoration_brightness);
+    float dbr = static_cast<float>(decoration_brightness);
     subsystem.set_color(dbr, dbr, dbr, 1.0f);
     while (true) {
         tx = -left / tile_width;
@@ -387,7 +387,7 @@ void Tournament::draw_players() {
             int height = tg->get_height();
             subsystem.draw_tilegraphic(tg, p->state.client_state.iconindex,
                 static_cast<int>(p->state.client_server_state.x) + left,
-				static_cast<int>(p->state.client_server_state.y) + top - height);
+                static_cast<int>(p->state.client_server_state.y) + top - height);
             subsystem.reset_color();
 
             /* draw armor */
@@ -397,8 +397,8 @@ void Tournament::draw_players() {
                     static_cast<CharacterAnimation>(p->state.client_state.icon));
                 tg = t->get_tilegraphic();
                 subsystem.draw_tilegraphic(tg, p->state.client_state.iconindex,
-					static_cast<int>(p->state.client_server_state.x) + left,
-						static_cast<int>(p->state.client_server_state.y) + top - height);
+                    static_cast<int>(p->state.client_server_state.x) + left,
+                        static_cast<int>(p->state.client_server_state.y) + top - height);
             }
 
             /* draw weapon belt */
@@ -408,8 +408,8 @@ void Tournament::draw_players() {
                     static_cast<CharacterAnimation>(p->state.client_state.icon));
                 tg = t->get_tilegraphic();
                 subsystem.draw_tilegraphic(tg, p->state.client_state.iconindex,
-					static_cast<int>(p->state.client_server_state.x) + left,
-					static_cast<int>(p->state.client_server_state.y) + top - height);
+                    static_cast<int>(p->state.client_server_state.x) + left,
+                    static_cast<int>(p->state.client_server_state.y) + top - height);
             }
 
             /* draw afk */
@@ -434,8 +434,8 @@ void Tournament::draw_players() {
                 const CollisionBox& colbox = p->get_characterset()->get_colbox();
                 subsystem.set_color(1.0f, 0.0f, 0.0f, 0.5f);
                 subsystem.draw_box(static_cast<int>(p->state.client_server_state.x) + left + colbox.x,
-					static_cast<int>(p->state.client_server_state.y) + top - colbox.height - colbox.y,
-					colbox.width, colbox.height);
+                    static_cast<int>(p->state.client_server_state.y) + top - colbox.height - colbox.y,
+                    colbox.width, colbox.height);
                 subsystem.reset_color();
             }
         }

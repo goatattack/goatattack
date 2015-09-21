@@ -4,8 +4,8 @@
 
 Map::Map(Subsystem& subsystem) : subsystem(subsystem) {
     parallax = 0;
-	decoration_brightness = 0.0f;
-	lightmap_alpha = 0.0f;
+    decoration_brightness = 0.0f;
+    lightmap_alpha = 0.0f;
     width = 100;
     height = 100;
     map = create_map(width, height);

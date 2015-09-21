@@ -139,7 +139,7 @@ void ClientServer::broadcast_data_synced(unsigned char tournament_id, command_t 
 }
 
 hostport_t ClientServer::get_port() const {
-	return port;
+    return port;
 }
 
 void ClientServer::stack_data(unsigned char tournament_id, command_t cmd, data_len_t len, const void *data) {

@@ -61,8 +61,8 @@ void TCPSocket::connect(const char *ip_address, unsigned short port) throw (TCPS
     flags |= O_NONBLOCK;
     fcntl(socket, F_SETFL, flags);
 #elif _WIN32
-	u_long mode = 0;
-	ioctlsocket(socket, FIONBIO, &mode);
+    u_long mode = 0;
+    ioctlsocket(socket, FIONBIO, &mode);
 #endif
 
     /* open connection */
@@ -84,9 +84,9 @@ void TCPSocket::connect(const char *ip_address, unsigned short port) throw (TCPS
 #ifdef __unix__
                    getsockopt(socket, SOL_SOCKET, SO_ERROR, static_cast<void *>(&valopt), &lon);
 #elif _WIN32
-				   char cvalopt = 0;
-				   getsockopt(socket, SOL_SOCKET, SO_ERROR, &cvalopt, &lon);
-				   valopt = static_cast<int>(cvalopt);
+                   char cvalopt = 0;
+                   getsockopt(socket, SOL_SOCKET, SO_ERROR, &cvalopt, &lon);
+                   valopt = static_cast<int>(cvalopt);
 #endif
                    if (valopt) {
                        std::string err("Cannot connect to server: ");
@@ -100,7 +100,7 @@ void TCPSocket::connect(const char *ip_address, unsigned short port) throw (TCPS
 #ifdef __unix__
                 usleep(100000);
 #elif _WIN32
-				Sleep(1);
+                Sleep(1);
 #endif
                 if (disconnecting) return;
             }
@@ -112,10 +112,10 @@ void TCPSocket::connect(const char *ip_address, unsigned short port) throw (TCPS
             err.append(strerror(errno));
             throw TCPSocketException(err);
         }
-	}
-	else if (rv == 0) {
-		connected = true;
-	}
+    }
+    else if (rv == 0) {
+        connected = true;
+    }
 
     /* set to blocking mode again */
 #ifdef __unix__
@@ -123,8 +123,8 @@ void TCPSocket::connect(const char *ip_address, unsigned short port) throw (TCPS
     flags &= (~O_NONBLOCK);
     fcntl(socket, F_SETFL, flags);
 #elif _WIN32
-	mode = 0;
-	ioctlsocket(socket, FIONBIO, &mode);
+    mode = 0;
+    ioctlsocket(socket, FIONBIO, &mode);
 #endif
 }
 
@@ -137,7 +137,7 @@ bool TCPSocket::activity(time_t sec, long usec) throw (TCPSocketException) {
 #ifdef __unix__
     timeout.tv_sec = sec;
 #elif _WIN32
-	timeout.tv_sec = static_cast<long>(sec);
+    timeout.tv_sec = static_cast<long>(sec);
 #endif
     timeout.tv_usec = usec;
 
@@ -156,9 +156,9 @@ bool TCPSocket::activity(time_t sec, long usec) throw (TCPSocketException) {
 #ifdef __unix__
         ioctl(socket, FIONREAD, &n);
 #elif _WIN32
-		u_long r = 0;
-		ioctlsocket(socket, FIONREAD, &r);
-		n = static_cast<int>(r);
+        u_long r = 0;
+        ioctlsocket(socket, FIONREAD, &r);
+        n = static_cast<int>(r);
 #endif
         if (!n) {
             error = true;
@@ -184,11 +184,11 @@ void TCPSocket::listen(const char *address, unsigned short port, int backlog) th
 
     /* setup listener socket */
 #ifdef __unix__
-	const int yes = 1;
+    const int yes = 1;
     setsockopt(socket, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof yes);
 #elif _WIN32
-	const char yes = 1;
-	setsockopt(socket, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof yes);
+    const char yes = 1;
+    setsockopt(socket, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof yes);
 #endif
     server.sin_family = AF_INET;
     if (address) {
@@ -208,7 +208,7 @@ void TCPSocket::listen(const char *address, unsigned short port, int backlog) th
     rv = ::listen(socket, backlog);
     if (rv < 0) {
         listening = connected = false;
-		closesocket(socket);
+        closesocket(socket);
         throw TCPSocketException("Listen failed: " + std::string(strerror(errno)));
     }
 }
@@ -250,9 +250,9 @@ void TCPSocket::close() {
 #ifdef __unix__
         ::shutdown(socket, SHUT_RDWR);
 #elif _WIN32
-		::shutdown(socket, SD_BOTH);
+        ::shutdown(socket, SD_BOTH);
 #else
-	#error What kind of os is that?
+    #error What kind of os is that?
 #endif
         closesocket(socket);
         connected = listening = false;
@@ -260,7 +260,7 @@ void TCPSocket::close() {
 #ifdef __unix__
         ::shutdown(socket, SHUT_RDWR);
 #elif _WIN32
-		::shutdown(socket, SD_BOTH);
+        ::shutdown(socket, SD_BOTH);
 #endif
         closesocket(socket);
         connected = listening = false;
@@ -292,7 +292,7 @@ size_t TCPSocket::receive(void *buffer, size_t size) throw (TCPSocketException) 
 #ifdef __unix__
     int rv = recv(socket, buffer, size, 0);
 #elif _WIN32
-	int rv = recv(socket, static_cast<char *>(buffer), size, 0);
+    int rv = recv(socket, static_cast<char *>(buffer), size, 0);
 #endif
     if (rv < 0) {
         throw TCPSocketException("Receive failed: " + std::string(strerror(errno)));

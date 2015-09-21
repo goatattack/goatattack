@@ -29,7 +29,7 @@ private:
 #ifdef __unix__
     pthread_t t;
 #else
-	HANDLE t;
+    HANDLE t;
 #endif
 
     static void *thread_helper(void *o);

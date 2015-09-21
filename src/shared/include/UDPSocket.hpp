@@ -33,7 +33,7 @@ protected:
 #ifdef __unix__
     int socket;
 #elif _WIN32
-	SOCKET socket;
+    SOCKET socket;
 #endif
     unsigned short port;
     struct sockaddr_in addr;

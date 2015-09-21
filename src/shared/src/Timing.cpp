@@ -17,8 +17,8 @@ void init_hpet() {
     mach_timebase_info(&__mach_timer_info);
     __timer_millis_mult = (static_cast<double>(__mach_timer_info.numer) / (static_cast<double>(__mach_timer_info.denom))) / 1000000000;
 #elif _WIN32
-	QueryPerformanceFrequency((LARGE_INTEGER*)&__freq);
-	__timer_millis_mult = static_cast<double>(__freq);
+    QueryPerformanceFrequency((LARGE_INTEGER*)&__freq);
+    __timer_millis_mult = static_cast<double>(__freq);
 #endif
 }
 
@@ -30,15 +30,15 @@ void get_now(gametime_t& time) {
 #ifdef __APPLE__
     double d = static_cast<double>(mach_absolute_time()) * __timer_millis_mult;
     time.tv_sec = static_cast<time_t>(d);
-	time.tv_nsec = static_cast<long>((d - time.tv_sec) * 1000000000);
+    time.tv_nsec = static_cast<long>((d - time.tv_sec) * 1000000000);
 #else
     clock_gettime(CLOCK_MONOTONIC_RAW, &time);
 #endif
 #elif _WIN32
-	QueryPerformanceCounter((LARGE_INTEGER*)&__qry);
-	double d = static_cast<double>(__qry) / __timer_millis_mult;
-	time.tv_sec = static_cast<int>(d);
-	time.tv_nsec = static_cast<long>((d - time.tv_sec) * 1000000000);
+    QueryPerformanceCounter((LARGE_INTEGER*)&__qry);
+    double d = static_cast<double>(__qry) / __timer_millis_mult;
+    time.tv_sec = static_cast<int>(d);
+    time.tv_nsec = static_cast<long>((d - time.tv_sec) * 1000000000);
 #endif
 }
 
@@ -87,7 +87,7 @@ void wait_ns(ns_t ns) {
     wait.tv_nsec = ns;
     nanosleep(&wait, &rem);
 #elif _WIN32
-	Sleep(ns / 1000000);
+    Sleep(ns / 1000000);
 #endif
 }
 
@@ -100,6 +100,6 @@ void wait_ms(ms_t ms) {
     wait.tv_nsec = ms * 1000000;
     nanosleep(&wait, &rem);
 #elif _WIN32
-	Sleep(ms);
+    Sleep(ms);
 #endif
 }

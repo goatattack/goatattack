@@ -30,9 +30,9 @@ ssize_t UDPSocket::send(uint32_t host, uint16_t port, void *buffer, size_t lengt
         throw UDPSocketException("Error sending packet: " + std::string(strerror(errno)));
     }
 #elif _WIN32
-	if (sz < 0) {
-		sz = 0;
-	}
+    if (sz < 0) {
+        sz = 0;
+    }
 #endif
 
     return sz;
@@ -51,9 +51,9 @@ ssize_t UDPSocket::recv(char *buffer, size_t length, uint32_t *host, uint16_t *p
         return 0;
     }
 #elif _WIN32
-	if (sz < 0) {
-		return 0;
-	}
+    if (sz < 0) {
+        return 0;
+    }
 #endif
 
     if (host) *host = ntohl(ao.sin_addr.s_addr);
@@ -63,24 +63,24 @@ ssize_t UDPSocket::recv(char *buffer, size_t length, uint32_t *host, uint16_t *p
 }
 
 void UDPSocket::create_socket(unsigned short port) throw (UDPSocketException) {
-	socket = ::socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-	if (socket < 0) {
-		throw UDPSocketException("Creating socket failed: " + std::string(strerror(errno)));
-	}
+    socket = ::socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    if (socket < 0) {
+        throw UDPSocketException("Creating socket failed: " + std::string(strerror(errno)));
+    }
 
 #ifdef _WIN32
-	u_long mode = 1;
-	ioctlsocket(socket, FIONBIO, &mode);
+    u_long mode = 1;
+    ioctlsocket(socket, FIONBIO, &mode);
 #else
-	fcntl(socket, F_SETFL, fcntl(socket, F_GETFL, 0) | O_NONBLOCK);
+    fcntl(socket, F_SETFL, fcntl(socket, F_GETFL, 0) | O_NONBLOCK);
 #endif
 
 #ifdef __unix__
-	int bc = 1;
-	int rv = setsockopt(socket, SOL_SOCKET, SO_BROADCAST, &bc, sizeof bc);
+    int bc = 1;
+    int rv = setsockopt(socket, SOL_SOCKET, SO_BROADCAST, &bc, sizeof bc);
 #else
-	const char bc = 1;
-	int rv = setsockopt(socket, SOL_SOCKET, SO_BROADCAST, &bc, sizeof bc);
+    const char bc = 1;
+    int rv = setsockopt(socket, SOL_SOCKET, SO_BROADCAST, &bc, sizeof bc);
 #endif
     if (rv < 0) {
         closesocket(socket);
@@ -94,7 +94,7 @@ void UDPSocket::create_socket(unsigned short port) throw (UDPSocketException) {
 
     if (port) {
         if (bind(socket, reinterpret_cast<struct sockaddr *>(&addr), sizeof(addr)) == -1) {
-			closesocket(socket);
+            closesocket(socket);
             throw UDPSocketException("UDPSocket binding failed: " + std::string(strerror(errno)));
         }
     }

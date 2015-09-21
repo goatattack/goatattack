@@ -22,7 +22,7 @@ Directory::Directory(const std::string& directory, const std::string& suffix,
             throw DirectoryException("Cannot look into directory " + directory + ": "
                 + std::string(strerror(errno)));
         }
-	}
+    }
 }
 
 Directory::~Directory() {
@@ -104,7 +104,7 @@ const char *Directory::get_entry() {
                 }
             } while (FindNextFileA(dir, &ffd));
 #endif
-		}
+        }
     }
 
     return 0;

@@ -62,7 +62,7 @@ private:
 
     Subsystem& subsystem;
 
-    int	offset;
+    int    offset;
     Tile *tiles[NumOfChars];
     int fw[NumOfChars];
     int fh[NumOfChars];
