@@ -17,6 +17,9 @@ PENDING:
 
 WISHES:
 * integrated collision detection of characters (by dev)
+* friendly-fire configurable
+* server-commands
+* use ini-format for server-config (sections)
 
 
 DONE:
