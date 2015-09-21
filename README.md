@@ -7,8 +7,8 @@ the game and the map editor can be compiled for all three platforms. the master 
 
 ## Build client
 ### Requires
-* **Debian/Ubuntu** build-essential libsdl2-dev libsd2l-mixer-dev libpng12-dev
-* **Archlinux** sdl2 sdl2_mixer libpng  
+* **Debian/Ubuntu** build-essential autoconf libtool git libsdl2-dev libsdl2-mixer-dev libpng12-dev
+* **Archlinux** sdl2 sdl2_mixer libpng git
 
 ### Installation
 1. Clone the repo `git clone https://github.com/goatattack/goatattack`
