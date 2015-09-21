@@ -1229,6 +1229,7 @@ std::ostream& Server::create_log_stream() {
         }
         subsystem << "can't open logfile " << log_filename << " (" << strerror(errno) << ")" << std::endl;
         delete log_file;
+        log_file = 0;
     }
     return subsystem.get_stream();
 }
