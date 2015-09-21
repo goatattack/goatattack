@@ -20,7 +20,7 @@ public:
     UtilsException(const std::string& msg) : Exception(msg) { }
 };
 
-void create_directory(const std::string& directory, const std::string& in) throw (UtilsException);
+void create_directory(const std::string& directory) throw (UtilsException);
 bool is_directory(const std::string& path);
 std::string get_home_directory() throw (UtilsException);
 bool file_exists(const std::string& filename);

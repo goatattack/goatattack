@@ -14,7 +14,7 @@ public:
 
 class Configuration {
 public:
-    Configuration(const std::string& directory, const std::string& filename) throw (ConfigurationException);
+    Configuration(const std::string& filename) throw (ConfigurationException);
     virtual ~Configuration();
 
     std::string get_string(const std::string& key) const;

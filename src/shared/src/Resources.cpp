@@ -59,8 +59,6 @@ Resources::Resources(Subsystem& subsystem, const std::string& resource_directory
     subsystem << "initializing resources" << std::endl;
     srand(static_cast<unsigned int>(time(0)));
 
-    create_directory(UserDirectory, get_home_directory());
-
     load_resources(false);
 }
 
@@ -441,16 +439,17 @@ void Resources::load_resources(bool home_paks_only) throw (ResourcesException) {
 
         /* scan user directories */
         subsystem << "scanning user directories" << std::endl;
-        read_all(get_home_directory() + dir_separator + UserDirectory + dir_separator, 0, false);
+        read_all(get_home_directory(), 0, false);
 
         /* read home directory */
-        std::string hdir = get_home_directory() + dir_separator + UserDirectory;
+        std::string hdir = get_home_directory();
+
         Directory dir(hdir, ".pak");
         const char *entry = 0;
         while ((entry = dir.get_entry())) {
             subsystem << "scanning " << entry << ".pak" << std::endl;
             try {
-                ZipReader zip(hdir + dir_separator + entry + ".pak");
+                ZipReader zip(hdir + entry + ".pak");
                 read_all("", &zip, false);
                 loaded_paks.push_back(LoadedPak(zip.get_zip_filename(), zip.get_zip_short_filename(), zip.get_hash(), true));
             } catch (const ZipException& e) {
