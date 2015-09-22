@@ -127,6 +127,11 @@ Server::~Server() {
 
     cleanup_held_players();
 
+    if (tournament) {
+        delete tournament;
+        tournament = 0;
+    }
+
     if (log_file) {
         delete log_file;
     }
