@@ -1,3 +1,6 @@
+0.4.2
+- quitting local server crash fixed
+
 0.4.1
 - servers listbox, sorting bug fixed
 - missing log entry type "LogTypeJoin"

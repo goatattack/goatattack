@@ -75,6 +75,7 @@ DONE:
 * missing log entry type "LogTypeJoin"
 * missing log entry type "LogTypePlayerNameChange"
 * configurable deadzone for gamepads
+* quitting local server crash fixed
 
 
 DEFERRED:
