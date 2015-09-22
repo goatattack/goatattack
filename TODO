@@ -7,6 +7,7 @@ PENDING:
 * server filter (sort out full or protected server)
 * map editor, add packetizer (ZipWriter class)
 * speed up rendering, using texture atlas, working with vbo
+* change to font rendering system freetype (static or dynamic)
 * ded server: sending clan badges png files via udp
 * map voting
 * switch team
