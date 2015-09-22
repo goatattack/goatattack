@@ -4,6 +4,8 @@
 
 #include <png.h>
 #include <cerrno>
+#include <string.h>
+#include <errno.h>
 
 void MapEditor::static_calculate_light_click(GuiButton *sender, void *data) {
     (reinterpret_cast<MapEditor *>(data))->calculate_light(false);
