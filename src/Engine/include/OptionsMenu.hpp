@@ -49,7 +49,7 @@ private:
     GuiTextbox *ck_dz_v;
 
     GuiTextbox *create_field(GuiWindow *parent, int x, int y,
-        const std::string& text, GuiButton::OnClick on_click);
+        const std::string& text, GuiButton::OnClick on_click, bool erase_pic);
     void capture_key(GuiTextbox *ck_selected);
 
     static void static_nav_close(void *data);
@@ -81,11 +81,17 @@ private:
     static bool static_capture_keydown(GuiWindow *sender, void *data, int keycode, bool repeat);
     static bool static_capture_joybuttondown(GuiWindow *sender, void *data, int button);
 
+    static void static_ck_erase_horz(GuiButton *sender, void *data);
+    static void static_ck_erase_vert(GuiButton *sender, void *data);
+
     static void static_close_window_click(GuiButton *sender, void *data);
     static void static_toggle_fullscreen_click(GuiCheckbox *sender, void *data, bool state);
     static void static_toggle_scanlines_click(GuiCheckbox *sender, void *data, bool state);
 
     static void static_close_capture_window_click(GuiButton *sender, void *data);
+
+    void ck_erase_horz();
+    void ck_erase_vert();
 
     void close_capture_window_click();
     void close_options_click();

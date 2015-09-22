@@ -212,29 +212,48 @@ void OptionsMenu::controller_and_keyboard_click() {
     int bw = 140;
     GuiWindow *window = gui.push_window(vw / 2 - ww / 2, vh / 2- wh / 2, ww, wh, "Controller And Keyboard");
 
-    ck_up = create_field(window, 15, 15, "up:", static_capture_up_click);
-    ck_down = create_field(window, 175, 15, "down:", static_capture_down_click);
-    ck_left = create_field(window, 15, 35, "left:", static_capture_left_click);
-    ck_right = create_field(window, 175, 35, "right:", static_capture_right_click);
-    ck_jump = create_field(window, 15, 55, "jump:", static_capture_jump_click);
-    ck_fire = create_field(window, 175, 55, "fire:", static_capture_fire_click);
-    ck_drop1 = create_field(window, 15, 75, "grenade:", static_capture_drop1_click);
-    ck_drop2 = create_field(window, 175, 75, "bomb:", static_capture_drop2_click);
-    ck_drop3 = create_field(window, 15, 95, "frog:", static_capture_drop3_click);
-    ck_chat = create_field(window, 175, 95, "chat:", static_capture_chat_click);
-    ck_stats = create_field(window, 15, 115, "stats:", static_capture_stats_click);
-    ck_escape = create_field(window, 175, 115, "esc:", static_capture_escape_click);
+    ck_up = create_field(window, 15, 15, "up:", static_capture_up_click, false);
+    ck_down = create_field(window, 175, 15, "down:", static_capture_down_click, false);
+    ck_left = create_field(window, 15, 35, "left:", static_capture_left_click, false);
+    ck_right = create_field(window, 175, 35, "right:", static_capture_right_click, false);
+    ck_jump = create_field(window, 15, 55, "jump:", static_capture_jump_click, false);
+    ck_fire = create_field(window, 175, 55, "fire:", static_capture_fire_click, false);
+    ck_drop1 = create_field(window, 15, 75, "grenade:", static_capture_drop1_click, false);
+    ck_drop2 = create_field(window, 175, 75, "bomb:", static_capture_drop2_click, false);
+    ck_drop3 = create_field(window, 15, 95, "frog:", static_capture_drop3_click, false);
+    ck_chat = create_field(window, 175, 95, "chat:", static_capture_chat_click, false);
+    ck_stats = create_field(window, 15, 115, "stats:", static_capture_stats_click, false);
+    ck_escape = create_field(window, 175, 115, "esc:", static_capture_escape_click, false);
     ck_selected = 0;
     capture_draw();
 
-    ck_dz_h = create_field(window, 15, 135, "dz horz.:", 0);
+    ck_dz_h = create_field(window, 15, 135, "dz horz.:", static_ck_erase_horz, true);
     ck_dz_h->set_text(config.get_string("deadzone_horizontal"));
-    ck_dz_v = create_field(window, 175, 135, "dz vert.:", 0);
+
+    ck_dz_v = create_field(window, 175, 135, "dz vert.:", static_ck_erase_vert, true);
     ck_dz_v->set_text(config.get_string("deadzone_vertical"));
 
     bw = 55;
     gui.create_button(window, ww / 2 - bw / 2, wh - 43, bw, 18, "Close", static_close_capture_window_click, this);
     gui.create_button(window, Gui::Spc, wh - 43, 110, 18, "Rescan Joysticks", static_capture_rescan_click, this);
+}
+
+void OptionsMenu::static_ck_erase_horz(GuiButton *sender, void *data) {
+    (reinterpret_cast<OptionsMenu *>(data))->ck_erase_horz();
+}
+
+void OptionsMenu::ck_erase_horz() {
+    ck_dz_h->set_text("3200");
+    ck_dz_h->set_focus();
+}
+
+void OptionsMenu::static_ck_erase_vert(GuiButton *sender, void *data) {
+    (reinterpret_cast<OptionsMenu *>(data))->ck_erase_vert();
+}
+
+void OptionsMenu::ck_erase_vert() {
+    ck_dz_v->set_text("3200");
+    ck_dz_v->set_focus();
 }
 
 void OptionsMenu::static_close_capture_window_click(GuiButton *sender, void *data) {
@@ -266,7 +285,7 @@ void OptionsMenu::close_capture_window_click() {
 }
 
 GuiTextbox *OptionsMenu::create_field(GuiWindow *parent, int x, int y,
-    const std::string& text, GuiButton::OnClick on_click)
+    const std::string& text, GuiButton::OnClick on_click, bool erase_pic)
 {
     Icon *select = resources.get_icon("select");
     TileGraphic *stg = select->get_tile()->get_tilegraphic();
@@ -275,14 +294,16 @@ GuiTextbox *OptionsMenu::create_field(GuiWindow *parent, int x, int y,
 
     gui.create_label(parent, x, y, text);
     GuiTextbox *tb = gui.create_textbox(parent, x + 50, y, 80, "");
-    tb->set_locked(on_click != 0);
     int tbh = tb->get_height();
-    if (on_click) {
+    if (!erase_pic) {
+        tb->set_locked(true);
         GuiButton *btn = gui.create_button(parent, x + 129, y, tbh, tbh, "", on_click, this);
         btn->show_bolts(false);
         gui.create_picture(btn, tbh / 2 - iw / 2, tbh / 2 - ih / 2, stg);
     } else {
-        tb->set_width(tb->get_width() + tbh - 1);
+        tb->set_locked(false);
+        GuiButton *btn = gui.create_button(parent, x + 129, y, tbh, tbh, "...", on_click, this);
+        btn->show_bolts(false);
     }
 
     return tb;
