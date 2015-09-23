@@ -7,7 +7,8 @@ Gui::Gui(Resources& resources, Subsystem& subsystem, Font *font)
     throw (GuiException, ResourcesException)
     : resources(resources), subsystem(subsystem), font(font), current_window(0),
       active_object(0), blink_on(true), running(false), mouse_is_down(false),
-      local_mousex(0), local_mousey(0), pmousex(&local_mousex), pmousey(&local_mousey)
+      local_mousex(0), local_mousey(0), pmousex(&local_mousex), pmousey(&local_mousey),
+      tooltip(0), tooltip_object(0), tooltip_x(0), tooltip_y(0)
 {
     if (!font) {
         throw GuiException("no valid font declared");
@@ -25,6 +26,8 @@ Gui::~Gui() {
     for (WindowStack::iterator it = windows.begin(); it != windows.end(); it++) {
         delete *it;
     }
+
+    destroy_tooltip();
 }
 
 void Gui::run() throw (Exception) {
@@ -106,6 +109,7 @@ GuiWindow *Gui::push_window(int x, int y, int width, int height, const std::stri
     GuiWindow *win = new GuiWindow(*this, 0, x, y, width, height, title);
     windows.push_back(win);
     set_current_window();
+    destroy_tooltip();
 
     return win;
 }
@@ -117,6 +121,7 @@ void Gui::pop_window() {
         windows.pop_back();
         set_current_window();
         active_object = 0;
+        destroy_tooltip();
     }
 }
 
@@ -531,11 +536,17 @@ void Gui::idleloop(int stack_counter) throw (Exception) {
         subsystem.begin_drawings();
 
         idle();
+        idle_tooltip();
         subsystem.reset_color();
-
         for (WindowStack::iterator it = windows.begin(); it != windows.end(); it++) {
             GuiWindow *o = *it;
             o->draw();
+        }
+        subsystem.reset_color();
+
+        /* draw tooltip */
+        if (tooltip) {
+            tooltip->draw();
         }
         subsystem.reset_color();
 
@@ -580,7 +591,8 @@ bool Gui::process_mousemove() {
         if (active_object) {
             active_object->mousemove(*pmousex, *pmousey);
         }
-    } else {if (current_window) {
+    } else {
+        if (current_window) {
             GuiObject *obj = current_window->get_upmost_object(*pmousex, *pmousey);
             while (obj && !obj->can_have_mouse_events()) {
                 obj = obj->get_parent();
@@ -588,6 +600,7 @@ bool Gui::process_mousemove() {
             if (obj) {
                 processed = obj->mousemove(*pmousex, *pmousey);
             }
+            set_tooltip(obj);
         }
     }
 
@@ -797,4 +810,46 @@ void Gui::yes_input_box_click() {
     last_response = MessageBoxResponseYes;
     last_entered = input_box->get_text();
     pop_window();
+}
+
+void Gui::set_tooltip(GuiObject *object) {
+    if (object != tooltip_object) {
+        if (!tooltip) {
+            get_now(tooltip_init);
+        }
+        destroy_tooltip();
+        tooltip_object = object;
+    }
+}
+
+void Gui::destroy_tooltip() {
+    if (tooltip) {
+        delete tooltip;
+        tooltip = 0;
+    }
+    tooltip_object = 0;
+}
+
+void Gui::idle_tooltip() {
+    if (!tooltip && tooltip_object) {
+        const std::string& tooltip_text = tooltip_object->get_tooltip_text();
+        if (tooltip_text.length()) {
+            if (diff_ms(tooltip_init, now) > 1500) {
+                tooltip_x = *pmousex;
+                tooltip_y = *pmousey;
+                Font *f = resources.get_font("normal");
+                int mrg = 2;
+                int tw = f->get_text_width(tooltip_text);
+                int th = f->get_font_height();
+                int ww = tw + 2 * mrg;
+                int wh = th + 2 * mrg;
+                tooltip = new GuiBox(*this, 0, tooltip_x, tooltip_y, ww, wh);
+                tooltip->set_filled(true);
+                tooltip->set_color(1.0f, 1.0f, 0.75f);
+                tooltip->set_follow_alpha(false);
+                GuiLabel *lbl = new GuiLabel(*this, tooltip, mrg, mrg, tw, th, tooltip_text);
+                lbl->set_follow_alpha(false);
+            }
+        }
+    }
 }

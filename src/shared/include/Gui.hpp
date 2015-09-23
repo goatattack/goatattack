@@ -20,8 +20,11 @@ struct GuiResponse {
     bool quit;
 };
 
-
 class Gui {
+private:
+    Gui(const Gui&);
+    Gui& operator=(const Gui&);
+
 public:
     static const int Spc = 12;
 
@@ -140,6 +143,10 @@ private:
     int local_mousey;
     int *pmousex;
     int *pmousey;
+    GuiBox *tooltip;
+    GuiObject *tooltip_object;
+    int tooltip_x;
+    int tooltip_y;
 
     WindowStack windows;
     InputData input;
@@ -153,6 +160,7 @@ private:
     Icon *msg_error;
     gametime_t now;
     gametime_t last;
+    gametime_t tooltip_init;
     MessageBoxResponse last_response;
     GuiTextbox *input_box;
     std::string last_entered;
@@ -171,6 +179,9 @@ private:
     bool process_joybuttondown(InputData& input);
     bool process_joybuttonup(InputData& input);
     void reset_blinker();
+    void destroy_tooltip();
+    void set_tooltip(GuiObject *object);
+    void idle_tooltip();
 
     /* messagebox helpers */
     static void static_close_click(GuiButton *sender, void *data);

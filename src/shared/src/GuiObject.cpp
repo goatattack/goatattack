@@ -135,6 +135,14 @@ const void *GuiObject::get_ptr_tag() const {
     return ptr;
 }
 
+void GuiObject::set_tooltip_text(const std::string& text) {
+    tooltip_text = text;
+}
+
+const std::string& GuiObject::get_tooltip_text() const {
+    return tooltip_text;
+}
+
 void GuiObject::draw() {
     if (visible) {
         paint();
@@ -431,12 +439,29 @@ void GuiWindow::prepare() {
 /* ****************************************************** */
 /* GuiBox                                                 */
 /* ****************************************************** */
-GuiBox::GuiBox(Gui& gui, GuiObject *parent) : GuiObject(gui, parent) { }
+GuiBox::GuiBox(Gui& gui, GuiObject *parent)
+    : GuiObject(gui, parent), follow_alpha(true), filled(false),
+      bg_r(0.5f), bg_g(0.5f), bg_b(1.0f) { }
 
 GuiBox::GuiBox(Gui& gui, GuiObject *parent, int x, int y, int width, int height)
-    : GuiObject(gui, parent, x, y, width, height) { }
+    : GuiObject(gui, parent, x, y, width, height), follow_alpha(true), filled(false),
+      bg_r(0.5f), bg_g(0.5f), bg_b(1.0f) { }
 
 GuiBox::~GuiBox() { }
+
+void GuiBox::set_color(float bg_r, float bg_g, float bg_b) {
+    this->bg_r = bg_r;
+    this->bg_g = bg_g;
+    this->bg_b = bg_b;
+}
+
+void GuiBox::set_follow_alpha(bool state) {
+    follow_alpha = state;
+}
+
+void GuiBox::set_filled(bool state) {
+    filled = state;
+}
 
 void GuiBox::paint() {
     int x = get_client_x();
@@ -446,14 +471,18 @@ void GuiBox::paint() {
     Subsystem& s = gui.get_subsystem();
 
     /* set alpha */
-    float alpha = gui.get_alpha(this);
+    float alpha = (follow_alpha ? gui.get_alpha(this) : 1.0f);
 
     /* draw box */
-    s.set_color(0.5f, 0.5f, 1.0f, alpha);
-    s.draw_box(x, y, width, 1);
-    s.draw_box(x, y + height - 1, width, 1);
-    s.draw_box(x, y, 1, height);
-    s.draw_box(x + width - 1, y, 1, height);
+    s.set_color(bg_r, bg_g, bg_b, alpha);
+    if (filled) {
+        s.draw_box(x, y, width, height);
+    } else {
+        s.draw_box(x, y, width, 1);
+        s.draw_box(x, y + height - 1, width, 1);
+        s.draw_box(x, y, 1, height);
+        s.draw_box(x + width - 1, y, 1, height);
+    }
 
     /* done */
     s.reset_color();
@@ -462,11 +491,14 @@ void GuiBox::paint() {
 /* ****************************************************** */
 /* GuiLabel                                               */
 /* ****************************************************** */
-GuiLabel::GuiLabel(Gui& gui, GuiObject *parent) : GuiObject(gui, parent) { }
+GuiLabel::GuiLabel(Gui& gui, GuiObject *parent)
+    : GuiObject(gui, parent), follow_alpha(true),
+      bg_r(1.0f), bg_g(1.0f), bg_b(1.0f) { }
 
 GuiLabel::GuiLabel(Gui& gui, GuiObject *parent, int x, int y,
     int width, int height, const std::string& caption)
-    : GuiObject(gui, parent, x, y, width, height), caption(caption) { }
+    : GuiObject(gui, parent, x, y, width, height),
+      follow_alpha(true), bg_r(1.0f), bg_g(1.0f), bg_b(1.0f), caption(caption) { }
 
 GuiLabel::~GuiLabel() { }
 
@@ -478,12 +510,22 @@ const std::string& GuiLabel::get_caption() const {
     return caption;
 }
 
+void GuiLabel::set_follow_alpha(bool state) {
+    follow_alpha = state;
+}
+
+void GuiLabel::set_color(float bg_r, float bg_g, float bg_b) {
+    this->bg_r = bg_r;
+    this->bg_g = bg_g;
+    this->bg_b = bg_b;
+}
+
 void GuiLabel::paint() {
     int x = get_client_x();
     int y = get_client_y();
     Subsystem& s = gui.get_subsystem();
 
-    s.set_color(1.0f, 1.0f, 1.0f, gui.get_alpha(this));
+    s.set_color(bg_r, bg_g, bg_b, (follow_alpha ? gui.get_alpha(this) : 1.0f));
     s.draw_text(gui.get_font(), x, y, caption);
     s.reset_color();
 }

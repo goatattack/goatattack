@@ -46,6 +46,9 @@ public:
     void set_ptr_tag(const void *ptr);
     const void *get_ptr_tag() const;
 
+    void set_tooltip_text(const std::string& text);
+    const std::string& get_tooltip_text() const;
+
     void draw();
 
     GuiObject *get_parent() const;
@@ -76,6 +79,7 @@ private:
 
     GuiObject *parent;
     Children children;
+    std::string tooltip_text;
 
     void set_parent(GuiObject *obj);
     virtual void paint() = 0;
@@ -158,8 +162,17 @@ public:
     GuiBox(Gui& gui, GuiObject *parent, int x, int y, int width, int height);
 
     virtual ~GuiBox();
+    void set_color(float bg_r, float bg_g, float bg_b);
+    void set_follow_alpha(bool state);
+    void set_filled(bool state);
 
 private:
+    bool follow_alpha;
+    bool filled;
+    float bg_r;
+    float bg_g;
+    float bg_b;
+
     virtual void paint();
 };
 
@@ -174,8 +187,14 @@ public:
 
     void set_caption(const std::string& caption);
     const std::string& get_caption() const;
+    void set_color(float bg_r, float bg_g, float bg_b);
+    void set_follow_alpha(bool state);
 
 private:
+    bool follow_alpha;
+    float bg_r;
+    float bg_g;
+    float bg_b;
     std::string caption;
 
     virtual void paint();

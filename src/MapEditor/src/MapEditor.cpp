@@ -377,6 +377,7 @@ void MapEditor::create_toolbox() {
 
     btn = create_button(window, 3, ofsy + (bh * l++), w, h, "", static_mode_selector_click, this);
     btn->show_bolts(false);
+    btn->set_tooltip_text("mode selector");
     create_picture(btn, 1, 1, resources.get_icon("me_select")->get_tile()->get_tilegraphic());
 
     /*
@@ -387,50 +388,62 @@ void MapEditor::create_toolbox() {
 
     btn = create_button(window, 3, ofsy + (bh * l++), w, h, "", static_center_map, this);
     btn->show_bolts(false);
+    btn->set_tooltip_text("center map");
     create_picture(btn, 1, 1, resources.get_icon("me_center")->get_tile()->get_tilegraphic());
 
     btn = create_button(window, 3, ofsy + (bh * l++), w, h, "", static_map_properties_click, this);
     btn->show_bolts(false);
+    btn->set_tooltip_text("map properties");
     create_picture(btn, 1, 1, resources.get_icon("me_properties")->get_tile()->get_tilegraphic());
 
     btn = create_button(window, 3, ofsy + (bh * l++), w, h, "", static_load_map_click, this);
     btn->show_bolts(false);
+    btn->set_tooltip_text("load map");
     create_picture(btn, 1, 1, resources.get_icon("me_load")->get_tile()->get_tilegraphic());
 
     btn = create_button(window, 3, ofsy + (bh * l++), w, h, "", static_save_map_click, this);
     btn->show_bolts(false);
+    btn->set_tooltip_text("save map");
     create_picture(btn, 1, 1, resources.get_icon("me_save")->get_tile()->get_tilegraphic());
 
     btn = create_button(window, 3, ofsy + (bh * l++), w, h, "", static_tile_selector_click, this);
     btn->show_bolts(false);
+    btn->set_tooltip_text("open tile selector");
     create_picture(btn, 1, 1, resources.get_icon("me_tile")->get_tile()->get_tilegraphic());
 
     btn = create_button(window, 3, ofsy + (bh * l++), w, h, "", static_object_selector_click, this);
     btn->show_bolts(false);
+    btn->set_tooltip_text("open object selector");
     create_picture(btn, 1, 1, resources.get_icon("me_objects")->get_tile()->get_tilegraphic());
 
     btn = create_button(window, 3, ofsy + (bh * l++), w, h, "", static_hcopy_click, this);
     btn->show_bolts(false);
+    btn->set_tooltip_text("horizontal copy");
     create_picture(btn, 1, 1, resources.get_icon("me_hcopy")->get_tile()->get_tilegraphic());
 
     btn = create_button(window, 3, ofsy + (bh * l++), w, h, "", static_calculate_light_click, this);
     btn->show_bolts(false);
+    btn->set_tooltip_text("generator quick lightmap");
     create_picture(btn, 1, 1, resources.get_icon("me_calclight")->get_tile()->get_tilegraphic());
 
     btn = create_button(window, 3, ofsy + (bh * l++), w, h, "", static_calculate_light_pixel_click, this);
     btn->show_bolts(false);
+    btn->set_tooltip_text("generator pixel precise lightmap");
     create_picture(btn, 1, 1, resources.get_icon("me_calclight_pixel")->get_tile()->get_tilegraphic());
 
     btn = create_button(window, 3, ofsy + (bh * l++), w, h, "", static_zap_click, this);
     btn->show_bolts(false);
+    btn->set_tooltip_text("zap/clear map");
     create_picture(btn, 1, 1, resources.get_icon("me_clean")->get_tile()->get_tilegraphic());
 
     btn = create_button(window, 3, ofsy + (bh * l++), w, h, "", static_options_click, this);
     btn->show_bolts(false);
+    btn->set_tooltip_text("map editor options");
     create_picture(btn, 1, 1, resources.get_icon("me_options")->get_tile()->get_tilegraphic());
 
     btn = create_button(window, 3, ofsy + (bh * l++), w, h, "", static_exit_click, this);
     btn->show_bolts(false);
+    btn->set_tooltip_text("quit map editor");
     create_picture(btn, 1, 1, resources.get_icon("me_exit")->get_tile()->get_tilegraphic());
 }
 
