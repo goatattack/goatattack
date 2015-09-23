@@ -1,5 +1,6 @@
 0.4.2
 - quitting local server crash fixed
+- tooltips added
 
 0.4.1
 - servers listbox, sorting bug fixed
