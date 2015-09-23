@@ -622,6 +622,9 @@ bool Gui::process_mousedown(int button) {
             }
         }
         active_object = obj;
+        if (!tooltip) {
+            destroy_tooltip();
+        }
     }
     mouse_is_down = true;
 
@@ -834,7 +837,7 @@ void Gui::idle_tooltip() {
     if (!tooltip && tooltip_object) {
         const std::string& tooltip_text = tooltip_object->get_tooltip_text();
         if (tooltip_text.length()) {
-            if (diff_ms(tooltip_init, now) > 1500) {
+            if (diff_ms(tooltip_init, now) > 750) {
                 tooltip_x = *pmousex;
                 tooltip_y = *pmousey;
                 Font *f = resources.get_font("normal");
