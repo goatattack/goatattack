@@ -7,7 +7,8 @@ Player::Player(Resources& resources, const Connection *c, player_id_t player_id,
       animation_counter(0.0f), font(0), player_name_width(0), its_me(false),
       respawning(false), joining(false), force_broadcast(false),
       flag_pick_refused_counter(0), flag_pick_refused(false), client_synced(false),
-      server_force_quit_client(false), server_force_quit_client_counter(0)
+      server_force_quit_client(false), server_force_quit_client_counter(0),
+      server_admin(false)
 {
     reset();
 }

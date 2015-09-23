@@ -674,8 +674,14 @@ void Server::event_data(const Connection *c, data_len_t len, void *data) throw (
 
                 case GPSChatMessage:
                 {
-                    logger.log(ServerLogger::LogTypeChatMessage, std::string(reinterpret_cast<char *>(t->data), t->len));
-                    broadcast_data(0, GPCChatMessage, NetFlagsReliable, t->len, t->data);
+                    if (t->len && t->data[0] == '/') {
+                        parse_command(c, p, t->len, t->data);
+                    } else {
+                        std::string msg(p->get_player_name() + ": ");
+                        msg.append(reinterpret_cast<char *>(t->data), t->len);
+                        logger.log(ServerLogger::LogTypeChatMessage, msg);
+                        broadcast_data(0, GPCChatMessage, NetFlagsReliable, msg.length(), msg.c_str());
+                    }
                     break;
                 }
 
@@ -1237,6 +1243,20 @@ std::ostream& Server::create_log_stream() {
         log_file = 0;
     }
     return subsystem.get_stream();
+}
+
+void Server::parse_command(const Connection *c, Player *p, data_len_t len, void *data) {
+    char *pcmd = static_cast<char *>(data);
+    std::string command(&pcmd[1], len - 1);
+    std::string param;
+    size_t pos = command.find(' ');
+    if (pos != std::string::npos) {
+        param = command.substr(pos);
+        command = command.substr(0, pos - 1);
+    }
+
+    subsystem << "cmd: *" << command << "*" << std::endl;
+    subsystem << "prm: *" << param << "*" << std::endl;
 }
 
 ScopeServer::ScopeServer(Server& server) : server(server) {

@@ -109,6 +109,9 @@ private:
 
     std::ostream& create_log_stream();
 
+    void parse_command(const Connection *c, Player *p, data_len_t len, void *data);
+
+
     /* implements Thread */
     virtual void thread();
 

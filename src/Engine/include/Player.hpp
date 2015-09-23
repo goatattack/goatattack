@@ -54,6 +54,8 @@ public:
     bool client_synced;
     bool server_force_quit_client;
     int server_force_quit_client_counter;
+    bool server_admin;
+
     int last_falling_y_pos;
 };
 

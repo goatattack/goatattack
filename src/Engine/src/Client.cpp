@@ -459,10 +459,9 @@ void Client::chat_send_message() {
     const std::string& text = chat_textbox->get_text();
 
     if (text.length() && conn) {
-        std::string msg(player_config.get_player_name() + ": " + text);
         {
             ScopeMutex lock(mtx);
-            send_data(conn, factory.get_tournament_id(), GPSChatMessage, NetFlagsReliable, static_cast<data_len_t>(msg.length()), msg.c_str());
+            send_data(conn, factory.get_tournament_id(), GPSChatMessage, NetFlagsReliable, static_cast<data_len_t>(text.length()), text.c_str());
         }
     }
     window_close_click();
