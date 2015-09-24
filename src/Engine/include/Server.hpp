@@ -9,6 +9,7 @@
 #include "ClientServer.hpp"
 #include "TournamentFactory.hpp"
 #include "ServerLogger.hpp"
+#include "ServerAdmin.hpp"
 
 #include <vector>
 #include <fstream>
@@ -89,6 +90,7 @@ private:
     std::string team_blue_name;
     std::ofstream *log_file;
     ServerLogger logger;
+    ServerAdmin *server_admin;
 
     MapConfigurations map_configs;
     HeldPlayerStats held_player_stats;
@@ -109,7 +111,7 @@ private:
 
     std::ostream& create_log_stream();
 
-    void parse_command(const Connection *c, Player *p, data_len_t len, void *data);
+    void parse_command(const Connection *c, Player *p, data_len_t len, void *data) throw (ServerAdminException);
 
 
     /* implements Thread */

@@ -1,5 +1,5 @@
-#ifndef RENDERER_HPP
-#define RENDERER_HPP
+#ifndef SUBSYSTEM_HPP
+#define SUBSYSTEM_HPP
 
 #include "Exception.hpp"
 #include "Tile.hpp"
@@ -169,4 +169,4 @@ protected:
     bool keep_pictures;
 };
 
-#endif // RENDERER_HPP
+#endif

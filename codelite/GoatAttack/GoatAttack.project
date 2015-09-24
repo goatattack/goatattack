@@ -212,6 +212,7 @@
       <File Name="../../src/Engine/include/ServerLogger.hpp"/>
       <File Name="../../src/Engine/include/ButtonNavigator.hpp"/>
       <File Name="../../src/Engine/include/GameserverInformation.hpp"/>
+      <File Name="../../src/Engine/include/ServerAdmin.hpp"/>
     </VirtualDirectory>
     <VirtualDirectory Name="src">
       <File Name="../../src/Engine/src/TournamentFactory.cpp"/>
@@ -245,6 +246,7 @@
       <File Name="../../src/Engine/src/ServerLogger.cpp"/>
       <File Name="../../src/Engine/src/ButtonNavigator.cpp"/>
       <File Name="../../src/Engine/src/GameserverInformation.cpp"/>
+      <File Name="../../src/Engine/src/ServerAdmin.cpp"/>
     </VirtualDirectory>
     <File Name="../../src/Engine/main.cpp"/>
   </VirtualDirectory>

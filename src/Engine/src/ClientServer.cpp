@@ -30,6 +30,21 @@ ClientServer::~ClientServer() {
     }
 }
 
+Tournament *ClientServer::get_tournament() const {
+    return tournament;
+}
+
+Players& ClientServer::get_players() {
+    return players;
+}
+
+void ClientServer::delete_tournament() {
+    if (tournament) {
+        delete tournament;
+        tournament = 0;
+    }
+}
+
 void ClientServer::stacked_send_data(const Connection *c, unsigned char tournament_id, command_t cmd,
     flags_t flags, data_len_t len, const void *data) throw (Exception)
 {

@@ -1,4 +1,5 @@
 # Goat Attack
+![alt tag](https://raw.githubusercontent.com/goatattack/goatattack/master/goatattack1.png)
 
 ## Goatattack is a fast-paced multiplayer pixel art shooter game.
 Goat Attack is a multiplayer 2D platformer pixel art shooter game for Linux, OS X and Windows. You can play it in a local network or over the Internet. This project is splitted three subprojects. the game itself, its map editor and a master server. six gameplay modes are supported. deathmatch, team deathmatch, capture the flag, speed race, catch the coin and goat of the hill.
