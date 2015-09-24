@@ -32,6 +32,8 @@ int start_net();
 void stop_net();
 uint32_t get_hash_of_string(const char *str);
 std::string uppercase(const std::string& str);
+std::string lowercase(const std::string& str);
+void trim(std::string& str);
 std::string generate_name();
 
 #endif // UTILS_HPP

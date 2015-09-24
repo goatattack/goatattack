@@ -43,10 +43,11 @@ const char *DefaultTeamBlue = "team blue";
 /* ingame server constructor */
 Server::Server(Resources& resources, Subsystem& subsystem,
     hostport_t port, pico_size_t num_players, const std::string& server_name,
-    GamePlayType type, const std::string& map_name, int duration, int warmup) throw (Exception)
+    GamePlayType type, const std::string& map_name, int duration, int warmup,
+    const std::string& admin_password) throw (Exception)
     : Properties(""), ClientServer(port, num_players, server_name, ""),
       resources(resources), subsystem(subsystem),
-      factory(resources, subsystem, 0),
+      factory(resources, subsystem, 0), server_admin(resources, *this, *this, admin_password),
       nbr_logout_msg(0), running(false), current_config(0), score_board_counter(0),
       warmup(false), hold_disconnected_players(false), reconnect_kills(0),
       hdp_counter(0), master_server(0), ms_counter(0), master_socket(),
@@ -62,7 +63,7 @@ Server::Server(Resources& resources, Subsystem& subsystem,
     : Properties(server_config_file),
       ClientServer(atoi(get_value("port").c_str()), atoi(get_value("num_players").c_str()), get_value("server_name"), get_value("server_password")),
       resources(resources), subsystem(subsystem),
-      factory(resources, subsystem, 0),
+      factory(resources, subsystem, 0), server_admin(resources, *this, *this),
       nbr_logout_msg(0), running(false), current_config(0), score_board_counter(0),
       warmup(false), hold_disconnected_players(atoi(get_value("hold_disconnected_player").c_str()) != 0 ? true : false),
       reconnect_kills(atoi(get_value("reconnect_kills").c_str())),
@@ -675,7 +676,11 @@ void Server::event_data(const Connection *c, data_len_t len, void *data) throw (
                 case GPSChatMessage:
                 {
                     if (t->len && t->data[0] == '/') {
-                        parse_command(c, p, t->len, t->data);
+                        try {
+                            parse_command(c, p, t->len, t->data);
+                        } catch (const Exception& e) {
+                            send_data(c, factory.get_tournament_id(), GPCTextMessage, NetFlagsReliable, strlen(e.what()), e.what());
+                        }
                     } else {
                         std::string msg(p->get_player_name() + ": ");
                         msg.append(reinterpret_cast<char *>(t->data), t->len);
@@ -1245,18 +1250,17 @@ std::ostream& Server::create_log_stream() {
     return subsystem.get_stream();
 }
 
-void Server::parse_command(const Connection *c, Player *p, data_len_t len, void *data) {
+void Server::parse_command(const Connection *c, Player *p, data_len_t len, void *data) throw (ServerAdminException) {
     char *pcmd = static_cast<char *>(data);
     std::string command(&pcmd[1], len - 1);
     std::string param;
     size_t pos = command.find(' ');
     if (pos != std::string::npos) {
-        param = command.substr(pos);
-        command = command.substr(0, pos - 1);
+        param = command.substr(pos + 1);
+        command = command.substr(0, pos);
     }
 
-    subsystem << "cmd: *" << command << "*" << std::endl;
-    subsystem << "prm: *" << param << "*" << std::endl;
+    server_admin.execute(c, p, command, param);
 }
 
 ScopeServer::ScopeServer(Server& server) : server(server) {

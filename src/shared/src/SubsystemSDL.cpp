@@ -94,12 +94,12 @@ SubsystemSDL::SubsystemSDL(std::ostream& stream, const std::string& window_title
         SDL_WINDOWPOS_UNDEFINED,
         current_width,
         current_height,
-        SDL_WINDOW_OPENGL | SDL_WINDOW_INPUT_GRABBED);
+        SDL_WINDOW_OPENGL); // | SDL_WINDOW_INPUT_GRABBED);
     if (!window) {
         throw SubsystemException("Could not create window: " +
             std::string(SDL_GetError()));
     }
-    SDL_ShowCursor(SDL_DISABLE);
+    //SDL_ShowCursor(SDL_DISABLE);
 
     /* load window icon */
     set_window_icon(window);

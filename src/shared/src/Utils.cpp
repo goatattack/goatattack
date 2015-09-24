@@ -166,6 +166,19 @@ std::string uppercase(const std::string& str) {
     return new_str;
 }
 
+std::string lowercase(const std::string& str) {
+    std::string new_str(str);
+    std::transform(new_str.begin(), new_str.end(), new_str.begin(), tolower);
+
+    return new_str;
+}
+
+
+void trim(std::string& str) {
+    str.erase(0, str.find_first_not_of(" "));
+    str.erase(str.find_last_not_of(" ") + 1);
+}
+
 std::string generate_name() {
     const char **name = name_syllables;
     int syl_cnt = 0;

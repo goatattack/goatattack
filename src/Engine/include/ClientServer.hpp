@@ -2,11 +2,10 @@
 #define CLIENTSERVER_HPP
 
 #include "MessageSequencer.hpp"
-#include "TournamentCTF.hpp"
-#include "TournamentDM.hpp"
-#include "TournamentTDM.hpp"
+#include "Tournament.hpp"
 #include "Player.hpp"
 #include "GameProtocol.hpp"
+#include "TournamentFactory.hpp"
 
 #include <string>
 
@@ -16,6 +15,13 @@ public:
         const std::string& server_name, const std::string& password);
     ClientServer(hostaddr_t host, hostport_t port);
     virtual ~ClientServer();
+
+    Tournament *get_tournament() const;
+    Players& get_players();
+    void delete_tournament();
+    void set_temporary_map_config(GamePlayType type, const std::string& map_name, int duration);
+    bool has_temporary_map_config() const;
+    MapConfiguration get_temporary_map_config();
 
 protected:
     enum SyncState {
@@ -34,6 +40,7 @@ protected:
 
     Players players;
 
+public:
     void stacked_send_data(const Connection *c, unsigned char tournament_id, command_t cmd, flags_t flags,
         data_len_t len, const void *data) throw (Exception);
 

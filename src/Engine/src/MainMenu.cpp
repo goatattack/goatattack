@@ -425,21 +425,26 @@ void MainMenu::create_server_click() {
     cs_server_name = create_textbox(window, 100, 15, 221, config.get_string("server_name"));
     cs_server_name->set_focus();
 
-    create_label(window, 15, 35, "port:");
-    cs_server_port = create_textbox(window, 100, 35, 55, config.get_string("server_port"));
+    create_label(window, 15, 33, "port:");
+    cs_server_port = create_textbox(window, 100, 33, 55, config.get_string("server_port"));
 
-    create_box(window, 15, 55, ww - 30, 1);
+    create_label(window, 15, 51, "admin pwd:");
+    cs_admin_password = create_textbox(window, 100, 51, 221, config.get_string("admin_password"));
+    cs_admin_password->set_hide_characters(true);
+
+    create_box(window, 15, 69, ww - 30, 1);
 
     /* game modes */
     int game_mode = config.get_int("game_mode");
-    create_label(window, 15, 60, "game mode:");
-    cs_dm = create_checkbox(window, 100, 61, "death match", game_mode == GamePlayTypeDM, static_game_mode_click, this);
-    cs_tdm = create_checkbox(window, 100, 74, "team death match", game_mode == GamePlayTypeTDM, static_game_mode_click, this);
-    cs_ctf = create_checkbox(window, 100, 87, "capture the flag", game_mode == GamePlayTypeCTF, static_game_mode_click, this);
+    int ofs = 13;
+    create_label(window, 15, 60 + ofs, "game mode:");
+    cs_dm = create_checkbox(window, 100, 61 + ofs, "death match", game_mode == GamePlayTypeDM, static_game_mode_click, this);
+    cs_tdm = create_checkbox(window, 100, 74 + ofs, "team death match", game_mode == GamePlayTypeTDM, static_game_mode_click, this);
+    cs_ctf = create_checkbox(window, 100, 87 + ofs, "capture the flag", game_mode == GamePlayTypeCTF, static_game_mode_click, this);
 
-    cs_sr = create_checkbox(window, 220, 61, "speed race", game_mode == GamePlayTypeSR, static_game_mode_click, this);
-    cs_ctc = create_checkbox(window, 220, 74, "catch the coin", game_mode == GamePlayTypeCTC, static_game_mode_click, this);
-    cs_goh = create_checkbox(window, 220, 87, "goat of the hill", game_mode == GamePlayTypeGOH, static_game_mode_click, this);
+    cs_sr = create_checkbox(window, 220, 61 + ofs, "speed race", game_mode == GamePlayTypeSR, static_game_mode_click, this);
+    cs_ctc = create_checkbox(window, 220, 74 + ofs, "catch the coin", game_mode == GamePlayTypeCTC, static_game_mode_click, this);
+    cs_goh = create_checkbox(window, 220, 87 + ofs, "goat of the hill", game_mode == GamePlayTypeGOH, static_game_mode_click, this);
 
     cs_current_mode = cs_dm;
     if (game_mode == GamePlayTypeTDM) {
@@ -473,29 +478,29 @@ void MainMenu::create_server_click() {
     cs_goh->set_tag(GamePlayTypeGOH);
 
 
-    create_box(window, 15, 104, ww - 30, 1);
+    create_box(window, 15, 116, ww - 30, 1);
 
     /* max players and duration */
-    create_label(window, 15, 111, "max. players:");
-    cs_max_players = create_textbox(window, 100, 111, 55, config.get_string("max_players"));
+    create_label(window, 15, 122, "max. players:");
+    cs_max_players = create_textbox(window, 100, 122, 55, config.get_string("max_players"));
 
-    create_label(window, 15, 131, "warm up:");
-    cs_warmup = create_textbox(window, 100, 131, 55, config.get_string("warmup"));
-    create_label(window, 160, 131, "(in seconds)");
+    create_label(window, 15, 140, "warm up:");
+    cs_warmup = create_textbox(window, 100, 140, 55, config.get_string("warmup"));
+    create_label(window, 160, 140, "(in seconds)");
 
-    create_label(window, 15, 151, "duration:");
-    cs_duration = create_textbox(window, 100, 151, 55, config.get_string("duration"));
-    create_label(window, 160, 151, "(in minutes)");
+    create_label(window, 15, 158, "duration:");
+    cs_duration = create_textbox(window, 100, 158, 55, config.get_string("duration"));
+    create_label(window, 160, 158, "(in minutes)");
 
-    create_box(window, 15, 171, ww - 30, 1);
+    create_box(window, 15, 178, ww - 30, 1);
 
     /* map selector */
     Icon *no_map = resources.get_icon("map_preview");
-    cs_map_preview = create_picture(window, ww - 64 - 15, 193, no_map->get_tile()->get_tilegraphic());
-    cs_map_name = create_label(window, ww - 64 - 15, 193 + 64 + 3, "");
+    cs_map_preview = create_picture(window, ww - 64 - 15, 196, no_map->get_tile()->get_tilegraphic());
+    cs_map_name = create_label(window, ww - 64 - 15, 196 + 64 + 3, "");
 
-    create_label(window, 15, 175, "select map:");
-    cs_maps = create_listbox(window, 15, 193, 235, 80, "Map Name", static_map_selected, this);
+    create_label(window, 15, 182, "select map:");
+    cs_maps = create_listbox(window, 15, 196, 235, 77, "Map Name", static_map_selected, this);
 
     fill_map_listbox(static_cast<GamePlayType>(game_mode));
 
@@ -604,6 +609,9 @@ void MainMenu::server_validate(bool close) {
         return;
     }
 
+    std::string admin_password = cs_admin_password->get_text();
+
+
     int game_mode = static_cast<GamePlayType>(cs_current_mode->get_tag());
 
     int max_players = atoi(cs_max_players->get_text().c_str());
@@ -652,6 +660,7 @@ void MainMenu::server_validate(bool close) {
     config.set_int("duration", duration);
     config.set_int("warmup", warmup);
     config.set_string("map_name", map->get_name());
+    config.set_string("admin_password", admin_password);
 
     /* start server or close window */
     if (close) {
@@ -661,7 +670,7 @@ void MainMenu::server_validate(bool close) {
             subsystem.stop_music();
             GamePlayType type = static_cast<GamePlayType>(game_mode);
             Server server(resources, subsystem, port, max_players, config.get_string("server_name"),
-                type, config.get_string("map_name"), duration, warmup);
+                type, config.get_string("map_name"), duration, warmup, admin_password);
             ScopeServer scope_server(server);
             Client client(resources, subsystem, INADDR_LOOPBACK, port, config, "");
             client.link_mouse(*this);

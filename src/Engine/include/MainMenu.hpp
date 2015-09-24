@@ -62,6 +62,7 @@ private:
 
     GuiTextbox *cs_server_name;
     GuiTextbox *cs_server_port;
+    GuiTextbox *cs_admin_password;
     GuiCheckbox *cs_dm;
     GuiCheckbox *cs_tdm;
     GuiCheckbox *cs_ctf;

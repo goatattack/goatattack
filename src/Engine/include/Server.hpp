@@ -9,6 +9,7 @@
 #include "ClientServer.hpp"
 #include "TournamentFactory.hpp"
 #include "ServerLogger.hpp"
+#include "ServerAdmin.hpp"
 
 #include <vector>
 #include <fstream>
@@ -23,7 +24,8 @@ class Server : public Properties, public ClientServer, public Thread {
 public:
     Server(Resources& resources, Subsystem& subsystem,
         hostport_t port, pico_size_t num_players, const std::string& server_name,
-        GamePlayType type, const std::string& map_name, int duration, int warmup)
+        GamePlayType type, const std::string& map_name, int duration, int warmup,
+        const std::string& admin_password)
         throw (Exception);
 
     Server(Resources& resources, Subsystem& subsystem,
@@ -72,6 +74,7 @@ private:
     Resources& resources;
     Subsystem& subsystem;
     TournamentFactory factory;
+    ServerAdmin server_admin;
 
     int nbr_logout_msg;
     bool running;
@@ -109,7 +112,7 @@ private:
 
     std::ostream& create_log_stream();
 
-    void parse_command(const Connection *c, Player *p, data_len_t len, void *data);
+    void parse_command(const Connection *c, Player *p, data_len_t len, void *data) throw (ServerAdminException);
 
 
     /* implements Thread */
