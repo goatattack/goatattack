@@ -1,5 +1,5 @@
-#ifndef RENDERERSDL_HPP
-#define RENDERERSDL_HPP
+#ifndef SUBSYSTEMSDL_HPP
+#define SUBSYSTEMSDL_HPP
 
 #include "Subsystem.hpp"
 
@@ -111,4 +111,4 @@ private:
     void set_window_icon(SDL_Window *window);
 };
 
-#endif // RENDERERSDL_HPP
+#endif

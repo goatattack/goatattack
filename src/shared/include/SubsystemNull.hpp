@@ -1,5 +1,5 @@
-#ifndef RENDERERNULL_HPP
-#define RENDERERNULL_HPP
+#ifndef SUBSYSTEMNULL_HPP
+#define SUBSYSTEMNULL_HPP
 
 #include "Subsystem.hpp"
 
@@ -63,4 +63,4 @@ public:
     virtual int get_view_height();
 };
 
-#endif // RENDERERNULL_HPP
+#endif

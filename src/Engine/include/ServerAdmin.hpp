@@ -46,12 +46,16 @@ private:
     void sc_op(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);
     void sc_deop(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);
     void sc_kick(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);
+    void sc_ban(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);
+    void sc_unban(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);
     void sc_next(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);
     void sc_map(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);
+    void sc_reload(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);
 
     void check_if_authorized(Player *p) throw (ServerAdminException);
     void check_if_params(const std::string& params) throw (ServerAdminException);
     void check_if_no_params(const std::string& params) throw (ServerAdminException);
+    void throw_not_implemented() throw (ServerAdminException);
 };
 
 #endif

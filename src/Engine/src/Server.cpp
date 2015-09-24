@@ -43,16 +43,15 @@ const char *DefaultTeamBlue = "team blue";
 /* ingame server constructor */
 Server::Server(Resources& resources, Subsystem& subsystem,
     hostport_t port, pico_size_t num_players, const std::string& server_name,
-    GamePlayType type, const std::string& map_name, int duration, int warmup,
-    const std::string& admin_password) throw (Exception)
+    GamePlayType type, const std::string& map_name, int duration, int warmup) throw (Exception)
     : Properties(""), ClientServer(port, num_players, server_name, ""),
       resources(resources), subsystem(subsystem),
-      factory(resources, subsystem, 0), server_admin(resources, *this, *this, admin_password),
+      factory(resources, subsystem, 0),
       nbr_logout_msg(0), running(false), current_config(0), score_board_counter(0),
       warmup(false), hold_disconnected_players(false), reconnect_kills(0),
       hdp_counter(0), master_server(0), ms_counter(0), master_socket(),
       rotation_current_index(0), team_red_name(DefaultTeamRed), team_blue_name(DefaultTeamBlue),
-      log_file(0), logger(subsystem.get_stream(), true)
+      log_file(0), logger(subsystem.get_stream(), true), server_admin(0)
 {
     map_configs.push_back(MapConfiguration(type, map_name, duration, warmup));
 }
@@ -63,7 +62,7 @@ Server::Server(Resources& resources, Subsystem& subsystem,
     : Properties(server_config_file),
       ClientServer(atoi(get_value("port").c_str()), atoi(get_value("num_players").c_str()), get_value("server_name"), get_value("server_password")),
       resources(resources), subsystem(subsystem),
-      factory(resources, subsystem, 0), server_admin(resources, *this, *this),
+      factory(resources, subsystem, 0),
       nbr_logout_msg(0), running(false), current_config(0), score_board_counter(0),
       warmup(false), hold_disconnected_players(atoi(get_value("hold_disconnected_player").c_str()) != 0 ? true : false),
       reconnect_kills(atoi(get_value("reconnect_kills").c_str())),
@@ -71,7 +70,7 @@ Server::Server(Resources& resources, Subsystem& subsystem,
       ms_counter(0), master_socket(), rotation_current_index(0),
       team_red_name(get_value("clan_red_name")),
       team_blue_name(get_value("clan_blue_name")),
-      log_file(0), logger(create_log_stream(), true)
+      log_file(0), logger(create_log_stream(), true), server_admin(0)
 {
     char kvb[128];
     int map_count = atoi(get_value("map_count").c_str());
@@ -115,9 +114,17 @@ Server::Server(Resources& resources, Subsystem& subsystem,
     if (reconnect_kills < 1) {
         reconnect_kills = 1;
     }
+
+    /* create server admin console */
+    server_admin = new ServerAdmin(resources, *this, *this);
 }
 
 Server::~Server() {
+    /* delete server console */
+    if (server_admin) {
+        delete server_admin;
+    }
+
     /* delete complete client pak list */
     destroy_paks(0);
 
@@ -1251,6 +1258,9 @@ std::ostream& Server::create_log_stream() {
 }
 
 void Server::parse_command(const Connection *c, Player *p, data_len_t len, void *data) throw (ServerAdminException) {
+    if (!server_admin) {
+        throw ServerAdminException("This is not a dedicated server");
+    }
     char *pcmd = static_cast<char *>(data);
     std::string command(&pcmd[1], len - 1);
     std::string param;
@@ -1260,7 +1270,7 @@ void Server::parse_command(const Connection *c, Player *p, data_len_t len, void 
         command = command.substr(0, pos);
     }
 
-    server_admin.execute(c, p, command, param);
+    server_admin->execute(c, p, command, param);
 }
 
 ScopeServer::ScopeServer(Server& server) : server(server) {

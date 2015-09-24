@@ -4,8 +4,11 @@ ServerAdmin::ServerCommand ServerAdmin::server_commands[] = {
     { "op", &ServerAdmin::sc_op },
     { "deop", &ServerAdmin::sc_deop },
     { "kick", &ServerAdmin::sc_kick },
+    { "ban", &ServerAdmin::sc_ban },
+    { "unban", &ServerAdmin::sc_unban },
     { "next", &ServerAdmin::sc_next },
     { "map", &ServerAdmin::sc_map },
+    { "reload", &ServerAdmin::sc_reload },
     { 0, 0 }
 };
 
@@ -89,6 +92,14 @@ void ServerAdmin::sc_kick(const Connection *c, Player *p, const std::string& par
     }
 }
 
+void ServerAdmin::sc_ban(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
+    throw_not_implemented();
+}
+
+void ServerAdmin::sc_unban(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
+    throw_not_implemented();
+}
+
 void ServerAdmin::sc_next(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
     check_if_authorized(p);
     check_if_no_params(params);
@@ -98,21 +109,11 @@ void ServerAdmin::sc_next(const Connection *c, Player *p, const std::string& par
 }
 
 void ServerAdmin::sc_map(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
-    check_if_authorized(p);
-    check_if_params(params);
-    /*
-    try {
-        std::string map_name = params;
-        int duration = 10;
-        Map *map = resources.get_map(map_name);
-        server.set_temporary_map_config(map->get_game_play_type(), map_name, duration);
-        server.delete_tournament();
-        std::string msg(p->get_player_name() + " loaded the map " + map_name);
-        server.broadcast_data(0, GPCTextMessage, NetFlagsReliable, msg.length(), msg.c_str());
-    } catch (const Exception& e) {
-        throw ServerAdminException(e.what());
-    }
-    */
+    throw_not_implemented();
+}
+
+void ServerAdmin::sc_reload(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
+    throw_not_implemented();
 }
 
 /* helper functions */
@@ -132,4 +133,8 @@ void ServerAdmin::check_if_no_params(const std::string& params) throw (ServerAdm
     if (params.length()) {
         throw ServerAdminException("No parameters needed");
     }
+}
+
+void ServerAdmin::throw_not_implemented() throw (ServerAdminException) {
+    throw ServerAdminException("Not implemented yet");
 }
