@@ -132,6 +132,8 @@ Tournament::~Tournament() {
     if (logger) {
         logger->set_map(0);
     }
+
+    subsystem.stop_music();
 }
 
 void Tournament::set_gui_is_destroyed(bool state) {
