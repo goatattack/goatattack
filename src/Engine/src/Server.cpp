@@ -54,9 +54,6 @@ Server::Server(Resources& resources, Subsystem& subsystem,
       log_file(0), logger(subsystem.get_stream(), true), server_admin(0)
 {
     map_configs.push_back(MapConfiguration(type, map_name, duration, warmup));
-
-    set_value("admin_password", "123");
-    server_admin = new ServerAdmin(resources, *this, *this);
 }
 
 /* dedicated server constructor */
