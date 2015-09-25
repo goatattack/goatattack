@@ -18,6 +18,14 @@ static const int MaxResends = 7;     /* 6250 ms   */
 static const int MsgHeaderLength = sizeof(NetMessage) - 1 + sizeof(NetMessageData) - 1;
 static const int ServerStatusLength = sizeof(ServerStatusMsg) - 1;
 
+ScopeHeapMarker::ScopeHeapMarker(SequencerHeap& heap) : heap(heap) {
+    heap.processing = true;
+}
+
+ScopeHeapMarker::~ScopeHeapMarker() {
+    heap.processing = false;
+}
+
 MessageSequencer::MessageSequencer(hostport_t port, pico_size_t max_heaps,
     const std::string& name, const std::string& password) throw (Exception)
     : max_heaps(max_heaps), is_client(false), name(name), password(password), socket(port),
@@ -241,7 +249,11 @@ bool MessageSequencer::cycle() throw (Exception) {
                     ack(h, tmp_smsg->seq_no);
                     command_t tmp_cmd = tmp_smsg->cmd;
                     delete tmp_smsg;
-                    if (tmp_cmd == NetCommandLogout) {
+                    if (h->deferred_kill) {
+                        kill_heap_with_logout(h, LogoutReasonApplicationQuit);
+                        recycle = true;
+                        break;
+                    } else if (tmp_cmd == NetCommandLogout) {
                         delete_heap(h);
                         recycle = true;
                         break;
@@ -260,9 +272,7 @@ bool MessageSequencer::cycle() throw (Exception) {
                     tmp_smsg->last_resend_ms *= 2;
                     if (tmp_smsg->resends > MaxResends) {
                         /* disconnect after too many resends */
-                        h->active = false;
-                        event_logout(h, LogoutReasonTooManyResends);
-                        delete_heap(h);
+                        kill_heap_with_logout(h, LogoutReasonTooManyResends);
                         recycle = true;
                         break;
                     } else {
@@ -281,9 +291,7 @@ bool MessageSequencer::cycle() throw (Exception) {
             }
             if (h->sent_pings > PingTimeout / PingInterval) {
                 /* after x seconds of absolutely silence, disconnect client */
-                h->active = false;
-                event_logout(h, LogoutReasonPingTimeout);
-                delete_heap(h);
+                kill_heap_with_logout(h, LogoutReasonPingTimeout);
                 recycle = true;
                 break;
             }
@@ -296,8 +304,11 @@ bool MessageSequencer::cycle() throw (Exception) {
 
 void MessageSequencer::kill(const Connection *c) throw (Exception) {
     SequencerHeap *h = static_cast<SequencerHeap *>(const_cast<Connection *>(c));
-    event_logout(c, LogoutApplicationQuit);
-    delete_heap(h);
+    if (h->processing) {
+        h->deferred_kill = true;
+    } else {
+        kill_heap_with_logout(h, LogoutReasonApplicationQuit);
+    }
 }
 
 void MessageSequencer::ack(SequencerHeap *heap, sequence_no_t seq_no) throw (Exception) {
@@ -307,6 +318,8 @@ void MessageSequencer::ack(SequencerHeap *heap, sequence_no_t seq_no) throw (Exc
 }
 
 void MessageSequencer::process_incoming(SequencerHeap *heap, NetMessage *msg) throw (Exception) {
+    ScopeHeapMarker heap_marker(*heap);
+
     NetMessageData *data = reinterpret_cast<NetMessageData *>(msg->data);
 
     switch (msg->cmd) {
@@ -405,7 +418,6 @@ SequencerHeap *MessageSequencer::find_heap(const Connection *c) {
 }
 
 void MessageSequencer::delete_heap(SequencerHeap *heap) {
-    flush_queues(heap);
     for (SequencerHeaps::iterator it = heaps.begin(); it != heaps.end(); it++) {
         SequencerHeap *h = *it;
         if (h == heap) {
@@ -415,6 +427,12 @@ void MessageSequencer::delete_heap(SequencerHeap *heap) {
             break;
         }
     }
+}
+
+void MessageSequencer::kill_heap_with_logout(SequencerHeap *heap, LogoutReason reason) {
+    heap->active = false;
+    event_logout(heap, reason);
+    delete_heap(heap);
 }
 
 void MessageSequencer::flush_queues(SequencerHeap *heap) {

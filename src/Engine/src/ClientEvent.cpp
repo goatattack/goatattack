@@ -74,7 +74,7 @@ void Client::event_logout(const Connection *c, LogoutReason reason) throw (Excep
             msg += " (too many resends)";
             break;
 
-        case LogoutApplicationQuit:
+        case LogoutReasonApplicationQuit:
             msg += " (application layer quit)";
             break;
     }

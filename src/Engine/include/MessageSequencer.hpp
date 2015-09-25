@@ -49,6 +49,7 @@ struct SequencerHeap : public Connection {
 
     SequencerHeap(hostaddr_t host, hostport_t port)
         : Connection(host, port), sent_pings(0), active(true),
+          processing(false), deferred_kill(false),
           last_send_unrel_seq_no(0), last_send_rel_seq_no(0),
           last_recv_unrel_seq_no(0), last_recv_rel_seq_no(0)
     {
@@ -58,6 +59,8 @@ struct SequencerHeap : public Connection {
 
     int sent_pings;
     bool active;
+    bool processing;
+    bool deferred_kill;
 
     sequence_no_t last_send_unrel_seq_no;
     sequence_no_t last_send_rel_seq_no;
@@ -70,13 +73,22 @@ struct SequencerHeap : public Connection {
     QueuedMessages out_queue;
 };
 
+class ScopeHeapMarker {
+public:
+    ScopeHeapMarker(SequencerHeap& heap);
+    ~ScopeHeapMarker();
+
+private:
+    SequencerHeap& heap;
+};
+
 class MessageSequencer {
 public:
     enum LogoutReason {
         LogoutReasonRegular = 0,
         LogoutReasonPingTimeout,
         LogoutReasonTooManyResends,
-        LogoutApplicationQuit
+        LogoutReasonApplicationQuit
     };
 
     enum RefusalReason {
@@ -129,10 +141,11 @@ private:
     SequencerHeap *find_heap(hostaddr_t host, hostport_t port);
     SequencerHeap *find_heap(const Connection *c);
     void delete_heap(SequencerHeap *heap);
+    void kill_heap_with_logout(SequencerHeap *heap, LogoutReason reason);
     void flush_queues(SequencerHeap *heap);
     void slack_send(hostaddr_t host, hostport_t port, sequence_no_t seq_no,
         flags_t flags, command_t cmd, data_len_t len, const void *data) throw (Exception);
     void delete_all_heaps();
 };
 
-#endif // MESSAGESEQUENCER_HPP
+#endif
