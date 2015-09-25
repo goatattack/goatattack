@@ -43,4 +43,4 @@ private:
 #endif
 };
 
-#endif // DIRECTORY_HPP
+#endif

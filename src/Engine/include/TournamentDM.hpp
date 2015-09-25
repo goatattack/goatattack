@@ -28,4 +28,4 @@ private:
     int draw_stats(Font *f, int x, int y);
 };
 
-#endif // TOURNAMENTDM_HPP
+#endif

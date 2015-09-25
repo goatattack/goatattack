@@ -42,4 +42,4 @@ private:
     size_t sz;
 };
 
-#endif // TILEGRAPHICGL_HPP
+#endif

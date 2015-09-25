@@ -43,4 +43,4 @@ private:
     void extract_binding(const Configuration& config, MappedKey& binding, const std::string& key);
 };
 
-#endif // KEYBINDING_HPP
+#endif

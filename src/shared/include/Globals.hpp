@@ -8,4 +8,4 @@ extern const bool ProductIsBeta;
 
 const double Epsilon = 0.00001f;
 
-#endif // GLOBALS_HPP
+#endif

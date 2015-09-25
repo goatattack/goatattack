@@ -16,6 +16,10 @@ public:
 };
 
 class MasterQuery : public ServerList, public Thread {
+private:
+    MasterQuery(const MasterQuery&);
+    MasterQuery& operator=(const MasterQuery&);
+
 public:
     MasterQuery(const std::string& masterserver, hostport_t masterport)
         throw (MasterQueryException);
@@ -41,4 +45,4 @@ private:
     virtual void thread();
 };
 
-#endif // MASTERQUERY_HPP
+#endif

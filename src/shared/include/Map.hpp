@@ -67,4 +67,4 @@ protected:
     void cleanup();
 };
 
-#endif // MAP_HPP
+#endif

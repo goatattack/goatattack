@@ -6,7 +6,6 @@ Movable::Movable(Subsystem& subsystem) : subsystem(subsystem) { }
 
 Movable::~Movable() { }
 
-
 int Movable::get_width() const {
     return width;
 }

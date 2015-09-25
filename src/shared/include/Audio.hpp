@@ -17,6 +17,10 @@ public:
 };
 
 class Audio {
+private:
+    Audio(const Audio&);
+    Audio& operator=(const Audio&);
+
 public:
     Audio();
     virtual ~Audio();
@@ -25,4 +29,4 @@ public:
     virtual void generate_music(const std::string& filename, ZipReader *zip = 0) throw (AudioException) = 0;
 };
 
-#endif // AUDIO_HPP
+#endif

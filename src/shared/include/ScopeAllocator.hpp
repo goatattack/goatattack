@@ -31,4 +31,4 @@ private:
     T *obj;
 };
 
-#endif // SCOPEALLOCATOR_HPP
+#endif

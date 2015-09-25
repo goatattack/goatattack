@@ -312,7 +312,7 @@ bool TCPSocket::is_connected() const {
 unsigned short TCPSocket::get_port() throw (TCPSocketException) {
     struct sockaddr_in sin;
     socklen_t len = sizeof(sin);
-    if (getsockname(socket, (struct sockaddr *)&sin, &len) == -1) {
+    if (getsockname(socket, reinterpret_cast<struct sockaddr *>(&sin), &len) == -1) {
         throw TCPSocketException("Can't get port: " + std::string(strerror(errno)));
     }
 
@@ -322,7 +322,7 @@ unsigned short TCPSocket::get_port() throw (TCPSocketException) {
 unsigned long TCPSocket::get_address() throw (TCPSocketException) {
     struct sockaddr_in sin;
     socklen_t len = sizeof(sin);
-    if (getsockname(socket, (struct sockaddr *)&sin, &len) == -1) {
+    if (getsockname(socket, reinterpret_cast<struct sockaddr *>(&sin), &len) == -1) {
         throw TCPSocketException("Can't get port: " + std::string(strerror(errno)));
     }
 

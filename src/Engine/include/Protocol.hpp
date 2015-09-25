@@ -147,4 +147,4 @@ template<typename T> void byte_swap(T& data) {
     }
 }
 
-#endif // PROTOCOL_HPP
+#endif

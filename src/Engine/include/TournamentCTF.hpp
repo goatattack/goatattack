@@ -49,4 +49,4 @@ private:
     virtual void team_fire_point(Player *penem, Team team, int points);
 };
 
-#endif // TOURNAMENTCTF_HPP
+#endif

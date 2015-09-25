@@ -46,4 +46,4 @@ private:
     void cdef(const std::string& key, const std::string& value);
 };
 
-#endif // CONFIGURATION_HPP
+#endif

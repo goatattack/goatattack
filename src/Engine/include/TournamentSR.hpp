@@ -80,4 +80,4 @@ private:
     void update_stats(TimesOfPlayer *top, float t);
 };
 
-#endif // TOURNAMENTSR_HPP
+#endif

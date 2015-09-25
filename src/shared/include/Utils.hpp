@@ -36,4 +36,4 @@ std::string lowercase(const std::string& str);
 void trim(std::string& str);
 std::string generate_name();
 
-#endif // UTILS_HPP
+#endif

@@ -15,6 +15,10 @@ public:
 };
 
 class Lightmap {
+private:
+    Lightmap(const Lightmap&);
+    Lightmap& operator=(const Lightmap&);
+
 public:
     Lightmap(Subsystem& subsystem, const std::string& filename, ZipReader *zip = 0)
         throw (LightmapException);
@@ -35,5 +39,4 @@ private:
     void cleanup();
 };
 
-
-#endif // LIGHTMAP_HPP
+#endif

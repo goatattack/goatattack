@@ -14,6 +14,10 @@ public:
 };
 
 class LANBroadcaster : public ServerList, public MessageSequencer, public Thread {
+private:
+    LANBroadcaster(const LANBroadcaster&);
+    LANBroadcaster& operator=(const LANBroadcaster&);
+
 public:
     LANBroadcaster(hostport_t port) throw (LANBroadcasterException, UDPSocketException);
     virtual ~LANBroadcaster();
@@ -40,4 +44,4 @@ private:
     virtual void thread();
 };
 
-#endif // LANBROADCASTER_HPP
+#endif

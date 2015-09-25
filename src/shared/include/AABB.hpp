@@ -32,4 +32,4 @@ protected:
     CollisionBox colbox;
 };
 
-#endif // AABB_HPP
+#endif

@@ -1,7 +1,7 @@
 #include "TournamentFactory.hpp"
 #include "TournamentDM.hpp"
-#include "TournamentCTF.hpp"
 #include "TournamentTDM.hpp"
+#include "TournamentCTF.hpp"
 #include "TournamentSR.hpp"
 #include "TournamentCTC.hpp"
 #include "TournamentGOH.hpp"
@@ -53,7 +53,7 @@ Tournament *TournamentFactory::create_tournament(const MapConfiguration& config,
     if (tournament && server) {
         tournament_id++;
         if (logger) {
-            logger->log(ServerLogger::LogTypeNewMap, "");
+            logger->log(ServerLogger::LogTypeNewMap, "new map loaded");
         }
     }
 

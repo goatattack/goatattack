@@ -197,4 +197,4 @@ private:
     void yes_input_box_click();
 };
 
-#endif // GUI_HPP
+#endif

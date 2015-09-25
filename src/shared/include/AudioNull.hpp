@@ -16,4 +16,4 @@ public:
     virtual void generate_music(const std::string& filename, ZipReader *zip = 0) throw (AudioException);
 };
 
-#endif // AUDIONULL_HPP
+#endif

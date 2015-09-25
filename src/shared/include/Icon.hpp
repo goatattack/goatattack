@@ -14,6 +14,10 @@ public:
 };
 
 class Icon : public Properties {
+private:
+    Icon(const Icon&);
+    Icon& operator=(const Icon&);
+
 public:
     Icon(Subsystem& subsystem, const std::string& filename, ZipReader *zip = 0)
         throw (KeyValueException, IconException);
@@ -33,4 +37,4 @@ private:
     void cleanup();
 };
 
-#endif // ICON_HPP
+#endif

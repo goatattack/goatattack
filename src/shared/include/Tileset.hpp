@@ -49,4 +49,4 @@ private:
     void cleanup();
 };
 
-#endif // TILESET_HPP
+#endif

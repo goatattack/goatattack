@@ -42,4 +42,4 @@ protected:
     bool get_one_shot(Properties& props, const std::string& suffix, bool default_value);
 };
 
-#endif // MOVABLE_HPP
+#endif

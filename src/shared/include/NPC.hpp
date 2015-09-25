@@ -17,6 +17,10 @@ enum NPCAnimation {
 };
 
 class NPC : public Properties, public Movable {
+private:
+    NPC(const NPC&);
+    NPC& operator=(const NPC&);
+
 public:
     NPC(Subsystem& subsystem, const std::string& filename, ZipReader *zip = 0)
         throw (KeyValueException, MovableException);
@@ -58,4 +62,4 @@ private:
     void cleanup();
 };
 
-#endif // NPC_HPP
+#endif

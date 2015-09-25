@@ -36,4 +36,4 @@ private:
 };
 
 
-#endif // THREAD_HPP
+#endif

@@ -29,4 +29,4 @@ private:
     Configuration config;
 };
 
-#endif // GAME_HPP
+#endif

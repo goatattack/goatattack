@@ -7,6 +7,10 @@
 class MasterQuery;
 
 class MasterQueryClient : public GameserverInformation, public MessageSequencer {
+private:
+    MasterQueryClient(const MasterQueryClient&);
+    MasterQueryClient& operator=(const MasterQueryClient&);
+
 public:
     MasterQueryClient(MasterQuery& master_query, hostaddr_t host, hostport_t port) throw (Exception);
     virtual ~MasterQueryClient();
@@ -24,4 +28,4 @@ public:
         int protocol_version) throw (Exception);
 };
 
-#endif // MASTERQUERYCLIENT_HPP
+#endif

@@ -14,6 +14,10 @@ public:
 };
 
 class Background : public Properties {
+private:
+    Background(const Background&);
+    Background& operator=(const Background&);
+
 public:
     Background(Subsystem& subsystem, const std::string& filename, ZipReader *zip)
         throw (KeyValueException, BackgroundException);
@@ -33,4 +37,4 @@ private:
     void cleanup();
 };
 
-#endif // BACKGROUND_HPP
+#endif

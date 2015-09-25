@@ -13,6 +13,10 @@
 #include <vector>
 
 class MainMenu : public Gui, protected OptionsMenu {
+private:
+    MainMenu(const MainMenu&);
+    MainMenu& operator=(const MainMenu&);
+
 public:
     MainMenu(Resources& resources, Subsystem& subsystem, Configuration& config);
     virtual ~MainMenu();
@@ -143,4 +147,4 @@ private:
     void destroy_server_locators();
 };
 
-#endif // MAINMENU_HPP
+#endif

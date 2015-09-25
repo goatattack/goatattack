@@ -121,7 +121,7 @@ uint32_t resolve_host(const std::string& hostname) {
         }
 
         for (p = servinfo; p != NULL; p = p->ai_next)  {
-            h = (struct sockaddr_in *)p->ai_addr;
+            h = reinterpret_cast<struct sockaddr_in *>(p->ai_addr);
     #ifdef __unix__
             return htonl(h->sin_addr.s_addr);
     #elif _WIN32

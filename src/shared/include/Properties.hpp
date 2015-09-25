@@ -28,4 +28,4 @@ private:
     std::string description;
 };
 
-#endif // PROPERTIES_HPP
+#endif

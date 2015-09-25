@@ -817,4 +817,4 @@ const int GXferDataChunkLen = sizeof(GXferDataChunk) - 1;
 const int GHillCounterLen = sizeof(GHillCounter);
 const int GPakHashLen = sizeof(GPakHash);
 
-#endif // GAMEPROTOCOL_HPP
+#endif

@@ -83,6 +83,10 @@ private:
 };
 
 class MessageSequencer {
+private:
+    MessageSequencer(const MessageSequencer&);
+    MessageSequencer& operator=(const MessageSequencer&);
+
 public:
     enum LogoutReason {
         LogoutReasonRegular = 0,

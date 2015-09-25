@@ -30,6 +30,10 @@ struct MapConfiguration {
 };
 
 class TournamentFactory {
+private:
+    TournamentFactory(const TournamentFactory&);
+    TournamentFactory& operator=(const TournamentFactory&);
+
 public:
     TournamentFactory(Resources& resources, Subsystem& subsystem, Gui *gui)
         throw (TournamentFactoryException);
@@ -48,4 +52,4 @@ private:
     unsigned char tournament_id;
 };
 
-#endif // TOURNAMENTFACTORY_HPP
+#endif

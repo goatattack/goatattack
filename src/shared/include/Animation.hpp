@@ -16,6 +16,10 @@ public:
 };
 
 class Animation : public Properties {
+private:
+    Animation(const Animation&);
+    Animation& operator=(const Animation&);
+
 public:
     Animation(Subsystem& subsystem, const std::string& filename, ZipReader *zip)
         throw (KeyValueException, AnimationException);
@@ -68,4 +72,4 @@ private:
     void cleanup();
 };
 
-#endif // ANIMATION_HPP
+#endif

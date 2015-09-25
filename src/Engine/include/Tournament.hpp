@@ -405,4 +405,4 @@ protected:
     }
 };
 
-#endif // TOURNAMENT_HPP
+#endif

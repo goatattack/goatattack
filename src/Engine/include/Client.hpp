@@ -32,6 +32,10 @@ struct ClientTextMessage {
 };
 
 class Client : public ClientServer, public Gui, protected OptionsMenu, protected Thread {
+private:
+    Client(const Client&);
+    Client& operator=(const Client&);
+
 public:
     Client(Resources& resources, Subsystem& subsystem, hostaddr_t host,
         hostport_t port, Configuration& config, const std::string& password)
@@ -138,4 +142,4 @@ private:
     void show_options_menu();
 };
 
-#endif // CLIENT_HPP
+#endif

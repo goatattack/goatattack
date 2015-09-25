@@ -13,6 +13,10 @@ class GuiWindow;
 
 /* GuiObject */
 class GuiObject {
+private:
+    GuiObject(const GuiObject&);
+    GuiObject& operator=(const GuiObject&);
+
 public:
     typedef std::vector<GuiObject *> Children;
 
@@ -592,4 +596,4 @@ private:
     static void static_scroll_changed(GuiScroll *sender, void *data, int value);
 };
 
-#endif // GUIOBJECT_HPP
+#endif

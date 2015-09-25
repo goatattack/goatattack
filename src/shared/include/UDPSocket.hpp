@@ -41,4 +41,4 @@ protected:
     void create_socket(unsigned short port) throw (UDPSocketException);
 };
 
-#endif // UDPSOCKET_HPP
+#endif

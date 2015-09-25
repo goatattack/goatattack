@@ -58,4 +58,4 @@ private:
     bool light_blocking;
 };
 
-#endif // TILE_HPP
+#endif

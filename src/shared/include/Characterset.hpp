@@ -20,6 +20,10 @@ enum CharacterAnimation {
 };
 
 class Characterset : public Properties, public Movable {
+private:
+    Characterset(const Characterset&);
+    Characterset& operator=(const Characterset&);
+
 public:
     Characterset(Subsystem& subsystem, const std::string& filename, ZipReader *zip = 0)
         throw (KeyValueException, MovableException);
@@ -70,4 +74,4 @@ private:
     void cleanup();
 };
 
-#endif // CHARACTERSET_HPP
+#endif

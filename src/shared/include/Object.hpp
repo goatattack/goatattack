@@ -15,6 +15,10 @@ public:
 };
 
 class Object : public Properties, public AABB {
+private:
+    Object(const Object&);
+    Object& operator=(const Object&);
+
 public:
     enum ObjectType {
         ObjectTypeNothing = 0,      /*  0 */
@@ -76,4 +80,4 @@ private:
     void cleanup();
 };
 
-#endif // OBJECT_HPP
+#endif

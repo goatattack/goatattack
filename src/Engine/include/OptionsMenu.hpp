@@ -10,6 +10,10 @@
 #include "ButtonNavigator.hpp"
 
 class OptionsMenu {
+private:
+    OptionsMenu(const OptionsMenu&);
+    OptionsMenu& operator=(const OptionsMenu&);
+
 public:
     OptionsMenu(Gui& gui, Resources& resources, Subsystem& subsystem,
     Configuration& config, bool in_game);
@@ -131,4 +135,4 @@ private:
     virtual void options_closed() { }
 };
 
-#endif // OPTIONSMENU_HPP
+#endif

@@ -28,4 +28,4 @@ protected:
     bool keep_pictures;
 };
 
-#endif // TILEGRAPHIC_HPP
+#endif

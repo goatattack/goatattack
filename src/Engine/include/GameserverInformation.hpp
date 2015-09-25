@@ -39,8 +39,6 @@ private:
     ServerList(const ServerList&);
     ServerList& operator=(const ServerList&);
 
-    typedef bool (*ServerSorter)(GameserverInformation *lhs, GameserverInformation *rhs);
-
 public:
     ServerList();
     virtual ~ServerList();
@@ -51,6 +49,8 @@ public:
     void sort();
 
 private:
+    typedef bool (*ServerSorter)(GameserverInformation *lhs, GameserverInformation *rhs);
+
     int sort_index;
     ServerSort sort_dir;
     ServerSorter server_sorter;

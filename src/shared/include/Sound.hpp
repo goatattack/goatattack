@@ -14,6 +14,10 @@ public:
 };
 
 class Sound : public Properties {
+private:
+    Sound(const Sound&);
+    Sound& operator=(const Sound&);
+
 public:
     Sound(Subsystem& subsystem, const std::string& filename, ZipReader *zip = 0)
         throw (KeyValueException, SoundException);
@@ -29,4 +33,4 @@ private:
     int playing_channel;
 };
 
-#endif // SOUND_HPP
+#endif

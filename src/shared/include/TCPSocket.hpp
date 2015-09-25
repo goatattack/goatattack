@@ -52,4 +52,4 @@ private:
     void check_states() throw (TCPSocketException);
 };
 
-#endif // TCPSOCKET_HPP
+#endif

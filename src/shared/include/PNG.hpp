@@ -65,4 +65,4 @@ private:
     static void user_data_read(png_structp png_ptr, png_bytep data, png_size_t len);
 };
 
-#endif // PNG_HPP
+#endif

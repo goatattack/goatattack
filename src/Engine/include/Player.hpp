@@ -9,6 +9,10 @@
 #include <vector>
 
 class Player {
+private:
+    Player(const Player&);
+    Player& operator=(const Player&);
+
 public:
     static const int PlayerFallingTestMaxY = 999999999;
 
@@ -63,4 +67,4 @@ typedef std::vector<Player *> Players;
 
 bool ComparePlayerScore(Player *lhs, Player *rhs);
 
-#endif // PLAYER_HPP
+#endif

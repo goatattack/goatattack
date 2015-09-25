@@ -21,6 +21,10 @@ public:
 };
 
 class Server : public Properties, public ClientServer, public Thread {
+private:
+    Server(const Server&);
+    Server& operator=(const Server&);
+
 public:
     Server(Resources& resources, Subsystem& subsystem,
         hostport_t port, pico_size_t num_players, const std::string& server_name,
@@ -136,4 +140,4 @@ private:
     Server& server;
 };
 
-#endif // SERVER_HPP
+#endif

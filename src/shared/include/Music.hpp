@@ -14,6 +14,10 @@ public:
 };
 
 class Music : public Properties {
+private:
+    Music(const Music&);
+    Music& operator=(const Music&);
+
 public:
     Music(Subsystem& subsystem, const std::string& filename, ZipReader *zip = 0)
         throw (KeyValueException, MusicException);
@@ -26,4 +30,4 @@ private:
     Audio *audio;
 };
 
-#endif // MUSIC_HPP
+#endif

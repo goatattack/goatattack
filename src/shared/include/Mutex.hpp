@@ -52,4 +52,4 @@ private:
     Mutex& mtx;
 };
 
-#endif // MUTEX_HPP
+#endif

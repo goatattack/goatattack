@@ -10,6 +10,10 @@
 #include <string>
 
 class ClientServer : public MessageSequencer {
+private:
+    ClientServer(const ClientServer&);
+    ClientServer& operator=(const ClientServer&);
+
 public:
     ClientServer(hostport_t port, pico_size_t num_players,
         const std::string& server_name, const std::string& password);
@@ -24,12 +28,6 @@ public:
     MapConfiguration get_temporary_map_config();
 
 protected:
-    enum SyncState {
-        PrepareMapsSync = 0,
-        InMapsSync,
-        MapsSynced
-    };
-
     Tournament *tournament;
     GTransport *gtrans;
     GGameState *ggamestat;
@@ -74,4 +72,4 @@ private:
     void stack_data(unsigned char tournament_id, command_t cmd, data_len_t len, const void *data);
 };
 
-#endif // CLIENTSERVER_HPP
+#endif

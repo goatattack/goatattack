@@ -31,4 +31,4 @@ private:
     SDL_RWops *src;
 };
 
-#endif // AUDIOSDL_HPP
+#endif

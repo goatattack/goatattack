@@ -58,4 +58,4 @@ private:
     void process_line(std::string line, const std::string& filename, ZipReader *zip) throw (KeyValueException);
 };
 
-#endif // KEYVALUE_HPP
+#endif

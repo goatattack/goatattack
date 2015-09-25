@@ -8,7 +8,6 @@
 #include "Font.hpp"
 #include "Icon.hpp"
 
-
 #include <cstring>
 #include <algorithm>
 #ifdef __unix__

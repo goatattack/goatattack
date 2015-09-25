@@ -69,4 +69,4 @@ protected:
 
     virtual void team_fire_point(Player *penem, Team team, int points) = 0;
 };
-#endif // TOURNAMENTTEAM_HPP
+#endif

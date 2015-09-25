@@ -78,4 +78,4 @@ private:
     static void fo_zip_close(FontOperations& op);
 };
 
-#endif // FONT_HPP
+#endif

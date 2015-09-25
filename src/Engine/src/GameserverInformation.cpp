@@ -2,8 +2,6 @@
 
 #include <algorithm>
 
-#include <iostream>
-
 /* server information class */
 GameserverInformation::GameserverInformation()
     : host(0), port(0), max_clients(0), cur_clients(0),

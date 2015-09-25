@@ -129,4 +129,4 @@ private:
     void prepare_resources() throw (ResourcesException);
 };
 
-#endif // RESOURCES_HPP
+#endif

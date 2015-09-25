@@ -21,4 +21,4 @@ void sub_ns(ns_t ns, gametime_t& from);
 void wait_ns(ns_t ns);
 void wait_ms(ms_t ms);
 
-#endif // TIMING_HPP
+#endif

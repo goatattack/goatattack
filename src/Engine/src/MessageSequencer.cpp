@@ -1,7 +1,6 @@
 #include "MessageSequencer.hpp"
 
 #include <cstdlib>
-#include <iostream>
 
 /* to simulate crappy net links:
  *

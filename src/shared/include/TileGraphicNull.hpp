@@ -17,4 +17,4 @@ private:
     size_t sz;
 };
 
-#endif // TILEGRAPHICNULL_HPP
+#endif

@@ -4,7 +4,7 @@
 
 #ifndef PATH_MAX
 #define PATH_MAX 4096
-#endif // PATH_MAX
+#endif
 
 Background::Background(Subsystem& subsystem, const std::string& filename, ZipReader *zip)
     throw (KeyValueException, BackgroundException)
