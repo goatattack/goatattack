@@ -22,3 +22,15 @@ Music::~Music() {
 const Audio *Music::get_audio() const {
     return audio;
 }
+
+ScopeMusicStopper::ScopeMusicStopper(Subsystem& subsystem, Music *music)
+    : subsystem(subsystem), music(music)
+{
+    subsystem.stop_music();
+}
+
+ScopeMusicStopper::~ScopeMusicStopper() {
+    if (music) {
+        subsystem.play_music(music);
+    }
+}

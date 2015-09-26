@@ -30,4 +30,18 @@ private:
     Audio *audio;
 };
 
+class ScopeMusicStopper {
+private:
+    ScopeMusicStopper(const ScopeMusicStopper&);
+    ScopeMusicStopper& operator=(const ScopeMusicStopper&);
+
+public:
+    ScopeMusicStopper(Subsystem& subsystem, Music *music);
+    virtual ~ScopeMusicStopper();
+
+private:
+    Subsystem& subsystem;
+    Music *music;
+};
+
 #endif

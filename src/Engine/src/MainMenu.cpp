@@ -379,13 +379,11 @@ void MainMenu::play_connect_wan_click() {
             lan_broadcaster->stop();
             master_query->stop();
             try {
-                subsystem.stop_music();
+                ScopeMusicStopper stop_music(subsystem, resources.get_music(TitleMusic));
                 Client client(resources, subsystem, host, port, config, pwd);
                 client.link_mouse(*this);
                 client.run();
-                subsystem.play_music(resources.get_music(TitleMusic));
             } catch (const Exception& e) {
-                subsystem.play_music(resources.get_music(TitleMusic));
                 show_messagebox(Gui::MessageBoxIconError, "Error", e.what());
             }
             lan_broadcaster->start();
@@ -658,7 +656,7 @@ void MainMenu::server_validate(bool close) {
         pop_window();
     } else {
         try {
-            subsystem.stop_music();
+            ScopeMusicStopper stop_music(subsystem, resources.get_music(TitleMusic));
             GamePlayType type = static_cast<GamePlayType>(game_mode);
             Server server(resources, subsystem, port, max_players, config.get_string("server_name"),
                 type, config.get_string("map_name"), duration, warmup);
@@ -666,9 +664,7 @@ void MainMenu::server_validate(bool close) {
             Client client(resources, subsystem, INADDR_LOOPBACK, port, config, "");
             client.link_mouse(*this);
             client.run();
-            subsystem.play_music(resources.get_music(TitleMusic));
         } catch (const Exception& e) {
-            subsystem.play_music(resources.get_music(TitleMusic));
             show_messagebox(Gui::MessageBoxIconError, "Error", e.what());
         }
         fill_map_listbox(static_cast<GamePlayType>(cs_current_mode->get_tag()));
