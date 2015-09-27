@@ -54,6 +54,9 @@ Server::Server(Resources& resources, Subsystem& subsystem,
       log_file(0), logger(subsystem.get_stream(), true), server_admin(0)
 {
     map_configs.push_back(MapConfiguration(type, map_name, duration, warmup));
+
+    set_value("admin_password", "master");
+    server_admin = new ServerAdmin(resources, *this, *this);
 }
 
 /* dedicated server constructor */
@@ -958,22 +961,31 @@ void Server::event_logout(const Connection *c, LogoutReason reason) throw (Excep
 bool Server::select_map() {
     bool switch_to_game = false;
 
-    if (tournament) {
-        delete tournament;
-        switch_to_game = warmup;
-    }
-
-    if (switch_to_game) {
-        warmup = false;
+    if (use_temporary_map_config()) {
+        if (tournament) {
+            delete tournament;
+        }
+        current_config = &get_temporary_map_config();
+        warmup = (current_config->warmup_in_seconds > 0);
+        set_temporary_map_config(false);
     } else {
-        const MapConfiguration& config = map_configs[rotation_current_index];
-        current_config = &config;
-        warmup = (config.warmup_in_seconds > 0);
+        if (tournament) {
+            delete tournament;
+            switch_to_game = warmup;
+        }
 
-        size_t sz = map_configs.size();
-        rotation_current_index++;
-        if (rotation_current_index >= sz) {
-            rotation_current_index = 0;
+        if (switch_to_game) {
+            warmup = false;
+        } else {
+            const MapConfiguration& config = map_configs[rotation_current_index];
+            current_config = &config;
+            warmup = (config.warmup_in_seconds > 0);
+
+            size_t sz = map_configs.size();
+            rotation_current_index++;
+            if (rotation_current_index >= sz) {
+                rotation_current_index = 0;
+            }
         }
     }
 

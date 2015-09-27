@@ -213,6 +213,7 @@
       <File Name="../../src/Engine/include/ButtonNavigator.hpp"/>
       <File Name="../../src/Engine/include/GameserverInformation.hpp"/>
       <File Name="../../src/Engine/include/ServerAdmin.hpp"/>
+      <File Name="../../src/Engine/include/MapConfiguration.hpp"/>
     </VirtualDirectory>
     <VirtualDirectory Name="src">
       <File Name="../../src/Engine/src/TournamentFactory.cpp"/>
@@ -247,6 +248,7 @@
       <File Name="../../src/Engine/src/ButtonNavigator.cpp"/>
       <File Name="../../src/Engine/src/GameserverInformation.cpp"/>
       <File Name="../../src/Engine/src/ServerAdmin.cpp"/>
+      <File Name="../../src/Engine/src/MapConfiguration.cpp"/>
     </VirtualDirectory>
     <File Name="../../src/Engine/main.cpp"/>
   </VirtualDirectory>

@@ -11,7 +11,7 @@ ClientServer::ClientServer(hostport_t port, pico_size_t num_players,
       gplayerinfo(reinterpret_cast<GPlayerInfo *>(gtrans->data)),
       gplayerdesc(reinterpret_cast<GPlayerDescription *>(gtrans->data)),
       gplaceobject(reinterpret_cast<GPlaceObject *>(gtrans->data)),
-      pb(gtrans), packet_len(0), port(port) { }
+      pb(gtrans), packet_len(0), port(port), has_temp_map_config(false) { }
 
 ClientServer::ClientServer(hostaddr_t host, hostport_t port)
     : MessageSequencer(host, port), tournament(0),
@@ -21,7 +21,7 @@ ClientServer::ClientServer(hostaddr_t host, hostport_t port)
       gplayerinfo(reinterpret_cast<GPlayerInfo *>(gtrans->data)),
       gplayerdesc(reinterpret_cast<GPlayerDescription *>(gtrans->data)),
       gplaceobject(reinterpret_cast<GPlaceObject *>(gtrans->data)),
-      pb(gtrans), packet_len(0), port(port) { }
+      pb(gtrans), packet_len(0), port(port), has_temp_map_config(false) { }
 
 ClientServer::~ClientServer() {
     if (tournament) {
@@ -43,6 +43,18 @@ void ClientServer::delete_tournament() {
         delete tournament;
         tournament = 0;
     }
+}
+
+bool ClientServer::use_temporary_map_config() const {
+    return has_temp_map_config;
+}
+
+void ClientServer::set_temporary_map_config(bool state) {
+    has_temp_map_config = state;
+}
+
+MapConfiguration& ClientServer::get_temporary_map_config() {
+    return temp_map_config;
 }
 
 void ClientServer::stacked_send_data(const Connection *c, unsigned char tournament_id, command_t cmd,

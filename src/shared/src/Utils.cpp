@@ -1,5 +1,6 @@
 #include "Utils.hpp"
 
+#include <sstream>
 #include <cerrno>
 #include <cstring>
 #include <algorithm>
@@ -173,8 +174,7 @@ std::string lowercase(const std::string& str) {
     return new_str;
 }
 
-
-void trim(std::string& str) {
+void instant_trim(std::string& str) {
     str.erase(0, str.find_first_not_of(" "));
     str.erase(str.find_last_not_of(" ") + 1);
 }
@@ -197,4 +197,18 @@ std::string generate_name() {
     complete_name[0] = toupper(complete_name[0]);
 
     return complete_name;
+}
+
+StringTokens tokenize(const std::string& str, char delimiter) {
+    StringTokens elements;
+    std::stringstream ss(str);
+    std::string item;
+    while (std::getline(ss, item, delimiter)) {
+        instant_trim(item);
+        if (item.length()) {
+            elements.push_back(item);
+        }
+    }
+
+    return elements;
 }

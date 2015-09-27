@@ -55,6 +55,7 @@ private:
     void check_if_authorized(Player *p) throw (ServerAdminException);
     void check_if_params(const std::string& params) throw (ServerAdminException);
     void check_if_no_params(const std::string& params) throw (ServerAdminException);
+    void throw_illegal_parameters() throw (ServerAdminException);
     void throw_not_implemented() throw (ServerAdminException);
 };
 

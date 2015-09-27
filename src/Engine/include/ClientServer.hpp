@@ -6,6 +6,7 @@
 #include "Player.hpp"
 #include "GameProtocol.hpp"
 #include "TournamentFactory.hpp"
+#include "MapConfiguration.hpp"
 
 #include <string>
 
@@ -23,9 +24,9 @@ public:
     Tournament *get_tournament() const;
     Players& get_players();
     void delete_tournament();
-    void set_temporary_map_config(GamePlayType type, const std::string& map_name, int duration);
-    bool has_temporary_map_config() const;
-    MapConfiguration get_temporary_map_config();
+    bool use_temporary_map_config() const;
+    void set_temporary_map_config(bool state);
+    MapConfiguration& get_temporary_map_config();
 
 protected:
     Tournament *tournament;
@@ -68,6 +69,9 @@ private:
     GTransport *pb;
     int packet_len;
     hostport_t port;
+    bool has_temp_map_config;
+
+    MapConfiguration temp_map_config;
 
     void stack_data(unsigned char tournament_id, command_t cmd, data_len_t len, const void *data);
 };
