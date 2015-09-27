@@ -12,6 +12,9 @@ ServerAdmin::ServerCommand ServerAdmin::server_commands[] = {
     { "next", &ServerAdmin::sc_next },
     { "map", &ServerAdmin::sc_map },
     { "reload", &ServerAdmin::sc_reload },
+    { "get", &ServerAdmin::sc_get },
+    { "set", &ServerAdmin::sc_set },
+    { "reset", &ServerAdmin::sc_reset },
     { 0, 0 }
 };
 
@@ -146,6 +149,39 @@ void ServerAdmin::sc_map(const Connection *c, Player *p, const std::string& para
 
 void ServerAdmin::sc_reload(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
     throw_not_implemented();
+}
+
+void ServerAdmin::sc_get(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
+    check_if_authorized(p);
+    StringTokens tokens = tokenize(params, ' ');
+    if (tokens.size() != 1) {
+        throw ServerAdminException("usage: /get <variable>");
+    }
+    const std::string& value = properties.get_value(tokens[0]);
+    std::string msg(tokens[0] + "=" + value);
+    server.send_data(c, 0, GPCTextMessage, NetFlagsReliable, msg.length(), msg.c_str());
+}
+
+void ServerAdmin::sc_set(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
+    check_if_authorized(p);
+    StringTokens tokens = tokenize(params, ' ');
+    if (tokens.size() != 2) {
+        throw ServerAdminException("usage: /set <variable> <value>");
+    }
+    properties.set_value(tokens[0], tokens[1]);
+    std::string msg("set " + tokens[0] + " to " + tokens[1]);
+    server.send_data(c, 0, GPCTextMessage, NetFlagsReliable, msg.length(), msg.c_str());
+}
+
+void ServerAdmin::sc_reset(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
+    check_if_authorized(p);
+    StringTokens tokens = tokenize(params, ' ');
+    if (tokens.size() != 1) {
+        throw ServerAdminException("usage: /reset <variable>");
+    }
+    properties.set_value(tokens[0], "");
+    std::string msg(tokens[0] + " cleared");
+    server.send_data(c, 0, GPCTextMessage, NetFlagsReliable, msg.length(), msg.c_str());
 }
 
 /* helper functions */
