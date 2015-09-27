@@ -53,6 +53,15 @@ void ServerAdmin::execute(const Connection *c, Player *p, std::string cmd, std::
     }
 }
 
+void ServerAdmin::update_configuration(const Connection *c) throw (Exception) {
+    hostport_t port = atoi(properties.get_value("port").c_str());
+    pico_size_t num_players = atoi(properties.get_value("num_players").c_str());
+    const std::string& server_name = properties.get_value("server_name");
+    const std::string& server_password = properties.get_value("server_password");
+    admin_password = properties.get_value("admin_password");
+    server.reload_config(port, num_players, server_name, server_password);
+}
+
 /* server functions */
 void ServerAdmin::sc_op(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
     if (params != admin_password) {
@@ -175,15 +184,6 @@ void ServerAdmin::sc_save(const Connection *c, Player *p, const std::string& par
     }
 }
 
-void ServerAdmin::update_configuration(const Connection *c) throw (Exception) {
-    hostport_t port = atoi(properties.get_value("port").c_str());
-    pico_size_t num_players = atoi(properties.get_value("num_players").c_str());
-    const std::string& server_name = properties.get_value("server_name");
-    const std::string& server_password = properties.get_value("server_password");
-    admin_password = properties.get_value("admin_password");
-    server.reload_config(port, num_players, server_name, server_password);
-}
-
 void ServerAdmin::sc_get(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
     check_if_authorized(p);
     StringTokens tokens = tokenize(params, ' ');
@@ -197,7 +197,7 @@ void ServerAdmin::sc_get(const Connection *c, Player *p, const std::string& para
 
 void ServerAdmin::sc_set(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
     check_if_authorized(p);
-    StringTokens tokens = tokenize(params, ' ');
+    StringTokens tokens = tokenize(params, ' ', 2);
     if (tokens.size() != 2) {
         throw ServerAdminException("Usage: /set <variable> <value>");
     }

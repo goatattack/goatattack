@@ -38,6 +38,6 @@ std::string uppercase(const std::string& str);
 std::string lowercase(const std::string& str);
 void instant_trim(std::string& str);
 std::string generate_name();
-StringTokens tokenize(const std::string& str, char delimiter);
+StringTokens tokenize(const std::string& str, char delimiter, int count = 0);
 
 #endif

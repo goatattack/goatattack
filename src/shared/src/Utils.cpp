@@ -199,11 +199,26 @@ std::string generate_name() {
     return complete_name;
 }
 
-StringTokens tokenize(const std::string& str, char delimiter) {
+StringTokens tokenize(const std::string& str, char delimiter, int count) {
     StringTokens elements;
     std::stringstream ss(str);
     std::string item;
+    int current_count = 0;
     while (std::getline(ss, item, delimiter)) {
+        instant_trim(item);
+        if (item.length()) {
+            elements.push_back(item);
+        }
+        if (count) {
+            current_count++;
+            if (current_count == count - 1) {
+                break;
+            }
+        }
+    }
+
+    /* insert remaining text */
+    if (std::getline(ss, item, '\x00')) {
         instant_trim(item);
         if (item.length()) {
             elements.push_back(item);
