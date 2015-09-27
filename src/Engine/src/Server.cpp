@@ -937,6 +937,8 @@ bool Server::select_map() {
         reload_map_rotation = false;
         current_config = 0;
         load_map_rotation();
+        delete tournament;
+        tournament = 0;
     }
 
     if (use_temporary_map_config()) {
