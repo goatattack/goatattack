@@ -39,7 +39,7 @@ private:
     Resources& resources;
     ClientServer& server;
     Properties& properties;
-    const std::string& admin_password;
+    std::string admin_password;
 
     static ServerCommand server_commands[];
 
