@@ -43,6 +43,8 @@ private:
 
     static ServerCommand server_commands[];
 
+    void update_configuration(const Connection *c) throw (Exception);
+
     void sc_op(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);
     void sc_deop(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);
     void sc_kick(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);
@@ -51,6 +53,7 @@ private:
     void sc_next(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);
     void sc_map(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);
     void sc_reload(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);
+    void sc_save(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);
     void sc_get(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);
     void sc_set(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);
     void sc_reset(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);

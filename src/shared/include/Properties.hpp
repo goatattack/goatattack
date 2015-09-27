@@ -21,11 +21,17 @@ public:
     void set_name(const std::string& name) throw (KeyValueException);
     void set_author(const std::string& author) throw (KeyValueException);
     void set_description(const std::string& description) throw (KeyValueException);
+    void reload_configuration() throw (KeyValueException);
+    void save_configuration() throw (KeyValueException);
 
 private:
+    std::string filename;
+
     std::string name;
     std::string author;
     std::string description;
+
+    void fetch();
 };
 
 #endif

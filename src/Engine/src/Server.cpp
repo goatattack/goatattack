@@ -933,14 +933,6 @@ void Server::event_logout(const Connection *c, LogoutReason reason) throw (Excep
 bool Server::select_map() {
     bool switch_to_game = false;
 
-    if (reload_map_rotation) {
-        reload_map_rotation = false;
-        current_config = 0;
-        load_map_rotation();
-        delete tournament;
-        tournament = 0;
-    }
-
     if (use_temporary_map_config()) {
         if (tournament) {
             delete tournament;
@@ -957,6 +949,13 @@ bool Server::select_map() {
         if (switch_to_game) {
             warmup = false;
         } else {
+            /* reload map rotation list */
+            if (reload_map_rotation) {
+                reload_map_rotation = false;
+                load_map_rotation();
+            }
+
+            /* pick next map */
             const MapConfiguration& config = map_configs[rotation_current_index];
             current_config = &config;
             warmup = (config.warmup_in_seconds > 0);

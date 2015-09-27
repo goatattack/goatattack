@@ -3,11 +3,9 @@
 Properties::Properties() { }
 
 Properties::Properties(const std::string& filename, ZipReader *zip) throw (KeyValueException)
-    : KeyValue(filename, zip)
+    : KeyValue(filename, zip), filename(filename)
 {
-    name = get_value("name");
-    author = get_value("author");
-    description = get_value("description");
+    fetch();
 }
 
 Properties::~Properties() { }
@@ -42,3 +40,24 @@ void Properties::set_description(const std::string& description) throw (KeyValue
     touch();
 }
 
+void Properties::reload_configuration() throw (KeyValueException) {
+    if (!filename.length()) {
+        throw KeyValueException("No filename specified");
+    }
+    clear();
+    read(filename);
+    fetch();
+}
+
+void Properties::save_configuration() throw (KeyValueException) {
+    if (!filename.length()) {
+        throw KeyValueException("No filename specified");
+    }
+    save(filename);
+}
+
+void Properties::fetch() {
+    name = get_value("name");
+    author = get_value("author");
+    description = get_value("description");
+}

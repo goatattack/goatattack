@@ -12,6 +12,7 @@ ServerAdmin::ServerCommand ServerAdmin::server_commands[] = {
     { "next", &ServerAdmin::sc_next },
     { "map", &ServerAdmin::sc_map },
     { "reload", &ServerAdmin::sc_reload },
+    { "save", &ServerAdmin::sc_save },
     { "get", &ServerAdmin::sc_get },
     { "set", &ServerAdmin::sc_set },
     { "reset", &ServerAdmin::sc_reset },
@@ -152,16 +153,34 @@ void ServerAdmin::sc_reload(const Connection *c, Player *p, const std::string& p
     check_if_no_params(params);
 
     try {
-        hostport_t port = atoi(properties.get_value("port").c_str());
-        pico_size_t num_players = atoi(properties.get_value("num_players").c_str());
-        const std::string& server_name = properties.get_value("server_name");
-        const std::string& server_password = properties.get_value("server_password");
-        server.reload_config(port, num_players, server_name, server_password);
+        properties.reload_configuration();
+        update_configuration(c);
         std::string msg("configuration reloaded");
         server.send_data(c, 0, GPCTextMessage, NetFlagsReliable, msg.length(), msg.c_str());
     } catch (const Exception& e) {
         throw ServerAdminException(e.what());
     }
+}
+
+void ServerAdmin::sc_save(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
+    check_if_authorized(p);
+    check_if_no_params(params);
+
+    try {
+        properties.save_configuration();
+        std::string msg("configuration saved");
+        server.send_data(c, 0, GPCTextMessage, NetFlagsReliable, msg.length(), msg.c_str());
+    } catch (const Exception& e) {
+        throw ServerAdminException(e.what());
+    }
+}
+
+void ServerAdmin::update_configuration(const Connection *c) throw (Exception) {
+    hostport_t port = atoi(properties.get_value("port").c_str());
+    pico_size_t num_players = atoi(properties.get_value("num_players").c_str());
+    const std::string& server_name = properties.get_value("server_name");
+    const std::string& server_password = properties.get_value("server_password");
+    server.reload_config(port, num_players, server_name, server_password);
 }
 
 void ServerAdmin::sc_get(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
@@ -182,6 +201,7 @@ void ServerAdmin::sc_set(const Connection *c, Player *p, const std::string& para
         throw ServerAdminException("Usage: /set <variable> <value>");
     }
     properties.set_value(tokens[0], tokens[1]);
+    update_configuration(c);
     std::string msg("set " + tokens[0] + " to " + tokens[1]);
     server.send_data(c, 0, GPCTextMessage, NetFlagsReliable, msg.length(), msg.c_str());
 }
