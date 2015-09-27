@@ -1,6 +1,7 @@
 #include "MessageSequencer.hpp"
 
 #include <cstdlib>
+#include <cstdio>
 
 /* to simulate crappy net links:
  *
@@ -308,6 +309,21 @@ void MessageSequencer::kill(const Connection *c) throw (Exception) {
     } else {
         kill_heap_with_logout(h, LogoutReasonApplicationQuit);
     }
+}
+
+void MessageSequencer::new_settings(hostport_t port, pico_size_t num_heaps,
+    const std::string& name, const std::string& password) throw (Exception)
+{
+    int current = static_cast<int>(heaps.size());
+    if (current >= num_heaps) {
+        char temp_buffer[256];
+        sprintf(temp_buffer, "Cannot set num_heaps to %d, %d are logged in", num_heaps, current);
+        throw MessageSequencerException(temp_buffer);
+    }
+    this->name = name;
+    this->password = password;
+    this->max_heaps = num_heaps;
+    socket.set_port(port);
 }
 
 void MessageSequencer::ack(SequencerHeap *heap, sequence_no_t seq_no) throw (Exception) {

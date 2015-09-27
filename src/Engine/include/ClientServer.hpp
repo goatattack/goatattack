@@ -10,6 +10,8 @@
 
 #include <string>
 
+class Server;
+
 class ClientServer : public MessageSequencer {
 private:
     ClientServer(const ClientServer&);
@@ -29,6 +31,7 @@ public:
     MapConfiguration& get_temporary_map_config();
 
 protected:
+    Server *server;
     Tournament *tournament;
     GTransport *gtrans;
     GGameState *ggamestat;
@@ -61,6 +64,10 @@ public:
 
     void broadcast_data_synced(unsigned char tournament_id, command_t cmd, flags_t flags, data_len_t len,
         const void *data) throw (Exception);
+
+    void set_server(Server *server);
+    void reload_config(hostport_t port, pico_size_t num_players,
+        const std::string& server_name, const std::string& password) throw (Exception);
 
     hostport_t get_port() const;
 

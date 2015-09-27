@@ -38,6 +38,7 @@ public:
 
     void start() throw (ServerException);
     void stop();
+    void reload_config() throw (ServerException);
 
 private:
     struct ClientPak {
@@ -95,6 +96,7 @@ private:
     std::ofstream *log_file;
     ServerLogger logger;
     ServerAdmin *server_admin;
+    bool reload_map_rotation;
 
     MapConfigurations map_configs;
     HeldPlayerStats held_player_stats;
@@ -112,11 +114,12 @@ private:
     void process_sync_pak(const Connection *c, Player *p) throw (ServerException);
     ClientPak *get_unsynced_client_pak(PlayerClientPak *pcpak);
     void destroy_paks(Player *p);
+    void check_team_names();
+    void load_map_rotation();
 
     std::ostream& create_log_stream();
 
     void parse_command(const Connection *c, Player *p, data_len_t len, void *data) throw (ServerAdminException);
-
 
     /* implements Thread */
     virtual void thread();

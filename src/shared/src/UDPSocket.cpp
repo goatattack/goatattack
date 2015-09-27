@@ -62,6 +62,20 @@ ssize_t UDPSocket::recv(char *buffer, size_t length, uint32_t *host, uint16_t *p
     return sz;
 }
 
+void UDPSocket::set_port(unsigned short port) throw (UDPSocketException) {
+    if (!this->port && port != this->port) {
+        throw UDPSocketException("Cannot change port of a client socket");
+    }
+    if (port != this->port) {
+        closesocket(socket);
+        create_socket(port);
+    }
+}
+
+unsigned short UDPSocket::get_port() const {
+    return port;
+}
+
 void UDPSocket::create_socket(unsigned short port) throw (UDPSocketException) {
     socket = ::socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     if (socket < 0) {
@@ -91,6 +105,7 @@ void UDPSocket::create_socket(unsigned short port) throw (UDPSocketException) {
     addr.sin_family = AF_INET;
     addr.sin_port = htons(port);
     addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    this->port = port;
 
     if (port) {
         if (bind(socket, reinterpret_cast<struct sockaddr *>(&addr), sizeof(addr)) == -1) {

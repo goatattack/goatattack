@@ -28,6 +28,8 @@ public:
 
     ssize_t send(uint32_t host, uint16_t port, void *buffer, size_t length) throw (UDPSocketException);
     ssize_t recv(char *buffer, size_t length, uint32_t *host, uint16_t *port) throw (UDPSocketException);
+    void set_port(unsigned short port) throw (UDPSocketException);
+    unsigned short get_port() const;
 
 protected:
 #ifdef __unix__

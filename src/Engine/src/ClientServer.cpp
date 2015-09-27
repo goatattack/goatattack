@@ -1,10 +1,11 @@
 #include "ClientServer.hpp"
+#include "Server.hpp"
 
 #include <cassert>
 
 ClientServer::ClientServer(hostport_t port, pico_size_t num_players,
     const std::string& server_name, const std::string& password)
-    : MessageSequencer(port, num_players, server_name, password), tournament(0),
+    : MessageSequencer(port, num_players, server_name, password), server(0), tournament(0),
       gtrans(reinterpret_cast<GTransport *>(buffer)),
       ggamestat(reinterpret_cast<GGameState *>(gtrans->data)),
       gplayerstat(reinterpret_cast<GPlayerState *>(gtrans->data)),
@@ -14,7 +15,7 @@ ClientServer::ClientServer(hostport_t port, pico_size_t num_players,
       pb(gtrans), packet_len(0), port(port), has_temp_map_config(false) { }
 
 ClientServer::ClientServer(hostaddr_t host, hostport_t port)
-    : MessageSequencer(host, port), tournament(0),
+    : MessageSequencer(host, port), server(0), tournament(0),
       gtrans(reinterpret_cast<GTransport *>(buffer)),
       ggamestat(reinterpret_cast<GGameState *>(gtrans->data)),
       gplayerstat(reinterpret_cast<GPlayerState *>(gtrans->data)),
@@ -167,6 +168,21 @@ void ClientServer::broadcast_data_synced(unsigned char tournament_id, command_t 
 
 hostport_t ClientServer::get_port() const {
     return port;
+}
+
+void ClientServer::set_server(Server *server) {
+    this->server = server;
+}
+
+void ClientServer::reload_config(hostport_t port, pico_size_t num_players,
+    const std::string& server_name, const std::string& password) throw (Exception)
+{
+    if (!server) {
+        throw Exception("No server, reloading settings failed");
+    }
+    MessageSequencer::new_settings(port, num_players, server_name, password);
+    this->port = port;
+    server->reload_config();
 }
 
 void ClientServer::stack_data(unsigned char tournament_id, command_t cmd, data_len_t len, const void *data) {

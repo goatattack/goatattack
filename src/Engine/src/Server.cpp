@@ -51,7 +51,8 @@ Server::Server(Resources& resources, Subsystem& subsystem,
       warmup(false), hold_disconnected_players(false), reconnect_kills(0),
       hdp_counter(0), master_server(0), ms_counter(0), master_socket(),
       rotation_current_index(0), team_red_name(DefaultTeamRed), team_blue_name(DefaultTeamBlue),
-      log_file(0), logger(subsystem.get_stream(), true), server_admin(0)
+      log_file(0), logger(subsystem.get_stream(), true), server_admin(0),
+      reload_map_rotation(false)
 {
     map_configs.push_back(MapConfiguration(type, map_name, duration, warmup));
 }
@@ -70,52 +71,14 @@ Server::Server(Resources& resources, Subsystem& subsystem,
       ms_counter(0), master_socket(), rotation_current_index(0),
       team_red_name(get_value("clan_red_name")),
       team_blue_name(get_value("clan_blue_name")),
-      log_file(0), logger(create_log_stream(), true), server_admin(0)
+      log_file(0), logger(create_log_stream(), true), server_admin(0),
+      reload_map_rotation(false)
 {
-    char kvb[128];
-    int map_count = atoi(get_value("map_count").c_str());
-    if (map_count < 1) {
-        throw ServerException("No maps defined in " + server_config_file);
-    }
-
-    for (int i = 0; i < map_count; i++) {
-        sprintf(kvb, "name%d", i);
-        const std::string& map_name = get_value(kvb);
-
-        sprintf(kvb, "type%d", i);
-        const std::string map_type_str = get_value(kvb);
-        GamePlayType type = GamePlayTypeDM;
-        if (map_type_str.length()) {
-            type = static_cast<GamePlayType>(atoi(get_value(kvb).c_str()));
-        } else {
-            type = resources.get_map(map_name)->get_game_play_type();
-        }
-
-        sprintf(kvb, "duration%d", i);
-        int duration = atoi(get_value(kvb).c_str());
-        sprintf(kvb, "warmup%d", i);
-        int warmup = atoi(get_value(kvb).c_str());
-        map_configs.push_back(MapConfiguration(type, map_name, duration, warmup));
-    }
-    if (atoi(get_value("shuffle_maps").c_str())) {
-        std::random_shuffle(map_configs.begin(), map_configs.end());
-    }
-
-    /* default team/clan names */
-    if (!team_red_name.length()) {
-        team_red_name = DefaultTeamRed;
-    }
-
-    if (!team_blue_name.length()) {
-        team_blue_name = DefaultTeamBlue;
-    }
-
-    /* reconnect penalty */
-    if (reconnect_kills < 1) {
-        reconnect_kills = 1;
-    }
+    load_map_rotation();
+    check_team_names();
 
     /* create server admin console */
+    set_server(this);
     server_admin = new ServerAdmin(resources, *this, *this);
 }
 
@@ -165,6 +128,18 @@ void Server::stop() {
         running = false;
         thread_join();
     }
+}
+
+void Server::reload_config() throw (ServerException) {
+    /* this is currently a dirty hack. in future i'll change passing the
+     * Properties& through all levels and call an update() from derived class */
+    hold_disconnected_players = (atoi(get_value("hold_disconnected_player").c_str()) != 0 ? true : false);
+    reconnect_kills = atoi(get_value("reconnect_kills").c_str());
+    master_server = resolve_host(get_value("master_server"));
+    team_red_name = get_value("clan_red_name");
+    team_blue_name = get_value("clan_blue_name");
+    check_team_names();
+    reload_map_rotation = true;
 }
 
 void Server::thread() {
@@ -958,6 +933,12 @@ void Server::event_logout(const Connection *c, LogoutReason reason) throw (Excep
 bool Server::select_map() {
     bool switch_to_game = false;
 
+    if (reload_map_rotation) {
+        reload_map_rotation = false;
+        current_config = 0;
+        load_map_rotation();
+    }
+
     if (use_temporary_map_config()) {
         if (tournament) {
             delete tournament;
@@ -1249,6 +1230,49 @@ void Server::destroy_paks(Player *p) {
                 break;
             }
         }
+    }
+}
+
+void Server::check_team_names() {
+    /* default team/clan names */
+    if (!team_red_name.length()) {
+        team_red_name = DefaultTeamRed;
+    }
+
+    if (!team_blue_name.length()) {
+        team_blue_name = DefaultTeamBlue;
+    }
+}
+
+void Server::load_map_rotation() {
+    map_configs.clear();
+    char kvb[128];
+    int map_count = atoi(get_value("map_count").c_str());
+    if (map_count < 1) {
+        throw ServerException("No maps defined in server configuration file");
+    }
+
+    for (int i = 0; i < map_count; i++) {
+        sprintf(kvb, "name%d", i);
+        const std::string& map_name = get_value(kvb);
+
+        sprintf(kvb, "type%d", i);
+        const std::string map_type_str = get_value(kvb);
+        GamePlayType type = GamePlayTypeDM;
+        if (map_type_str.length()) {
+            type = static_cast<GamePlayType>(atoi(get_value(kvb).c_str()));
+        } else {
+            type = resources.get_map(map_name)->get_game_play_type();
+        }
+
+        sprintf(kvb, "duration%d", i);
+        int duration = atoi(get_value(kvb).c_str());
+        sprintf(kvb, "warmup%d", i);
+        int warmup = atoi(get_value(kvb).c_str());
+        map_configs.push_back(MapConfiguration(type, map_name, duration, warmup));
+    }
+    if (atoi(get_value("shuffle_maps").c_str())) {
+        std::random_shuffle(map_configs.begin(), map_configs.end());
     }
 }
 

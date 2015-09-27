@@ -3,10 +3,17 @@
 
 #include "Protocol.hpp"
 #include "UDPSocket.hpp"
+#include "Exception.hpp"
 
 #include <deque>
 #include <vector>
 #include <time.h>
+
+class MessageSequencerException : public Exception {
+public:
+    MessageSequencerException(const char *msg) : Exception(msg) { }
+    MessageSequencerException(std::string msg) : Exception(msg) { }
+};
 
 /* we start to resend after 50ms,                       */
 /* then doubling the resend interval after each resend. */
@@ -116,6 +123,8 @@ public:
     void push(const Connection *c, command_t cmd, flags_t flags, data_len_t len, const void *data) throw (Exception);
     bool cycle() throw (Exception);
     void kill(const Connection *c) throw (Exception);
+    void new_settings(hostport_t port, pico_size_t num_heaps, const std::string& name,
+        const std::string& password) throw (Exception);
 
     virtual void event_status(hostaddr_t host, hostport_t port, const std::string& name,
         int max_clients, int cur_clients, ms_t ping_time, bool secured,

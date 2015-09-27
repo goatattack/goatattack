@@ -86,7 +86,6 @@ void MasterQuery::refresh() throw (MasterQueryException) {
 }
 
 void MasterQuery::locked_sort() {
-    //ScopeMutex lock(mtx);
     sort();
 }
 

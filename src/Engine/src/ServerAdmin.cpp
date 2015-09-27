@@ -148,14 +148,27 @@ void ServerAdmin::sc_map(const Connection *c, Player *p, const std::string& para
 }
 
 void ServerAdmin::sc_reload(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
-    throw_not_implemented();
+    check_if_authorized(p);
+    check_if_no_params(params);
+
+    try {
+        hostport_t port = atoi(properties.get_value("port").c_str());
+        pico_size_t num_players = atoi(properties.get_value("num_players").c_str());
+        const std::string& server_name = properties.get_value("server_name");
+        const std::string& server_password = properties.get_value("server_password");
+        server.reload_config(port, num_players, server_name, server_password);
+        std::string msg("configuration reloaded");
+        server.send_data(c, 0, GPCTextMessage, NetFlagsReliable, msg.length(), msg.c_str());
+    } catch (const Exception& e) {
+        throw ServerAdminException(e.what());
+    }
 }
 
 void ServerAdmin::sc_get(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
     check_if_authorized(p);
     StringTokens tokens = tokenize(params, ' ');
     if (tokens.size() != 1) {
-        throw ServerAdminException("usage: /get <variable>");
+        throw ServerAdminException("Usage: /get <variable>");
     }
     const std::string& value = properties.get_value(tokens[0]);
     std::string msg(tokens[0] + "=" + value);
@@ -166,7 +179,7 @@ void ServerAdmin::sc_set(const Connection *c, Player *p, const std::string& para
     check_if_authorized(p);
     StringTokens tokens = tokenize(params, ' ');
     if (tokens.size() != 2) {
-        throw ServerAdminException("usage: /set <variable> <value>");
+        throw ServerAdminException("Usage: /set <variable> <value>");
     }
     properties.set_value(tokens[0], tokens[1]);
     std::string msg("set " + tokens[0] + " to " + tokens[1]);
@@ -177,7 +190,7 @@ void ServerAdmin::sc_reset(const Connection *c, Player *p, const std::string& pa
     check_if_authorized(p);
     StringTokens tokens = tokenize(params, ' ');
     if (tokens.size() != 1) {
-        throw ServerAdminException("usage: /reset <variable>");
+        throw ServerAdminException("Usage: /reset <variable>");
     }
     properties.set_value(tokens[0], "");
     std::string msg(tokens[0] + " cleared");
