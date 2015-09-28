@@ -80,6 +80,8 @@ DONE:
 * configurable deadzone for gamepads
 * quitting local server crash fixed
 * tooltips added
+* server-commands
+* friendly-fire configurable
 
 
 DEFERRED:
