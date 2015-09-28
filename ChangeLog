@@ -1,6 +1,8 @@
 0.4.2
 - quitting local server crash fixed
 - tooltips added
+- server commands
+- friendly-fire configurable
 
 0.4.1
 - servers listbox, sorting bug fixed

@@ -39,7 +39,8 @@ Tournament::Tournament(Resources& resources, Subsystem& subsystem, Gui *gui, Ser
       hud_bombs(resources.get_icon("bomb")),
       hud_frogs(resources.get_icon("frog")),
       enemy_indicator(resources.get_icon("enemy_indicator_neutral")),
-      game_over(false), logger(logger), gui_is_destroyed(false)
+      game_over(false), logger(logger), gui_is_destroyed(false),
+      do_friendly_fire_alarm(true)
 {
     /* init */
     char kvb[128];
@@ -830,3 +831,7 @@ GenericData *Tournament::create_generic_data() {
 void Tournament::destroy_generic_data(void *data) { }
 
 void Tournament::generic_data_delivery(void *data) { }
+
+void Tournament::set_friendly_fire_alarm(bool state) {
+    do_friendly_fire_alarm = state;
+}

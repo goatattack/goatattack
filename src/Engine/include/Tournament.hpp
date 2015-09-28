@@ -186,6 +186,7 @@ public:
     void fire_grenade(Player *p, unsigned char direction);
     void fire_bomb(Player *p, unsigned char direction);
     void fire_frog(Player *p, unsigned char direction);
+    void set_friendly_fire_alarm(bool state);
 
     void draw();
     void delete_responses();
@@ -288,6 +289,7 @@ protected:
     bool game_over;
     ServerLogger *logger;
     bool gui_is_destroyed;
+    bool do_friendly_fire_alarm;
 
     int tilex;
     int tiley;

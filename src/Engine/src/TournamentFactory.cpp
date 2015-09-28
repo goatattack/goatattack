@@ -6,6 +6,8 @@
 #include "TournamentCTC.hpp"
 #include "TournamentGOH.hpp"
 
+#include <cstdlib>
+
 TournamentFactory::TournamentFactory(Resources& resources, Subsystem& subsystem, Gui *gui)
     throw (TournamentFactoryException)
     : resources(resources), subsystem(subsystem), gui(gui), tournament_id(0) { }
@@ -66,4 +68,11 @@ unsigned char TournamentFactory::get_tournament_id() const {
 
 void TournamentFactory::set_tournament_id(unsigned char id) {
     tournament_id = id;
+}
+
+void TournamentFactory::set_tournament_server_flags(Properties& properties, Tournament *tournament) {
+    if (tournament) {
+        bool state = (atoi(properties.get_value("friendly_fire_alarm").c_str()) ? true : false);
+        tournament->set_friendly_fire_alarm(state);
+    }
 }

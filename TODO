@@ -1,5 +1,4 @@
 WORKING ON:
-* server-commands
 
 
 PENDING:
@@ -19,11 +18,11 @@ PENDING:
 	- doors
 	- warpzones
 	- destructable tiles
+* server commands: ban, unban, working with client hashes
 
 
 WISHES:
 * integrated collision detection of characters (by dev)
-* friendly-fire configurable
 * use ini-format for server-config (sections)
 * currently the ingame-chat has no support for special characters (like äöüß).
 

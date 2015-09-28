@@ -391,9 +391,11 @@ void TournamentTeam::check_friendly_fire(identifier_t owner, Player *p) {
 }
 
 bool TournamentTeam::friendly_fire_alarm(GFriendyFireAlarm *alarm) {
-    Player *me = get_me();
-    if (me && me->state.id == alarm->owner) {
-        return true;
+    if (do_friendly_fire_alarm) {
+        Player *me = get_me();
+        if (me && me->state.id == alarm->owner) {
+            return true;
+        }
     }
 
     return false;

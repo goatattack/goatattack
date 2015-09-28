@@ -33,6 +33,7 @@ public:
 
     unsigned char get_tournament_id() const;
     void set_tournament_id(unsigned char id);
+    void set_tournament_server_flags(Properties& properties, Tournament *tournament);
 
 private:
     Resources& resources;

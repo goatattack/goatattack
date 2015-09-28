@@ -140,6 +140,7 @@ void Server::reload_config() throw (ServerException) {
     team_blue_name = get_value("clan_blue_name");
     check_team_names();
     reload_map_rotation = true;
+    factory.set_tournament_server_flags(*this, tournament);
 }
 
 void Server::thread() {
@@ -970,6 +971,7 @@ bool Server::select_map() {
 
     tournament = factory.create_tournament(*current_config, true, warmup, players, &logger);
     tournament->set_team_names(team_red_name, team_blue_name);
+    factory.set_tournament_server_flags(*this, tournament);
     score_board_counter = 30000;
 
     return switch_to_game;
