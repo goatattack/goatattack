@@ -270,6 +270,21 @@
     <ClCompile Include="..\..\..\src\shared\src\ZipWriter.cpp">
       <Filter>shared\src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\Engine\src\ButtonNavigator.cpp">
+      <Filter>game\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Engine\src\GameserverInformation.cpp">
+      <Filter>game\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Engine\src\MapConfiguration.cpp">
+      <Filter>game\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Engine\src\ServerAdmin.cpp">
+      <Filter>game\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Engine\src\ServerLogger.cpp">
+      <Filter>game\src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Win.hpp">
@@ -511,6 +526,21 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\shared\include\ZipWriter.hpp">
       <Filter>shared\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Engine\include\ButtonNavigator.hpp">
+      <Filter>game\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Engine\include\GameserverInformation.hpp">
+      <Filter>game\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Engine\include\MapConfiguration.hpp">
+      <Filter>game\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Engine\include\ServerAdmin.hpp">
+      <Filter>game\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Engine\include\ServerLogger.hpp">
+      <Filter>game\include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

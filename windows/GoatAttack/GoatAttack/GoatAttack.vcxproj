@@ -16,19 +16,24 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Engine\main.cpp" />
+    <ClCompile Include="..\..\..\src\Engine\src\ButtonNavigator.cpp" />
     <ClCompile Include="..\..\..\src\Engine\src\Client.cpp" />
     <ClCompile Include="..\..\..\src\Engine\src\ClientEvent.cpp" />
     <ClCompile Include="..\..\..\src\Engine\src\ClientServer.cpp" />
     <ClCompile Include="..\..\..\src\Engine\src\Game.cpp" />
+    <ClCompile Include="..\..\..\src\Engine\src\GameserverInformation.cpp" />
     <ClCompile Include="..\..\..\src\Engine\src\KeyBinding.cpp" />
     <ClCompile Include="..\..\..\src\Engine\src\LANBroadcaster.cpp" />
     <ClCompile Include="..\..\..\src\Engine\src\MainMenu.cpp" />
+    <ClCompile Include="..\..\..\src\Engine\src\MapConfiguration.cpp" />
     <ClCompile Include="..\..\..\src\Engine\src\MasterQuery.cpp" />
     <ClCompile Include="..\..\..\src\Engine\src\MasterQueryClient.cpp" />
     <ClCompile Include="..\..\..\src\Engine\src\MessageSequencer.cpp" />
     <ClCompile Include="..\..\..\src\Engine\src\OptionsMenu.cpp" />
     <ClCompile Include="..\..\..\src\Engine\src\Player.cpp" />
     <ClCompile Include="..\..\..\src\Engine\src\Server.cpp" />
+    <ClCompile Include="..\..\..\src\Engine\src\ServerAdmin.cpp" />
+    <ClCompile Include="..\..\..\src\Engine\src\ServerLogger.cpp" />
     <ClCompile Include="..\..\..\src\Engine\src\Tournament.cpp" />
     <ClCompile Include="..\..\..\src\Engine\src\TournamentCTC.cpp" />
     <ClCompile Include="..\..\..\src\Engine\src\TournamentCTF.cpp" />
@@ -96,13 +101,16 @@
     <ClCompile Include="..\..\..\src\shared\zlib\zutil.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\src\Engine\include\ButtonNavigator.hpp" />
     <ClInclude Include="..\..\..\src\Engine\include\Client.hpp" />
     <ClInclude Include="..\..\..\src\Engine\include\ClientServer.hpp" />
     <ClInclude Include="..\..\..\src\Engine\include\Game.hpp" />
     <ClInclude Include="..\..\..\src\Engine\include\GameProtocol.hpp" />
+    <ClInclude Include="..\..\..\src\Engine\include\GameserverInformation.hpp" />
     <ClInclude Include="..\..\..\src\Engine\include\KeyBinding.hpp" />
     <ClInclude Include="..\..\..\src\Engine\include\LANBroadcaster.hpp" />
     <ClInclude Include="..\..\..\src\Engine\include\MainMenu.hpp" />
+    <ClInclude Include="..\..\..\src\Engine\include\MapConfiguration.hpp" />
     <ClInclude Include="..\..\..\src\Engine\include\MasterQuery.hpp" />
     <ClInclude Include="..\..\..\src\Engine\include\MasterQueryClient.hpp" />
     <ClInclude Include="..\..\..\src\Engine\include\MessageSequencer.hpp" />
@@ -110,6 +118,8 @@
     <ClInclude Include="..\..\..\src\Engine\include\Player.hpp" />
     <ClInclude Include="..\..\..\src\Engine\include\Protocol.hpp" />
     <ClInclude Include="..\..\..\src\Engine\include\Server.hpp" />
+    <ClInclude Include="..\..\..\src\Engine\include\ServerAdmin.hpp" />
+    <ClInclude Include="..\..\..\src\Engine\include\ServerLogger.hpp" />
     <ClInclude Include="..\..\..\src\Engine\include\Tournament.hpp" />
     <ClInclude Include="..\..\..\src\Engine\include\TournamentCTC.hpp" />
     <ClInclude Include="..\..\..\src\Engine\include\TournamentCTF.hpp" />
