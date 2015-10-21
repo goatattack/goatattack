@@ -129,6 +129,8 @@ am_goatattack_OBJECTS = goatattack-main.$(OBJEXT) \
 	src/goatattack-GameserverInformation.$(OBJEXT) \
 	src/goatattack-ServerLogger.$(OBJEXT) \
 	src/goatattack-ButtonNavigator.$(OBJEXT) \
+	src/goatattack-ServerAdmin.$(OBJEXT) \
+	src/goatattack-MapConfiguration.$(OBJEXT) \
 	../shared/src/goatattack-AABB.$(OBJEXT) \
 	../shared/src/goatattack-Animation.$(OBJEXT) \
 	../shared/src/goatattack-Audio.$(OBJEXT) \
@@ -401,6 +403,7 @@ goatattack_SOURCES = main.cpp src/Client.cpp src/ClientEvent.cpp \
 	src/TournamentGOH.cpp src/TournamentTeam.cpp \
 	src/TournamentWeapons.cpp src/GameserverInformation.cpp \
 	src/ServerLogger.cpp src/ButtonNavigator.cpp \
+	src/ServerAdmin.cpp src/MapConfiguration.cpp \
 	../shared/src/AABB.cpp ../shared/src/Animation.cpp \
 	../shared/src/Audio.cpp ../shared/src/AudioNull.cpp \
 	../shared/src/AudioSDL.cpp ../shared/src/Background.cpp \
@@ -581,6 +584,10 @@ src/goatattack-GameserverInformation.$(OBJEXT): src/$(am__dirstamp) \
 src/goatattack-ServerLogger.$(OBJEXT): src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/goatattack-ButtonNavigator.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/goatattack-ServerAdmin.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/goatattack-MapConfiguration.$(OBJEXT): src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 ../shared/src/$(am__dirstamp):
 	@$(MKDIR_P) ../shared/src
@@ -807,12 +814,14 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/goatattack-KeyBinding.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/goatattack-LANBroadcaster.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/goatattack-MainMenu.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/goatattack-MapConfiguration.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/goatattack-MasterQuery.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/goatattack-MasterQueryClient.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/goatattack-MessageSequencer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/goatattack-OptionsMenu.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/goatattack-Player.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/goatattack-Server.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/goatattack-ServerAdmin.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/goatattack-ServerLogger.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/goatattack-Tournament.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/goatattack-TournamentCTC.Po@am__quote@
@@ -1325,6 +1334,34 @@ src/goatattack-ButtonNavigator.obj: src/ButtonNavigator.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/ButtonNavigator.cpp' object='src/goatattack-ButtonNavigator.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(goatattack_CXXFLAGS) $(CXXFLAGS) -c -o src/goatattack-ButtonNavigator.obj `if test -f 'src/ButtonNavigator.cpp'; then $(CYGPATH_W) 'src/ButtonNavigator.cpp'; else $(CYGPATH_W) '$(srcdir)/src/ButtonNavigator.cpp'; fi`
+
+src/goatattack-ServerAdmin.o: src/ServerAdmin.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(goatattack_CXXFLAGS) $(CXXFLAGS) -MT src/goatattack-ServerAdmin.o -MD -MP -MF src/$(DEPDIR)/goatattack-ServerAdmin.Tpo -c -o src/goatattack-ServerAdmin.o `test -f 'src/ServerAdmin.cpp' || echo '$(srcdir)/'`src/ServerAdmin.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/goatattack-ServerAdmin.Tpo src/$(DEPDIR)/goatattack-ServerAdmin.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/ServerAdmin.cpp' object='src/goatattack-ServerAdmin.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(goatattack_CXXFLAGS) $(CXXFLAGS) -c -o src/goatattack-ServerAdmin.o `test -f 'src/ServerAdmin.cpp' || echo '$(srcdir)/'`src/ServerAdmin.cpp
+
+src/goatattack-ServerAdmin.obj: src/ServerAdmin.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(goatattack_CXXFLAGS) $(CXXFLAGS) -MT src/goatattack-ServerAdmin.obj -MD -MP -MF src/$(DEPDIR)/goatattack-ServerAdmin.Tpo -c -o src/goatattack-ServerAdmin.obj `if test -f 'src/ServerAdmin.cpp'; then $(CYGPATH_W) 'src/ServerAdmin.cpp'; else $(CYGPATH_W) '$(srcdir)/src/ServerAdmin.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/goatattack-ServerAdmin.Tpo src/$(DEPDIR)/goatattack-ServerAdmin.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/ServerAdmin.cpp' object='src/goatattack-ServerAdmin.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(goatattack_CXXFLAGS) $(CXXFLAGS) -c -o src/goatattack-ServerAdmin.obj `if test -f 'src/ServerAdmin.cpp'; then $(CYGPATH_W) 'src/ServerAdmin.cpp'; else $(CYGPATH_W) '$(srcdir)/src/ServerAdmin.cpp'; fi`
+
+src/goatattack-MapConfiguration.o: src/MapConfiguration.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(goatattack_CXXFLAGS) $(CXXFLAGS) -MT src/goatattack-MapConfiguration.o -MD -MP -MF src/$(DEPDIR)/goatattack-MapConfiguration.Tpo -c -o src/goatattack-MapConfiguration.o `test -f 'src/MapConfiguration.cpp' || echo '$(srcdir)/'`src/MapConfiguration.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/goatattack-MapConfiguration.Tpo src/$(DEPDIR)/goatattack-MapConfiguration.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/MapConfiguration.cpp' object='src/goatattack-MapConfiguration.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(goatattack_CXXFLAGS) $(CXXFLAGS) -c -o src/goatattack-MapConfiguration.o `test -f 'src/MapConfiguration.cpp' || echo '$(srcdir)/'`src/MapConfiguration.cpp
+
+src/goatattack-MapConfiguration.obj: src/MapConfiguration.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(goatattack_CXXFLAGS) $(CXXFLAGS) -MT src/goatattack-MapConfiguration.obj -MD -MP -MF src/$(DEPDIR)/goatattack-MapConfiguration.Tpo -c -o src/goatattack-MapConfiguration.obj `if test -f 'src/MapConfiguration.cpp'; then $(CYGPATH_W) 'src/MapConfiguration.cpp'; else $(CYGPATH_W) '$(srcdir)/src/MapConfiguration.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/goatattack-MapConfiguration.Tpo src/$(DEPDIR)/goatattack-MapConfiguration.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/MapConfiguration.cpp' object='src/goatattack-MapConfiguration.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(goatattack_CXXFLAGS) $(CXXFLAGS) -c -o src/goatattack-MapConfiguration.obj `if test -f 'src/MapConfiguration.cpp'; then $(CYGPATH_W) 'src/MapConfiguration.cpp'; else $(CYGPATH_W) '$(srcdir)/src/MapConfiguration.cpp'; fi`
 
 ../shared/src/goatattack-AABB.o: ../shared/src/AABB.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(goatattack_CXXFLAGS) $(CXXFLAGS) -MT ../shared/src/goatattack-AABB.o -MD -MP -MF ../shared/src/$(DEPDIR)/goatattack-AABB.Tpo -c -o ../shared/src/goatattack-AABB.o `test -f '../shared/src/AABB.cpp' || echo '$(srcdir)/'`../shared/src/AABB.cpp

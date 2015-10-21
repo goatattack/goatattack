@@ -6,8 +6,10 @@
 #include <vector>
 #ifdef __unix__
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_opengl.h>
 #elif _WIN32
 #include <SDL.h>
+#include <SDL_opengl.h>
 #endif
 
 class SubsystemSDL : public Subsystem {
@@ -82,6 +84,7 @@ private:
     float scanlines_intensity;
     int deadzone_horizontal;
     int deadzone_vertical;
+    GLuint selected_tex;
 
     SDL_GLContext glcontext;
     SDL_Event event;

@@ -50,7 +50,8 @@ static void channel_done(int c) {
 
 SubsystemSDL::SubsystemSDL(std::ostream& stream, const std::string& window_title) throw (SubsystemException)
     : Subsystem(stream, window_title), window(0), joyaxis(0), fullscreen(false),
-      draw_scanlines(false), scanlines_intensity(0.5f)
+      draw_scanlines(false), scanlines_intensity(0.5f),
+      deadzone_horizontal(3200), deadzone_vertical(3200), selected_tex(0)
 {
     stream << "starting SubsystemSDL" << std::endl;
 
@@ -314,8 +315,14 @@ void SubsystemSDL::draw_tilegraphic(TileGraphic *tilegraphic, int index, int x, 
     const int& width = tg->get_width();
     const int& height = tg->get_height();
 
-    glBindTexture(GL_TEXTURE_2D, tg->get_texture(index));
+    /* switch texture, if needed */
+    GLuint tex = tg->get_texture(index);
+    if (tex != selected_tex) {
+        glBindTexture(GL_TEXTURE_2D, tex);
+        selected_tex = tex;
+    }
 
+    /* draw quad */
     glBegin(GL_QUADS);
     glTexCoord2i(0, 0);
     glVertex2i(((x_offset + x) * current_zoom), ((y_offset + y) * current_zoom));

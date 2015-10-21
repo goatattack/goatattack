@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<CodeLite_Workspace Name="Goat Attack" Database="" SWTLW="No">
+<CodeLite_Workspace Name="Goat Attack" Database="">
+  <WorkspaceParserMacros/>
+  <WorkspaceParserPaths>
+    <Include Path="../src/Engine/include"/>
+    <Include Path="../src/shared/include"/>
+    <Include Path="../src/shared/zlib"/>
+  </WorkspaceParserPaths>
   <Project Name="GoatAttack" Path="GoatAttack/GoatAttack.project" Active="Yes"/>
   <Project Name="MapEditor" Path="MapEditor/MapEditor.project" Active="No"/>
   <Project Name="MasterServer" Path="MasterServer/MasterServer.project" Active="No"/>
@@ -15,4 +21,7 @@
       <Project Name="MasterServer" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
+  <Environment>
+    <![CDATA[]]>
+  </Environment>
 </CodeLite_Workspace>
