@@ -6,6 +6,7 @@
 #include "TournamentFactory.hpp"
 #include "OptionsMenu.hpp"
 #include "Protocol.hpp"
+#include "Scope.hpp"
 
 #include <cstdlib>
 #include <algorithm>
@@ -86,7 +87,7 @@ void MainMenu::idle() throw (Exception) {
         ms_t diff = diff_ms(last_lan_info, now);
         if (diff > 5000) {
             try {
-                ScopeMutex(lan_broadcaster->get_mutex());
+                Scope<Mutex> lock(lan_broadcaster->get_mutex());
                 lan_broadcaster->refresh();
             } catch (const Exception&) {
                 /* chomp */
@@ -96,7 +97,7 @@ void MainMenu::idle() throw (Exception) {
         /* update list */
         int top_index = play_lan_list->get_top_index();
         play_lan_list->clear();
-        ScopeMutex(lan_broadcaster->get_mutex());
+        Scope<Mutex> lock(lan_broadcaster->get_mutex());
         const Hosts& hosts = lan_broadcaster->get_hosts();
         for (Hosts::const_iterator it = hosts.begin();
             it != hosts.end(); it++)
@@ -118,7 +119,7 @@ void MainMenu::idle() throw (Exception) {
         /* update list */
         int top_index = play_wan_list->get_top_index();
         play_wan_list->clear();
-        ScopeMutex lock(master_query->get_mutex());
+        Scope<Mutex> lock(master_query->get_mutex());
         const Hosts& hosts = master_query->get_hosts();
         for (Hosts::const_iterator it = hosts.begin();
             it != hosts.end(); it++)
@@ -335,7 +336,7 @@ void MainMenu::static_play_refresh_lan_click(GuiButton *sender, void *data) {
 }
 
 void MainMenu::play_refresh_lan_click() {
-    ScopeMutex lock(lan_broadcaster->get_mutex());
+    Scope<Mutex> lock(lan_broadcaster->get_mutex());
     lan_list_selected_entry = 0;
     play_lan_list->set_selected_index(-1);
     lan_broadcaster->clear();
@@ -348,7 +349,7 @@ void MainMenu::static_play_refresh_wan_click(GuiButton *sender, void *data) {
 }
 
 void MainMenu::play_refresh_wan_click() {
-    ScopeMutex lock(master_query->get_mutex());
+    Scope<Mutex> lock(master_query->get_mutex());
     wan_list_selected_entry = 0;
     play_wan_list->set_selected_index(-1);
     master_query->refresh();

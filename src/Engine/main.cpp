@@ -30,7 +30,6 @@ int main(int argc, char *argv[]) {
         #else
             SubsystemSDL subsystem(stream, "Goat Attack");
         #endif
-
 #ifdef __APPLE__
         CFBundleRef mainBundle = CFBundleGetMainBundle();
         CFURLRef resourcesURL = CFBundleCopyResourcesDirectoryURL(mainBundle);

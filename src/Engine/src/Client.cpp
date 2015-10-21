@@ -1,5 +1,6 @@
 #include "Client.hpp"
 #include "Utils.hpp"
+#include "Scope.hpp"
 
 #include <iostream>
 #include <algorithm>
@@ -45,7 +46,7 @@ Client::Client(Resources& resources, Subsystem& subsystem, hostaddr_t host,
     strncpy(gplayerdesc->player_name, player_config.get_player_name().c_str(), NameLength - 1);
     strncpy(gplayerdesc->characterset_name, player_config.get_player_skin().c_str(), NameLength - 1);
     {
-        ScopeMutex lock(mtx);
+        Scope<Mutex> lock(mtx);
         login(password, GPlayerDescriptionLen, gplayerdesc);
     }
     binding.extract_from_config(player_config);
@@ -94,7 +95,7 @@ void Client::idle() throw (Exception) {
     do {
         ServerEvent evt;
         {
-            ScopeMutex lock(mtx);
+            Scope<Mutex> lock(mtx);
             if (server_events.empty()) {
                 break;
             }
@@ -161,7 +162,7 @@ void Client::idle() throw (Exception) {
             Tournament::StateResponses& responses = tournament->get_state_responses();
             size_t sz = responses.size();
             {
-                ScopeMutex lock(mtx);
+                Scope<Mutex> lock(mtx);
                 for (size_t i = 0; i < sz; i++) {
                     StateResponse *resp = responses[i];
                     stacked_send_data(conn, factory.get_tournament_id(), resp->action, 0, resp->len, resp->data);
@@ -186,7 +187,7 @@ void Client::idle() throw (Exception) {
                 state = me->state.client_server_state;
                 state.to_net();
                 {
-                    ScopeMutex lock(mtx);
+                    Scope<Mutex> lock(mtx);
                     send_data(conn, factory.get_tournament_id(), GPSUpdatePlayerClientServerState, 0, GPlayerClientServerStateLen, &state);
                 }
                 me->state.client_server_state.flags &= ~PlayerClientServerFlagForceBroadcast;
@@ -393,7 +394,7 @@ void Client::options_closed() {
         strncpy(pdesc.player_name, player_config.get_player_name().c_str(), NameLength - 1);
         strncpy(pdesc.characterset_name, player_config.get_player_skin().c_str(), NameLength - 1);
         {
-            ScopeMutex lock(mtx);
+            Scope<Mutex> lock(mtx);
             send_data(conn, factory.get_tournament_id(), GPSPlayerChanged, NetFlagsReliable, GPlayerDescriptionLen, &pdesc);
         }
     }
@@ -460,7 +461,7 @@ void Client::chat_send_message() {
 
     if (text.length() && conn) {
         {
-            ScopeMutex lock(mtx);
+            Scope<Mutex> lock(mtx);
             send_data(conn, factory.get_tournament_id(), GPSChatMessage, NetFlagsReliable, static_cast<data_len_t>(text.length()), text.c_str());
         }
     }
@@ -482,7 +483,7 @@ void Client::thread() {
     /* net loop */
     while (running) {
         {
-            ScopeMutex lock(mtx);
+            Scope<Mutex> lock(mtx);
             while(cycle());
         }
         wait_ns(1000000);
@@ -490,7 +491,7 @@ void Client::thread() {
 
     /* gracefully logout */
     {
-        ScopeMutex lock(mtx);
+        Scope<Mutex> lock(mtx);
         logout();
         while(cycle());
     }

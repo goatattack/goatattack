@@ -40,10 +40,10 @@ void Mutex::unlock() {
 #endif
 }
 
-ScopeMutex::ScopeMutex(Mutex& mtx) : mtx(mtx) {
-    mtx.lock();
+void Mutex::enter_scope() {
+    lock();
 }
 
-ScopeMutex::~ScopeMutex() {
-    mtx.unlock();
+void Mutex::leave_scope() {
+    unlock();
 }

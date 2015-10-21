@@ -1,4 +1,5 @@
 #include "Client.hpp"
+#include "Scope.hpp"
 
 #include <cerrno>
 
@@ -86,7 +87,7 @@ void Client::event_logout(const Connection *c, LogoutReason reason) throw (Excep
 }
 
 void Client::sevt_login(ServerEvent& evt) {
-    ScopeMutex lock(mtx);
+    Scope<Mutex> lock(mtx);
 
     const Resources::LoadedPaks& paks = resources.get_loaded_paks();
     GPakHash gph;
@@ -720,7 +721,7 @@ void Client::sevt_data(ServerEvent& evt) {
                     }
                 }
                 {
-                    ScopeMutex lock(mtx);
+                    Scope<Mutex> lock(mtx);
                     send_data(evt.c, 0, GPSPakSyncAck, NetFlagsReliable, 0, 0);
                 }
                 break;

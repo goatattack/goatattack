@@ -35,21 +35,11 @@ public:
     void lock();
     void unlock();
 
+    void enter_scope();
+    void leave_scope();
+
 private:
     mutex_t *mutex;
-};
-
-class ScopeMutex {
-private:
-    ScopeMutex(const ScopeMutex& rhs);
-    ScopeMutex& operator=(const ScopeMutex& rhs);
-
-public:
-    ScopeMutex(Mutex& mtx);
-    virtual ~ScopeMutex();
-
-private:
-    Mutex& mtx;
 };
 
 #endif

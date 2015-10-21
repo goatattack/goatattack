@@ -1,5 +1,6 @@
 #include "MasterQuery.hpp"
 #include "TCPSocket.hpp"
+#include "Scope.hpp"
 
 #include <cstdlib>
 
@@ -105,7 +106,7 @@ void MasterQuery::thread() {
     while (running) {
         {
             get_now(now);
-            ScopeMutex lock(mtx);
+            Scope<Mutex> lock(mtx);
             cycle(&now);
         }
         wait_ns(1000000);

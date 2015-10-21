@@ -1,4 +1,5 @@
 #include "CompileThread.hpp"
+#include "Scope.hpp"
 
 #include <cmath>
 #include <algorithm>
@@ -53,11 +54,11 @@ CompileThread::CompileThread(EditableMap *wmap, unsigned char **lightmap)
 CompileThread::~CompileThread() { }
 
 bool CompileThread::is_finished() {
-    ScopeMutex lock(mtx);
+    Scope<Mutex> lock(mtx);
     return finished;
 }
 
 int CompileThread::get_percentage() {
-    ScopeMutex lock(mtx);
+    Scope<Mutex> lock(mtx);
     return finished_percent;
 }

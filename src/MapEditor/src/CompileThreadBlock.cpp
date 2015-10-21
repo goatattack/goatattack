@@ -1,4 +1,5 @@
 #include "CompileThreadBlock.hpp"
+#include "Scope.hpp"
 
 #include <cmath>
 
@@ -28,7 +29,7 @@ void CompileThreadBlock::thread() {
 
     for (size_t i = 0; i < nlgt; i++) {
         {
-            ScopeMutex lock(mtx);
+            Scope<Mutex> lock(mtx);
             finished_percent = 100 * (i + 1) / nlgt;
         }
         int r = lights[i]->radius;
@@ -104,6 +105,6 @@ void CompileThreadBlock::thread() {
         }
     }
 
-    ScopeMutex lock(mtx);
+    Scope<Mutex> lock(mtx);
     finished = true;
 }

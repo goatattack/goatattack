@@ -1,4 +1,4 @@
-AC_INIT([goatattack], [0.4.2], [pw@earthwave.ch])
+AC_INIT([goatattack], [0.4.3-dev], [pw@earthwave.ch])
 
 AM_INIT_AUTOMAKE([subdir-objects])
 LT_INIT

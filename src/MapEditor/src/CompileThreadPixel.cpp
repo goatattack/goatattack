@@ -1,5 +1,6 @@
 #include "CompileThreadPixel.hpp"
 #include "TileGraphicGL.hpp"
+#include "Scope.hpp"
 
 #include <cmath>
 
@@ -29,7 +30,7 @@ void CompileThreadPixel::thread() {
 
     for (size_t i = 0; i < nlgt; i++) {
         {
-            ScopeMutex lock(mtx);
+            Scope<Mutex> lock(mtx);
             finished_percent = 100 * (i + 1) / nlgt;
         }
         int r = lights[i]->radius;
@@ -134,6 +135,6 @@ void CompileThreadPixel::thread() {
         }
     }
 
-    ScopeMutex lock(mtx);
+    Scope<Mutex> lock(mtx);
     finished = true;
 }

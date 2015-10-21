@@ -107,6 +107,7 @@
       <File Name="../../src/shared/include/SHA256.hpp"/>
       <File Name="../../src/shared/include/Zip.hpp"/>
       <File Name="../../src/shared/include/ZipWriter.hpp"/>
+      <File Name="../../src/shared/include/Scope.hpp"/>
     </VirtualDirectory>
     <VirtualDirectory Name="src">
       <File Name="../../src/shared/src/AABB.cpp"/>

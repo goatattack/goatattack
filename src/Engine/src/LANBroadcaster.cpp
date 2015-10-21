@@ -1,6 +1,5 @@
 #include "LANBroadcaster.hpp"
-
-#include <iostream>
+#include "Scope.hpp"
 
 LANBroadcaster::LANBroadcaster(hostport_t port) throw (LANBroadcasterException, UDPSocketException)
     : MessageSequencer(port, 0, "", ""), port(port), running(false)
@@ -85,7 +84,7 @@ void LANBroadcaster::cleanup() {
 void LANBroadcaster::thread() {
     while (running) {
         {
-            ScopeMutex lock(mtx);
+            Scope<Mutex> lock(mtx);
             while(cycle());
         }
         wait_ns(1000000);
