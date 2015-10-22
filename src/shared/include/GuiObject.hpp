@@ -122,7 +122,6 @@ public:
     int get_client_height() const;
     GuiObject *get_focused_object();
     void set_focused_object(GuiObject *object);
-    void set_draw_window(bool state);
 
     virtual bool can_have_mouse_events() const;
     virtual bool mousedown(int button, int x, int y);
@@ -152,7 +151,6 @@ private:
     void *on_joy_button_up_data;
     std::string title;
     bool screws;
-    bool draw_window;
 
     bool mouse_is_down;
     bool moving_valid;

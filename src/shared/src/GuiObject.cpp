@@ -226,7 +226,7 @@ GuiWindow::GuiWindow(Gui& gui, GuiObject *parent)
       on_key_down_data(0), on_key_up(0), on_key_up_data(0),
       on_joy_motion(0), on_joy_motion_data(0), on_joy_button_down(0),
       on_joy_button_down_data(0), on_joy_button_up(0), on_joy_button_up_data(0),
-      title(), screws(true), draw_window(true)
+      title(), screws(true)
 {
     prepare();
 }
@@ -237,7 +237,7 @@ GuiWindow::GuiWindow(Gui& gui, GuiObject *parent, int x, int y,
       on_key_down(0), on_key_down_data(0), on_key_up(0), on_key_up_data(0),
       on_joy_motion(0), on_joy_motion_data(0), on_joy_button_down(0),
       on_joy_button_down_data(0), on_joy_button_up(0), on_joy_button_up_data(0),
-      title(title), screws(true), draw_window(true)
+      title(title), screws(true)
 {
     prepare();
 }
@@ -301,10 +301,6 @@ void GuiWindow::set_focused_object(GuiObject *object) {
     }
 }
 
-void GuiWindow::set_draw_window(bool state) {
-    draw_window = state;
-}
-
 bool GuiWindow::can_have_mouse_events() const {
     return true;
 }
@@ -321,7 +317,7 @@ bool GuiWindow::mousedown(int button, int x, int y) {
 }
 
 bool GuiWindow::mousemove(int x, int y) {
-    if (draw_window && mouse_is_down && moving_valid) {
+    if (mouse_is_down && moving_valid) {
         set_x(x - distance_x);
         set_y(y - distance_y);
     }
@@ -386,49 +382,47 @@ int GuiWindow::get_client_y() const {
 }
 
 void GuiWindow::paint() {
-    if (draw_window) {
-        Subsystem& s = gui.get_subsystem();
-        Font *f = gui.get_font();
-        int x = GuiObject::get_x();
-        int y = GuiObject::get_y();
-        int width = get_width();
-        int height = get_height();
+    Subsystem& s = gui.get_subsystem();
+    Font *f = gui.get_font();
+    int x = GuiObject::get_x();
+    int y = GuiObject::get_y();
+    int width = get_width();
+    int height = get_height();
 
-        /* set alpha */
-        float alpha = gui.get_alpha(this);
+    /* set alpha */
+    float alpha = gui.get_alpha(this);
 
-        /* draw shadow */
-        s.set_color(0.0f, 0.0f, 0.0f, 0.2f);
-        s.draw_box(x + 7, y + 7, width, height);
+    /* draw shadow */
+    s.set_color(0.0f, 0.0f, 0.0f, 0.2f);
+    s.draw_box(x + 7, y + 7, width, height);
 
-        /* draw window */
-        s.set_color(0.5f, 0.5f, 1.0f, alpha);
-        s.draw_box(x, y, width, height);
+    /* draw window */
+    s.set_color(0.5f, 0.5f, 1.0f, alpha);
+    s.draw_box(x, y, width, height);
 
+    s.set_color(0.0f, 0.0f, 0.35f, alpha);
+    s.draw_box(x + 1, y + 1, width - 2, height - 2);
+
+    /* draw title bar */
+    int tw = f->get_text_width(title);
+    if (gui.is_active(this)) {
+        s.set_color(0.05f, 0.05f, 0.15f, alpha);
         s.set_color(0.0f, 0.0f, 0.35f, alpha);
-        s.draw_box(x + 1, y + 1, width - 2, height - 2);
-
-        /* draw title bar */
-        int tw = f->get_text_width(title);
-        if (gui.is_active(this)) {
-            s.set_color(0.05f, 0.05f, 0.15f, alpha);
-            s.set_color(0.0f, 0.0f, 0.35f, alpha);
-            s.draw_box(x + 1, y + 1, width - 2, window_title_height);
-        }
-        s.set_color(1.0f, 1.0f, 1.0f, alpha);
-        s.draw_text(f, x + width / 2 - (tw / 2), y + 2, title);
-
-        /* draw screws */
-        if (screws) {
-            s.draw_icon(screw1, get_client_x() + 3, get_client_y() + 3);
-            s.draw_icon(screw2, get_client_x() + 3, get_y() + get_height() - 3 - 8);
-            s.draw_icon(screw3, get_x() + get_width() - 3 - 8, get_client_y() + 3);
-            s.draw_icon(screw4, get_x() + get_width() - 3 - 8, get_y() + get_height() - 3 - 8);
-        }
-
-        /* done */
-        s.reset_color();
+        s.draw_box(x + 1, y + 1, width - 2, window_title_height);
     }
+    s.set_color(1.0f, 1.0f, 1.0f, alpha);
+    s.draw_text(f, x + width / 2 - (tw / 2), y + 2, title);
+
+    /* draw screws */
+    if (screws) {
+        s.draw_icon(screw1, get_client_x() + 3, get_client_y() + 3);
+        s.draw_icon(screw2, get_client_x() + 3, get_y() + get_height() - 3 - 8);
+        s.draw_icon(screw3, get_x() + get_width() - 3 - 8, get_client_y() + 3);
+        s.draw_icon(screw4, get_x() + get_width() - 3 - 8, get_y() + get_height() - 3 - 8);
+    }
+
+    /* done */
+    s.reset_color();
 }
 
 void GuiWindow::prepare() {
