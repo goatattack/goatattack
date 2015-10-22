@@ -227,6 +227,10 @@ bool Gui::is_active(GuiObject *object) const {
 }
 
 float Gui::get_alpha(GuiObject *object) const {
+    if (object && !object->get_follow_alpha()) {
+        return 1.0f;
+    }
+
     return (is_active(object) ? WindowAlphaActive : WindowAlphaInactive);
 }
 
@@ -399,10 +403,6 @@ Gui::MessageBoxResponse Gui::show_inputbox(const std::string& title, std::string
 
 void Gui::idleloop(int stack_counter) throw (Exception) {
     while (running && static_cast<int>(windows.size()) > stack_counter) {
-        if (!running) {
-                std::cout << "ciao" << std::endl;
-                break;
-        }
         /* update caret blinker */
         get_now(now);
         if (diff_ms(last, now) > 500) {
@@ -761,7 +761,7 @@ bool Gui::process_joybuttonup(InputData& input) {
 void Gui::reset_blinker() {
     get_now(last);
     blink_on = true;
-        last = now;
+    last = now;
 }
 
 void Gui::static_close_click(GuiButton *sender, void *data) {

@@ -53,6 +53,9 @@ public:
     void set_tooltip_text(const std::string& text);
     const std::string& get_tooltip_text() const;
 
+    bool get_follow_alpha() const;
+    void set_follow_alpha(bool state);
+
     void draw();
 
     GuiObject *get_parent() const;
@@ -79,6 +82,7 @@ private:
     int height;
     bool visible;
     int tag;
+    bool follow_alpha;
     const void *ptr;
 
     GuiObject *parent;
@@ -118,6 +122,7 @@ public:
     int get_client_height() const;
     GuiObject *get_focused_object();
     void set_focused_object(GuiObject *object);
+    void set_draw_window(bool state);
 
     virtual bool can_have_mouse_events() const;
     virtual bool mousedown(int button, int x, int y);
@@ -147,6 +152,7 @@ private:
     void *on_joy_button_up_data;
     std::string title;
     bool screws;
+    bool draw_window;
 
     bool mouse_is_down;
     bool moving_valid;
@@ -167,11 +173,9 @@ public:
 
     virtual ~GuiBox();
     void set_color(float bg_r, float bg_g, float bg_b);
-    void set_follow_alpha(bool state);
     void set_filled(bool state);
 
 private:
-    bool follow_alpha;
     bool filled;
     float bg_r;
     float bg_g;

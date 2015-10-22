@@ -7,13 +7,15 @@
 /* GuiObject                                              */
 /* ****************************************************** */
 GuiObject::GuiObject(Gui& gui, GuiObject *parent)
-    : gui(gui), x(0), y(0), width(0), height(0), visible(true), tag(0), ptr(0)
+    : gui(gui), x(0), y(0), width(0), height(0), visible(true), tag(0),
+      follow_alpha(true), ptr(0)
 {
     set_parent(parent);
 }
 
 GuiObject::GuiObject(Gui& gui, GuiObject *parent, int x, int y, int width, int height)
-: gui(gui), x(x), y(y), width(width), height(height), visible(true), tag(0), ptr(0)
+    : gui(gui), x(x), y(y), width(width), height(height), visible(true), tag(0),
+      follow_alpha(true), ptr(0)
 {
     set_parent(parent);
 }
@@ -141,6 +143,14 @@ const std::string& GuiObject::get_tooltip_text() const {
     return tooltip_text;
 }
 
+bool GuiObject::get_follow_alpha() const {
+    return follow_alpha;
+}
+
+void GuiObject::set_follow_alpha(bool state) {
+    follow_alpha = state;
+}
+
 void GuiObject::draw() {
     if (visible) {
         paint();
@@ -216,7 +226,7 @@ GuiWindow::GuiWindow(Gui& gui, GuiObject *parent)
       on_key_down_data(0), on_key_up(0), on_key_up_data(0),
       on_joy_motion(0), on_joy_motion_data(0), on_joy_button_down(0),
       on_joy_button_down_data(0), on_joy_button_up(0), on_joy_button_up_data(0),
-      title(), screws(true)
+      title(), screws(true), draw_window(true)
 {
     prepare();
 }
@@ -227,7 +237,7 @@ GuiWindow::GuiWindow(Gui& gui, GuiObject *parent, int x, int y,
       on_key_down(0), on_key_down_data(0), on_key_up(0), on_key_up_data(0),
       on_joy_motion(0), on_joy_motion_data(0), on_joy_button_down(0),
       on_joy_button_down_data(0), on_joy_button_up(0), on_joy_button_up_data(0),
-      title(title), screws(true)
+      title(title), screws(true), draw_window(true)
 {
     prepare();
 }
@@ -291,6 +301,10 @@ void GuiWindow::set_focused_object(GuiObject *object) {
     }
 }
 
+void GuiWindow::set_draw_window(bool state) {
+    draw_window = state;
+}
+
 bool GuiWindow::can_have_mouse_events() const {
     return true;
 }
@@ -307,7 +321,7 @@ bool GuiWindow::mousedown(int button, int x, int y) {
 }
 
 bool GuiWindow::mousemove(int x, int y) {
-    if (mouse_is_down && moving_valid) {
+    if (draw_window && mouse_is_down && moving_valid) {
         set_x(x - distance_x);
         set_y(y - distance_y);
     }
@@ -372,47 +386,49 @@ int GuiWindow::get_client_y() const {
 }
 
 void GuiWindow::paint() {
-    Subsystem& s = gui.get_subsystem();
-    Font *f = gui.get_font();
-    int x = GuiObject::get_x();
-    int y = GuiObject::get_y();
-    int width = get_width();
-    int height = get_height();
+    if (draw_window) {
+        Subsystem& s = gui.get_subsystem();
+        Font *f = gui.get_font();
+        int x = GuiObject::get_x();
+        int y = GuiObject::get_y();
+        int width = get_width();
+        int height = get_height();
 
-    /* set alpha */
-    float alpha = gui.get_alpha(this);
+        /* set alpha */
+        float alpha = gui.get_alpha(this);
 
-    /* draw shadow */
-    s.set_color(0.0f, 0.0f, 0.0f, 0.2f);
-    s.draw_box(x + 7, y + 7, width, height);
+        /* draw shadow */
+        s.set_color(0.0f, 0.0f, 0.0f, 0.2f);
+        s.draw_box(x + 7, y + 7, width, height);
 
-    /* draw window */
-    s.set_color(0.5f, 0.5f, 1.0f, alpha);
-    s.draw_box(x, y, width, height);
+        /* draw window */
+        s.set_color(0.5f, 0.5f, 1.0f, alpha);
+        s.draw_box(x, y, width, height);
 
-    s.set_color(0.0f, 0.0f, 0.35f, alpha);
-    s.draw_box(x + 1, y + 1, width - 2, height - 2);
-
-    /* draw title bar */
-    int tw = f->get_text_width(title);
-    if (gui.is_active(this)) {
-        s.set_color(0.05f, 0.05f, 0.15f, alpha);
         s.set_color(0.0f, 0.0f, 0.35f, alpha);
-        s.draw_box(x + 1, y + 1, width - 2, window_title_height);
-    }
-    s.set_color(1.0f, 1.0f, 1.0f, gui.get_alpha(this));
-    s.draw_text(f, x + width / 2 - (tw / 2), y + 2, title);
+        s.draw_box(x + 1, y + 1, width - 2, height - 2);
 
-    /* draw screws */
-    if (screws) {
-        s.draw_icon(screw1, get_client_x() + 3, get_client_y() + 3);
-        s.draw_icon(screw2, get_client_x() + 3, get_y() + get_height() - 3 - 8);
-        s.draw_icon(screw3, get_x() + get_width() - 3 - 8, get_client_y() + 3);
-        s.draw_icon(screw4, get_x() + get_width() - 3 - 8, get_y() + get_height() - 3 - 8);
-    }
+        /* draw title bar */
+        int tw = f->get_text_width(title);
+        if (gui.is_active(this)) {
+            s.set_color(0.05f, 0.05f, 0.15f, alpha);
+            s.set_color(0.0f, 0.0f, 0.35f, alpha);
+            s.draw_box(x + 1, y + 1, width - 2, window_title_height);
+        }
+        s.set_color(1.0f, 1.0f, 1.0f, alpha);
+        s.draw_text(f, x + width / 2 - (tw / 2), y + 2, title);
 
-    /* done */
-    s.reset_color();
+        /* draw screws */
+        if (screws) {
+            s.draw_icon(screw1, get_client_x() + 3, get_client_y() + 3);
+            s.draw_icon(screw2, get_client_x() + 3, get_y() + get_height() - 3 - 8);
+            s.draw_icon(screw3, get_x() + get_width() - 3 - 8, get_client_y() + 3);
+            s.draw_icon(screw4, get_x() + get_width() - 3 - 8, get_y() + get_height() - 3 - 8);
+        }
+
+        /* done */
+        s.reset_color();
+    }
 }
 
 void GuiWindow::prepare() {
@@ -438,11 +454,11 @@ void GuiWindow::prepare() {
 /* GuiBox                                                 */
 /* ****************************************************** */
 GuiBox::GuiBox(Gui& gui, GuiObject *parent)
-    : GuiObject(gui, parent), follow_alpha(true), filled(false),
+    : GuiObject(gui, parent), filled(false),
       bg_r(0.5f), bg_g(0.5f), bg_b(1.0f) { }
 
 GuiBox::GuiBox(Gui& gui, GuiObject *parent, int x, int y, int width, int height)
-    : GuiObject(gui, parent, x, y, width, height), follow_alpha(true), filled(false),
+    : GuiObject(gui, parent, x, y, width, height), filled(false),
       bg_r(0.5f), bg_g(0.5f), bg_b(1.0f) { }
 
 GuiBox::~GuiBox() { }
@@ -451,10 +467,6 @@ void GuiBox::set_color(float bg_r, float bg_g, float bg_b) {
     this->bg_r = bg_r;
     this->bg_g = bg_g;
     this->bg_b = bg_b;
-}
-
-void GuiBox::set_follow_alpha(bool state) {
-    follow_alpha = state;
 }
 
 void GuiBox::set_filled(bool state) {
@@ -469,7 +481,7 @@ void GuiBox::paint() {
     Subsystem& s = gui.get_subsystem();
 
     /* set alpha */
-    float alpha = (follow_alpha ? gui.get_alpha(this) : 1.0f);
+    float alpha = gui.get_alpha(this);
 
     /* draw box */
     s.set_color(bg_r, bg_g, bg_b, alpha);
@@ -689,7 +701,7 @@ void GuiButton::paint() {
     width -= 2;
     int tw = f->get_text_width(caption);
     int th = f->get_font_height() + 2;
-    s.set_color(text_r, text_b, text_b, gui.get_alpha(this));
+    s.set_color(text_r, text_b, text_b, alpha);
     switch (align) {
         case AlignmentCenter:
             s.draw_text(f, x + offset_x + ofs + width / 2 - tw / 2, y + offset_y + ofs + height / 2 - th / 2, caption);

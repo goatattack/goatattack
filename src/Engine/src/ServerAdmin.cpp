@@ -16,7 +16,7 @@ ServerAdmin::ServerCommand ServerAdmin::server_commands[] = {
     { "get", &ServerAdmin::sc_get },
     { "set", &ServerAdmin::sc_set },
     { "reset", &ServerAdmin::sc_reset },
-    { 0, 0 }
+    { "vote", &ServerAdmin::sc_vote },{ 0, 0 }
 };
 
 ServerAdmin::ServerAdmin(Resources& resources, ClientServer& client_server,
@@ -218,6 +218,10 @@ void ServerAdmin::sc_reset(const Connection *c, Player *p, const std::string& pa
     server.send_data(c, 0, GPCTextMessage, NetFlagsReliable, msg.length(), msg.c_str());
 }
 
+void ServerAdmin::sc_vote(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
+    throw_not_implemented();
+}
+
 /* helper functions */
 void ServerAdmin::check_if_authorized(Player *p) throw (ServerAdminException) {
     if (!p->server_admin) {
@@ -240,6 +244,7 @@ void ServerAdmin::check_if_no_params(const std::string& params) throw (ServerAdm
 void ServerAdmin::throw_illegal_parameters() throw (ServerAdminException) {
     throw ServerAdminException("Illegal parameters");
 }
+
 void ServerAdmin::throw_not_implemented() throw (ServerAdminException) {
     throw ServerAdminException("Not implemented yet");
 }

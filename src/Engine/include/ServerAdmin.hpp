@@ -57,6 +57,7 @@ private:
     void sc_get(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);
     void sc_set(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);
     void sc_reset(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);
+    void sc_vote(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);
 
     void check_if_authorized(Player *p) throw (ServerAdminException);
     void check_if_params(const std::string& params) throw (ServerAdminException);

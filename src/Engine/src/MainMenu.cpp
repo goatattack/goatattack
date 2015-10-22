@@ -59,7 +59,7 @@ void MainMenu::idle() throw (Exception) {
             int wh = 220;
             int bw = 160;
 
-            GuiWindow *window = push_window(vw / 2 - ww / 2, vh / 2- wh / 2, ww, wh, "Welcome To Goat Attack");
+            GuiWindow *window = push_window(vw / 2 - ww / 2, vh / 2 - wh / 2, ww, wh, "Welcome To Goat Attack");
             create_button(window, ww / 2 - bw / 2, 10, bw, 26, "Play", static_play_click, this);
             create_button(window, ww / 2 - bw / 2, 45, bw, 26, "Create Local LAN Server", static_create_server_click, this);
             create_button(window, ww / 2 - bw / 2, 80, bw, 26, "Options And Settings", static_options_click, this);
