@@ -584,6 +584,7 @@ GuiWindow *Gui::get_window_of_object(GuiObject *object) const {
 
     return window;
 }
+
 bool Gui::process_mousemove() {
     bool processed = false;
 

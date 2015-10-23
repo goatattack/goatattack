@@ -16,7 +16,8 @@ ServerAdmin::ServerCommand ServerAdmin::server_commands[] = {
     { "get", &ServerAdmin::sc_get },
     { "set", &ServerAdmin::sc_set },
     { "reset", &ServerAdmin::sc_reset },
-    { "vote", &ServerAdmin::sc_vote },{ 0, 0 }
+    { "vote", &ServerAdmin::sc_vote },
+    { 0, 0 }
 };
 
 ServerAdmin::ServerAdmin(Resources& resources, ClientServer& client_server,
