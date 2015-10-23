@@ -44,7 +44,7 @@ void OptionsMenu::static_nav_close(void *data) {
     (reinterpret_cast<OptionsMenu *>(data))->close_options_click();
 }
 
-void OptionsMenu::static_close_options_click(GuiButton *sender, void *data) {
+void OptionsMenu::static_close_options_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<OptionsMenu *>(data))->close_options_click();
 }
 
@@ -56,7 +56,7 @@ void OptionsMenu::close_options_click() {
     }
 }
 
-void OptionsMenu::static_back_options_click(GuiButton *sender, void *data) {
+void OptionsMenu::static_back_options_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<OptionsMenu *>(data))->back_click();
 }
 
@@ -67,7 +67,7 @@ void OptionsMenu::back_click() {
 /* ************************************************************************** */
 /* Player settings                                                            */
 /* ************************************************************************** */
-void OptionsMenu::static_player_click(GuiButton *sender, void *data) {
+void OptionsMenu::static_player_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<OptionsMenu *>(data))->player_click();
 }
 
@@ -111,7 +111,7 @@ void OptionsMenu::player_skin_click(int index) {
     player_skin_pic->set_picture(cset->get_tile(DirectionRight, CharacterAnimationStanding)->get_tilegraphic());
 }
 
-void OptionsMenu::static_close_player_click(GuiButton *sender, void *data) {
+void OptionsMenu::static_close_player_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<OptionsMenu *>(data))->close_player_click();
 }
 
@@ -125,7 +125,7 @@ void OptionsMenu::close_player_click() {
 /* ************************************************************************** */
 /* Graphics and sound settings                                                */
 /* ************************************************************************** */
-void OptionsMenu::static_graphics_and_sound_click(GuiButton *sender, void *data) {
+void OptionsMenu::static_graphics_and_sound_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<OptionsMenu *>(data))->graphics_and_sound_click();
 }
 
@@ -169,7 +169,7 @@ void OptionsMenu::toggle_scanlines_click(bool state) {
     config.set_bool("show_scanlines", state);
 }
 
-void OptionsMenu::static_scanlines_intensity_changed(GuiScroll *sender, void *data, int value) {
+void OptionsMenu::static_scanlines_intensity_changed(GuiVirtualScroll *sender, void *data, int value) {
     (reinterpret_cast<OptionsMenu *>(data))->scanlines_intensity_changed(value);
 }
 
@@ -179,7 +179,7 @@ void OptionsMenu::scanlines_intensity_changed(int value) {
     config.set_int("scanlines_intensity", value);
 }
 
-void OptionsMenu::static_music_volume_changed(GuiScroll *sender, void *data, int value) {
+void OptionsMenu::static_music_volume_changed(GuiVirtualScroll *sender, void *data, int value) {
     (reinterpret_cast<OptionsMenu *>(data))->music_volume_changed(value);
 }
 
@@ -188,7 +188,7 @@ void OptionsMenu::music_volume_changed(int value) {
     config.set_int("music_volume", value);
 }
 
-void OptionsMenu::static_sfx_volume_changed(GuiScroll *sender, void *data, int value) {
+void OptionsMenu::static_sfx_volume_changed(GuiVirtualScroll *sender, void *data, int value) {
     (reinterpret_cast<OptionsMenu *>(data))->sfx_volume_changed(value);
 }
 
@@ -200,7 +200,7 @@ void OptionsMenu::sfx_volume_changed(int value) {
 /* ************************************************************************** */
 /* Controller and keyboard settings                                           */
 /* ************************************************************************** */
-void OptionsMenu::static_controller_and_keyboard_click(GuiButton *sender, void *data) {
+void OptionsMenu::static_controller_and_keyboard_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<OptionsMenu *>(data))->controller_and_keyboard_click();
 }
 
@@ -238,7 +238,7 @@ void OptionsMenu::controller_and_keyboard_click() {
     gui.create_button(window, Gui::Spc, wh - 43, 110, 18, "Rescan Joysticks", static_capture_rescan_click, this);
 }
 
-void OptionsMenu::static_ck_erase_horz(GuiButton *sender, void *data) {
+void OptionsMenu::static_ck_erase_horz(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<OptionsMenu *>(data))->ck_erase_horz();
 }
 
@@ -247,7 +247,7 @@ void OptionsMenu::ck_erase_horz() {
     ck_dz_h->set_focus();
 }
 
-void OptionsMenu::static_ck_erase_vert(GuiButton *sender, void *data) {
+void OptionsMenu::static_ck_erase_vert(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<OptionsMenu *>(data))->ck_erase_vert();
 }
 
@@ -256,7 +256,7 @@ void OptionsMenu::ck_erase_vert() {
     ck_dz_v->set_focus();
 }
 
-void OptionsMenu::static_close_capture_window_click(GuiButton *sender, void *data) {
+void OptionsMenu::static_close_capture_window_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<OptionsMenu *>(data))->close_capture_window_click();
 }
 
@@ -285,7 +285,7 @@ void OptionsMenu::close_capture_window_click() {
 }
 
 GuiTextbox *OptionsMenu::create_field(GuiWindow *parent, int x, int y,
-    const std::string& text, GuiButton::OnClick on_click, bool erase_pic)
+    const std::string& text, GuiVirtualButton::OnClick on_click, bool erase_pic)
 {
     Icon *select = resources.get_icon("select");
     TileGraphic *stg = select->get_tile()->get_tilegraphic();
@@ -331,7 +331,7 @@ void OptionsMenu::capture_key(GuiTextbox *ck_selected) {
     gui.create_button(window, ww / 2 - bw / 2, wh - 43, bw, 18, "Cancel", static_abort_capture_click, this);
 }
 
-void OptionsMenu::static_abort_capture_click(GuiButton *sender, void *data) {
+void OptionsMenu::static_abort_capture_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<OptionsMenu *>(data))->abort_capture_click();
 }
 
@@ -340,7 +340,7 @@ void OptionsMenu::abort_capture_click() {
     gui.pop_window();
 }
 
-void OptionsMenu::static_capture_rescan_click(GuiButton *sender, void *data) {
+void OptionsMenu::static_capture_rescan_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<OptionsMenu *>(data))->capture_rescan_click();
 }
 
@@ -350,51 +350,51 @@ void OptionsMenu::capture_rescan_click() {
     gui.show_messagebox(Gui::MessageBoxIconInformation, "Joysticks", buffer);
 }
 
-void OptionsMenu::static_capture_up_click(GuiButton *sender, void *data) {
+void OptionsMenu::static_capture_up_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<OptionsMenu *>(data))->capture_up_click();
 }
 
-void OptionsMenu::static_capture_down_click(GuiButton *sender, void *data) {
+void OptionsMenu::static_capture_down_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<OptionsMenu *>(data))->capture_down_click();
 }
 
-void OptionsMenu::static_capture_left_click(GuiButton *sender, void *data) {
+void OptionsMenu::static_capture_left_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<OptionsMenu *>(data))->capture_left_click();
 }
 
-void OptionsMenu::static_capture_right_click(GuiButton *sender, void *data) {
+void OptionsMenu::static_capture_right_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<OptionsMenu *>(data))->capture_right_click();
 }
 
-void OptionsMenu::static_capture_jump_click(GuiButton *sender, void *data) {
+void OptionsMenu::static_capture_jump_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<OptionsMenu *>(data))->capture_jump_click();
 }
 
-void OptionsMenu::static_capture_fire_click(GuiButton *sender, void *data) {
+void OptionsMenu::static_capture_fire_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<OptionsMenu *>(data))->capture_fire_click();
 }
 
-void OptionsMenu::static_capture_drop1_click(GuiButton *sender, void *data) {
+void OptionsMenu::static_capture_drop1_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<OptionsMenu *>(data))->capture_drop1_click();
 }
 
-void OptionsMenu::static_capture_drop2_click(GuiButton *sender, void *data) {
+void OptionsMenu::static_capture_drop2_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<OptionsMenu *>(data))->capture_drop2_click();
 }
 
-void OptionsMenu::static_capture_drop3_click(GuiButton *sender, void *data) {
+void OptionsMenu::static_capture_drop3_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<OptionsMenu *>(data))->capture_drop3_click();
 }
 
-void OptionsMenu::static_capture_chat_click(GuiButton *sender, void *data) {
+void OptionsMenu::static_capture_chat_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<OptionsMenu *>(data))->capture_chat_click();
 }
 
-void OptionsMenu::static_capture_stats_click(GuiButton *sender, void *data) {
+void OptionsMenu::static_capture_stats_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<OptionsMenu *>(data))->capture_stats_click();
 }
 
-void OptionsMenu::static_capture_escape_click(GuiButton *sender, void *data) {
+void OptionsMenu::static_capture_escape_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<OptionsMenu *>(data))->capture_escape_click();
 }
 
@@ -555,7 +555,7 @@ bool OptionsMenu::capture_joybuttondown(int button) {
 /* ************************************************************************** */
 /* Close editor                                                               */
 /* ************************************************************************** */
-void OptionsMenu::static_close_window_click(GuiButton *sender, void *data) {
+void OptionsMenu::static_close_window_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<OptionsMenu *>(data))->close_window_click();
 }
 

@@ -206,27 +206,24 @@ private:
     virtual void paint();
 };
 
-/* GuiButton */
-class GuiButton : public GuiObject {
+/* GuiVirtualButton */
+class GuiVirtualButton : public GuiObject {
 public:
-    typedef void (*OnClick)(GuiButton *sender, void *data);
+    typedef void (*OnClick)(GuiVirtualButton *sender, void *data);
     enum Alignment {
         AlignmentCenter = 0,
         AlignmentLeft,
         AlignmentRight
     };
 
-    GuiButton(Gui& gui, GuiObject *parent);
-    GuiButton(Gui& gui, GuiObject *parent, int x, int y, int width, int height,
+    GuiVirtualButton(Gui& gui, GuiObject *parent);
+    GuiVirtualButton(Gui& gui, GuiObject *parent, int x, int y, int width, int height,
         const std::string& caption, OnClick on_click, void *on_click_data);
 
-    virtual ~GuiButton();
+    virtual ~GuiVirtualButton();
 
     void set_caption(const std::string& caption);
     const std::string& get_caption() const;
-    void show_bolts(bool state);
-    void set_color(float r, float g, float b);
-    void reset_color();
     OnClick get_on_click_func();
     void *get_on_click_data();
     void set_alignment(Alignment align);
@@ -243,20 +240,35 @@ protected:
     virtual int get_client_x() const;
     virtual int get_client_y() const;
 
-private:
     std::string caption;
     bool mouse_is_down;
     OnClick on_click;
     void *on_click_data;
     bool mouse_is_in_button;
+    Alignment align;
+    int offset_x;
+    int offset_y;
+};
+
+/* GuiButton */
+class GuiButton : public GuiVirtualButton {
+public:
+    GuiButton(Gui& gui, GuiObject *parent);
+    GuiButton(Gui& gui, GuiObject *parent, int x, int y, int width, int height,
+        const std::string& caption, GuiVirtualButton::OnClick on_click, void *on_click_data);
+
+    virtual ~GuiButton();
+
+    void show_bolts(bool state);
+    void set_color(float r, float g, float b);
+    void reset_color();
+
+private:
     bool bolts;
     Icon *bolt;
     float text_r;
     float text_g;
     float text_b;
-    Alignment align;
-    int offset_x;
-    int offset_y;
 
     virtual void paint();
     void prepare();
@@ -402,21 +414,21 @@ private:
 
     virtual void paint();
 
-    static void static_tab_clicked(GuiButton *sender, void *data);
+    static void static_tab_clicked(GuiVirtualButton *sender, void *data);
 };
 
-/* GuiScroll */
-class GuiScroll : public GuiObject {
+/* GuiVirtualScroll */
+class GuiVirtualScroll : public GuiObject {
 public:
-    typedef void (*ValueChanged)(GuiScroll *sender, void *data, int value);
+    typedef void (*ValueChanged)(GuiVirtualScroll *sender, void *data, int value);
     static const int Size = 11;
 
-    GuiScroll(Gui& gui, GuiObject *parent);
-    GuiScroll(Gui& gui, GuiObject *parent, int x, int y, int width, int height,
+    GuiVirtualScroll(Gui& gui, GuiObject *parent);
+    GuiVirtualScroll(Gui& gui, GuiObject *parent, int x, int y, int width, int height,
         int min_value, int max_value, int initial_value,
         ValueChanged on_value_changed, void *on_value_changed_data);
 
-    virtual ~GuiScroll();
+    virtual ~GuiVirtualScroll();
 
     void set_value(int value);
     int get_value() const;
@@ -436,17 +448,17 @@ protected:
     bool draw_block;
 
     void recalc();
-    static void static_down_button_clicked(GuiButton *sender, void *data);
-    static void static_up_button_clicked(GuiButton *sender, void *data);
+    static void static_down_button_clicked(GuiVirtualButton *sender, void *data);
+    static void static_up_button_clicked(GuiVirtualButton *sender, void *data);
 };
 
 /* GuiHScroll */
-class GuiHScroll : public GuiScroll {
+class GuiHScroll : public GuiVirtualScroll {
 public:
     GuiHScroll(Gui& gui, GuiObject *parent);
     GuiHScroll(Gui& gui, GuiObject *parent, int x, int y, int width,
         int min_value, int max_value, int initial_value,
-        GuiScroll::ValueChanged on_value_changed, void *on_value_changed_data);
+        GuiVirtualScroll::ValueChanged on_value_changed, void *on_value_changed_data);
 
     virtual ~GuiHScroll();
 
@@ -470,12 +482,12 @@ private:
 };
 
 /* GuiVScroll */
-class GuiVScroll : public GuiScroll {
+class GuiVScroll : public GuiVirtualScroll {
 public:
     GuiVScroll(Gui& gui, GuiObject *parent);
     GuiVScroll(Gui& gui, GuiObject *parent, int x, int y, int height,
         int min_value, int max_value, int initial_value,
-        GuiScroll::ValueChanged on_value_changed, void *on_value_changed_data);
+        GuiVirtualScroll::ValueChanged on_value_changed, void *on_value_changed_data);
 
     virtual ~GuiVScroll();
 
@@ -584,7 +596,7 @@ private:
     Entries entries;
     int start_index;
     int selected_index;
-    GuiScroll *sb;
+    GuiVirtualScroll *sb;
     bool mouse_is_down;
     GuiListboxEntry *title_bar;
     bool title_bar_visible;
@@ -595,7 +607,7 @@ private:
     void recalc();
     void select_from_mouse(int x, int y, bool from_mousemove);
 
-    static void static_scroll_changed(GuiScroll *sender, void *data, int value);
+    static void static_scroll_changed(GuiVirtualScroll *sender, void *data, int value);
 };
 
 #endif

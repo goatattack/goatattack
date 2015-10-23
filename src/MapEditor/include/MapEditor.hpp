@@ -77,9 +77,10 @@ private:
 
     /* helpers */
     void create_toolbox();
-    void add_close_button(GuiWindow *window, GuiButton::OnClick on_click = 0);
-    void add_ok_cancel_buttons(GuiWindow *window, GuiButton::OnClick on_click);
-    void add_ok_cancel_buttons(GuiWindow *window, GuiButton::OnClick on_ok_click, GuiButton::OnClick on_cancel_click);
+    void add_close_button(GuiWindow *window, GuiVirtualButton::OnClick on_click = 0);
+    void add_ok_cancel_buttons(GuiWindow *window, GuiVirtualButton::OnClick on_click);
+    void add_ok_cancel_buttons(GuiWindow *window, GuiVirtualButton::OnClick on_ok_click,
+        GuiVirtualButton::OnClick on_cancel_click);
     void draw_background();
     void draw_decoration();
     void draw_lightmap();
@@ -91,14 +92,14 @@ private:
     void place_light(int x, int y, bool erasing);
     void mouse_move_map(int x, int y);
 
-    static void static_center_map(GuiButton *sender, void *data);
+    static void static_center_map(GuiVirtualButton *sender, void *data);
     void center_map();
 
-    static void static_window_close_click(GuiButton *sender, void *data);
+    static void static_window_close_click(GuiVirtualButton *sender, void *data);
 
     /* mode selector */
-    static void static_mode_selector_click(GuiButton *sender, void *data);
-    static void static_os_close_click(GuiButton *sender, void *data);
+    static void static_mode_selector_click(GuiVirtualButton *sender, void *data);
+    static void static_os_close_click(GuiVirtualButton *sender, void *data);
     void mode_selector_click();
 
     /* map properties */
@@ -120,7 +121,7 @@ private:
     GuiCheckbox *mp_cb_ctc;
     GuiCheckbox *mp_cb_goh;
 
-    static void static_map_properties_click(GuiButton *sender, void *data);
+    static void static_map_properties_click(GuiVirtualButton *sender, void *data);
     void map_properties_click();
 
     static void static_mp_dm_click(GuiCheckbox *sender, void *data, bool state);
@@ -141,11 +142,11 @@ private:
     static void static_mp_goh_click(GuiCheckbox *sender, void *data, bool state);
     void mp_goh_click();
 
-    static void static_mp_ok_click(GuiButton *sender, void *data);
+    static void static_mp_ok_click(GuiVirtualButton *sender, void *data);
     void mp_ok_click();
 
     /* tile selector */
-    static void static_tile_selector_click(GuiButton *sender, void *data);
+    static void static_tile_selector_click(GuiVirtualButton *sender, void *data);
     void tile_selector_click();
     void add_buttons(bool first, GuiWindow *window, int from_tile_index);
     GuiWindow *ts_window;
@@ -153,18 +154,18 @@ private:
     int ts_start_index;
     int ts_end_index;
     int ts_buttons_on_page;
-    static void static_ts_previous_click(GuiButton *sender, void *data);
+    static void static_ts_previous_click(GuiVirtualButton *sender, void *data);
     void ts_previous_click();
-    static void static_ts_next_click(GuiButton *sender, void *data);
+    static void static_ts_next_click(GuiVirtualButton *sender, void *data);
     void ts_next_click();
-    static void static_ts_tile_click(GuiButton *sender, void *data);
-    void ts_tile_click(GuiButton *sender);
-    static void static_ts_close_click(GuiButton *sender, void *data);
+    static void static_ts_tile_click(GuiVirtualButton *sender, void *data);
+    void ts_tile_click(GuiVirtualButton *sender);
+    static void static_ts_close_click(GuiVirtualButton *sender, void *data);
     static bool static_ts_keydown(GuiWindow *sender, void *data, int keycode, bool repeat);
     void ts_close_click();
-    static void static_ts_properties_click(GuiButton *sender, void *data);
+    static void static_ts_properties_click(GuiVirtualButton *sender, void *data);
     void ts_properties_click();
-    static void static_ts_properties_ok_click(GuiButton *sender, void *data);
+    static void static_ts_properties_ok_click(GuiVirtualButton *sender, void *data);
     void ts_properties_ok_click();
     GuiCheckbox *tsp_background;
     GuiCheckbox *tsp_light_blocking;
@@ -174,52 +175,52 @@ private:
     void save_tileset() throw (Exception);
 
     /* object selector */
-    static void static_object_selector_click(GuiButton *sender, void *data);
+    static void static_object_selector_click(GuiVirtualButton *sender, void *data);
     void object_selector_click();
     GuiWindow *os_window;
     GuiPicture *os_picture;
 
-    static void static_os_object_click(GuiButton *sender, void *data);
-    void os_object_click(GuiButton *sender);
+    static void static_os_object_click(GuiVirtualButton *sender, void *data);
+    void os_object_click(GuiVirtualButton *sender);
     static bool static_os_keydown(GuiWindow *sender, void *data, int keycode, bool repeat);
     void os_close_click();
 
     /* open map */
-    static void static_load_map_click(GuiButton *sender, void *data);
+    static void static_load_map_click(GuiVirtualButton *sender, void *data);
     void load_map_click();
-    static void static_load_map_ok_click(GuiButton *sender, void *data);
+    static void static_load_map_ok_click(GuiVirtualButton *sender, void *data);
     void load_map_ok_click();
     GuiListbox *lm_maps;
 
     /* save map */
-    static void static_save_map_click(GuiButton *sender, void *data);
+    static void static_save_map_click(GuiVirtualButton *sender, void *data);
     void save_map_click();
 
     /* hcopy */
-    static void static_hcopy_click(GuiButton *sender, void *data);
+    static void static_hcopy_click(GuiVirtualButton *sender, void *data);
     void hcopy_click();
 
     /* calculate lightmaps */
-    static void static_calculate_light_click(GuiButton *sender, void *data);
-    static void static_calculate_light_pixel_click(GuiButton *sender, void *data);
+    static void static_calculate_light_click(GuiVirtualButton *sender, void *data);
+    static void static_calculate_light_pixel_click(GuiVirtualButton *sender, void *data);
     void calculate_light(bool pixel_precise);
     void finalise_lightmap();
 
     /* zap */
-    static void static_zap_click(GuiButton *sender, void *data);
+    static void static_zap_click(GuiVirtualButton *sender, void *data);
     void zap_click();
 
     /* options */
-    static void static_options_click(GuiButton *sender, void *data);
+    static void static_options_click(GuiVirtualButton *sender, void *data);
     void options_click();
 
-    static void static_options_ok_click(GuiButton *sender, void *data);
+    static void static_options_ok_click(GuiVirtualButton *sender, void *data);
     void options_ok_click();
 
-    static void static_options_cancel_click(GuiButton *sender, void *data);
+    static void static_options_cancel_click(GuiVirtualButton *sender, void *data);
     void options_cancel_click();
 
-    static void static_options_value_changed(GuiScroll *sender, void *data, int value);
+    static void static_options_value_changed(GuiVirtualScroll *sender, void *data, int value);
     void options_value_changed(int value);
 
     static void static_options_fs_clicked(GuiCheckbox *sender, void *data, bool state);
@@ -236,7 +237,7 @@ private:
     GuiHScroll *opt_intensity;
 
     /* exit editor */
-    static void static_exit_click(GuiButton *sender, void *data);
+    static void static_exit_click(GuiVirtualButton *sender, void *data);
     void exit_click();
 };
 

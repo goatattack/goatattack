@@ -450,11 +450,11 @@ void MapEditor::create_toolbox() {
 /* ************************************************************************** */
 /* helper functions                                                           */
 /* ************************************************************************** */
-void MapEditor::static_window_close_click(GuiButton *sender, void *data) {
+void MapEditor::static_window_close_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<Gui *>(data))->pop_window();
 }
 
-void MapEditor::add_close_button(GuiWindow *window, GuiButton::OnClick on_click) {
+void MapEditor::add_close_button(GuiWindow *window, GuiVirtualButton::OnClick on_click) {
     std::string caption("Close");
     int width = window->get_client_width();
     int height = window->get_client_height();
@@ -468,7 +468,7 @@ void MapEditor::add_close_button(GuiWindow *window, GuiButton::OnClick on_click)
     create_button(window, width / 2 - bw / 2, height - bh - Spc, bw, bh, caption, on_click, this);
 }
 
-void MapEditor::add_ok_cancel_buttons(GuiWindow *window, GuiButton::OnClick on_click) {
+void MapEditor::add_ok_cancel_buttons(GuiWindow *window, GuiVirtualButton::OnClick on_click) {
     std::string caption("Cancel");
     int width = window->get_client_width();
     int height = window->get_client_height();
@@ -478,7 +478,9 @@ void MapEditor::add_ok_cancel_buttons(GuiWindow *window, GuiButton::OnClick on_c
     create_button(window, width - 2 * bw - Spc - 5, height - bh - Spc, bw, bh, "Ok", on_click, this);
 }
 
-void MapEditor::add_ok_cancel_buttons(GuiWindow *window, GuiButton::OnClick on_ok_click, GuiButton::OnClick on_cancel_click) {
+void MapEditor::add_ok_cancel_buttons(GuiWindow *window, GuiVirtualButton::OnClick on_ok_click,
+    GuiVirtualButton::OnClick on_cancel_click)
+{
     std::string caption("Cancel");
     int width = window->get_client_width();
     int height = window->get_client_height();
@@ -901,7 +903,7 @@ void MapEditor::mouse_move_map(int x, int y) {
     top = move_origin_top + (y - move_origin_y) / subsystem.get_zoom_factor();
 }
 
-void MapEditor::static_center_map(GuiButton *sender, void *data) {
+void MapEditor::static_center_map(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<MapEditor *>(data))->center_map();
 }
 void MapEditor::center_map() {
@@ -921,7 +923,7 @@ void MapEditor::center_map() {
 /* ************************************************************************** */
 /* change mode                                                                */
 /* ************************************************************************** */
-void MapEditor::static_mode_selector_click(GuiButton *sender, void *data) {
+void MapEditor::static_mode_selector_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<MapEditor *>(data))->mode_selector_click();
 }
 
@@ -937,7 +939,7 @@ void MapEditor::mode_selector_click() {
 /* ************************************************************************** */
 /* map properties                                                             */
 /* ************************************************************************** */
-void MapEditor::static_map_properties_click(GuiButton *sender, void *data) {
+void MapEditor::static_map_properties_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<MapEditor *>(data))->map_properties_click();
 }
 
@@ -1134,7 +1136,7 @@ void MapEditor::mp_goh_click() {
     mp_cb_goh->set_state(true);
 }
 
-void MapEditor::static_mp_ok_click(GuiButton *sender, void *data) {
+void MapEditor::static_mp_ok_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<MapEditor *>(data))->mp_ok_click();
 }
 
@@ -1253,7 +1255,7 @@ void MapEditor::mp_ok_click() {
 /* ************************************************************************** */
 /* load map                                                                   */
 /* ************************************************************************** */
-void MapEditor::static_load_map_click(GuiButton *sender, void *data) {
+void MapEditor::static_load_map_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<MapEditor *>(data))->load_map_click();
 }
 
@@ -1293,7 +1295,7 @@ void MapEditor::load_map_click() {
     add_ok_cancel_buttons(window, static_load_map_ok_click);
 }
 
-void MapEditor::static_load_map_ok_click(GuiButton *sender, void *data) {
+void MapEditor::static_load_map_ok_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<MapEditor *>(data))->load_map_ok_click();
 }
 
@@ -1321,7 +1323,7 @@ void MapEditor::load_map_ok_click() {
 /* ************************************************************************** */
 /* save map                                                                   */
 /* ************************************************************************** */
-void MapEditor::static_save_map_click(GuiButton *sender, void *data) {
+void MapEditor::static_save_map_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<MapEditor *>(data))->save_map_click();
 }
 
@@ -1343,7 +1345,7 @@ void MapEditor::save_map_click() {
 /* ************************************************************************** */
 /* tile selector                                                              */
 /* ************************************************************************** */
-void MapEditor::static_tile_selector_click(GuiButton *sender, void *data) {
+void MapEditor::static_tile_selector_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<MapEditor *>(data))->tile_selector_click();
 }
 
@@ -1428,7 +1430,7 @@ void MapEditor::add_buttons(bool first, GuiWindow *window, int from_tile_index) 
     create_button(window, window->get_client_width() - bw - Spc, bb, bw, bh, ">", static_ts_next_click, this);
 }
 
-void MapEditor::static_ts_previous_click(GuiButton *sender, void *data) {
+void MapEditor::static_ts_previous_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<MapEditor *>(data))->ts_previous_click();
 }
 
@@ -1440,7 +1442,7 @@ void MapEditor::ts_previous_click() {
     add_buttons(false, ts_window, new_index);
 }
 
-void MapEditor::static_ts_next_click(GuiButton *sender, void *data) {
+void MapEditor::static_ts_next_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<MapEditor *>(data))->ts_next_click();
 }
 
@@ -1453,16 +1455,16 @@ void MapEditor::ts_next_click() {
     }
 }
 
-void MapEditor::static_ts_tile_click(GuiButton *sender, void *data) {
+void MapEditor::static_ts_tile_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<MapEditor *>(data))->ts_tile_click(sender);
 }
 
-void MapEditor::ts_tile_click(GuiButton *sender) {
+void MapEditor::ts_tile_click(GuiVirtualButton *sender) {
     ts_picture = static_cast<GuiPicture *>(sender->get_children()[0]);
     selected_tile_index = sender->get_tag();
 }
 
-void MapEditor::static_ts_close_click(GuiButton *sender, void *data) {
+void MapEditor::static_ts_close_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<MapEditor *>(data))->ts_close_click();
 }
 
@@ -1480,7 +1482,7 @@ void MapEditor::ts_close_click() {
     pop_window();
 }
 
-void MapEditor::static_ts_properties_click(GuiButton *sender, void *data) {
+void MapEditor::static_ts_properties_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<MapEditor *>(data))->ts_properties_click();
 }
 
@@ -1526,7 +1528,7 @@ void MapEditor::ts_properties_click() {
     add_ok_cancel_buttons(window, static_ts_properties_ok_click);
 }
 
-void MapEditor::static_ts_properties_ok_click(GuiButton *sender, void *data) {
+void MapEditor::static_ts_properties_ok_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<MapEditor *>(data))->ts_properties_ok_click();
 }
 
@@ -1591,7 +1593,7 @@ void MapEditor::save_tileset() throw (Exception) {
 /* ************************************************************************** */
 /* object selector                                                            */
 /* ************************************************************************** */
-void MapEditor::static_object_selector_click(GuiButton *sender, void *data) {
+void MapEditor::static_object_selector_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<MapEditor *>(data))->object_selector_click();
 }
 
@@ -1641,11 +1643,11 @@ void MapEditor::object_selector_click() {
     add_close_button(os_window, static_os_close_click);
 }
 
-void MapEditor::static_os_object_click(GuiButton *sender, void *data) {
+void MapEditor::static_os_object_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<MapEditor *>(data))->os_object_click(sender);
 }
 
-void MapEditor::os_object_click(GuiButton *sender) {
+void MapEditor::os_object_click(GuiVirtualButton *sender) {
     os_picture = static_cast<GuiPicture *>(sender->get_children()[0]);
     selected_object_index = sender->get_tag();
 }
@@ -1659,7 +1661,7 @@ bool MapEditor::static_os_keydown(GuiWindow *sender, void *data, int keycode, bo
     return false;
 }
 
-void MapEditor::static_os_close_click(GuiButton *sender, void *data) {
+void MapEditor::static_os_close_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<MapEditor *>(data))->os_close_click();
 }
 
@@ -1671,7 +1673,7 @@ void MapEditor::os_close_click() {
 /* ************************************************************************** */
 /* horizontal copy                                                            */
 /* ************************************************************************** */
-void MapEditor::static_hcopy_click(GuiButton *sender, void *data) {
+void MapEditor::static_hcopy_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<MapEditor *>(data))->hcopy_click();
 }
 
@@ -1715,7 +1717,7 @@ void MapEditor::hcopy_click() {
 /* ************************************************************************** */
 /* zap map                                                                    */
 /* ************************************************************************** */
-void MapEditor::static_zap_click(GuiButton *sender, void *data) {
+void MapEditor::static_zap_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<MapEditor *>(data))->zap_click();
 }
 
@@ -1735,7 +1737,7 @@ void MapEditor::zap_click() {
 /* ************************************************************************** */
 /* options                                                                    */
 /* ************************************************************************** */
-void MapEditor::static_options_click(GuiButton *sender, void *data) {
+void MapEditor::static_options_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<MapEditor *>(data))->options_click();
 }
 
@@ -1763,7 +1765,7 @@ void MapEditor::options_click() {
     add_ok_cancel_buttons(window, static_options_ok_click, static_options_cancel_click);
 }
 
-void MapEditor::static_options_value_changed(GuiScroll *sender, void *data, int value) {
+void MapEditor::static_options_value_changed(GuiVirtualScroll *sender, void *data, int value) {
     (reinterpret_cast<MapEditor *>(data))->options_value_changed(value);
 }
 
@@ -1787,7 +1789,7 @@ void MapEditor::options_sl_clicked(bool state) {
     subsystem.set_scanlines(state);
 }
 
-void MapEditor::static_options_ok_click(GuiButton *sender, void *data) {
+void MapEditor::static_options_ok_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<MapEditor *>(data))->options_ok_click();
 }
 
@@ -1799,7 +1801,7 @@ void MapEditor::options_ok_click() {
     pop_window();
 }
 
-void MapEditor::static_options_cancel_click(GuiButton *sender, void *data) {
+void MapEditor::static_options_cancel_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<MapEditor *>(data))->options_cancel_click();
 }
 
@@ -1815,7 +1817,7 @@ void MapEditor::options_cancel_click() {
 /* ************************************************************************** */
 /* exit editor                                                                */
 /* ************************************************************************** */
-void MapEditor::static_exit_click(GuiButton *sender, void *data) {
+void MapEditor::static_exit_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<MapEditor *>(data))->exit_click();
 }
 

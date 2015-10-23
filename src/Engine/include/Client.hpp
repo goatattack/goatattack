@@ -131,7 +131,7 @@ private:
     void reset_key(MappedKey::Device dev, int param);
     void reset_key(MappedKey::Device dev, int param, MappedKey& key, int flag);
 
-    static void static_window_close_click(GuiButton *sender, void *data);
+    static void static_window_close_click(GuiVirtualButton *sender, void *data);
     static bool static_window_keydown(GuiWindow *sender, void *data, int keycode, bool repeat);
     static bool static_window_joybutton_down(GuiWindow *sender, void *data, int button);
     bool window_keydown(int keycode);

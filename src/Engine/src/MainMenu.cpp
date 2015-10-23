@@ -176,7 +176,7 @@ void MainMenu::on_input_event(const InputData& input) { }
 /* ************************************************************************** */
 /* Play                                                                       */
 /* ************************************************************************** */
-void MainMenu::static_play_click(GuiButton *sender, void *data) {
+void MainMenu::static_play_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<MainMenu *>(data))->play_click();
 }
 
@@ -257,7 +257,7 @@ void MainMenu::on_lan_entry_click(int index) {
     lan_list_selected_entry = play_lan_list->get_entry(index)->get_ptr_tag();
 }
 
-void MainMenu::static_play_close(GuiButton *sender, void *data) {
+void MainMenu::static_play_close(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<MainMenu *>(data))->play_close();
 }
 
@@ -289,7 +289,7 @@ void MainMenu::play_lan_sort_click(int index) {
     }
 }
 
-void MainMenu::static_play_connect_lan_click(GuiButton *sender, void *data) {
+void MainMenu::static_play_connect_lan_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<MainMenu *>(data))->play_connect_lan_click();
 }
 
@@ -331,7 +331,7 @@ void MainMenu::play_connect_lan_click() {
     }
 }
 
-void MainMenu::static_play_refresh_lan_click(GuiButton *sender, void *data) {
+void MainMenu::static_play_refresh_lan_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<MainMenu *>(data))->play_refresh_lan_click();
 }
 
@@ -344,7 +344,7 @@ void MainMenu::play_refresh_lan_click() {
     get_now(last_lan_info);
 }
 
-void MainMenu::static_play_refresh_wan_click(GuiButton *sender, void *data) {
+void MainMenu::static_play_refresh_wan_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<MainMenu *>(data))->play_refresh_wan_click();
 }
 
@@ -355,7 +355,7 @@ void MainMenu::play_refresh_wan_click() {
     master_query->refresh();
 }
 
-void MainMenu::static_play_connect_wan_click(GuiButton *sender, void *data) {
+void MainMenu::static_play_connect_wan_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<MainMenu *>(data))->play_connect_wan_click();
 }
 
@@ -395,7 +395,7 @@ void MainMenu::play_connect_wan_click() {
     }
 }
 
-void MainMenu::static_play_manual(GuiButton *sender, void *data) {
+void MainMenu::static_play_manual(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<MainMenu *>(data))->play_manual();
 }
 
@@ -406,7 +406,7 @@ void MainMenu::play_manual() {
 /* ************************************************************************** */
 /* Create server                                                              */
 /* ************************************************************************** */
-void MainMenu::static_create_server_click(GuiButton *sender, void *data) {
+void MainMenu::static_create_server_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<MainMenu *>(data))->create_server_click();
 }
 
@@ -581,11 +581,11 @@ void MainMenu::map_selected(int index) {
     }
 }
 
-void MainMenu::static_start_server_click(GuiButton *sender, void *data) {
+void MainMenu::static_start_server_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<MainMenu *>(data))->server_validate(false);
 }
 
-void MainMenu::static_close_start_server_click(GuiButton *sender, void *data) {
+void MainMenu::static_close_start_server_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<MainMenu *>(data))->server_validate(true);
 }
 
@@ -686,7 +686,7 @@ bool MainMenu::map_is_valid(GamePlayType selected_type, GamePlayType map_type) {
 /* ************************************************************************** */
 /* Options                                                                    */
 /* ************************************************************************** */
-void MainMenu::static_options_click(GuiButton *sender, void *data) {
+void MainMenu::static_options_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<MainMenu *>(data))->options_click();
 }
 
@@ -697,7 +697,7 @@ void MainMenu::options_click() {
 /* ************************************************************************** */
 /* Credits                                                                    */
 /* ************************************************************************** */
-void MainMenu::static_credits_click(GuiButton *sender, void *data) {
+void MainMenu::static_credits_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<MainMenu *>(data))->credits_click();
 }
 
@@ -735,14 +735,14 @@ void MainMenu::credits_click() {
 /* ************************************************************************** */
 /* Quit                                                                       */
 /* ************************************************************************** */
-void MainMenu::static_quit_click(GuiButton *sender, void *data) {
+void MainMenu::static_quit_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<Gui *>(data))->leave();
 }
 
 /* ************************************************************************** */
 /* Window close                                                               */
 /* ************************************************************************** */
-void MainMenu::static_close_window_click(GuiButton *sender, void *data) {
+void MainMenu::static_close_window_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<MainMenu *>(data))->close_window_click();
 }
 

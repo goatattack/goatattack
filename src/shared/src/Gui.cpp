@@ -140,7 +140,7 @@ GuiLabel *Gui::create_label(GuiObject *parent, int x, int y,
 }
 
 GuiButton *Gui::create_button(GuiObject *parent, int x, int y, int width,
-    int height, const std::string& caption, GuiButton::OnClick on_click,
+    int height, const std::string& caption, GuiVirtualButton::OnClick on_click,
     void *on_click_data) throw (GuiException)
 {
     check_parent(parent);
@@ -185,7 +185,7 @@ GuiTab *Gui::create_tab(GuiObject *parent, int x, int y, int width,
 
 GuiHScroll *Gui::create_hscroll(GuiObject *parent, int x, int y, int width,
     int min_value, int max_value, int initial_value,
-    GuiScroll::ValueChanged on_value_changed, void *on_value_changed_data)
+    GuiVirtualScroll::ValueChanged on_value_changed, void *on_value_changed_data)
     throw (GuiException)
 {
     check_parent(parent);
@@ -195,7 +195,7 @@ GuiHScroll *Gui::create_hscroll(GuiObject *parent, int x, int y, int width,
 
 GuiVScroll *Gui::create_vscroll(GuiObject *parent, int x, int y, int height,
     int min_value, int max_value, int initial_value,
-    GuiScroll::ValueChanged on_value_changed, void *on_value_changed_data)
+    GuiVirtualScroll::ValueChanged on_value_changed, void *on_value_changed_data)
     throw (GuiException)
 {
     check_parent(parent);
@@ -765,12 +765,12 @@ void Gui::reset_blinker() {
     last = now;
 }
 
-void Gui::static_close_click(GuiButton *sender, void *data) {
+void Gui::static_close_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<Gui *>(data))->pop_window();
 }
 
 /* messagebox response callbacks */
-void Gui::static_cancel_click(GuiButton *sender, void *data) {
+void Gui::static_cancel_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<Gui *>(data))->cancel_click();
 }
 
@@ -779,7 +779,7 @@ void Gui::cancel_click() {
     pop_window();
 }
 
-void Gui::static_ok_click(GuiButton *sender, void *data) {
+void Gui::static_ok_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<Gui *>(data))->ok_click();
 }
 
@@ -788,7 +788,7 @@ void Gui::ok_click() {
     pop_window();
 }
 
-void Gui::static_yes_click(GuiButton *sender, void *data) {
+void Gui::static_yes_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<Gui *>(data))->yes_click();
 }
 
@@ -797,7 +797,7 @@ void Gui::yes_click() {
     pop_window();
 }
 
-void Gui::static_no_click(GuiButton *sender, void *data) {
+void Gui::static_no_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<Gui *>(data))->no_click();
 }
 
@@ -806,7 +806,7 @@ void Gui::no_click() {
     pop_window();
 }
 
-void Gui::static_yes_input_box_click(GuiButton *sender, void *data) {
+void Gui::static_yes_input_box_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<Gui *>(data))->yes_input_box_click();
 }
 

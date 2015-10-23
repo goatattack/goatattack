@@ -321,11 +321,11 @@ void TournamentTeam::player_join_request(Player *p) {
     }
 }
 
-void TournamentTeam::static_red_team_click(GuiButton *sender, void *data) {
+void TournamentTeam::static_red_team_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<TournamentTeam *>(data))->team_click(PlayerServerFlagTeamRed);
 }
 
-void TournamentTeam::static_blue_team_click(GuiButton *sender, void *data) {
+void TournamentTeam::static_blue_team_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<TournamentTeam *>(data))->team_click(0);
 }
 

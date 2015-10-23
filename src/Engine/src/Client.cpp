@@ -400,7 +400,7 @@ void Client::options_closed() {
     }
 }
 
-void Client::static_window_close_click(GuiButton *sender, void *data) {
+void Client::static_window_close_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<Client *>(data))->window_close_click();
 }
 

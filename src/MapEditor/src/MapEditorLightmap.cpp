@@ -6,11 +6,11 @@
 #include <cerrno>
 #include <cstring>
 
-void MapEditor::static_calculate_light_click(GuiButton *sender, void *data) {
+void MapEditor::static_calculate_light_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<MapEditor *>(data))->calculate_light(false);
 }
 
-void MapEditor::static_calculate_light_pixel_click(GuiButton *sender, void *data) {
+void MapEditor::static_calculate_light_pixel_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<MapEditor *>(data))->calculate_light(true);
 }
 

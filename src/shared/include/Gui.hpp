@@ -83,7 +83,7 @@ public:
         const std::string& caption) throw (GuiException);
 
     GuiButton *create_button(GuiObject *parent, int x, int y, int width, int height,
-        const std::string& caption, GuiButton::OnClick on_click,
+        const std::string& caption, GuiVirtualButton::OnClick on_click,
         void *on_click_data) throw (GuiException);
 
     GuiCheckbox *create_checkbox(GuiObject *parent, int x, int y,
@@ -104,12 +104,12 @@ public:
 
     GuiHScroll *create_hscroll(GuiObject *parent, int x, int y, int width,
         int min_value, int max_value, int initial_value,
-        GuiScroll::ValueChanged on_value_changed, void *on_value_changed_data)
+        GuiVirtualScroll::ValueChanged on_value_changed, void *on_value_changed_data)
         throw (GuiException);
 
     GuiVScroll *create_vscroll(GuiObject *parent, int x, int y, int height,
         int min_value, int max_value, int initial_value,
-        GuiScroll::ValueChanged on_value_changed, void *on_value_changed_data)
+        GuiVirtualScroll::ValueChanged on_value_changed, void *on_value_changed_data)
         throw (GuiException);
 
     GuiListbox *create_listbox(GuiObject *parent, int x, int y, int width,
@@ -184,16 +184,16 @@ private:
     void idle_tooltip();
 
     /* messagebox helpers */
-    static void static_close_click(GuiButton *sender, void *data);
-    static void static_cancel_click(GuiButton *sender, void *data);
+    static void static_close_click(GuiVirtualButton *sender, void *data);
+    static void static_cancel_click(GuiVirtualButton *sender, void *data);
     void cancel_click();
-    static void static_ok_click(GuiButton *sender, void *data);
+    static void static_ok_click(GuiVirtualButton *sender, void *data);
     void ok_click();
-    static void static_yes_click(GuiButton *sender, void *data);
+    static void static_yes_click(GuiVirtualButton *sender, void *data);
     void yes_click();
-    static void static_no_click(GuiButton *sender, void *data);
+    static void static_no_click(GuiVirtualButton *sender, void *data);
     void no_click();
-    static void static_yes_input_box_click(GuiButton *sender, void *data);
+    static void static_yes_input_box_click(GuiVirtualButton *sender, void *data);
     void yes_input_box_click();
 };
 

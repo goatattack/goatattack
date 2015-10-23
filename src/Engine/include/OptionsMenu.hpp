@@ -53,46 +53,46 @@ private:
     GuiTextbox *ck_dz_v;
 
     GuiTextbox *create_field(GuiWindow *parent, int x, int y,
-        const std::string& text, GuiButton::OnClick on_click, bool erase_pic);
+        const std::string& text, GuiVirtualButton::OnClick on_click, bool erase_pic);
     void capture_key(GuiTextbox *ck_selected);
 
     static void static_nav_close(void *data);
 
-    static void static_close_options_click(GuiButton *sender, void *data);
-    static void static_back_options_click(GuiButton *sender, void *data);
-    static void static_player_click(GuiButton *sender, void *data);
+    static void static_close_options_click(GuiVirtualButton *sender, void *data);
+    static void static_back_options_click(GuiVirtualButton *sender, void *data);
+    static void static_player_click(GuiVirtualButton *sender, void *data);
     static void static_player_skin_click(GuiListbox *sender, void *data, int index);
-    static void static_close_player_click(GuiButton *sender, void *data);
-    static void static_graphics_and_sound_click(GuiButton *sender, void *data);
-    static void static_scanlines_intensity_changed(GuiScroll *sender, void *data, int value);
-    static void static_music_volume_changed(GuiScroll *sender, void *data, int value);
-    static void static_sfx_volume_changed(GuiScroll *sender, void *data, int value);
-    static void static_controller_and_keyboard_click(GuiButton *sender, void *data);
-    static void static_abort_capture_click(GuiButton *sender, void *data);
-    static void static_capture_rescan_click(GuiButton *sender, void *data);
-    static void static_capture_up_click(GuiButton *sender, void *data);
-    static void static_capture_down_click(GuiButton *sender, void *data);
-    static void static_capture_left_click(GuiButton *sender, void *data);
-    static void static_capture_right_click(GuiButton *sender, void *data);
-    static void static_capture_jump_click(GuiButton *sender, void *data);
-    static void static_capture_fire_click(GuiButton *sender, void *data);
-    static void static_capture_drop1_click(GuiButton *sender, void *data);
-    static void static_capture_drop2_click(GuiButton *sender, void *data);
-    static void static_capture_drop3_click(GuiButton *sender, void *data);
-    static void static_capture_chat_click(GuiButton *sender, void *data);
-    static void static_capture_stats_click(GuiButton *sender, void *data);
-    static void static_capture_escape_click(GuiButton *sender, void *data);
+    static void static_close_player_click(GuiVirtualButton *sender, void *data);
+    static void static_graphics_and_sound_click(GuiVirtualButton *sender, void *data);
+    static void static_scanlines_intensity_changed(GuiVirtualScroll *sender, void *data, int value);
+    static void static_music_volume_changed(GuiVirtualScroll *sender, void *data, int value);
+    static void static_sfx_volume_changed(GuiVirtualScroll *sender, void *data, int value);
+    static void static_controller_and_keyboard_click(GuiVirtualButton *sender, void *data);
+    static void static_abort_capture_click(GuiVirtualButton *sender, void *data);
+    static void static_capture_rescan_click(GuiVirtualButton *sender, void *data);
+    static void static_capture_up_click(GuiVirtualButton *sender, void *data);
+    static void static_capture_down_click(GuiVirtualButton *sender, void *data);
+    static void static_capture_left_click(GuiVirtualButton *sender, void *data);
+    static void static_capture_right_click(GuiVirtualButton *sender, void *data);
+    static void static_capture_jump_click(GuiVirtualButton *sender, void *data);
+    static void static_capture_fire_click(GuiVirtualButton *sender, void *data);
+    static void static_capture_drop1_click(GuiVirtualButton *sender, void *data);
+    static void static_capture_drop2_click(GuiVirtualButton *sender, void *data);
+    static void static_capture_drop3_click(GuiVirtualButton *sender, void *data);
+    static void static_capture_chat_click(GuiVirtualButton *sender, void *data);
+    static void static_capture_stats_click(GuiVirtualButton *sender, void *data);
+    static void static_capture_escape_click(GuiVirtualButton *sender, void *data);
     static bool static_capture_keydown(GuiWindow *sender, void *data, int keycode, bool repeat);
     static bool static_capture_joybuttondown(GuiWindow *sender, void *data, int button);
 
-    static void static_ck_erase_horz(GuiButton *sender, void *data);
-    static void static_ck_erase_vert(GuiButton *sender, void *data);
+    static void static_ck_erase_horz(GuiVirtualButton *sender, void *data);
+    static void static_ck_erase_vert(GuiVirtualButton *sender, void *data);
 
-    static void static_close_window_click(GuiButton *sender, void *data);
+    static void static_close_window_click(GuiVirtualButton *sender, void *data);
     static void static_toggle_fullscreen_click(GuiCheckbox *sender, void *data, bool state);
     static void static_toggle_scanlines_click(GuiCheckbox *sender, void *data, bool state);
 
-    static void static_close_capture_window_click(GuiButton *sender, void *data);
+    static void static_close_capture_window_click(GuiVirtualButton *sender, void *data);
 
     void ck_erase_horz();
     void ck_erase_vert();

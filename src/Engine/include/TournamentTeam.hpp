@@ -60,8 +60,8 @@ protected:
     void draw_team_score(int x, int y, bool rightalign, score_t score);
     void add_team_score_animation(Player *p, const std::string& text);
 
-    static void static_red_team_click(GuiButton *sender, void *data);
-    static void static_blue_team_click(GuiButton *sender, void *data);
+    static void static_red_team_click(GuiVirtualButton *sender, void *data);
+    static void static_blue_team_click(GuiVirtualButton *sender, void *data);
     void team_click(playerflags_t flags);
     void close_select_team_window();
 

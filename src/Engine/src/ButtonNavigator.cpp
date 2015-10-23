@@ -137,7 +137,7 @@ void ButtonNavigator::set_button_focus_down() {
 void ButtonNavigator::do_current_button_click() {
     if (current_index >= 0 && current_index < static_cast<int>(navigator_buttons.size())) {
         GuiButton *btn = navigator_buttons[current_index];
-        GuiButton::OnClick on_click = btn->get_on_click_func();
+        GuiVirtualButton::OnClick on_click = btn->get_on_click_func();
         if (on_click) {
             on_click(btn, btn->get_on_click_data());
         }

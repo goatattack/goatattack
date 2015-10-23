@@ -88,32 +88,32 @@ private:
     void drawmenu(Font *font, const char **entries);
 
     /* statics for button callbacks */
-    static void static_play_click(GuiButton *sender, void *data);
-    static void static_play_close(GuiButton *sender, void *data);
+    static void static_play_click(GuiVirtualButton *sender, void *data);
+    static void static_play_close(GuiVirtualButton *sender, void *data);
     void play_close();
-    static void static_play_manual(GuiButton *sender, void *data);
+    static void static_play_manual(GuiVirtualButton *sender, void *data);
     void play_manual();
-    static void static_play_connect_lan_click(GuiButton *sender, void *data);
+    static void static_play_connect_lan_click(GuiVirtualButton *sender, void *data);
     void play_connect_lan_click();
-    static void static_play_refresh_lan_click(GuiButton *sender, void *data);
+    static void static_play_refresh_lan_click(GuiVirtualButton *sender, void *data);
     void play_refresh_lan_click();
 
-    static void static_play_connect_wan_click(GuiButton *sender, void *data);
+    static void static_play_connect_wan_click(GuiVirtualButton *sender, void *data);
     void play_connect_wan_click();
-    static void static_play_refresh_wan_click(GuiButton *sender, void *data);
+    static void static_play_refresh_wan_click(GuiVirtualButton *sender, void *data);
     void play_refresh_wan_click();
 
-    static void static_create_server_click(GuiButton *sender, void *data);
+    static void static_create_server_click(GuiVirtualButton *sender, void *data);
     static void static_game_mode_click(GuiCheckbox *sender, void *data, bool state);
     static void static_map_selected(GuiListbox *sender, void *data, int index);
-    static void static_start_server_click(GuiButton *sender, void *data);
-    static void static_close_start_server_click(GuiButton *sender, void *data);
+    static void static_start_server_click(GuiVirtualButton *sender, void *data);
+    static void static_close_start_server_click(GuiVirtualButton *sender, void *data);
 
-    static void static_options_click(GuiButton *sender, void *data);
-    static void static_credits_click(GuiButton *sender, void *data);
-    static void static_quit_click(GuiButton *sender, void *data);
+    static void static_options_click(GuiVirtualButton *sender, void *data);
+    static void static_credits_click(GuiVirtualButton *sender, void *data);
+    static void static_quit_click(GuiVirtualButton *sender, void *data);
 
-    static void static_close_window_click(GuiButton *sender, void *data);
+    static void static_close_window_click(GuiVirtualButton *sender, void *data);
 
     static void static_play_wan_sort_click(GuiListbox *sender, void *data, int index);
     static void static_play_lan_sort_click(GuiListbox *sender, void *data, int index);

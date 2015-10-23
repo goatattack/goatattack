@@ -535,38 +535,122 @@ void GuiLabel::paint() {
 }
 
 /* ****************************************************** */
+/* GuiVirtualButton                                       */
+/* ****************************************************** */
+GuiVirtualButton::GuiVirtualButton(Gui& gui, GuiObject *parent)
+    : GuiObject(gui, parent), caption(), mouse_is_down(false),
+      on_click(0), on_click_data(0), align(AlignmentCenter),
+      offset_x(0), offset_y(0) { }
+
+GuiVirtualButton::GuiVirtualButton(Gui& gui, GuiObject *parent, int x, int y,
+    int width, int height, const std::string& caption,
+    OnClick on_click, void *on_click_data)
+    : GuiObject(gui, parent, x, y, width, height),
+      caption(caption), mouse_is_down(false),
+      on_click(on_click), on_click_data(on_click_data), align(AlignmentCenter),
+      offset_x(0), offset_y(0) { }
+
+GuiVirtualButton::~GuiVirtualButton() { }
+
+void GuiVirtualButton::set_caption(const std::string& caption) {
+    this->caption = caption;
+}
+
+const std::string& GuiVirtualButton::get_caption() const {
+    return caption;
+}
+
+GuiVirtualButton::OnClick GuiVirtualButton::get_on_click_func() {
+    return on_click;
+}
+
+void *GuiVirtualButton::get_on_click_data() {
+    return on_click_data;
+}
+
+void GuiVirtualButton::set_alignment(Alignment align) {
+    this->align = align;
+}
+
+void GuiVirtualButton::set_offset_x(int x) {
+    offset_x = x;
+}
+
+void GuiVirtualButton::set_offset_y(int y) {
+    offset_y = y;
+}
+
+bool GuiVirtualButton::can_have_focus() const {
+    return true;
+}
+
+bool GuiVirtualButton::can_have_mouse_events() const {
+    return true;
+}
+
+bool GuiVirtualButton::mousedown(int button, int x, int y) {
+    if (button == 0) {
+        mouse_is_down = true;
+        mouse_is_in_button = true;
+    }
+
+    return true;
+}
+
+bool GuiVirtualButton::mousemove(int x, int y) {
+    int cx = GuiObject::get_client_x();
+    int cy = GuiObject::get_client_y();
+    int w = get_width();
+    int h = get_height();
+
+    mouse_is_in_button = (x >= cx && x < cx + w && y >= cy && y < cy + h);
+
+    return true;
+}
+
+bool GuiVirtualButton::mouseup(int button, int x, int y) {
+    if (button == 0) {
+        mouse_is_down = false;
+        if (mouse_is_in_button) {
+            if (on_click) {
+                on_click(this, on_click_data);
+            }
+        }
+    }
+
+    return true;
+}
+
+int GuiVirtualButton::get_client_x() const {
+    int ofs = (mouse_is_down && mouse_is_in_button ? 1 : 0);
+    return GuiObject::get_client_x() + ofs;
+}
+
+int GuiVirtualButton::get_client_y() const {
+    int ofs = (mouse_is_down && mouse_is_in_button ? 1 : 0);
+    return GuiObject::get_client_y() + ofs;
+}
+
+/* ****************************************************** */
 /* GuiButton                                              */
 /* ****************************************************** */
 GuiButton::GuiButton(Gui& gui, GuiObject *parent)
-    : GuiObject(gui, parent), caption(), mouse_is_down(false),
-      on_click(0), on_click_data(0), bolts(true),
-      text_r(1.0f), text_g(1.0f), text_b(1.0f), align(AlignmentCenter),
-      offset_x(0), offset_y(0)
+    : GuiVirtualButton(gui, parent), bolts(true),
+      text_r(1.0f), text_g(1.0f), text_b(1.0f)
 {
     prepare();
 }
 
 GuiButton::GuiButton(Gui& gui, GuiObject *parent, int x, int y,
     int width, int height, const std::string& caption,
-    OnClick on_click, void *on_click_data)
-    : GuiObject(gui, parent, x, y, width, height),
-      caption(caption), mouse_is_down(false),
-      on_click(on_click), on_click_data(on_click_data), bolts(true),
-      text_r(1.0f), text_g(1.0f), text_b(1.0f), align(AlignmentCenter),
-      offset_x(0), offset_y(0)
+    GuiVirtualButton::OnClick on_click, void *on_click_data)
+    : GuiVirtualButton(gui, parent, x, y, width, height, caption, on_click, on_click_data),
+      bolts(true), text_r(1.0f), text_g(1.0f), text_b(1.0f)
 {
     prepare();
 }
 
 GuiButton::~GuiButton() { }
-
-void GuiButton::set_caption(const std::string& caption) {
-    this->caption = caption;
-}
-
-const std::string& GuiButton::get_caption() const {
-    return caption;
-}
 
 void GuiButton::show_bolts(bool state) {
     bolts = state;
@@ -580,77 +664,6 @@ void GuiButton::set_color(float r, float g, float b) {
 
 void GuiButton::reset_color() {
     text_r = text_g = text_b = 1.0f;
-}
-
-GuiButton::OnClick GuiButton::get_on_click_func() {
-    return on_click;
-}
-
-void *GuiButton::get_on_click_data() {
-    return on_click_data;
-}
-
-void GuiButton::set_alignment(Alignment align) {
-    this->align = align;
-}
-
-void GuiButton::set_offset_x(int x) {
-    offset_x = x;
-}
-
-void GuiButton::set_offset_y(int y) {
-    offset_y = y;
-}
-
-bool GuiButton::can_have_focus() const {
-    return true;
-}
-
-bool GuiButton::can_have_mouse_events() const {
-    return true;
-}
-
-bool GuiButton::mousedown(int button, int x, int y) {
-    if (button == 0) {
-        mouse_is_down = true;
-        mouse_is_in_button = true;
-    }
-
-    return true;
-}
-
-bool GuiButton::mousemove(int x, int y) {
-    int cx = GuiObject::get_client_x();
-    int cy = GuiObject::get_client_y();
-    int w = get_width();
-    int h = get_height();
-
-    mouse_is_in_button = (x >= cx && x < cx + w && y >= cy && y < cy + h);
-
-    return true;
-}
-
-bool GuiButton::mouseup(int button, int x, int y) {
-    if (button == 0) {
-        mouse_is_down = false;
-        if (mouse_is_in_button) {
-            if (on_click) {
-                on_click(this, on_click_data);
-            }
-        }
-    }
-
-    return true;
-}
-
-int GuiButton::get_client_x() const {
-    int ofs = (mouse_is_down && mouse_is_in_button ? 1 : 0);
-    return GuiObject::get_client_x() + ofs;
-}
-
-int GuiButton::get_client_y() const {
-    int ofs = (mouse_is_down && mouse_is_in_button ? 1 : 0);
-    return GuiObject::get_client_y() + ofs;
 }
 
 void GuiButton::paint() {
@@ -1208,7 +1221,7 @@ void GuiTab::select_tab(int index) {
     }
 }
 
-void GuiTab::static_tab_clicked(GuiButton *sender, void *data) {
+void GuiTab::static_tab_clicked(GuiVirtualButton *sender, void *data) {
     Tab *tab = reinterpret_cast<Tab *>(data);
     tab->owner->select_tab(tab->tab_number);
 }
@@ -1233,13 +1246,13 @@ void GuiTab::paint() {
 }
 
 /* ****************************************************** */
-/* GuiScroll                                              */
+/* GuiVirtualScroll                                       */
 /* ****************************************************** */
-GuiScroll::GuiScroll(Gui& gui, GuiObject *parent)
+GuiVirtualScroll::GuiVirtualScroll(Gui& gui, GuiObject *parent)
     : GuiObject(gui, parent), on_value_changed(0), on_value_changed_data(0),
       min_value(0), max_value(100), current_value(0) { }
 
-GuiScroll::GuiScroll(Gui& gui, GuiObject *parent, int x, int y, int width, int height,
+GuiVirtualScroll::GuiVirtualScroll(Gui& gui, GuiObject *parent, int x, int y, int width, int height,
     int min_value, int max_value, int initial_value, ValueChanged on_value_changed,
     void *on_value_changed_data)
     : GuiObject(gui, parent, x, y, width, height), on_value_changed(on_value_changed),
@@ -1252,9 +1265,9 @@ GuiScroll::GuiScroll(Gui& gui, GuiObject *parent, int x, int y, int width, int h
     recalc();
 }
 
-GuiScroll::~GuiScroll() { }
+GuiVirtualScroll::~GuiVirtualScroll() { }
 
-void GuiScroll::set_value(int value) {
+void GuiVirtualScroll::set_value(int value) {
     int old_value = current_value;
     current_value = value;
     recalc();
@@ -1265,41 +1278,41 @@ void GuiScroll::set_value(int value) {
     }
 }
 
-int GuiScroll::get_value() const {
+int GuiVirtualScroll::get_value() const {
     return current_value;
 }
 
-void GuiScroll::set_min_value(int value) {
+void GuiVirtualScroll::set_min_value(int value) {
     if (value <= max_value) {
         min_value = value;
         recalc();
     }
 }
 
-int GuiScroll::get_min_value() const {
+int GuiVirtualScroll::get_min_value() const {
     return min_value;
 }
 
-void GuiScroll::set_max_value(int value) {
+void GuiVirtualScroll::set_max_value(int value) {
     if (value >= min_value) {
         max_value = value;
         recalc();
     }
 }
 
-int GuiScroll::get_max_value() const {
+int GuiVirtualScroll::get_max_value() const {
     return max_value;
 }
 
-bool GuiScroll::can_have_focus() const {
+bool GuiVirtualScroll::can_have_focus() const {
     return true;
 }
 
-bool GuiScroll::can_have_mouse_events() const {
+bool GuiVirtualScroll::can_have_mouse_events() const {
     return true;
 }
 
-void GuiScroll::recalc() {
+void GuiVirtualScroll::recalc() {
     if (current_value < min_value) {
         current_value = min_value;
     }
@@ -1310,20 +1323,20 @@ void GuiScroll::recalc() {
 }
 
 
-void GuiScroll::static_down_button_clicked(GuiButton *sender, void *data) {
-    GuiScroll *obj = reinterpret_cast<GuiScroll *>(data);
+void GuiVirtualScroll::static_down_button_clicked(GuiVirtualButton *sender, void *data) {
+    GuiVirtualScroll *obj = reinterpret_cast<GuiVirtualScroll *>(data);
     obj->set_value(obj->get_value() - 1);
 }
 
-void GuiScroll::static_up_button_clicked(GuiButton *sender, void *data) {
-    GuiScroll *obj = reinterpret_cast<GuiScroll *>(data);
+void GuiVirtualScroll::static_up_button_clicked(GuiVirtualButton *sender, void *data) {
+    GuiVirtualScroll *obj = reinterpret_cast<GuiVirtualScroll *>(data);
     obj->set_value(obj->get_value() + 1);
 }
 
 /* ****************************************************** */
 /* GuiHScroll                                             */
 /* ****************************************************** */
-GuiHScroll::GuiHScroll(Gui& gui, GuiObject *parent) : GuiScroll(gui, parent),
+GuiHScroll::GuiHScroll(Gui& gui, GuiObject *parent) : GuiVirtualScroll(gui, parent),
     left_button(0), right_button(0), left_arrow(0), right_arrow(0)
 {
     prepare();
@@ -1331,8 +1344,8 @@ GuiHScroll::GuiHScroll(Gui& gui, GuiObject *parent) : GuiScroll(gui, parent),
 
 GuiHScroll::GuiHScroll(Gui& gui, GuiObject *parent, int x, int y, int width,
     int min_value, int max_value, int initial_value,
-    GuiScroll::ValueChanged on_value_changed, void *on_value_changed_data)
-    : GuiScroll(gui, parent, x, y, width, Size, min_value, max_value, initial_value,
+    GuiVirtualScroll::ValueChanged on_value_changed, void *on_value_changed_data)
+    : GuiVirtualScroll(gui, parent, x, y, width, Size, min_value, max_value, initial_value,
       on_value_changed, on_value_changed_data)
 {
     prepare();
@@ -1441,7 +1454,7 @@ void GuiHScroll::calc_blockpos() {
 /* ****************************************************** */
 /* GuiVScroll                                             */
 /* ****************************************************** */
-GuiVScroll::GuiVScroll(Gui& gui, GuiObject *parent) : GuiScroll(gui, parent),
+GuiVScroll::GuiVScroll(Gui& gui, GuiObject *parent) : GuiVirtualScroll(gui, parent),
     up_button(0), down_button(0), up_arrow(0), down_arrow(0)
 {
     prepare();
@@ -1449,8 +1462,8 @@ GuiVScroll::GuiVScroll(Gui& gui, GuiObject *parent) : GuiScroll(gui, parent),
 
 GuiVScroll::GuiVScroll(Gui& gui, GuiObject *parent, int x, int y, int height,
     int min_value, int max_value, int initial_value,
-    GuiScroll::ValueChanged on_value_changed, void *on_value_changed_data)
-    : GuiScroll(gui, parent, x, y, Size, height, min_value, max_value,
+    GuiVirtualScroll::ValueChanged on_value_changed, void *on_value_changed_data)
+    : GuiVirtualScroll(gui, parent, x, y, Size, height, min_value, max_value,
       initial_value, on_value_changed, on_value_changed_data)
 {
     prepare();
@@ -1856,7 +1869,7 @@ void GuiListbox::my_down_mousemove(int x, int y, bool from_mousemove) {
 }
 
 void GuiListbox::setup(const std::string& title) {
-    sb = gui.create_vscroll(this, get_width() - GuiScroll::Size, 0, get_height(),
+    sb = gui.create_vscroll(this, get_width() - GuiVirtualScroll::Size, 0, get_height(),
         0, 0, 0, static_scroll_changed, this);
 
     title_bar = new GuiListboxEntry(gui, this, title);
@@ -1920,6 +1933,6 @@ void GuiListbox::select_from_mouse(int x, int y, bool from_mousemove) {
     set_selected_index(index + start_index);
 }
 
-void GuiListbox::static_scroll_changed(GuiScroll *sender, void *data, int value) {
+void GuiListbox::static_scroll_changed(GuiVirtualScroll *sender, void *data, int value) {
     (reinterpret_cast<GuiListbox *>(data))->set_top_index(value);
 }
