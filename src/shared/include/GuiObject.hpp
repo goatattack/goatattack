@@ -19,6 +19,7 @@ private:
 
 public:
     typedef std::vector<GuiObject *> Children;
+    typedef void (*OnCallback)(GuiObject *sender, void *data);
 
     GuiObject(Gui& gui, GuiObject *parent);
     GuiObject(Gui& gui, GuiObject *parent, int x, int y,
@@ -123,6 +124,8 @@ public:
     GuiObject *get_focused_object();
     void set_focused_object(GuiObject *object);
     void set_invisible(bool state);
+    void set_cancelable(bool state);
+    void set_cancel_callback(OnCallback on_cancel, void *on_cancel_data);
 
     virtual bool can_have_mouse_events() const;
     virtual bool mousedown(int button, int x, int y);
@@ -150,6 +153,9 @@ private:
     void *on_joy_button_down_data;
     OnJoyButtonUp on_joy_button_up;
     void *on_joy_button_up_data;
+    bool cancelable;
+    OnCallback on_cancel;
+    void *on_cancel_data;
     std::string title;
     bool screws;
     bool invisible;

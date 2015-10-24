@@ -20,6 +20,11 @@ void OptionsMenu::show_options() {
 
         nav.clear();
         GuiWindow *window = gui.push_window(vw / 2 - ww / 2, vh / 2- wh / 2, ww, wh, "Options And Settings");
+        if (!in_game) {
+            window->set_cancelable(true);
+            window->set_cancel_callback(static_cancel_click, this);
+        }
+
         nav.add_button(gui.create_button(window, ww / 2 - bw / 2, 10, bw, 26, "Player", static_player_click, this));
         nav.add_button(gui.create_button(window, ww / 2 - bw / 2, 45, bw, 26, "Graphics And Sound", static_graphics_and_sound_click, this));
         nav.add_button(gui.create_button(window, ww / 2 - bw / 2, 80, bw, 26, "Controller And Keyboard", static_controller_and_keyboard_click, this));
@@ -44,6 +49,10 @@ void OptionsMenu::static_nav_close(void *data) {
     (reinterpret_cast<OptionsMenu *>(data))->close_options_click();
 }
 
+void OptionsMenu::static_cancel_click(GuiObject *sender, void *data) {
+    (reinterpret_cast<OptionsMenu *>(data))->close_options_click();
+}
+
 void OptionsMenu::static_close_options_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<OptionsMenu *>(data))->close_options_click();
 }
@@ -53,6 +62,7 @@ void OptionsMenu::close_options_click() {
         options_visible = false;
         gui.pop_window();
         options_closed();
+        std::cout << "BREAK" << std::endl;
     }
 }
 
@@ -77,7 +87,10 @@ void OptionsMenu::player_click() {
     int ww = 287;
     int wh = 167;
     int bw = 140;
+
+    subsystem.clear_input_buffer();
     GuiWindow *window = gui.push_window(vw / 2 - ww / 2, vh / 2- wh / 2, ww, wh, "Player");
+    window->set_cancelable(true);
 
     gui.create_label(window, 15, 15, "player's name:");
     player_name = gui.create_textbox(window, 120, 15, 150, config.get_string("player_name"));
@@ -135,7 +148,9 @@ void OptionsMenu::graphics_and_sound_click() {
     int ww = 253;
     int wh = 155;
     int bw = 140;
+
     GuiWindow *window = gui.push_window(vw / 2 - ww / 2, vh / 2- wh / 2, ww, wh, "Graphics And Sound");
+    window->set_cancelable(true);
 
     gui.create_checkbox(window, 15, 15, "fullscreen graphics mode", subsystem.is_fullscreen(), static_toggle_fullscreen_click, this);
     gui.create_checkbox(window, 15, 30, "draw scanlines", subsystem.has_scanlines(), static_toggle_scanlines_click, this);
@@ -210,7 +225,9 @@ void OptionsMenu::controller_and_keyboard_click() {
     int ww = 335;
     int wh = 203;
     int bw = 140;
+
     GuiWindow *window = gui.push_window(vw / 2 - ww / 2, vh / 2- wh / 2, ww, wh, "Controller And Keyboard");
+    window->set_cancelable(true);
 
     ck_up = create_field(window, 15, 15, "up:", static_capture_up_click, false);
     ck_down = create_field(window, 175, 15, "down:", static_capture_down_click, false);

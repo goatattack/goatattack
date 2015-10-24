@@ -89,6 +89,7 @@ private:
 
     /* statics for button callbacks */
     static void static_play_click(GuiVirtualButton *sender, void *data);
+    static void static_cancel_click(GuiObject *sender, void *data);
     static void static_play_close(GuiVirtualButton *sender, void *data);
     void play_close();
     static void static_play_manual(GuiVirtualButton *sender, void *data);

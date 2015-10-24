@@ -197,7 +197,11 @@ void MainMenu::play_click() {
     int vh = subsystem.get_view_height();
     int ww = 400;
     int wh = 300;
+
     GuiWindow *window = push_window(vw / 2 - ww / 2, vh / 2 - wh / 2, ww, wh, "Play");
+    window->set_cancelable(true);
+    window->set_cancel_callback(static_cancel_click, this);
+
     int wcw = window->get_client_width();
     int wch = window->get_client_height();
 
@@ -263,6 +267,10 @@ void MainMenu::static_on_lan_entry_click(GuiListbox *sender, void *data, int ind
 
 void MainMenu::on_lan_entry_click(int index) {
     lan_list_selected_entry = play_lan_list->get_entry(index)->get_ptr_tag();
+}
+
+void MainMenu::static_cancel_click(GuiObject *sender, void *data) {
+    (reinterpret_cast<MainMenu *>(data))->play_close();
 }
 
 void MainMenu::static_play_close(GuiVirtualButton *sender, void *data) {
@@ -426,6 +434,7 @@ void MainMenu::create_server_click() {
     int wh = 326;
     int bw = 140;
     GuiWindow *window = push_window(vw / 2 - ww / 2, vh / 2 - wh / 2, ww, wh, "Create Local LAN Server");
+    window->set_cancelable(true);
 
     /* server settings */
     create_label(window, 15, 15, "server name:");
@@ -707,7 +716,8 @@ void MainMenu::list_packages_click() {
     int bh = 18;
     const int hash_width = 450;
 
-    GuiWindow *window = push_window(vw / 2 - ww / 2, vh / 2 - wh / 2, ww, wh, "Loaded Packages");
+    GuiWindow *window = push_window(vw / 2 - ww / 2, vh / 2 - wh / 2, ww, wh, "List Loaded Packages");
+    window->set_cancelable(true);
     wh = window->get_client_height() + 2;
 
     GuiListbox *lb = create_listbox(window, Spc, Spc, ww - 2 * Spc, wh - 3 * Spc - bh, "Package", 0, 0);
@@ -762,7 +772,10 @@ void MainMenu::credits_click() {
     int left = 10;
     int lft = 30;
     int tab = 90;
+
     GuiWindow *window = push_window(vw / 2 - ww / 2, vh / 2- wh / 2, ww, wh, "Credits");
+    window->set_cancelable(true);
+
     create_label(window, lft, 10, "code:");
     create_label(window, tab, 10, "freanux");
 

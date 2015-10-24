@@ -226,7 +226,7 @@ GuiWindow::GuiWindow(Gui& gui, GuiObject *parent)
       on_key_down_data(0), on_key_up(0), on_key_up_data(0),
       on_joy_motion(0), on_joy_motion_data(0), on_joy_button_down(0),
       on_joy_button_down_data(0), on_joy_button_up(0), on_joy_button_up_data(0),
-      title(), screws(true)
+      cancelable(false), on_cancel(0), on_cancel_data(0), title(), screws(true)
 {
     prepare();
 }
@@ -237,7 +237,8 @@ GuiWindow::GuiWindow(Gui& gui, GuiObject *parent, int x, int y,
       on_key_down(0), on_key_down_data(0), on_key_up(0), on_key_up_data(0),
       on_joy_motion(0), on_joy_motion_data(0), on_joy_button_down(0),
       on_joy_button_down_data(0), on_joy_button_up(0), on_joy_button_up_data(0),
-      title(title), screws(true), invisible(false)
+      cancelable(false), on_cancel(0), on_cancel_data(0), title(title),
+      screws(true), invisible(false)
 {
     prepare();
 }
@@ -305,6 +306,15 @@ void GuiWindow::set_invisible(bool state) {
     invisible = state;
 }
 
+void GuiWindow::set_cancelable(bool state) {
+    cancelable = state;
+}
+
+void GuiWindow::set_cancel_callback(OnCallback on_cancel, void *on_cancel_data) {
+    this->on_cancel = on_cancel;
+    this->on_cancel_data = on_cancel_data;
+}
+
 bool GuiWindow::can_have_mouse_events() const {
     return true;
 }
@@ -338,7 +348,13 @@ bool GuiWindow::mouseup(int button, int x, int y) {
 }
 
 bool GuiWindow::keydown(int keycode, bool repeat) {
-    if (on_key_down) {
+    if (cancelable && keycode == 27) {
+        if (on_cancel) {
+            on_cancel(this, on_cancel_data);
+        } else {
+            gui.pop_window();
+        }
+    } else if (on_key_down) {
         return on_key_down(this, on_key_down_data, keycode, repeat);
     }
 

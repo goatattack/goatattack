@@ -58,6 +58,7 @@ private:
 
     static void static_nav_close(void *data);
 
+    static void static_cancel_click(GuiObject *sender, void *data);
     static void static_close_options_click(GuiVirtualButton *sender, void *data);
     static void static_back_options_click(GuiVirtualButton *sender, void *data);
     static void static_player_click(GuiVirtualButton *sender, void *data);
