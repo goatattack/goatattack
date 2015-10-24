@@ -1,3 +1,9 @@
+0.4.3
+- new rounded buttons
+- new menu
+- list of loaded paks
+- closing windows with escape keys
+
 0.4.2
 - quitting local server crash fixed
 - tooltips added

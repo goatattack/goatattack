@@ -18,7 +18,7 @@ PENDING:
 	- doors
 	- warpzones
 	- destructable tiles
-* server commands: ban, unban, working with client hashes
+* server commands: vote, ban, unban, working with client hashes
 
 
 WISHES:
@@ -82,6 +82,10 @@ DONE:
 * tooltips added
 * server-commands
 * friendly-fire configurable
+* new rounded buttons
+* new menu
+* list of loaded paks
+* closing windows with escape keys
 
 
 DEFERRED:
