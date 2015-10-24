@@ -83,10 +83,18 @@ int Gui::get_mouse_y() const {
 
 void Gui::set_mouse_x(int v) {
     *pmousex = v;
+    subsystem.set_mouse_position(v, *pmousey);
 }
 
 void Gui::set_mouse_y(int v) {
     *pmousey = v;
+    subsystem.set_mouse_position(*pmousex, v);
+}
+
+void Gui::set_mouse_xy(int x, int y) {
+    *pmousex = x;
+    *pmousey = y;
+    subsystem.set_mouse_position(x, y);
 }
 
 size_t Gui::get_stack_count() const {
@@ -145,6 +153,15 @@ GuiButton *Gui::create_button(GuiObject *parent, int x, int y, int width,
 {
     check_parent(parent);
     return new GuiButton(*this, parent, x, y, width, height, caption, on_click, on_click_data);
+}
+
+GuiRoundedButton *Gui::create_rounded_button(GuiObject *parent, int x, int y, int width,
+    int height, const std::string& caption, GuiVirtualButton::OnClick on_click,
+    void *on_click_data) throw (GuiException)
+{
+    check_parent(parent);
+    return new GuiRoundedButton(*this, parent, x, y, width, height, caption,
+        on_click, on_click_data);
 }
 
 GuiCheckbox *Gui::create_checkbox(GuiObject *parent, int x, int y,
@@ -386,7 +403,7 @@ Gui::MessageBoxResponse Gui::show_inputbox(const std::string& title, std::string
     height = window->get_client_height();
     int bw = get_font()->get_text_width(caption_no) + 24;
 
-    std::string caption_yes = "Ok";
+    std::string caption_yes("Ok");
     int bw2 = get_font()->get_text_width(caption_yes) + 24;
     if (bw2 > bw) {
         bw = bw2;

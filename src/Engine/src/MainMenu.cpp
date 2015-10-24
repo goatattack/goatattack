@@ -50,31 +50,39 @@ void MainMenu::idle() throw (Exception) {
     if (!shown) {
         ms_t diff = diff_ms(startup, now);
         if (diff > 1300) {
+        //if (diff > 100) {
             shown = true;
             Font *f = get_font();
             int th = f->get_font_height();
             int vw = subsystem.get_view_width();
             int vh = subsystem.get_view_height();
-            int ww = 220;
-            int wh = 220;
+            int ww = 600;
+            int wh = 300;
             int bw = 160;
+            int bh = 35;
 
-            GuiWindow *window = push_window(vw / 2 - ww / 2, vh / 2 - wh / 2, ww, wh, "Welcome To Goat Attack");
-            create_button(window, ww / 2 - bw / 2, 10, bw, 26, "Play", static_play_click, this);
-            create_button(window, ww / 2 - bw / 2, 45, bw, 26, "Create Local LAN Server", static_create_server_click, this);
-            create_button(window, ww / 2 - bw / 2, 80, bw, 26, "Options And Settings", static_options_click, this);
-            create_button(window, ww / 2 - bw / 2, 115, bw, 26, "Credits", static_credits_click, this);
-            create_button(window, ww / 2 - bw / 2, 150, bw, 26, "Quit Game", static_quit_click, this);
+            GuiWindow *window = push_window(vw / 2 - ww / 2, vh / 2 - wh / 2, ww, wh, "");
+            window->set_invisible(true);
+
+            const int yofs = 30;
+            create_rounded_button(window, 20, 30 + yofs, bw, bh, "Play", static_play_click, this)->set_follow_alpha(false);
+            create_rounded_button(window, 17, 90 + yofs, bw, bh, "Create Local LAN Server", static_create_server_click, this)->set_follow_alpha(false);
+            create_rounded_button(window, 20, 150 + yofs, bw, bh, "List Loaded Packages", static_list_packages_click, this)->set_follow_alpha(false);
+
+            create_rounded_button(window, 420, 30 + yofs, bw, bh, "Options And Settings", static_options_click, this)->set_follow_alpha(false);
+            create_rounded_button(window, 423, 90 + yofs, bw, bh, "Credits", static_credits_click, this)->set_follow_alpha(false);
+            create_rounded_button(window, 420, 150 + yofs, bw, bh, "Quit Game", static_quit_click, this)->set_follow_alpha(false);
 
             std::string version("Current Version: ");
             version += GameVersion;
             int tw = f->get_text_width(version);
-            create_label(window, ww / 2 - tw / 2, wh - th - 21, version);
+            create_label(window, ww / 2 - tw / 2, wh - th - 21, version)->set_follow_alpha(false);
 
             if (ProductIsBeta) {
                 Icon *beta = resources.get_icon("beta");
-                create_picture(window, ww - 32 - Spc - 3, wh - 32 - Spc - 3, beta->get_tile()->get_tilegraphic());
+                create_picture(window, ww / 2 + tw / 2, wh - 32 - Spc - 3, beta->get_tile()->get_tilegraphic())->set_follow_alpha(false);
             }
+            set_mouse_xy(subsystem.get_view_width() / 2, subsystem.get_view_height() / 2);
         }
     }
 
@@ -681,6 +689,51 @@ bool MainMenu::map_is_valid(GamePlayType selected_type, GamePlayType map_type) {
     }
 
     return (selected_type <= map_type);
+}
+
+/* ************************************************************************** */
+/* List Packages                                                              */
+/* ************************************************************************** */
+void MainMenu::static_list_packages_click(GuiVirtualButton *sender, void *data) {
+    (reinterpret_cast<MainMenu *>(data))->list_packages_click();
+}
+
+void MainMenu::list_packages_click() {
+    Font *f = get_font();
+    int vw = subsystem.get_view_width();
+    int vh = subsystem.get_view_height();
+    int ww = 627;
+    int wh = 256;
+    int bh = 18;
+    const int hash_width = 450;
+
+    GuiWindow *window = push_window(vw / 2 - ww / 2, vh / 2 - wh / 2, ww, wh, "Loaded Packages");
+    wh = window->get_client_height() + 2;
+
+    GuiListbox *lb = create_listbox(window, Spc, Spc, ww - 2 * Spc, wh - 3 * Spc - bh, "Package", 0, 0);
+    lb->show_title_bar(true);
+    GuiListboxEntry *titlebar = lb->get_title_bar();
+    titlebar->add_column("Hash", hash_width);
+
+    const Resources::LoadedPaks loaded_paks = resources.get_loaded_paks();
+    for (Resources::LoadedPaks::const_iterator it = loaded_paks.begin(); it != loaded_paks.end(); it++) {
+        const Resources::LoadedPak& pak = *it;
+        GuiListboxEntry *entry = lb->add_entry(pak.pak_short_name);
+        entry->add_column(pak.pak_hash, hash_width);
+    }
+    lb->set_selected_index(0);
+
+    /* close button */
+    std::string text("Close");
+    int bw = f->get_text_width(text) + 28;
+    create_button(window, ww / 2 - bw / 2, wh - bh - Spc, bw, bh, text, static_close_packages_list_click, this);
+}
+
+void MainMenu::static_close_packages_list_click(GuiVirtualButton *sender, void *data) {
+    (reinterpret_cast<MainMenu *>(data))->close_packages_list_click();
+}
+void MainMenu::close_packages_list_click() {
+    pop_window();
 }
 
 /* ************************************************************************** */

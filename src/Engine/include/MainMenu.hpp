@@ -109,6 +109,11 @@ private:
     static void static_start_server_click(GuiVirtualButton *sender, void *data);
     static void static_close_start_server_click(GuiVirtualButton *sender, void *data);
 
+    static void static_list_packages_click(GuiVirtualButton *sender, void *data);
+    void list_packages_click();
+    static void static_close_packages_list_click(GuiVirtualButton *sender, void *data);
+    void close_packages_list_click();
+
     static void static_options_click(GuiVirtualButton *sender, void *data);
     static void static_credits_click(GuiVirtualButton *sender, void *data);
     static void static_quit_click(GuiVirtualButton *sender, void *data);

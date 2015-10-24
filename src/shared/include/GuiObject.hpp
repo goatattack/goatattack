@@ -122,6 +122,7 @@ public:
     int get_client_height() const;
     GuiObject *get_focused_object();
     void set_focused_object(GuiObject *object);
+    void set_invisible(bool state);
 
     virtual bool can_have_mouse_events() const;
     virtual bool mousedown(int button, int x, int y);
@@ -151,6 +152,7 @@ private:
     void *on_joy_button_up_data;
     std::string title;
     bool screws;
+    bool invisible;
 
     bool mouse_is_down;
     bool moving_valid;
@@ -269,6 +271,33 @@ private:
     float text_r;
     float text_g;
     float text_b;
+
+    virtual void paint();
+    void prepare();
+};
+
+/* GuiRoundedButton */
+class GuiRoundedButton : public GuiVirtualButton {
+public:
+    GuiRoundedButton(Gui& gui, GuiObject *parent);
+    GuiRoundedButton(Gui& gui, GuiObject *parent, int x, int y, int width, int height,
+        const std::string& caption, GuiVirtualButton::OnClick on_click, void *on_click_data);
+
+    virtual ~GuiRoundedButton();
+
+    void show_bolts(bool state);
+
+private:
+    bool bolts;
+    Icon *bolt;
+    Icon *mb_ul;
+    Icon *mb_ur;
+    Icon *mb_ll;
+    Icon *mb_lr;
+    Icon *mb_ul_pressed;
+    Icon *mb_ur_pressed;
+    Icon *mb_ll_pressed;
+    Icon *mb_lr_pressed;
 
     virtual void paint();
     void prepare();

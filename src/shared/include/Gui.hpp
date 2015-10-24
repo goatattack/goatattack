@@ -67,6 +67,7 @@ public:
     int get_mouse_y() const;
     void set_mouse_x(int v);
     void set_mouse_y(int v);
+    void set_mouse_xy(int x, int y);
     size_t get_stack_count() const;
 
     Resources& get_resources() const;
@@ -84,6 +85,10 @@ public:
 
     GuiButton *create_button(GuiObject *parent, int x, int y, int width, int height,
         const std::string& caption, GuiVirtualButton::OnClick on_click,
+        void *on_click_data) throw (GuiException);
+
+    GuiRoundedButton *create_rounded_button(GuiObject *parent, int x, int y, int width,
+        int height, const std::string& caption, GuiVirtualButton::OnClick on_click,
         void *on_click_data) throw (GuiException);
 
     GuiCheckbox *create_checkbox(GuiObject *parent, int x, int y,
