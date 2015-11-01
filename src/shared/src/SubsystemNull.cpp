@@ -108,6 +108,10 @@ bool SubsystemNull::get_input(InputData& input) {
 
 void SubsystemNull::set_music_volume(int v) { }
 
+int SubsystemNull::get_music_volume() {
+    return 0;
+}
+
 void SubsystemNull::set_sound_volume(int v) { }
 
 void SubsystemNull::clear_input_buffer() { }

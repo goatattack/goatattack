@@ -433,6 +433,10 @@ void SubsystemSDL::set_music_volume(int v) {
     Mix_VolumeMusic(v);
 }
 
+int SubsystemSDL::get_music_volume() {
+    return Mix_VolumeMusic(-1);
+}
+
 void SubsystemSDL::set_sound_volume(int v) {
     Mix_Volume(-1, v);
 }

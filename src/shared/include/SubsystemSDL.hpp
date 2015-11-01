@@ -57,6 +57,7 @@ public:
     virtual void stop_music();
 
     virtual void set_music_volume(int v);
+    virtual int get_music_volume();
     virtual void set_sound_volume(int v);
 
     virtual bool get_input(InputData& input);

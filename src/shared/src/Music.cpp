@@ -24,12 +24,13 @@ const Audio *Music::get_audio() const {
 }
 
 ScopeMusicStopper::ScopeMusicStopper(Subsystem& subsystem, Music *music)
-    : subsystem(subsystem), music(music)
+    : subsystem(subsystem), music(music), volume(subsystem.get_music_volume())
 {
     subsystem.stop_music();
 }
 
 ScopeMusicStopper::~ScopeMusicStopper() {
+    subsystem.set_music_volume(volume);
     if (music) {
         subsystem.play_music(music);
     }

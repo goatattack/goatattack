@@ -150,6 +150,7 @@ public:
     virtual void stop_music() = 0;
 
     virtual void set_music_volume(int v) = 0;
+    virtual int get_music_volume() = 0;
     virtual void set_sound_volume(int v) = 0;
 
     virtual bool get_input(InputData& input) = 0;
