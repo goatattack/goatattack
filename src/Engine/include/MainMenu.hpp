@@ -25,6 +25,13 @@ public:
     virtual void on_input_event(const InputData& input);
 
 private:
+    enum MenuButtonState {
+        MenuButtonStateNone = 0,
+        MenuButtonStateCreating,
+        MenuButtonStateFinalize,
+        MenuButtonStateDone
+    };
+
     struct MapEntry {
         MapEntry(Map *map, int index) : map(map), index(index) { }
 
@@ -55,9 +62,12 @@ private:
     Icon *brick;
     int bw;
     int bh;
-    bool shown;
+    MenuButtonState shown;
     LANBroadcaster *lan_broadcaster;
     MasterQuery *master_query;
+    GuiWindow *main_window;
+    int mw_w;
+    int mw_h;
 
     gametime_t now;
     gametime_t startup;
@@ -81,6 +91,7 @@ private:
     GuiListbox *cs_maps;
     GuiListbox *play_lan_list;
     GuiListbox *play_wan_list;
+    GuiRoundedButton *rb[6];
 
     const void *wan_list_selected_entry;
     const void *lan_list_selected_entry;

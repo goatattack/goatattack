@@ -18,7 +18,8 @@ MainMenu::MainMenu(Resources& resources, Subsystem& subsystem, Configuration& co
       OptionsMenu(*this, resources, subsystem, config, false),
       resources(resources), subsystem(subsystem), config(config),
       x(0), y(0), bgox(0), bgoy(0), goat(0), title(0), gw(0), gh(0),
-      shown(false), lan_broadcaster(0), master_query(0)
+      shown(MenuButtonStateNone), lan_broadcaster(0), master_query(0),
+      main_window(0), mw_w(0), mw_h(0)
 {
     goat = resources.get_icon("title_goat");
     title = resources.get_icon("title_text");
@@ -34,6 +35,8 @@ MainMenu::MainMenu(Resources& resources, Subsystem& subsystem, Configuration& co
     last = startup;
 
     subsystem.play_music(resources.get_music(TitleMusic));
+
+    memset(rb, 0, sizeof rb);
 }
 
 MainMenu::~MainMenu() {
@@ -47,42 +50,82 @@ void MainMenu::idle() throw (Exception) {
     get_now(now);
 
     /* first delay, then show main menu */
-    if (!shown) {
+    if (shown != MenuButtonStateDone) {
         ms_t diff = diff_ms(startup, now);
-        if (diff > 1300) {
-        //if (diff > 100) {
-            shown = true;
-            Font *f = get_font();
-            int th = f->get_font_height();
-            int vw = subsystem.get_view_width();
-            int vh = subsystem.get_view_height();
-            int ww = 600;
-            int wh = 300;
-            int bw = 160;
-            int bh = 35;
+        switch (shown) {
+            case MenuButtonStateNone:
+            {
+                if (diff > 1300) {
+                    startup = now;
+                    shown = MenuButtonStateCreating;
 
-            GuiWindow *window = push_window(vw / 2 - ww / 2, vh / 2 - wh / 2, ww, wh, "");
-            window->set_invisible(true);
-
-            const int yofs = 30;
-            create_rounded_button(window, 20, 30 + yofs, bw, bh, "Play", static_play_click, this)->set_follow_alpha(false);
-            create_rounded_button(window, 17, 90 + yofs, bw, bh, "Create Local LAN Server", static_create_server_click, this)->set_follow_alpha(false);
-            create_rounded_button(window, 20, 150 + yofs, bw, bh, "List Loaded Packages", static_list_packages_click, this)->set_follow_alpha(false);
-
-            create_rounded_button(window, 420, 30 + yofs, bw, bh, "Options And Settings", static_options_click, this)->set_follow_alpha(false);
-            create_rounded_button(window, 423, 90 + yofs, bw, bh, "Credits", static_credits_click, this)->set_follow_alpha(false);
-            create_rounded_button(window, 420, 150 + yofs, bw, bh, "Quit Game", static_quit_click, this)->set_follow_alpha(false);
-
-            std::string version("Current Version: ");
-            version += GameVersion;
-            int tw = f->get_text_width(version);
-            create_label(window, ww / 2 - tw / 2, wh - th - 21, version)->set_follow_alpha(false);
-
-            if (ProductIsBeta) {
-                Icon *beta = resources.get_icon("beta");
-                create_picture(window, ww / 2 + tw / 2, wh - 32 - Spc - 3, beta->get_tile()->get_tilegraphic())->set_follow_alpha(false);
+                    int vw = subsystem.get_view_width();
+                    int vh = subsystem.get_view_height();
+                    mw_w = 600;
+                    mw_h = 300;
+                    main_window = push_window(vw / 2 - mw_w / 2, vh / 2 - mw_h / 2, mw_w, mw_h, "");
+                    main_window->set_invisible(true);
+                    set_mouse_xy(subsystem.get_view_width() / 2, subsystem.get_view_height() / 2);
+                }
+                break;
             }
-            set_mouse_xy(subsystem.get_view_width() / 2, subsystem.get_view_height() / 2);
+
+            case MenuButtonStateCreating:
+            {
+                if (diff > 75) {
+                    startup = now;
+
+                    int bw = 160;
+                    int bh = 35;
+                    const int yofs = 30;
+
+                    if (!rb[0]) {
+                        rb[0] = create_rounded_button(main_window, 20, 30 + yofs, bw, bh, "Play", static_play_click, this);
+                        rb[0]->set_follow_alpha(false);
+                    } else if (!rb[1]) {
+                        rb[1] = create_rounded_button(main_window, 17, 90 + yofs, bw, bh, "Create Local LAN Server", static_create_server_click, this);
+                        rb[1]->set_follow_alpha(false);
+                    } else if (!rb[2]) {
+                        rb[2] = create_rounded_button(main_window, 20, 150 + yofs, bw, bh, "List Loaded Packages", static_list_packages_click, this);
+                        rb[2]->set_follow_alpha(false);
+                    } else if (!rb[3]) {
+                        rb[3] = create_rounded_button(main_window, 420, 30 + yofs, bw, bh, "Options And Settings", static_options_click, this);
+                        rb[3]->set_follow_alpha(false);
+                    } else if (!rb[4]) {
+                        rb[4] = create_rounded_button(main_window, 423, 90 + yofs, bw, bh, "Credits", static_credits_click, this);
+                        rb[4]->set_follow_alpha(false);
+                    } else if (!rb[5]) {
+                        rb[5] = create_rounded_button(main_window, 420, 150 + yofs, bw, bh, "Quit Game", static_quit_click, this);
+                        rb[5]->set_follow_alpha(false);
+                        shown = MenuButtonStateFinalize;
+                    }
+                }
+                break;
+            }
+
+            case MenuButtonStateFinalize:
+            {
+                if (diff > 100) {
+                    startup = now;
+                    shown = MenuButtonStateDone;
+
+                    Font *f = get_font();
+                    int th = f->get_font_height();
+                    std::string version("Current Version: ");
+                    version += GameVersion;
+                    int tw = f->get_text_width(version);
+                    create_label(main_window, mw_w / 2 - tw / 2, mw_h - th - 21, version)->set_follow_alpha(false);
+
+                    if (ProductIsBeta) {
+                        Icon *beta = resources.get_icon("beta");
+                        create_picture(main_window, mw_w / 2 + tw / 2, mw_h - 32 - Spc - 3, beta->get_tile()->get_tilegraphic())->set_follow_alpha(false);
+                    }
+                }
+                break;
+            }
+
+            case MenuButtonStateDone:
+                break;
         }
     }
 
@@ -330,13 +373,11 @@ void MainMenu::play_connect_lan_click() {
             lan_broadcaster->stop();
             master_query->stop();
             try {
-                subsystem.stop_music();
+                ScopeMusicStopper stop_music(subsystem, resources.get_music(TitleMusic));
                 Client client(resources, subsystem, host, port, config, pwd);
                 client.link_mouse(*this);
                 client.run();
-                subsystem.play_music(resources.get_music(TitleMusic));
             } catch (const Exception& e) {
-                subsystem.play_music(resources.get_music(TitleMusic));
                 show_messagebox(Gui::MessageBoxIconError, "Error", e.what());
             }
             lan_broadcaster->start();
