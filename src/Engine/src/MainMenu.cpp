@@ -19,7 +19,8 @@ MainMenu::MainMenu(Resources& resources, Subsystem& subsystem, Configuration& co
       resources(resources), subsystem(subsystem), config(config),
       x(0), y(0), bgox(0), bgoy(0), goat(0), title(0), gw(0), gh(0),
       shown(MenuButtonStateNone), lan_broadcaster(0), master_query(0),
-      main_window(0), mw_w(0), mw_h(0)
+      main_window(0), mw_w(0), mw_h(0),
+      menu_construction(resources.get_sound("menu_construction"))
 {
     goat = resources.get_icon("title_goat");
     title = resources.get_icon("title_text");
@@ -72,7 +73,7 @@ void MainMenu::idle() throw (Exception) {
 
             case MenuButtonStateCreating:
             {
-                if (diff > 75) {
+                if (diff > 50) {
                     startup = now;
 
                     int bw = 160;
@@ -82,21 +83,27 @@ void MainMenu::idle() throw (Exception) {
                     if (!rb[0]) {
                         rb[0] = create_rounded_button(main_window, 20, 30 + yofs, bw, bh, "Play", static_play_click, this);
                         rb[0]->set_follow_alpha(false);
+                        subsystem.play_sound(menu_construction, 1);
                     } else if (!rb[1]) {
                         rb[1] = create_rounded_button(main_window, 17, 90 + yofs, bw, bh, "Create Local LAN Server", static_create_server_click, this);
                         rb[1]->set_follow_alpha(false);
+                        subsystem.play_sound(menu_construction, 1);
                     } else if (!rb[2]) {
                         rb[2] = create_rounded_button(main_window, 20, 150 + yofs, bw, bh, "List Loaded Packages", static_list_packages_click, this);
                         rb[2]->set_follow_alpha(false);
+                        subsystem.play_sound(menu_construction, 1);
                     } else if (!rb[3]) {
                         rb[3] = create_rounded_button(main_window, 420, 30 + yofs, bw, bh, "Options And Settings", static_options_click, this);
                         rb[3]->set_follow_alpha(false);
+                        subsystem.play_sound(menu_construction, 1);
                     } else if (!rb[4]) {
                         rb[4] = create_rounded_button(main_window, 423, 90 + yofs, bw, bh, "Credits", static_credits_click, this);
                         rb[4]->set_follow_alpha(false);
+                        subsystem.play_sound(menu_construction, 1);
                     } else if (!rb[5]) {
                         rb[5] = create_rounded_button(main_window, 420, 150 + yofs, bw, bh, "Quit Game", static_quit_click, this);
                         rb[5]->set_follow_alpha(false);
+                        subsystem.play_sound(menu_construction, 1);
                         shown = MenuButtonStateFinalize;
                     }
                 }

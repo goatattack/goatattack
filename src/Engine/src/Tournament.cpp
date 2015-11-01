@@ -264,7 +264,6 @@ void Tournament::add_animation(const std::string& name, identifier_t id,
         if (!server) {
             subsystem.play_sound(ani->get_sound(), ani->get_sound_loops());
         }
-
     } catch (const ResourcesException& e) {
         if (gani) delete gani;
         subsystem << "creating animation failed: " << e.what() << std::endl;

@@ -68,6 +68,7 @@ private:
     GuiWindow *main_window;
     int mw_w;
     int mw_h;
+    Sound *menu_construction;
 
     gametime_t now;
     gametime_t startup;
