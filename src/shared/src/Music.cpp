@@ -1,8 +1,11 @@
 #include "Music.hpp"
 
+#include <cstdlib>
+
 Music::Music(Subsystem& subsystem, const std::string& filename, ZipReader *zip)
     throw (KeyValueException, MusicException)
-    : Properties(filename + ".music", zip), subsystem(subsystem), audio(0)
+    : Properties(filename + ".music", zip), subsystem(subsystem), audio(0),
+      do_not_play_in_music_player(false), audio_filename(filename)
 {
     try {
         audio = subsystem.create_audio();
@@ -13,13 +16,21 @@ Music::Music(Subsystem& subsystem, const std::string& filename, ZipReader *zip)
             throw MusicException(e.what());
         }
     }
+
+    do_not_play_in_music_player = (atoi(get_value("do_not_play_in_music_player").c_str()) ? true : false);
 }
 
 Music::~Music() {
-    delete audio;
+    if (audio) {
+        delete audio;
+    }
 }
 
-const Audio *Music::get_audio() const {
+bool Music::get_do_not_play_in_music_player() const {
+    return do_not_play_in_music_player;
+}
+
+const Audio *Music::get_audio() const throw (MusicException) {
     return audio;
 }
 

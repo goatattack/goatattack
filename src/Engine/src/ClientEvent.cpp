@@ -95,7 +95,7 @@ void Client::sevt_login(ServerEvent& evt) {
         const Resources::LoadedPak& pak = *it;
         memset(&gph, 0, GPakHashLen);
         strncpy(gph.pak_name, pak.pak_short_name.c_str(), NameLength - 1);
-        strncpy(gph.pak_hash, pak.pak_hash.c_str(), 64);
+        strncpy(gph.pak_hash, pak.pak_hash.c_str(), sizeof(GPakHash::pak_hash));
         gph.to_net();
         stacked_send_data(evt.c, 0, GPSPakSyncHash, NetFlagsReliable, GPakHashLen, &gph);
     }
@@ -429,9 +429,7 @@ void Client::sevt_data(ServerEvent& evt) {
             case GPCTextMessage:
             {
                 std::string msg(reinterpret_cast<char *>(t->data), t->len);
-                ClientTextMessage *cmsg = new ClientTextMessage;
-                cmsg->text = msg;
-                client_text_messages.push_back(cmsg);
+                add_text_msg(msg);
                 break;
             }
 
@@ -449,9 +447,7 @@ void Client::sevt_data(ServerEvent& evt) {
             case GPCChatMessage:
             {
                 std::string msg(reinterpret_cast<char *>(t->data), t->len);
-                ClientTextMessage *cmsg = new ClientTextMessage;
-                cmsg->text = msg;
-                client_text_messages.push_back(cmsg);
+                add_text_msg(msg);
                 subsystem.play_sound(resources.get_sound("chat"), 0);
                 break;
             }
@@ -542,9 +538,7 @@ void Client::sevt_data(ServerEvent& evt) {
             {
                 if (tournament) {
                     tournament->join_refused();
-                    ClientTextMessage *cmsg = new ClientTextMessage;
-                    cmsg->text = "YOUR JOIN REQUEST WAS REFUSED";
-                    client_text_messages.push_back(cmsg);
+                    add_text_msg("YOUR JOIN REQUEST WAS REFUSED");
                     subsystem.play_sound(resources.get_sound("error"), 0);
                 }
                 break;
@@ -577,9 +571,7 @@ void Client::sevt_data(ServerEvent& evt) {
                 if (tournament) {
                     if (tournament->friendly_fire_alarm(alarm)) {
                         subsystem.play_controlled_sound(resources.get_sound("friendly_fire"), 0);
-                        ClientTextMessage *cmsg = new ClientTextMessage;
-                        cmsg->text = "FRIENDLY FIRE: WATCH OUT!!!";
-                        client_text_messages.push_back(cmsg);
+                        add_text_msg("FRIENDLY FIRE: WATCH OUT!!!");
                     }
                 }
                 break;
@@ -589,9 +581,7 @@ void Client::sevt_data(ServerEvent& evt) {
             {
                 if (tournament) {
                     subsystem.play_controlled_sound(resources.get_sound("unbalanced"), 0);
-                    ClientTextMessage *cmsg = new ClientTextMessage;
-                    cmsg->text = "GAMEPLAY IS UNBALANCED";
-                    client_text_messages.push_back(cmsg);
+                    add_text_msg("GAMEPLAY IS UNBALANCED");
                 }
                 break;
             }
@@ -600,9 +590,7 @@ void Client::sevt_data(ServerEvent& evt) {
             {
                 if (tournament) {
                     subsystem.play_system_sound(resources.get_sound("warm_up"));
-                    ClientTextMessage *cmsg = new ClientTextMessage;
-                    cmsg->text = "please warm up";
-                    client_text_messages.push_back(cmsg);
+                    add_text_msg("please warm up");
                 }
                 break;
             }
@@ -611,9 +599,7 @@ void Client::sevt_data(ServerEvent& evt) {
             {
                 if (tournament) {
                     subsystem.play_system_sound(resources.get_sound("ready"));
-                    ClientTextMessage *cmsg = new ClientTextMessage;
-                    cmsg->text = "game begins";
-                    client_text_messages.push_back(cmsg);
+                    add_text_msg("game begins");
                 }
                 break;
             }
@@ -622,9 +608,7 @@ void Client::sevt_data(ServerEvent& evt) {
             {
                 if (tournament) {
                     subsystem.play_system_sound(resources.get_sound("game_over"));
-                    ClientTextMessage *cmsg = new ClientTextMessage;
-                    cmsg->text = "GAME IS OVER";
-                    client_text_messages.push_back(cmsg);
+                    add_text_msg("GAME IS OVER");
                 }
                 break;
             }
@@ -645,18 +629,14 @@ void Client::sevt_data(ServerEvent& evt) {
                         if (old_name != new_name) {
                             p->set_player_name(new_name);
                             p->font = 0;
-                            ClientTextMessage *cmsg = new ClientTextMessage;
-                            cmsg->text = old_name + " is now known as " + new_name;
-                            client_text_messages.push_back(cmsg);
+                            add_text_msg(old_name + " is now known as " + new_name);
                         }
 
                         /* change skin */
                         if (old_skin != new_skin) {
                             try {
                                 p->set_characterset(new_skin);
-                                ClientTextMessage *cmsg = new ClientTextMessage;
-                                cmsg->text = p->get_player_name() + " changed the skin to " + new_skin;
-                                client_text_messages.push_back(cmsg);
+                                add_text_msg(p->get_player_name() + " changed the skin to " + new_skin);
                             } catch (const Exception& e) {
                                 subsystem << e.what() << std::endl;
                             }

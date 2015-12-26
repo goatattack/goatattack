@@ -1,6 +1,7 @@
 #ifndef CLIENT_HPP
 #define CLIENT_HPP
 
+#include "TextMessageSystem.hpp"
 #include "Exception.hpp"
 #include "Resources.hpp"
 #include "Subsystem.hpp"
@@ -24,14 +25,10 @@ public:
     ClientException(std::string msg) : Exception(msg) { }
 };
 
-struct ClientTextMessage {
-    ClientTextMessage() : duration(0.0f), delete_me(false) { }
-    std::string text;
-    double duration;
-    bool delete_me;
-};
-
-class Client : public ClientServer, public Gui, protected OptionsMenu, protected Thread {
+class Client
+    : public ClientServer, public Gui, protected OptionsMenu,
+      protected TextMessageSystem, protected Thread
+{
 private:
     Client(const Client&);
     Client& operator=(const Client&);
@@ -44,6 +41,9 @@ public:
 
     virtual void idle() throw (Exception);
     virtual void on_input_event(const InputData& input);
+
+protected:
+    virtual void on_leave();
 
 private:
     enum EventType {
@@ -65,7 +65,6 @@ private:
     };
 
     typedef std::queue<ServerEvent> ServerEvents;
-    typedef std::vector<ClientTextMessage *> ClientTextMessages;
 
     /* ctor */
     Resources& resources;
@@ -89,7 +88,6 @@ private:
 
     /* hidden */
     const Connection *conn;
-    ClientTextMessages client_text_messages;
     GuiTextbox *chat_textbox;
     KeyBinding binding;
     std::string old_player_name;

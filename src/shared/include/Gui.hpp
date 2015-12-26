@@ -56,6 +56,7 @@ public:
 
     virtual void idle() throw (Exception) = 0;
     virtual void on_input_event(const InputData& input) = 0;
+    virtual void on_leave() = 0;
 
     void load_resources();
     void link_mouse(const Gui& gui);

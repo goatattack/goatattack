@@ -50,9 +50,15 @@ Client::Client(Resources& resources, Subsystem& subsystem, hostaddr_t host,
         login(password, GPlayerDescriptionLen, gplayerdesc);
     }
     binding.extract_from_config(player_config);
+
+    /* start music player */
+    subsystem.start_music_player(resources, *this);
 }
 
 Client::~Client() {
+    /* stop music player */
+    subsystem.stop_music_player();
+
     /* stop thread if running */
     if (running) {
         stop_thread();
@@ -69,12 +75,6 @@ Client::~Client() {
 
     /* cleanup */
     for (Players::iterator it = players.begin(); it != players.end(); it++) {
-        delete *it;
-    }
-
-    for (ClientTextMessages::iterator it = client_text_messages.begin();
-        it != client_text_messages.end(); it++)
-    {
         delete *it;
     }
 
@@ -165,7 +165,12 @@ void Client::idle() throw (Exception) {
                 Scope<Mutex> lock(mtx);
                 for (size_t i = 0; i < sz; i++) {
                     StateResponse *resp = responses[i];
-                    stacked_send_data(conn, factory.get_tournament_id(), resp->action, 0, resp->len, resp->data);
+                    if (resp->action == GPCTextMessage) {
+                        std::string msg(reinterpret_cast<const char *>(resp->data), resp->len);
+                        add_text_msg(msg);
+                    } else {
+                        stacked_send_data(conn, factory.get_tournament_id(), resp->action, 0, resp->len, resp->data);
+                    }
                 }
                 flush_stacked_send_data(conn, 0);
             }
@@ -196,18 +201,18 @@ void Client::idle() throw (Exception) {
     }
 
     /* interpolate messages */
-    for (ClientTextMessages::iterator it = client_text_messages.begin();
-        it != client_text_messages.end(); it++)
+    for (TextMessages::iterator it = text_messages.begin();
+        it != text_messages.end(); it++)
     {
-        ClientTextMessage *cmsg = *it;
+        TextMessage *cmsg = *it;
         cmsg->duration += (diff / 1000000.0f);
         if (cmsg->duration > TextMessageDuration) {
             cmsg->delete_me = true;
         }
     }
-    client_text_messages.erase(std::remove_if(client_text_messages.begin(),
-        client_text_messages.end(), erase_element<ClientTextMessage>),
-        client_text_messages.end());
+    text_messages.erase(std::remove_if(text_messages.begin(),
+        text_messages.end(), erase_element<TextMessage>),
+        text_messages.end());
 
     /* player in options or in chatbox? */
     if (me) {
@@ -228,10 +233,10 @@ void Client::idle() throw (Exception) {
     int view_height = subsystem.get_view_height();
     int font_height = font->get_font_height();
     int y = view_height - font_height - 5;
-    for (ClientTextMessages::reverse_iterator it = client_text_messages.rbegin();
-        it != client_text_messages.rend(); it++)
+    for (TextMessages::reverse_iterator it = text_messages.rbegin();
+        it != text_messages.rend(); it++)
     {
-        ClientTextMessage *cmsg = *it;
+        TextMessage *cmsg = *it;
         float alpha = 1.0f;
         if (cmsg->duration > TextMessageFadeOutAt) {
             alpha = static_cast<float>((TextMessageDuration - cmsg->duration) / (TextMessageDuration - TextMessageFadeOutAt));
@@ -380,6 +385,10 @@ void Client::on_input_event(const InputData& input) {
                 break;
         }
     }
+}
+
+void Client::on_leave() {
+    subsystem.stop_music_player();
 }
 
 void Client::options_closed() {

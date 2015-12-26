@@ -100,17 +100,27 @@ bool SubsystemNull::is_sound_playing(Sound *sound) {
     return false;
 }
 
-void SubsystemNull::play_music(Music *music) { }
+bool SubsystemNull::play_music(Music *music) {
+    return false;
+}
+
+void SubsystemNull::start_music_player(Resources& resources, TextMessageSystem& tms) { }
+
+void SubsystemNull::skip_music_player_song() { }
+
+void SubsystemNull::stop_music_player() { }
 
 bool SubsystemNull::get_input(InputData& input) {
     return false;
 }
 
-void SubsystemNull::set_music_volume(int v) { }
+void SubsystemNull::set_music_volume(int v, bool in_game) { }
 
 int SubsystemNull::get_music_volume() {
     return 0;
 }
+
+void SubsystemNull::set_relative_music_volume(int v) { }
 
 void SubsystemNull::set_sound_volume(int v) { }
 

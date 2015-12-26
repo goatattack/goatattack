@@ -7,6 +7,7 @@
 #include "AudioSDL.hpp"
 #include "Font.hpp"
 #include "Icon.hpp"
+#include "Resources.hpp"
 
 #include <cstring>
 #include <algorithm>
@@ -48,10 +49,47 @@ static void channel_done(int c) {
     }
 }
 
+typedef std::vector<Music *> MusicPlayerMusics;
+
+Music *music_player_current_music = 0;
+int music_player_current_index = -1;
+TextMessageSystem *music_player_tms = 0;
+MusicPlayerMusics music_player_musics;
+
+static void play_next_song() {
+    if (music_player_tms) {
+        Music *music = 0;
+        int sz = static_cast<int>(music_player_musics.size());
+        if (sz) {
+            music_player_current_index++;
+            if (music_player_current_index >= sz) {
+                music_player_current_index = 0;
+            }
+            music = music_player_musics[music_player_current_index];
+            if (music != music_player_current_music) {
+                music_player_current_music = music;
+                std::string msg("music: " + music->get_description() + " by " + music->get_author());
+                music_player_tms->add_text_msg(msg);
+            }
+        }
+        if (music_player_current_music) {
+            const AudioSDL *audio = static_cast<const AudioSDL *>(music_player_current_music->get_audio());
+            Mix_PlayMusic(audio->get_music(), 0);
+        }
+    }
+}
+
+static void music_finished() {
+    if (music_player_current_music) {
+        play_next_song();
+    }
+}
+
 SubsystemSDL::SubsystemSDL(std::ostream& stream, const std::string& window_title) throw (SubsystemException)
     : Subsystem(stream, window_title), window(0), joyaxis(0), fullscreen(false),
       draw_scanlines(false), scanlines_intensity(0.5f),
-      deadzone_horizontal(3200), deadzone_vertical(3200), selected_tex(0)
+      deadzone_horizontal(3200), deadzone_vertical(3200), selected_tex(0),
+      music_volume(0), relative_music_volume(100)
 {
     stream << "starting SubsystemSDL" << std::endl;
 
@@ -126,6 +164,8 @@ SubsystemSDL::SubsystemSDL(std::ostream& stream, const std::string& window_title
     }
     Mix_ChannelFinished(channel_done);
     Mix_ReserveChannels(1);
+
+    Mix_HookMusicFinished(music_finished);
 }
 
 SubsystemSDL::~SubsystemSDL() {
@@ -418,23 +458,70 @@ bool SubsystemSDL::is_sound_playing(Sound *sound) {
     return (std::find(playing_sounds.begin(), playing_sounds.end(), sound) != playing_sounds.end());
 }
 
-void SubsystemSDL::play_music(Music *music) {
+bool SubsystemSDL::play_music(Music *music) {
+    music_player_current_music = 0;
     if (music) {
         const AudioSDL *audio = static_cast<const AudioSDL *>(music->get_audio());
         Mix_PlayMusic(audio->get_music(), -1);
+        return true;
     }
+
+    return false;
 }
 
 void SubsystemSDL::stop_music() {
+    music_player_tms = 0;
+    music_player_current_music = 0;
+    music_player_musics.clear();
     Mix_HaltMusic();
 }
 
-void SubsystemSDL::set_music_volume(int v) {
-    Mix_VolumeMusic(v);
+void SubsystemSDL::start_music_player(Resources& resources, TextMessageSystem& tms) {
+    music_player_tms = &tms;
+    music_player_musics.clear();
+    Resources::ResourceObjects& musics = resources.get_musics();
+    for (Resources::ResourceObjects::iterator it = musics.begin(); it != musics.end(); it++) {
+        Resources::ResourceObject& obj = *it;
+        Music *music = static_cast<Music *>(obj.object);
+        if (!music->get_do_not_play_in_music_player()) {
+            music_player_musics.push_back(music);
+        }
+    }
+    std::random_shuffle(music_player_musics.begin(), music_player_musics.end());
+
+    play_next_song();
+}
+
+void SubsystemSDL::skip_music_player_song() {
+    play_next_song();
+}
+
+void SubsystemSDL::stop_music_player() {
+    stop_music();
+}
+
+void SubsystemSDL::set_music_volume(int v, bool in_game) {
+    music_volume = v;
+    if (in_game) {
+        set_relative_music_volume(relative_music_volume);
+    } else {
+        Mix_VolumeMusic(v);
+    }
 }
 
 int SubsystemSDL::get_music_volume() {
-    return Mix_VolumeMusic(-1);
+    return music_volume;
+}
+
+void SubsystemSDL::set_relative_music_volume(int v) {
+    relative_music_volume = v;
+    float p = static_cast<float>(v);
+    if (v < 0 || v > 100) {
+        p = 100.0f;
+    }
+
+    int rv = (music_volume / 100.0f * p);
+    Mix_VolumeMusic(rv);
 }
 
 void SubsystemSDL::set_sound_volume(int v) {

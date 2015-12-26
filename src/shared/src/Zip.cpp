@@ -1,5 +1,5 @@
 #include "Zip.hpp"
-#include "SHA256.hpp"
+#include "CRC64.hpp"
 #include "Utils.hpp"
 
 #include <cstring>
@@ -43,17 +43,16 @@ void Zip::rehash() throw (ZipException) {
         throw ZipException("No file opened");
     }
 
-    SHA256 sha256;
+    CRC64 crc;
     fseek(f, 0, SEEK_SET);
     while (true) {
         size_t sz = fread(buffer, 1, sizeof buffer, f);
         if (sz) {
-            sha256.process(buffer, sz);
+            crc.process(buffer, sz);
         }
         if (!sz) {
             break;
         }
     }
-    sha256.final();
-    hash = sha256.get_hash();
+    hash = crc.get_hash();
 }

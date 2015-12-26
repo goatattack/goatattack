@@ -175,6 +175,8 @@ am_goatattack_OBJECTS = goatattack-main.$(OBJEXT) \
 	../shared/src/goatattack-ZipReader.$(OBJEXT) \
 	../shared/src/goatattack-ZipWriter.$(OBJEXT) \
 	../shared/src/goatattack-SHA256.$(OBJEXT) \
+	../shared/src/goatattack-CRC64.$(OBJEXT) \
+	../shared/src/goatattack-TextMessageSystem.$(OBJEXT) \
 	../shared/zlib/adler32.$(OBJEXT) \
 	../shared/zlib/crc32.$(OBJEXT) \
 	../shared/zlib/inffast.$(OBJEXT) \
@@ -426,7 +428,8 @@ goatattack_SOURCES = main.cpp src/Client.cpp src/ClientEvent.cpp \
 	../shared/src/Timing.cpp ../shared/src/UDPSocket.cpp \
 	../shared/src/Utils.cpp ../shared/src/Zip.cpp \
 	../shared/src/ZipReader.cpp ../shared/src/ZipWriter.cpp \
-	../shared/src/SHA256.cpp ../shared/zlib/adler32.c \
+	../shared/src/SHA256.cpp ../shared/src/CRC64.cpp \
+	../shared/src/TextMessageSystem.cpp ../shared/zlib/adler32.c \
 	../shared/zlib/crc32.c ../shared/zlib/inffast.c \
 	../shared/zlib/inflate.c ../shared/zlib/inftrees.c \
 	../shared/zlib/zutil.c
@@ -722,6 +725,12 @@ src/goatattack-MapConfiguration.$(OBJEXT): src/$(am__dirstamp) \
 ../shared/src/goatattack-SHA256.$(OBJEXT):  \
 	../shared/src/$(am__dirstamp) \
 	../shared/src/$(DEPDIR)/$(am__dirstamp)
+../shared/src/goatattack-CRC64.$(OBJEXT):  \
+	../shared/src/$(am__dirstamp) \
+	../shared/src/$(DEPDIR)/$(am__dirstamp)
+../shared/src/goatattack-TextMessageSystem.$(OBJEXT):  \
+	../shared/src/$(am__dirstamp) \
+	../shared/src/$(DEPDIR)/$(am__dirstamp)
 ../shared/zlib/$(am__dirstamp):
 	@$(MKDIR_P) ../shared/zlib
 	@: > ../shared/zlib/$(am__dirstamp)
@@ -760,6 +769,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@../shared/src/$(DEPDIR)/goatattack-AudioNull.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../shared/src/$(DEPDIR)/goatattack-AudioSDL.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../shared/src/$(DEPDIR)/goatattack-Background.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../shared/src/$(DEPDIR)/goatattack-CRC64.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../shared/src/$(DEPDIR)/goatattack-Characterset.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../shared/src/$(DEPDIR)/goatattack-Configuration.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../shared/src/$(DEPDIR)/goatattack-Directory.Po@am__quote@
@@ -786,6 +796,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@../shared/src/$(DEPDIR)/goatattack-SubsystemNull.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../shared/src/$(DEPDIR)/goatattack-SubsystemSDL.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../shared/src/$(DEPDIR)/goatattack-TCPSocket.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../shared/src/$(DEPDIR)/goatattack-TextMessageSystem.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../shared/src/$(DEPDIR)/goatattack-Thread.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../shared/src/$(DEPDIR)/goatattack-Tile.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../shared/src/$(DEPDIR)/goatattack-TileGraphic.Po@am__quote@
@@ -1978,6 +1989,34 @@ src/goatattack-MapConfiguration.obj: src/MapConfiguration.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../shared/src/SHA256.cpp' object='../shared/src/goatattack-SHA256.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(goatattack_CXXFLAGS) $(CXXFLAGS) -c -o ../shared/src/goatattack-SHA256.obj `if test -f '../shared/src/SHA256.cpp'; then $(CYGPATH_W) '../shared/src/SHA256.cpp'; else $(CYGPATH_W) '$(srcdir)/../shared/src/SHA256.cpp'; fi`
+
+../shared/src/goatattack-CRC64.o: ../shared/src/CRC64.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(goatattack_CXXFLAGS) $(CXXFLAGS) -MT ../shared/src/goatattack-CRC64.o -MD -MP -MF ../shared/src/$(DEPDIR)/goatattack-CRC64.Tpo -c -o ../shared/src/goatattack-CRC64.o `test -f '../shared/src/CRC64.cpp' || echo '$(srcdir)/'`../shared/src/CRC64.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../shared/src/$(DEPDIR)/goatattack-CRC64.Tpo ../shared/src/$(DEPDIR)/goatattack-CRC64.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../shared/src/CRC64.cpp' object='../shared/src/goatattack-CRC64.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(goatattack_CXXFLAGS) $(CXXFLAGS) -c -o ../shared/src/goatattack-CRC64.o `test -f '../shared/src/CRC64.cpp' || echo '$(srcdir)/'`../shared/src/CRC64.cpp
+
+../shared/src/goatattack-CRC64.obj: ../shared/src/CRC64.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(goatattack_CXXFLAGS) $(CXXFLAGS) -MT ../shared/src/goatattack-CRC64.obj -MD -MP -MF ../shared/src/$(DEPDIR)/goatattack-CRC64.Tpo -c -o ../shared/src/goatattack-CRC64.obj `if test -f '../shared/src/CRC64.cpp'; then $(CYGPATH_W) '../shared/src/CRC64.cpp'; else $(CYGPATH_W) '$(srcdir)/../shared/src/CRC64.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../shared/src/$(DEPDIR)/goatattack-CRC64.Tpo ../shared/src/$(DEPDIR)/goatattack-CRC64.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../shared/src/CRC64.cpp' object='../shared/src/goatattack-CRC64.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(goatattack_CXXFLAGS) $(CXXFLAGS) -c -o ../shared/src/goatattack-CRC64.obj `if test -f '../shared/src/CRC64.cpp'; then $(CYGPATH_W) '../shared/src/CRC64.cpp'; else $(CYGPATH_W) '$(srcdir)/../shared/src/CRC64.cpp'; fi`
+
+../shared/src/goatattack-TextMessageSystem.o: ../shared/src/TextMessageSystem.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(goatattack_CXXFLAGS) $(CXXFLAGS) -MT ../shared/src/goatattack-TextMessageSystem.o -MD -MP -MF ../shared/src/$(DEPDIR)/goatattack-TextMessageSystem.Tpo -c -o ../shared/src/goatattack-TextMessageSystem.o `test -f '../shared/src/TextMessageSystem.cpp' || echo '$(srcdir)/'`../shared/src/TextMessageSystem.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../shared/src/$(DEPDIR)/goatattack-TextMessageSystem.Tpo ../shared/src/$(DEPDIR)/goatattack-TextMessageSystem.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../shared/src/TextMessageSystem.cpp' object='../shared/src/goatattack-TextMessageSystem.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(goatattack_CXXFLAGS) $(CXXFLAGS) -c -o ../shared/src/goatattack-TextMessageSystem.o `test -f '../shared/src/TextMessageSystem.cpp' || echo '$(srcdir)/'`../shared/src/TextMessageSystem.cpp
+
+../shared/src/goatattack-TextMessageSystem.obj: ../shared/src/TextMessageSystem.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(goatattack_CXXFLAGS) $(CXXFLAGS) -MT ../shared/src/goatattack-TextMessageSystem.obj -MD -MP -MF ../shared/src/$(DEPDIR)/goatattack-TextMessageSystem.Tpo -c -o ../shared/src/goatattack-TextMessageSystem.obj `if test -f '../shared/src/TextMessageSystem.cpp'; then $(CYGPATH_W) '../shared/src/TextMessageSystem.cpp'; else $(CYGPATH_W) '$(srcdir)/../shared/src/TextMessageSystem.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../shared/src/$(DEPDIR)/goatattack-TextMessageSystem.Tpo ../shared/src/$(DEPDIR)/goatattack-TextMessageSystem.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../shared/src/TextMessageSystem.cpp' object='../shared/src/goatattack-TextMessageSystem.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(goatattack_CXXFLAGS) $(CXXFLAGS) -c -o ../shared/src/goatattack-TextMessageSystem.obj `if test -f '../shared/src/TextMessageSystem.cpp'; then $(CYGPATH_W) '../shared/src/TextMessageSystem.cpp'; else $(CYGPATH_W) '$(srcdir)/../shared/src/TextMessageSystem.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

@@ -12,6 +12,8 @@
 #include <SDL_opengl.h>
 #endif
 
+class Resources;
+
 class SubsystemSDL : public Subsystem {
 public:
     SubsystemSDL(std::ostream& stream, const std::string& window_title) throw (SubsystemException);
@@ -53,11 +55,15 @@ public:
     virtual int play_controlled_sound(Sound *sound, int loops);
     virtual bool is_sound_playing(Sound *sound);
 
-    virtual void play_music(Music *music);
+    virtual bool play_music(Music *music);
     virtual void stop_music();
+    virtual void start_music_player(Resources& resources, TextMessageSystem& tms);
+    virtual void skip_music_player_song();
+    virtual void stop_music_player();
 
-    virtual void set_music_volume(int v);
+    virtual void set_music_volume(int v, bool in_game = false);
     virtual int get_music_volume();
+    virtual void set_relative_music_volume(int v);
     virtual void set_sound_volume(int v);
 
     virtual bool get_input(InputData& input);
@@ -86,6 +92,8 @@ private:
     int deadzone_horizontal;
     int deadzone_vertical;
     GLuint selected_tex;
+    int music_volume;
+    int relative_music_volume;
 
     SDL_GLContext glcontext;
     SDL_Event event;

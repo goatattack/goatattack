@@ -3,6 +3,8 @@
 
 #include "Subsystem.hpp"
 
+class Resources;
+
 class SubsystemNull : public Subsystem {
 public:
     SubsystemNull(std::ostream& stream, const std::string& window_title) throw (SubsystemException);
@@ -24,7 +26,6 @@ public:
     virtual void set_deadzone_horizontal(int v);
     virtual void set_deadzone_vertical(int v);
 
-
     virtual TileGraphic *create_tilegraphic(int width, int height);
     virtual Audio *create_audio();
 
@@ -45,11 +46,15 @@ public:
     virtual int play_controlled_sound(Sound *sound, int loops);
     virtual bool is_sound_playing(Sound *sound);
 
-    virtual void play_music(Music *music);
+    virtual bool play_music(Music *music);
     virtual void stop_music();
+    virtual void start_music_player(Resources& resources, TextMessageSystem& tms);
+    virtual void skip_music_player_song();
+    virtual void stop_music_player();
 
-    virtual void set_music_volume(int v);
+    virtual void set_music_volume(int v, bool in_game = false);
     virtual int get_music_volume();
+    virtual void set_relative_music_volume(int v);
     virtual void set_sound_volume(int v);
 
     virtual bool get_input(InputData& input);

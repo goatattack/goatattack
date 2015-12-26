@@ -344,6 +344,8 @@ void MapEditor::on_input_event(const InputData& input) {
     }
 }
 
+void MapEditor::on_leave() { }
+
 void MapEditor::hand_draw(int x, int y) {
     switch (draw_mode) {
         case DrawModeTile:

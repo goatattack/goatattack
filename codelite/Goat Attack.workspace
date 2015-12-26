@@ -9,6 +9,9 @@
   <Project Name="GoatAttack" Path="GoatAttack/GoatAttack.project" Active="Yes"/>
   <Project Name="MapEditor" Path="MapEditor/MapEditor.project" Active="No"/>
   <Project Name="MasterServer" Path="MasterServer/MasterServer.project" Active="No"/>
+  <Environment>
+    <![CDATA[]]>
+  </Environment>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Project Name="MasterServer" ConfigName="Debug"/>
@@ -21,7 +24,4 @@
       <Project Name="MasterServer" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
-  <Environment>
-    <![CDATA[]]>
-  </Environment>
 </CodeLite_Workspace>

@@ -69,6 +69,7 @@
       <File Name="../../src/shared/include/Background.hpp"/>
       <File Name="../../src/shared/include/Characterset.hpp"/>
       <File Name="../../src/shared/include/Configuration.hpp"/>
+      <File Name="../../src/shared/include/CRC64.hpp"/>
       <File Name="../../src/shared/include/Directory.hpp"/>
       <File Name="../../src/shared/include/Exception.hpp"/>
       <File Name="../../src/shared/include/Font.hpp"/>
@@ -87,6 +88,7 @@
       <File Name="../../src/shared/include/PNG.hpp"/>
       <File Name="../../src/shared/include/Properties.hpp"/>
       <File Name="../../src/shared/include/Resources.hpp"/>
+      <File Name="../../src/shared/include/Scope.hpp"/>
       <File Name="../../src/shared/include/ScopeAllocator.hpp"/>
       <File Name="../../src/shared/include/ScopeCollector.hpp"/>
       <File Name="../../src/shared/include/Sound.hpp"/>
@@ -94,6 +96,7 @@
       <File Name="../../src/shared/include/SubsystemNull.hpp"/>
       <File Name="../../src/shared/include/SubsystemSDL.hpp"/>
       <File Name="../../src/shared/include/TCPSocket.hpp"/>
+      <File Name="../../src/shared/include/TextMessageSystem.hpp"/>
       <File Name="../../src/shared/include/Thread.hpp"/>
       <File Name="../../src/shared/include/Tile.hpp"/>
       <File Name="../../src/shared/include/TileGraphic.hpp"/>
@@ -103,11 +106,9 @@
       <File Name="../../src/shared/include/Timing.hpp"/>
       <File Name="../../src/shared/include/UDPSocket.hpp"/>
       <File Name="../../src/shared/include/Utils.hpp"/>
-      <File Name="../../src/shared/include/ZipReader.hpp"/>
-      <File Name="../../src/shared/include/SHA256.hpp"/>
       <File Name="../../src/shared/include/Zip.hpp"/>
+      <File Name="../../src/shared/include/ZipReader.hpp"/>
       <File Name="../../src/shared/include/ZipWriter.hpp"/>
-      <File Name="../../src/shared/include/Scope.hpp"/>
     </VirtualDirectory>
     <VirtualDirectory Name="src">
       <File Name="../../src/shared/src/AABB.cpp"/>
@@ -118,6 +119,7 @@
       <File Name="../../src/shared/src/Background.cpp"/>
       <File Name="../../src/shared/src/Characterset.cpp"/>
       <File Name="../../src/shared/src/Configuration.cpp"/>
+      <File Name="../../src/shared/src/CRC64.cpp"/>
       <File Name="../../src/shared/src/Directory.cpp"/>
       <File Name="../../src/shared/src/Exception.cpp"/>
       <File Name="../../src/shared/src/Font.cpp"/>
@@ -141,6 +143,7 @@
       <File Name="../../src/shared/src/SubsystemNull.cpp"/>
       <File Name="../../src/shared/src/SubsystemSDL.cpp"/>
       <File Name="../../src/shared/src/TCPSocket.cpp"/>
+      <File Name="../../src/shared/src/TextMessageSystem.cpp"/>
       <File Name="../../src/shared/src/Thread.cpp"/>
       <File Name="../../src/shared/src/Tile.cpp"/>
       <File Name="../../src/shared/src/TileGraphic.cpp"/>
@@ -150,10 +153,9 @@
       <File Name="../../src/shared/src/Timing.cpp"/>
       <File Name="../../src/shared/src/UDPSocket.cpp"/>
       <File Name="../../src/shared/src/Utils.cpp"/>
-      <File Name="../../src/shared/src/ZipReader.cpp"/>
       <File Name="../../src/shared/src/Zip.cpp"/>
+      <File Name="../../src/shared/src/ZipReader.cpp"/>
       <File Name="../../src/shared/src/ZipWriter.cpp"/>
-      <File Name="../../src/shared/src/SHA256.cpp"/>
     </VirtualDirectory>
     <VirtualDirectory Name="zlib">
       <File Name="../../src/shared/zlib/adler32.c"/>

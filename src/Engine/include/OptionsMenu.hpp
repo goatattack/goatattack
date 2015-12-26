@@ -60,6 +60,7 @@ private:
 
     static void static_cancel_click(GuiObject *sender, void *data);
     static void static_close_options_click(GuiVirtualButton *sender, void *data);
+    static void static_skip_song_click(GuiVirtualButton *sender, void *data);
     static void static_back_options_click(GuiVirtualButton *sender, void *data);
     static void static_player_click(GuiVirtualButton *sender, void *data);
     static void static_player_skin_click(GuiListbox *sender, void *data, int index);
@@ -67,6 +68,7 @@ private:
     static void static_graphics_and_sound_click(GuiVirtualButton *sender, void *data);
     static void static_scanlines_intensity_changed(GuiVirtualScroll *sender, void *data, int value);
     static void static_music_volume_changed(GuiVirtualScroll *sender, void *data, int value);
+    static void static_map_volume_changed(GuiVirtualScroll *sender, void *data, int value);
     static void static_sfx_volume_changed(GuiVirtualScroll *sender, void *data, int value);
     static void static_controller_and_keyboard_click(GuiVirtualButton *sender, void *data);
     static void static_abort_capture_click(GuiVirtualButton *sender, void *data);
@@ -100,6 +102,7 @@ private:
 
     void close_capture_window_click();
     void close_options_click();
+    void skip_song();
     void back_click();
     void close_window_click();
     void player_click();
@@ -108,6 +111,7 @@ private:
     void graphics_and_sound_click();
     void scanlines_intensity_changed(int value);
     void music_volume_changed(int value);
+    void map_volume_changed(int value);
     void sfx_volume_changed(int value);
     void controller_and_keyboard_click();
     void abort_capture_click();

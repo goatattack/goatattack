@@ -15,7 +15,7 @@
 
 
 /* increase, if protocol changes */
-const int ProtocolVersion = 2;
+const int ProtocolVersion = 3;
 
 /* --- */
 typedef uint32_t hostaddr_t;

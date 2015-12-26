@@ -23,11 +23,14 @@ public:
         throw (KeyValueException, MusicException);
     virtual ~Music();
 
-    const Audio *get_audio() const;
+    const Audio *get_audio() const throw (MusicException);
+    bool get_do_not_play_in_music_player() const;
 
 private:
     Subsystem& subsystem;
-    Audio *audio;
+    mutable Audio *audio;
+    bool do_not_play_in_music_player;
+    std::string audio_filename;
 };
 
 class ScopeMusicStopper {

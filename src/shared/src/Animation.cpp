@@ -27,6 +27,8 @@ Animation::Animation(Subsystem& subsystem, const std::string& filename, ZipReade
 
         screen_shaker = atoi(get_value("screen_shaker").c_str());
 
+        in_background = (atoi(get_value("background").c_str()) ? true : false);
+
         projectile = (atoi(get_value("projectile").c_str()) ? true : false);
         damage = atoi(get_value("damage").c_str());
         randomized_index = atoi(get_value("randomized_index").c_str());
@@ -96,6 +98,10 @@ double Animation::get_impact() const {
 
 bool Animation::is_projectile() const {
     return projectile;
+}
+
+bool Animation::is_in_background() const {
+    return in_background;
 }
 
 int Animation::get_damage() const {

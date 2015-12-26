@@ -769,7 +769,7 @@ void Server::event_data(const Connection *c, data_len_t len, void *data) throw (
                     GPakHash *hash = reinterpret_cast<GPakHash *>(t->data);
                     hash->from_net();
                     std::string pak_name = hash->pak_name;
-                    std::string pak_hash(hash->pak_hash, 64);
+                    std::string pak_hash(hash->pak_hash, sizeof(GPakHash::pak_hash));
                     const Resources::LoadedPaks& my_paks = resources.get_loaded_paks();
                     for (Resources::LoadedPaks::const_iterator it = my_paks.begin(); it != my_paks.end(); it++) {
                         const Resources::LoadedPak& my_pak = *it;

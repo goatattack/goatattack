@@ -231,6 +231,8 @@ void MainMenu::idle() throw (Exception) {
 
 void MainMenu::on_input_event(const InputData& input) { }
 
+void MainMenu::on_leave() { }
+
 /* ************************************************************************** */
 /* Play                                                                       */
 /* ************************************************************************** */
@@ -759,10 +761,10 @@ void MainMenu::list_packages_click() {
     Font *f = get_font();
     int vw = subsystem.get_view_width();
     int vh = subsystem.get_view_height();
-    int ww = 627;
+    int ww = 400;
     int wh = 256;
     int bh = 18;
-    const int hash_width = 450;
+    const int hash_width = 150;
 
     GuiWindow *window = push_window(vw / 2 - ww / 2, vh / 2 - wh / 2, ww, wh, "List Loaded Packages");
     window->set_cancelable(true);
@@ -816,7 +818,7 @@ void MainMenu::credits_click() {
     int vw = subsystem.get_view_width();
     int vh = subsystem.get_view_height();
     int ww = 200;
-    int wh = 225;
+    int wh = 240;
     int left = 10;
     int lft = 30;
     int tab = 90;
@@ -836,14 +838,15 @@ void MainMenu::credits_click() {
     create_label(window, tab, 80, "cataclisma");
 
     create_label(window, lft, 100, "music:");
-    create_label(window, tab, 100, "daniel wressle");
+    create_label(window, tab, 100, "daniel wressle,");
+    create_label(window, tab, 115, "martins garden");
 
-    create_label(window, left, 130, "special thanks to:");
-    create_label(window, left, 145, "ruby, cataclisma, julia, tanja, luxi");
-    create_label(window, left, 160, "and of course, frederic the goat");
+    create_label(window, left, 145, "special thanks to:");
+    create_label(window, left, 160, "ruby, cataclisma, julia, tanja, luxi");
+    create_label(window, left, 175, "and of course, frederic the goat");
 
     int bw = 55;
-    create_button(window, ww / 2 - bw / 2, 182, bw, 18, "Close", static_close_window_click, this);
+    create_button(window, ww / 2 - bw / 2, wh - 43, bw, 18, "Close", static_close_window_click, this);
 }
 
 /* ************************************************************************** */

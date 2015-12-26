@@ -24,6 +24,9 @@ public:
     virtual void idle() throw (Exception);
     virtual void on_input_event(const InputData& input);
 
+protected:
+    virtual void on_leave();
+
 private:
     enum MenuButtonState {
         MenuButtonStateNone = 0,

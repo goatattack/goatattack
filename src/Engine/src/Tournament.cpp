@@ -134,7 +134,7 @@ Tournament::~Tournament() {
         logger->set_map(0);
     }
 
-    subsystem.stop_music();
+    //subsystem.stop_music();
 }
 
 void Tournament::set_gui_is_destroyed(bool state) {
@@ -187,10 +187,6 @@ void Tournament::set_player_configuration(Configuration *config) {
 
 void Tournament::set_ready() {
     ready = true;
-    const std::string& music_name = map.get_value("music");
-    if (music_name.length()) {
-        subsystem.play_music(resources.get_music(music_name));
-    }
 }
 
 bool Tournament::is_ready() const {

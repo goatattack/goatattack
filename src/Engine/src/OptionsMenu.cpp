@@ -15,7 +15,7 @@ void OptionsMenu::show_options() {
         int vw = subsystem.get_view_width();
         int vh = subsystem.get_view_height();
         int ww = 213;
-        int wh = (in_game ? 200 : 165);
+        int wh = (in_game ? 235 : 165);
         int bw = 140;
 
         nav.clear();
@@ -29,10 +29,11 @@ void OptionsMenu::show_options() {
         nav.add_button(gui.create_button(window, ww / 2 - bw / 2, 45, bw, 26, "Graphics And Sound", static_graphics_and_sound_click, this));
         nav.add_button(gui.create_button(window, ww / 2 - bw / 2, 80, bw, 26, "Controller And Keyboard", static_controller_and_keyboard_click, this));
         if (in_game) {
-            nav.add_button(gui.create_button(window, ww / 2 - bw / 2, 115, bw, 26, "Return To Main Menu", static_back_options_click, this));
+            nav.add_button(gui.create_button(window, ww / 2 - bw / 2, 115, bw, 26, "Skip song", static_skip_song_click, this));
+            nav.add_button(gui.create_button(window, ww / 2 - bw / 2, 150, bw, 26, "Return To Main Menu", static_back_options_click, this));
         }
 
-        nav.add_button(gui.create_button(window, ww / 2 - bw / 2, 150 - (in_game ? 0 : 35), bw, 26, "Close", static_close_options_click, this));
+        nav.add_button(gui.create_button(window, ww / 2 - bw / 2, 185 - (in_game ? 0 : 70), bw, 26, "Close", static_close_options_click, this));
 
         if (in_game) {
             nav.install_handlers(window, static_nav_close, this);
@@ -62,8 +63,15 @@ void OptionsMenu::close_options_click() {
         options_visible = false;
         gui.pop_window();
         options_closed();
-        std::cout << "BREAK" << std::endl;
     }
+}
+
+void OptionsMenu::static_skip_song_click(GuiVirtualButton *sender, void *data) {
+    (reinterpret_cast<OptionsMenu *>(data))->skip_song();
+}
+
+void OptionsMenu::skip_song() {
+    subsystem.skip_music_player_song();
 }
 
 void OptionsMenu::static_back_options_click(GuiVirtualButton *sender, void *data) {
@@ -146,7 +154,7 @@ void OptionsMenu::graphics_and_sound_click() {
     int vw = subsystem.get_view_width();
     int vh = subsystem.get_view_height();
     int ww = 253;
-    int wh = 155;
+    int wh = 170; //155;
     int bw = 140;
 
     GuiWindow *window = gui.push_window(vw / 2 - ww / 2, vh / 2- wh / 2, ww, wh, "Graphics And Sound");
@@ -158,9 +166,13 @@ void OptionsMenu::graphics_and_sound_click() {
     gui.create_hscroll(window, 95, 46, 143, 25, 100, config.get_int("scanlines_intensity"), static_scanlines_intensity_changed, this);
     gui.create_box(window, 15, 66, ww - 30, 1);
     gui.create_label(window, 15, 75, "music volume:");
-    gui.create_hscroll(window, 95, 76, 143, 0, 128, config.get_int("music_volume"), static_music_volume_changed, this);
-    gui.create_label(window, 15, 90, "sfx volume:");
-    gui.create_hscroll(window, 95, 91, 143, 0, 128, config.get_int("sfx_volume"), static_sfx_volume_changed, this);
+    gui.create_hscroll(window, 95, 76, 143, 0, 100, config.get_int("music_volume"), static_music_volume_changed, this);
+
+    gui.create_label(window, 15, 90, "map volume:");
+    gui.create_hscroll(window, 95, 91, 143, 0, 128, config.get_int("map_volume"), static_map_volume_changed, this);
+
+    gui.create_label(window, 15, 105, "sfx volume:");
+    gui.create_hscroll(window, 95, 106, 143, 0, 128, config.get_int("sfx_volume"), static_sfx_volume_changed, this);
 
     bw = 55;
     gui.create_button(window, ww / 2 - bw / 2, wh - 43, bw, 18, "Close", static_close_window_click, this);
@@ -199,8 +211,19 @@ void OptionsMenu::static_music_volume_changed(GuiVirtualScroll *sender, void *da
 }
 
 void OptionsMenu::music_volume_changed(int value) {
-    subsystem.set_music_volume(value);
+    subsystem.set_music_volume(value, in_game);
     config.set_int("music_volume", value);
+}
+
+void OptionsMenu::static_map_volume_changed(GuiVirtualScroll *sender, void *data, int value) {
+    (reinterpret_cast<OptionsMenu *>(data))->map_volume_changed(value);
+}
+
+void OptionsMenu::map_volume_changed(int value) {
+    if (in_game) {
+        subsystem.set_relative_music_volume(value);
+    }
+    config.set_int("map_volume", value);
 }
 
 void OptionsMenu::static_sfx_volume_changed(GuiVirtualScroll *sender, void *data, int value) {

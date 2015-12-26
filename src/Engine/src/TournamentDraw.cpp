@@ -23,8 +23,8 @@ void Tournament::draw() {
         draw_npcs();
         draw_players();
         draw_player_addons();
-        draw_animations(false);
         draw_map(false);
+        draw_animations(false);
         draw_enemies_on_hud();
         draw_player_names();
         draw_team_colours();
@@ -202,21 +202,22 @@ void Tournament::draw_animations(bool background) {
         it != game_animations.end(); it++)
     {
         GameAnimation *gani = *it;
+        if (gani->animation->is_in_background() == background) {
+            int x = static_cast<int>(round(gani->state.x));
+            int y = static_cast<int>(round(gani->state.y));
 
-        int x = static_cast<int>(round(gani->state.x));
-        int y = static_cast<int>(round(gani->state.y));
+            TileGraphic *tg = gani->animation->get_tile()->get_tilegraphic();
 
-        TileGraphic *tg = gani->animation->get_tile()->get_tilegraphic();
+            subsystem.draw_tilegraphic(tg, gani->index, x + left, y + top);
 
-        subsystem.draw_tilegraphic(tg, gani->index, x + left, y + top);
-
-        if (debug) {
-            if (gani->animation->get_damage()) {
-                int w = tg->get_width();
-                int h = tg->get_height();
-                subsystem.set_color(1.0f, 0.0f, 0.0f, 0.5f);
-                subsystem.draw_box(x + left, y + top, w, h);
-                subsystem.reset_color();
+            if (debug) {
+                if (gani->animation->get_damage()) {
+                    int w = tg->get_width();
+                    int h = tg->get_height();
+                    subsystem.set_color(1.0f, 0.0f, 0.0f, 0.5f);
+                    subsystem.draw_box(x + left, y + top, w, h);
+                    subsystem.reset_color();
+                }
             }
         }
     }

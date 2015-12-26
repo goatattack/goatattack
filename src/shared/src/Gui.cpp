@@ -33,6 +33,7 @@ Gui::~Gui() {
 void Gui::run() throw (Exception) {
     running = true;
     idleloop(-1);
+    on_leave();
 }
 
 void Gui::leave() {

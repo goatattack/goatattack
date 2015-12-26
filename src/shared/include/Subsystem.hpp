@@ -3,12 +3,15 @@
 
 #include "Exception.hpp"
 #include "Tile.hpp"
+#include "TextMessageSystem.hpp"
 
 #include <iostream>
 
 #ifdef _WIN32
 #include "Win.hpp"
 #endif
+
+class Resources;
 
 class SubsystemException : public Exception {
 public:
@@ -146,11 +149,15 @@ public:
     virtual int play_controlled_sound(Sound *sound, int loops) = 0;
     virtual bool is_sound_playing(Sound *sound) = 0;
 
-    virtual void play_music(Music *music) = 0;
+    virtual bool play_music(Music *music) = 0;
     virtual void stop_music() = 0;
+    virtual void start_music_player(Resources& resources, TextMessageSystem& tms) = 0;
+    virtual void skip_music_player_song() = 0;
+    virtual void stop_music_player() = 0;
 
-    virtual void set_music_volume(int v) = 0;
+    virtual void set_music_volume(int v, bool in_game = false) = 0;
     virtual int get_music_volume() = 0;
+    virtual void set_relative_music_volume(int v) = 0;
     virtual void set_sound_volume(int v) = 0;
 
     virtual bool get_input(InputData& input) = 0;

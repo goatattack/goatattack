@@ -36,6 +36,7 @@ public:
     double get_springiness() const;
     double get_impact() const;
     bool is_projectile() const;
+    bool is_in_background() const;
     int get_damage() const;
     int get_spread() const;
     int get_spread_count() const;
@@ -67,6 +68,7 @@ private:
     int x_offset;
     int y_offset;
     int screen_shaker;
+    bool in_background;
 
     void create_tile(const std::string& filename, ZipReader *zip) throw (Exception);
     void cleanup();

@@ -73,6 +73,7 @@ private:
     /* implementation of Gui::idle() and Gui::on_input_event() */
     virtual void idle() throw (Exception);
     virtual void on_input_event(const InputData& input);
+    virtual void on_leave();
     void hand_draw(int x, int y);
 
     /* helpers */

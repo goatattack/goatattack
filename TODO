@@ -86,6 +86,11 @@ DONE:
 * new menu
 * list of loaded paks
 * closing windows with escape keys
+* animation z-order fixed
+* map volume added
+* hasher switched from SHA256 to CRC64
+* changed protocol version to 3
+* ingame music player added (thanks to daniel & marcel for this masterpieces)
 
 
 DEFERRED:

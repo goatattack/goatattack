@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CodeLite_Project Name="GoatAttack" InternalType="Console">
+  <Reconciliation>
+    <Regexes/>
+    <Excludepaths/>
+    <Ignorefiles/>
+    <Extensions>
+      <![CDATA[cpp;c;h;hpp;xrc;wxcp;fbp]]>
+    </Extensions>
+    <Topleveldir>../GoatAttack</Topleveldir>
+  </Reconciliation>
   <Plugins>
     <Plugin Name="qmake">
       <![CDATA[00070001N0018*Debug (dedicated)0000000000000001N0020*Release (dedicated)0000000000000001N0005Debug0000000000000001N0017Debug (dedicated)0000000000000001N0007Release0000000000000001N0015Release (32bit)0000000000000001N0019Release (dedicated)000000000000]]>
@@ -133,10 +142,11 @@
       <File Name="../../src/shared/include/SubsystemNull.hpp"/>
       <File Name="../../src/shared/include/Directory.hpp"/>
       <File Name="../../src/shared/include/ZipReader.hpp"/>
-      <File Name="../../src/shared/include/SHA256.hpp"/>
       <File Name="../../src/shared/include/Zip.hpp"/>
       <File Name="../../src/shared/include/ZipWriter.hpp"/>
       <File Name="../../src/shared/include/Scope.hpp"/>
+      <File Name="../../src/shared/include/CRC64.hpp"/>
+      <File Name="../../src/shared/include/TextMessageSystem.hpp"/>
     </VirtualDirectory>
     <VirtualDirectory Name="src">
       <File Name="../../src/shared/src/GuiObject.cpp"/>
@@ -180,9 +190,10 @@
       <File Name="../../src/shared/src/Object.cpp"/>
       <File Name="../../src/shared/src/Properties.cpp"/>
       <File Name="../../src/shared/src/ZipReader.cpp"/>
-      <File Name="../../src/shared/src/SHA256.cpp"/>
       <File Name="../../src/shared/src/Zip.cpp"/>
       <File Name="../../src/shared/src/ZipWriter.cpp"/>
+      <File Name="../../src/shared/src/CRC64.cpp"/>
+      <File Name="../../src/shared/src/TextMessageSystem.cpp"/>
     </VirtualDirectory>
   </VirtualDirectory>
   <VirtualDirectory Name="Engine">
