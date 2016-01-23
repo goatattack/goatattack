@@ -10,4 +10,4 @@ goatattack_CXXFLAGS += -D DEDICATED_SERVER
 else
 goatattack_LDADD += -lGL -lSDL2 -lSDL2_mixer
 endif
-goatattack_CXXFLAGS += -D DATA_DIRECTORY=$(pkgdatadir)
+goatattack_CXXFLAGS += -DDATA_DIRECTORY=$(pkgdatadir) -D__STDC_FORMAT_MACROS
