@@ -57,6 +57,7 @@
     <ClCompile Include="..\..\..\src\shared\src\Background.cpp" />
     <ClCompile Include="..\..\..\src\shared\src\Characterset.cpp" />
     <ClCompile Include="..\..\..\src\shared\src\Configuration.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\CRC64.cpp" />
     <ClCompile Include="..\..\..\src\shared\src\Directory.cpp" />
     <ClCompile Include="..\..\..\src\shared\src\Exception.cpp" />
     <ClCompile Include="..\..\..\src\shared\src\Font.cpp" />
@@ -75,12 +76,12 @@
     <ClCompile Include="..\..\..\src\shared\src\PNG.cpp" />
     <ClCompile Include="..\..\..\src\shared\src\Properties.cpp" />
     <ClCompile Include="..\..\..\src\shared\src\Resources.cpp" />
-    <ClCompile Include="..\..\..\src\shared\src\SHA256.cpp" />
     <ClCompile Include="..\..\..\src\shared\src\Sound.cpp" />
     <ClCompile Include="..\..\..\src\shared\src\Subsystem.cpp" />
     <ClCompile Include="..\..\..\src\shared\src\SubsystemNull.cpp" />
     <ClCompile Include="..\..\..\src\shared\src\SubsystemSDL.cpp" />
     <ClCompile Include="..\..\..\src\shared\src\TCPSocket.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\TextMessageSystem.cpp" />
     <ClCompile Include="..\..\..\src\shared\src\Thread.cpp" />
     <ClCompile Include="..\..\..\src\shared\src\Tile.cpp" />
     <ClCompile Include="..\..\..\src\shared\src\TileGraphic.cpp" />
@@ -90,7 +91,7 @@
     <ClCompile Include="..\..\..\src\shared\src\Timing.cpp" />
     <ClCompile Include="..\..\..\src\shared\src\UDPSocket.cpp" />
     <ClCompile Include="..\..\..\src\shared\src\Utils.cpp" />
-    <ClCompile Include="..\..\..\src\shared\src\ZIP.cpp" />
+    <ClCompile Include="..\..\..\src\shared\src\Zip.cpp" />
     <ClCompile Include="..\..\..\src\shared\src\ZipReader.cpp" />
     <ClCompile Include="..\..\..\src\shared\src\ZipWriter.cpp" />
     <ClCompile Include="..\..\..\src\shared\zlib\adler32.c" />
@@ -137,6 +138,7 @@
     <ClInclude Include="..\..\..\src\shared\include\Background.hpp" />
     <ClInclude Include="..\..\..\src\shared\include\Characterset.hpp" />
     <ClInclude Include="..\..\..\src\shared\include\Configuration.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\CRC64.hpp" />
     <ClInclude Include="..\..\..\src\shared\include\Directory.hpp" />
     <ClInclude Include="..\..\..\src\shared\include\Exception.hpp" />
     <ClInclude Include="..\..\..\src\shared\include\Font.hpp" />
@@ -155,14 +157,15 @@
     <ClInclude Include="..\..\..\src\shared\include\PNG.hpp" />
     <ClInclude Include="..\..\..\src\shared\include\Properties.hpp" />
     <ClInclude Include="..\..\..\src\shared\include\Resources.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\Scope.hpp" />
     <ClInclude Include="..\..\..\src\shared\include\ScopeAllocator.hpp" />
     <ClInclude Include="..\..\..\src\shared\include\ScopeCollector.hpp" />
-    <ClInclude Include="..\..\..\src\shared\include\SHA256.hpp" />
     <ClInclude Include="..\..\..\src\shared\include\Sound.hpp" />
     <ClInclude Include="..\..\..\src\shared\include\Subsystem.hpp" />
     <ClInclude Include="..\..\..\src\shared\include\SubsystemNull.hpp" />
     <ClInclude Include="..\..\..\src\shared\include\SubsystemSDL.hpp" />
     <ClInclude Include="..\..\..\src\shared\include\TCPSocket.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\TextMessageSystem.hpp" />
     <ClInclude Include="..\..\..\src\shared\include\Thread.hpp" />
     <ClInclude Include="..\..\..\src\shared\include\Tile.hpp" />
     <ClInclude Include="..\..\..\src\shared\include\TileGraphic.hpp" />
@@ -172,7 +175,7 @@
     <ClInclude Include="..\..\..\src\shared\include\Timing.hpp" />
     <ClInclude Include="..\..\..\src\shared\include\UDPSocket.hpp" />
     <ClInclude Include="..\..\..\src\shared\include\Utils.hpp" />
-    <ClInclude Include="..\..\..\src\shared\include\ZIP.hpp" />
+    <ClInclude Include="..\..\..\src\shared\include\Zip.hpp" />
     <ClInclude Include="..\..\..\src\shared\include\ZipReader.hpp" />
     <ClInclude Include="..\..\..\src\shared\include\ZipWriter.hpp" />
     <ClInclude Include="..\..\..\src\shared\zlib\crc32.h" />
@@ -185,7 +188,6 @@
     <ClInclude Include="..\..\..\src\shared\zlib\zlib.h" />
     <ClInclude Include="..\..\..\src\shared\zlib\zutil.h" />
     <ClInclude Include="..\..\Win.hpp" />
-    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="GoatAttack.rc" />
