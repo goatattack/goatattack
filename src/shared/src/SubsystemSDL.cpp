@@ -520,7 +520,7 @@ void SubsystemSDL::set_relative_music_volume(int v) {
         p = 100.0f;
     }
 
-    int rv = (music_volume / 100.0f * p);
+    int rv = static_cast<int>(music_volume / 100.0f * p);
     Mix_VolumeMusic(rv);
 }
 

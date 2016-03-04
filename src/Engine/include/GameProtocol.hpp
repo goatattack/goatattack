@@ -778,8 +778,9 @@ struct GHillCounter {
 
 #pragma pack(1)
 struct GPakHash {
+	static const int HashLength = 16;
     char pak_name[NameLength];
-    char pak_hash[16];  // CRC64
+	char pak_hash[HashLength];  // CRC64
 
     inline void from_net() { }
     inline void to_net() { }

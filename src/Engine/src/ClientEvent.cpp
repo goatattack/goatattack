@@ -95,7 +95,7 @@ void Client::sevt_login(ServerEvent& evt) {
         const Resources::LoadedPak& pak = *it;
         memset(&gph, 0, GPakHashLen);
         strncpy(gph.pak_name, pak.pak_short_name.c_str(), NameLength - 1);
-        strncpy(gph.pak_hash, pak.pak_hash.c_str(), sizeof(GPakHash::pak_hash));
+		strncpy(gph.pak_hash, pak.pak_hash.c_str(), GPakHash::HashLength);
         gph.to_net();
         stacked_send_data(evt.c, 0, GPSPakSyncHash, NetFlagsReliable, GPakHashLen, &gph);
     }
