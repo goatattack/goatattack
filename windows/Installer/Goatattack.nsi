@@ -63,7 +63,7 @@ VIAddVersionKey /LANG=${LANG_ENGLISH} "CompanyName" "goatattack.net"
 VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "${VERSION}"
 VIAddVersionKey /LANG=${LANG_ENGLISH} "InernalName" "Goat Attack Installer.exe"
 VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "Goat Attack"
-VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "Copyright (C) 2015"
+VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "Copyright (C) 2016"
 
 
 ;check for previous installed versions
