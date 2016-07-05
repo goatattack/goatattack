@@ -42,7 +42,6 @@
 		5268D6C51BA0A38E00399464 /* PNG.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5268D6991BA0A38E00399464 /* PNG.cpp */; };
 		5268D6C61BA0A38E00399464 /* Properties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5268D69A1BA0A38E00399464 /* Properties.cpp */; };
 		5268D6C71BA0A38E00399464 /* Resources.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5268D69B1BA0A38E00399464 /* Resources.cpp */; };
-		5268D6C81BA0A38E00399464 /* SHA256.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5268D69C1BA0A38E00399464 /* SHA256.cpp */; };
 		5268D6C91BA0A38E00399464 /* Sound.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5268D69D1BA0A38E00399464 /* Sound.cpp */; };
 		5268D6CA1BA0A38E00399464 /* Subsystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5268D69E1BA0A38E00399464 /* Subsystem.cpp */; };
 		5268D6CB1BA0A38E00399464 /* SubsystemNull.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5268D69F1BA0A38E00399464 /* SubsystemNull.cpp */; };
@@ -101,6 +100,8 @@
 		EC850B4A1B34323D00D90F2A /* SDL2_mixer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 524E104A1B33753A00AF62C4 /* SDL2_mixer.framework */; };
 		EC850B4B1B34323D00D90F2A /* SDL2_mixer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 524E104A1B33753A00AF62C4 /* SDL2_mixer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		EC850B4D1B34446500D90F2A /* frederic.icns in Resources */ = {isa = PBXBuildFile; fileRef = EC850B4C1B34446500D90F2A /* frederic.icns */; };
+		ECA4799C1D2BCE0D009D6C1F /* CRC64.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECA4799A1D2BCE0D009D6C1F /* CRC64.cpp */; settings = {ASSET_TAGS = (); }; };
+		ECA4799D1D2BCE0D009D6C1F /* TextMessageSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECA4799B1D2BCE0D009D6C1F /* TextMessageSystem.cpp */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -178,7 +179,6 @@
 		5268D6991BA0A38E00399464 /* PNG.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PNG.cpp; sourceTree = "<group>"; };
 		5268D69A1BA0A38E00399464 /* Properties.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Properties.cpp; sourceTree = "<group>"; };
 		5268D69B1BA0A38E00399464 /* Resources.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Resources.cpp; sourceTree = "<group>"; };
-		5268D69C1BA0A38E00399464 /* SHA256.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SHA256.cpp; sourceTree = "<group>"; };
 		5268D69D1BA0A38E00399464 /* Sound.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Sound.cpp; sourceTree = "<group>"; };
 		5268D69E1BA0A38E00399464 /* Subsystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Subsystem.cpp; sourceTree = "<group>"; };
 		5268D69F1BA0A38E00399464 /* SubsystemNull.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SubsystemNull.cpp; sourceTree = "<group>"; };
@@ -224,7 +224,6 @@
 		5268D6F31BA0A39800399464 /* Resources.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Resources.hpp; sourceTree = "<group>"; };
 		5268D6F41BA0A39800399464 /* ScopeAllocator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ScopeAllocator.hpp; sourceTree = "<group>"; };
 		5268D6F51BA0A39800399464 /* ScopeCollector.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ScopeCollector.hpp; sourceTree = "<group>"; };
-		5268D6F61BA0A39800399464 /* SHA256.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SHA256.hpp; sourceTree = "<group>"; };
 		5268D6F71BA0A39800399464 /* Sound.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Sound.hpp; sourceTree = "<group>"; };
 		5268D6F81BA0A39800399464 /* Subsystem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Subsystem.hpp; sourceTree = "<group>"; };
 		5268D6F91BA0A39800399464 /* SubsystemNull.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SubsystemNull.hpp; sourceTree = "<group>"; };
@@ -315,6 +314,11 @@
 		52D13D831BB9B2D0008B5EF5 /* TournamentWeapons.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TournamentWeapons.cpp; path = ../../../src/Engine/src/TournamentWeapons.cpp; sourceTree = "<group>"; };
 		EC7CFF6A1B345BCC001F3D45 /* Goat Attack.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Goat Attack.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		EC850B4C1B34446500D90F2A /* frederic.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = frederic.icns; sourceTree = "<group>"; };
+		ECA479971D2BCDE7009D6C1F /* CRC64.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CRC64.hpp; sourceTree = "<group>"; };
+		ECA479981D2BCDE7009D6C1F /* Scope.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Scope.hpp; sourceTree = "<group>"; };
+		ECA479991D2BCDE7009D6C1F /* TextMessageSystem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TextMessageSystem.hpp; sourceTree = "<group>"; };
+		ECA4799A1D2BCE0D009D6C1F /* CRC64.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CRC64.cpp; sourceTree = "<group>"; };
+		ECA4799B1D2BCE0D009D6C1F /* TextMessageSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextMessageSystem.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -347,6 +351,9 @@
 		524E0F951B33747D00AF62C4 /* include */ = {
 			isa = PBXGroup;
 			children = (
+				ECA479971D2BCDE7009D6C1F /* CRC64.hpp */,
+				ECA479981D2BCDE7009D6C1F /* Scope.hpp */,
+				ECA479991D2BCDE7009D6C1F /* TextMessageSystem.hpp */,
 				5268D6DA1BA0A39800399464 /* AABB.hpp */,
 				5268D6DB1BA0A39800399464 /* Animation.hpp */,
 				5268D6DC1BA0A39800399464 /* Audio.hpp */,
@@ -375,7 +382,6 @@
 				5268D6F31BA0A39800399464 /* Resources.hpp */,
 				5268D6F41BA0A39800399464 /* ScopeAllocator.hpp */,
 				5268D6F51BA0A39800399464 /* ScopeCollector.hpp */,
-				5268D6F61BA0A39800399464 /* SHA256.hpp */,
 				5268D6F71BA0A39800399464 /* Sound.hpp */,
 				5268D6F81BA0A39800399464 /* Subsystem.hpp */,
 				5268D6F91BA0A39800399464 /* SubsystemNull.hpp */,
@@ -400,6 +406,8 @@
 		524E0FC11B33747D00AF62C4 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				ECA4799A1D2BCE0D009D6C1F /* CRC64.cpp */,
+				ECA4799B1D2BCE0D009D6C1F /* TextMessageSystem.cpp */,
 				5268D6821BA0A38E00399464 /* AABB.cpp */,
 				5268D6831BA0A38E00399464 /* Animation.cpp */,
 				5268D6841BA0A38E00399464 /* Audio.cpp */,
@@ -426,7 +434,6 @@
 				5268D6991BA0A38E00399464 /* PNG.cpp */,
 				5268D69A1BA0A38E00399464 /* Properties.cpp */,
 				5268D69B1BA0A38E00399464 /* Resources.cpp */,
-				5268D69C1BA0A38E00399464 /* SHA256.cpp */,
 				5268D69D1BA0A38E00399464 /* Sound.cpp */,
 				5268D69E1BA0A38E00399464 /* Subsystem.cpp */,
 				5268D69F1BA0A38E00399464 /* SubsystemNull.cpp */,
@@ -649,7 +656,7 @@
 		528B25DA1B33584000849A91 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0630;
+				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Philippe Widmer";
 			};
 			buildConfigurationList = 528B25DD1B33584000849A91 /* Build configuration list for PBXProject "Goat Attack" */;
@@ -694,6 +701,7 @@
 				5268D6CE1BA0A38E00399464 /* Thread.cpp in Sources */,
 				5268D6C51BA0A38E00399464 /* PNG.cpp in Sources */,
 				52D13D8E1BB9B2D0008B5EF5 /* MasterQuery.cpp in Sources */,
+				ECA4799C1D2BCE0D009D6C1F /* CRC64.cpp in Sources */,
 				5268D6D41BA0A38E00399464 /* Timing.cpp in Sources */,
 				5268D6CC1BA0A38E00399464 /* SubsystemSDL.cpp in Sources */,
 				5268D6BE1BA0A38E00399464 /* Lightmap.cpp in Sources */,
@@ -735,6 +743,7 @@
 				52D13D881BB9B2D0008B5EF5 /* Game.cpp in Sources */,
 				5268D6D31BA0A38E00399464 /* Tileset.cpp in Sources */,
 				5268D6B01BA0A38E00399464 /* Audio.cpp in Sources */,
+				ECA4799D1D2BCE0D009D6C1F /* TextMessageSystem.cpp in Sources */,
 				52D13DA31BB9B2D0008B5EF5 /* TournamentTeam.cpp in Sources */,
 				5268D6B61BA0A38E00399464 /* Directory.cpp in Sources */,
 				52D13D871BB9B2D0008B5EF5 /* ClientServer.cpp in Sources */,
@@ -770,7 +779,6 @@
 				5268D6BA1BA0A38E00399464 /* Gui.cpp in Sources */,
 				52C38A131BA0A2A4002208C5 /* main.cpp in Sources */,
 				5268D6CF1BA0A38E00399464 /* Tile.cpp in Sources */,
-				5268D6C81BA0A38E00399464 /* SHA256.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -804,6 +812,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
@@ -883,6 +892,7 @@
 					../goatattack,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_BUNDLE_IDENTIFIER = "net.goatattack.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "Goat Attack";
 				STRIP_INSTALLED_PRODUCT = NO;
 				WRAPPER_EXTENSION = app;
@@ -914,6 +924,7 @@
 					../goatattack,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_BUNDLE_IDENTIFIER = "net.goatattack.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "Goat Attack";
 				STRIP_INSTALLED_PRODUCT = NO;
 				WRAPPER_EXTENSION = app;
