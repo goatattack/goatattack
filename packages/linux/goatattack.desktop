@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Goat Attack
+GenericName=Multiplayer shooter
+Comment=Fast-paced multiplayer pixel art shooter game
+Exec=goatattack
+Icon=goatattack
+Type=Application
+Categories=Game;ArcadeGame;

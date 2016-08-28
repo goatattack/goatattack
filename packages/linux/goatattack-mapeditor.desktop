@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Goat Attack Map Editor
+GenericName=Map editor for Goat Attack
+Comment=Map editor for the multiplayer game Goat Attack
+Exec=goatattack-mapeditor
+Icon=goatattack-mapeditor
+Type=Application
+Categories=Game;ArcadeGame;
