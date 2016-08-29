@@ -1,4 +1,4 @@
-AC_INIT([goatattack], [0.4.3-dev], [pw@earthwave.ch])
+AC_INIT([goatattack], [0.4.3], [pw@earthwave.ch])
 
 AM_INIT_AUTOMAKE([subdir-objects])
 LT_INIT
@@ -6,6 +6,7 @@ LT_INIT
 AC_LANG(C++)
 AC_LANG(C)
 AC_PROG_CXX
+AC_PROG_RANLIB
 
 AC_CONFIG_MACRO_DIR([m4])
 
@@ -49,7 +50,7 @@ if test ! -z "$missing_headers"; then
 fi
 
 # --- ready ---
-AC_CONFIG_FILES([Makefile src/Engine/Makefile])
+AC_CONFIG_FILES([Makefile src/shared/Makefile src/Engine/Makefile])
 if test "x$MAP_EDITOR" = "xyes"; then
 	if test "x$DEDICATED_SERVER" != "xyes"; then
 		AC_CONFIG_FILES([src/MapEditor/Makefile])

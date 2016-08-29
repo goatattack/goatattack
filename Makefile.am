@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = gnu
 ACLOCAL_AMFLAGS = -I m4
-SUBDIRS = src/Engine
+SUBDIRS = src/shared src/Engine
 LDADD = -lpthread -lrt
 if MAP_EDITOR
 SUBDIRS += src/MapEditor
