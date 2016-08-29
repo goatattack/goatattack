@@ -9,5 +9,9 @@ if DEDICATED_SERVER
 goatattack_CXXFLAGS += -D DEDICATED_SERVER
 else
 goatattack_LDADD += -lGL -lSDL2 -lSDL2_mixer
+iconsdir = $(datarootdir)/icons/hicolor/64x64/apps
+dist_icons_DATA = ../../packages/linux/goatattack.png
+desktopdir = $(datarootdir)/applications
+dist_desktop_DATA = ../../packages/linux/goatattack.desktop
 endif
 goatattack_CXXFLAGS += -DDATA_DIRECTORY=$(pkgdatadir) -D__STDC_FORMAT_MACROS

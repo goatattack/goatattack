@@ -6,3 +6,7 @@ goatattack_mapeditor_SOURCES += ../shared/zlib/adler32.c ../shared/zlib/crc32.c 
 goatattack_mapeditor_CXXFLAGS = -I ./include -I ../shared/include -I ../shared/zlib -Wno-unused-result
 goatattack_mapeditor_CXXFLAGS += -D DATA_DIRECTORY=$(pkgdatadir)
 goatattack_mapeditor_LDADD = -lpng -lGL -lSDL2 -lSDL2_mixer
+iconsdir = $(datarootdir)/icons/hicolor/64x64/apps
+dist_icons_DATA = ../../packages/linux/goatattack-mapeditor.png
+desktopdir = $(datarootdir)/applications
+dist_desktop_DATA = ../../packages/linux/goatattack-mapeditor.desktop
