@@ -59,127 +59,11 @@
       <File Name="../../src/MapEditor/include/MapEditor.hpp"/>
     </VirtualDirectory>
   </VirtualDirectory>
-  <VirtualDirectory Name="shared">
-    <VirtualDirectory Name="include">
-      <File Name="../../src/shared/include/AABB.hpp"/>
-      <File Name="../../src/shared/include/Animation.hpp"/>
-      <File Name="../../src/shared/include/Audio.hpp"/>
-      <File Name="../../src/shared/include/AudioNull.hpp"/>
-      <File Name="../../src/shared/include/AudioSDL.hpp"/>
-      <File Name="../../src/shared/include/Background.hpp"/>
-      <File Name="../../src/shared/include/Characterset.hpp"/>
-      <File Name="../../src/shared/include/Configuration.hpp"/>
-      <File Name="../../src/shared/include/CRC64.hpp"/>
-      <File Name="../../src/shared/include/Directory.hpp"/>
-      <File Name="../../src/shared/include/Exception.hpp"/>
-      <File Name="../../src/shared/include/Font.hpp"/>
-      <File Name="../../src/shared/include/Globals.hpp"/>
-      <File Name="../../src/shared/include/Gui.hpp"/>
-      <File Name="../../src/shared/include/GuiObject.hpp"/>
-      <File Name="../../src/shared/include/Icon.hpp"/>
-      <File Name="../../src/shared/include/KeyValue.hpp"/>
-      <File Name="../../src/shared/include/Lightmap.hpp"/>
-      <File Name="../../src/shared/include/Map.hpp"/>
-      <File Name="../../src/shared/include/Movable.hpp"/>
-      <File Name="../../src/shared/include/Music.hpp"/>
-      <File Name="../../src/shared/include/Mutex.hpp"/>
-      <File Name="../../src/shared/include/NPC.hpp"/>
-      <File Name="../../src/shared/include/Object.hpp"/>
-      <File Name="../../src/shared/include/PNG.hpp"/>
-      <File Name="../../src/shared/include/Properties.hpp"/>
-      <File Name="../../src/shared/include/Resources.hpp"/>
-      <File Name="../../src/shared/include/Scope.hpp"/>
-      <File Name="../../src/shared/include/ScopeAllocator.hpp"/>
-      <File Name="../../src/shared/include/ScopeCollector.hpp"/>
-      <File Name="../../src/shared/include/Sound.hpp"/>
-      <File Name="../../src/shared/include/Subsystem.hpp"/>
-      <File Name="../../src/shared/include/SubsystemNull.hpp"/>
-      <File Name="../../src/shared/include/SubsystemSDL.hpp"/>
-      <File Name="../../src/shared/include/TCPSocket.hpp"/>
-      <File Name="../../src/shared/include/TextMessageSystem.hpp"/>
-      <File Name="../../src/shared/include/Thread.hpp"/>
-      <File Name="../../src/shared/include/Tile.hpp"/>
-      <File Name="../../src/shared/include/TileGraphic.hpp"/>
-      <File Name="../../src/shared/include/TileGraphicGL.hpp"/>
-      <File Name="../../src/shared/include/TileGraphicNull.hpp"/>
-      <File Name="../../src/shared/include/Tileset.hpp"/>
-      <File Name="../../src/shared/include/Timing.hpp"/>
-      <File Name="../../src/shared/include/UDPSocket.hpp"/>
-      <File Name="../../src/shared/include/Utils.hpp"/>
-      <File Name="../../src/shared/include/Zip.hpp"/>
-      <File Name="../../src/shared/include/ZipReader.hpp"/>
-      <File Name="../../src/shared/include/ZipWriter.hpp"/>
-    </VirtualDirectory>
-    <VirtualDirectory Name="src">
-      <File Name="../../src/shared/src/AABB.cpp"/>
-      <File Name="../../src/shared/src/Animation.cpp"/>
-      <File Name="../../src/shared/src/Audio.cpp"/>
-      <File Name="../../src/shared/src/AudioNull.cpp"/>
-      <File Name="../../src/shared/src/AudioSDL.cpp"/>
-      <File Name="../../src/shared/src/Background.cpp"/>
-      <File Name="../../src/shared/src/Characterset.cpp"/>
-      <File Name="../../src/shared/src/Configuration.cpp"/>
-      <File Name="../../src/shared/src/CRC64.cpp"/>
-      <File Name="../../src/shared/src/Directory.cpp"/>
-      <File Name="../../src/shared/src/Exception.cpp"/>
-      <File Name="../../src/shared/src/Font.cpp"/>
-      <File Name="../../src/shared/src/Globals.cpp"/>
-      <File Name="../../src/shared/src/Gui.cpp"/>
-      <File Name="../../src/shared/src/GuiObject.cpp"/>
-      <File Name="../../src/shared/src/Icon.cpp"/>
-      <File Name="../../src/shared/src/KeyValue.cpp"/>
-      <File Name="../../src/shared/src/Lightmap.cpp"/>
-      <File Name="../../src/shared/src/Map.cpp"/>
-      <File Name="../../src/shared/src/Movable.cpp"/>
-      <File Name="../../src/shared/src/Music.cpp"/>
-      <File Name="../../src/shared/src/Mutex.cpp"/>
-      <File Name="../../src/shared/src/NPC.cpp"/>
-      <File Name="../../src/shared/src/Object.cpp"/>
-      <File Name="../../src/shared/src/PNG.cpp"/>
-      <File Name="../../src/shared/src/Properties.cpp"/>
-      <File Name="../../src/shared/src/Resources.cpp"/>
-      <File Name="../../src/shared/src/Sound.cpp"/>
-      <File Name="../../src/shared/src/Subsystem.cpp"/>
-      <File Name="../../src/shared/src/SubsystemNull.cpp"/>
-      <File Name="../../src/shared/src/SubsystemSDL.cpp"/>
-      <File Name="../../src/shared/src/TCPSocket.cpp"/>
-      <File Name="../../src/shared/src/TextMessageSystem.cpp"/>
-      <File Name="../../src/shared/src/Thread.cpp"/>
-      <File Name="../../src/shared/src/Tile.cpp"/>
-      <File Name="../../src/shared/src/TileGraphic.cpp"/>
-      <File Name="../../src/shared/src/TileGraphicGL.cpp"/>
-      <File Name="../../src/shared/src/TileGraphicNull.cpp"/>
-      <File Name="../../src/shared/src/Tileset.cpp"/>
-      <File Name="../../src/shared/src/Timing.cpp"/>
-      <File Name="../../src/shared/src/UDPSocket.cpp"/>
-      <File Name="../../src/shared/src/Utils.cpp"/>
-      <File Name="../../src/shared/src/Zip.cpp"/>
-      <File Name="../../src/shared/src/ZipReader.cpp"/>
-      <File Name="../../src/shared/src/ZipWriter.cpp"/>
-    </VirtualDirectory>
-    <VirtualDirectory Name="zlib">
-      <File Name="../../src/shared/zlib/adler32.c"/>
-      <File Name="../../src/shared/zlib/crc32.c"/>
-      <File Name="../../src/shared/zlib/crc32.h"/>
-      <File Name="../../src/shared/zlib/gzguts.h"/>
-      <File Name="../../src/shared/zlib/inffast.c"/>
-      <File Name="../../src/shared/zlib/inffast.h"/>
-      <File Name="../../src/shared/zlib/inffixed.h"/>
-      <File Name="../../src/shared/zlib/inflate.c"/>
-      <File Name="../../src/shared/zlib/inflate.h"/>
-      <File Name="../../src/shared/zlib/inftrees.c"/>
-      <File Name="../../src/shared/zlib/inftrees.h"/>
-      <File Name="../../src/shared/zlib/zconf.h"/>
-      <File Name="../../src/shared/zlib/zlib.h"/>
-      <File Name="../../src/shared/zlib/zutil.c"/>
-      <File Name="../../src/shared/zlib/zutil.h"/>
-    </VirtualDirectory>
-  </VirtualDirectory>
   <Dependencies Name="Debug"/>
   <Dependencies Name="Release"/>
   <Settings Type="Executable">
     <GlobalSettings>
-      <Compiler Options="-pedantic;-Wno-unused-result" C_Options="" Assembler="">
+      <Compiler Options="-pedantic;-Wextra;-Wno-unused-result;-Wno-unused-parameter" C_Options="-Wextra;-Wno-unused-result;-Wno-unused-parameter" Assembler="">
         <IncludePath Value="."/>
         <IncludePath Value="../../src/MapEditor/include"/>
         <IncludePath Value="../../src/shared/include"/>
@@ -188,6 +72,7 @@
       </Compiler>
       <Linker Options="">
         <LibraryPath Value="."/>
+        <Library Value="shared"/>
         <Library Value="png"/>
         <Library Value="pthread"/>
         <Library Value="rt"/>
@@ -202,9 +87,12 @@
         <IncludePath Value="."/>
         <Preprocessor Value="DATA_DIRECTORY=${HOME}/Programming/goatattack/data"/>
       </Compiler>
-      <Linker Options="" Required="yes"/>
+      <Linker Options="" Required="yes">
+        <LibraryPath Value="../shared/Debug"/>
+      </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="./$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <BuildSystem Name="Default"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>
       </Environment>
@@ -242,9 +130,12 @@
         <Preprocessor Value="NDEBUG"/>
         <Preprocessor Value="DATA_DIRECTORY=/usr/share/goatattack"/>
       </Compiler>
-      <Linker Options="" Required="yes"/>
+      <Linker Options="" Required="yes">
+        <LibraryPath Value="../shared/Release"/>
+      </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Release" Command="./$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <BuildSystem Name="Default"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>
       </Environment>

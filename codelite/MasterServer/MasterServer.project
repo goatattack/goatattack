@@ -37,31 +37,18 @@
     </VirtualDirectory>
     <File Name="../../src/MasterServer/main.cpp"/>
   </VirtualDirectory>
-  <VirtualDirectory Name="shared">
-    <VirtualDirectory Name="include">
-      <File Name="../../src/shared/include/Exception.hpp"/>
-      <File Name="../../src/shared/include/Mutex.hpp"/>
-      <File Name="../../src/shared/include/TCPSocket.hpp"/>
-      <File Name="../../src/shared/include/Timing.hpp"/>
-      <File Name="../../src/shared/include/UDPSocket.hpp"/>
-    </VirtualDirectory>
-    <VirtualDirectory Name="src">
-      <File Name="../../src/shared/src/Exception.cpp"/>
-      <File Name="../../src/shared/src/Mutex.cpp"/>
-      <File Name="../../src/shared/src/TCPSocket.cpp"/>
-      <File Name="../../src/shared/src/Timing.cpp"/>
-      <File Name="../../src/shared/src/UDPSocket.cpp"/>
-    </VirtualDirectory>
-  </VirtualDirectory>
+  <Dependencies Name="Debug"/>
+  <Dependencies Name="Release"/>
   <Settings Type="Executable">
     <GlobalSettings>
-      <Compiler Options="-pedantic;-Wno-unused-result" C_Options="-pedantic;-Wno-unused-result" Assembler="">
+      <Compiler Options="-pedantic;-Wextra;-Wno-unused-result;-Wno-unused-parameter" C_Options="-pedantic;-Wextra;-Wno-unused-result;-Wno-unused-parameter" Assembler="">
         <IncludePath Value="."/>
         <IncludePath Value="../../src/MasterServer/include"/>
         <IncludePath Value="../../src/shared/include"/>
       </Compiler>
       <Linker Options="">
         <LibraryPath Value="."/>
+        <Library Value="shared"/>
       </Linker>
       <ResourceCompiler Options=""/>
     </GlobalSettings>
@@ -69,9 +56,12 @@
       <Compiler Options="-g;-O0;-Wall" C_Options="-g;-O0;-Wall" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="."/>
       </Compiler>
-      <Linker Options="" Required="yes"/>
+      <Linker Options="" Required="yes">
+        <LibraryPath Value="../shared/Debug"/>
+      </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="./$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <BuildSystem Name="Default"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>
       </Environment>
@@ -108,9 +98,12 @@
         <IncludePath Value="."/>
         <Preprocessor Value="NDEBUG"/>
       </Compiler>
-      <Linker Options="" Required="yes"/>
+      <Linker Options="" Required="yes">
+        <LibraryPath Value="../shared/Release"/>
+      </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Release" Command="./$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <BuildSystem Name="Default"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>
       </Environment>

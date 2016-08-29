@@ -12,16 +12,21 @@
   <Environment>
     <![CDATA[]]>
   </Environment>
+  <Project Name="shared" Path="shared/shared.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
+      <Environment/>
       <Project Name="MasterServer" ConfigName="Debug"/>
       <Project Name="MapEditor" ConfigName="Debug"/>
       <Project Name="GoatAttack" ConfigName="Debug"/>
+      <Project Name="shared" ConfigName="Debug"/>
     </WorkspaceConfiguration>
-    <WorkspaceConfiguration Name="Release" Selected="no">
+    <WorkspaceConfiguration Name="Release" Selected="yes">
+      <Environment/>
       <Project Name="GoatAttack" ConfigName="Release"/>
       <Project Name="MapEditor" ConfigName="Release"/>
       <Project Name="MasterServer" ConfigName="Release"/>
+      <Project Name="shared" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>
