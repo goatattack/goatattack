@@ -39,6 +39,7 @@ Configuration::Configuration(const std::string& directory,
     cdef("max_players", "12");
     cdef("duration", "20");
     cdef("warmup", "0");
+    cdef("text_fade_speed", "6");
 
     cdef("bind_escape_device", "0");
     cdef("bind_escape_param", "27");

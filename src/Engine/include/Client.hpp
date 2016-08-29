@@ -83,6 +83,9 @@ private:
     bool running;
     bool reload_resources;
 
+    double text_message_duration;
+    double text_message_fade_out_at;
+
     gametime_t now;
     gametime_t last;
 
@@ -138,6 +141,7 @@ private:
     void window_close_click();
     void chat_send_message();
     void show_options_menu();
+    void update_text_fade_speed();
 };
 
 #endif

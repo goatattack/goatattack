@@ -1,3 +1,10 @@
+0.4.4
+- changing text fading speed
+- splitting shared from other projects
+- linking against system zlib (thanks to Rémi Verschelde)
+- build system cleanups (thanks to Rémi Verschelde)
+- desktop icon added, better ones are in work in progress (thanks to Rémi Verschelde)
+
 0.4.3
 - new rounded buttons
 - new menu

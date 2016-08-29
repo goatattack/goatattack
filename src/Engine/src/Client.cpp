@@ -5,11 +5,8 @@
 #include <iostream>
 #include <algorithm>
 
-static double TextMessageDuration = 7500.0f;
-static double TextMessageFadeOutAt = 6000.0f;
-
 const ns_t CycleS = 1000000000;
-const int BroadcastsPerS = 15; //20;
+const int BroadcastsPerS = 15;
 const ns_t UpdatePeriod = CycleS / BroadcastsPerS;
 
 template <class T> static bool erase_element(T *elem) {
@@ -35,6 +32,7 @@ Client::Client(Resources& resources, Subsystem& subsystem, hostaddr_t host,
 {
     conn = 0;
     get_now(last);
+    update_text_fade_speed();
 
     /* start data receiver thread */
     if (!thread_start()) {
@@ -206,7 +204,7 @@ void Client::idle() throw (Exception) {
     {
         TextMessage *cmsg = *it;
         cmsg->duration += (diff / 1000000.0f);
-        if (cmsg->duration > TextMessageDuration) {
+        if (cmsg->duration > text_message_duration) {
             cmsg->delete_me = true;
         }
     }
@@ -238,8 +236,8 @@ void Client::idle() throw (Exception) {
     {
         TextMessage *cmsg = *it;
         float alpha = 1.0f;
-        if (cmsg->duration > TextMessageFadeOutAt) {
-            alpha = static_cast<float>((TextMessageDuration - cmsg->duration) / (TextMessageDuration - TextMessageFadeOutAt));
+        if (cmsg->duration > text_message_fade_out_at) {
+            alpha = static_cast<float>((text_message_duration - cmsg->duration) / (text_message_duration - text_message_fade_out_at));
         }
 
         subsystem.set_color(0.75f, 0.75f, 1.0f, alpha);
@@ -407,6 +405,8 @@ void Client::options_closed() {
             send_data(conn, factory.get_tournament_id(), GPSPlayerChanged, NetFlagsReliable, GPlayerDescriptionLen, &pdesc);
         }
     }
+
+    update_text_fade_speed();
 }
 
 void Client::static_window_close_click(GuiVirtualButton *sender, void *data) {
@@ -486,6 +486,11 @@ void Client::show_options_menu() {
             me->state.client_server_state.key_states = 0;
         }
     }
+}
+
+void Client::update_text_fade_speed() {
+    text_message_duration = player_config.get_int("text_fade_speed") * 1000.0f;
+    text_message_fade_out_at = text_message_duration - 1500.0f;
 }
 
 void Client::thread() {

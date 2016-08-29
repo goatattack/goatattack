@@ -71,14 +71,6 @@ struct GameTextAnimation {
     bool delete_me;
 };
 
-struct GameTextMessage {
-    GameTextMessage() : duration(0.0f), delete_me(false) { }
-
-    std::string text;
-    double duration;
-    bool delete_me;
-};
-
 struct GameObject {
     GameObject() : picked(false), spawn_counter(0.0f),
         falling(false), last_falling_y_pos(Player::PlayerFallingTestMaxY),
@@ -245,7 +237,6 @@ protected:
     Background *background;
 
     typedef std::vector<GameTextAnimation *> GameTextAnimations;
-    typedef std::vector<GameTextMessage *> GameTextMessages;
     typedef std::vector<GameObject *> SpawnPoints;
     typedef std::vector<GameObject *> FrogSpawnPoints;
 
