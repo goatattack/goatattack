@@ -1,4 +1,5 @@
 #include "MessageSequencer.hpp"
+#include "AutoPtr.hpp"
 
 #include <cstdlib>
 #include <cstdio>
@@ -62,8 +63,8 @@ void MessageSequencer::request_server_info(hostaddr_t host, hostport_t port) thr
 
 void MessageSequencer::login(const std::string& password, data_len_t len, const void *data) throw (Exception) {
     int sz = sizeof(NetLogin) + len;
-    char *tmp = new char[sz];
-    NetLogin *login = reinterpret_cast<NetLogin *>(tmp);
+    AutoPtr<char []> tmp(new char[sz]);
+    NetLogin *login = reinterpret_cast<NetLogin *>(&tmp[0]);
     memset(login, 0, sizeof(NetLogin));
     strncpy(login->pwd, password.c_str(), NetLoginPasswordLen - 1);
     login->len = len;
@@ -71,7 +72,6 @@ void MessageSequencer::login(const std::string& password, data_len_t len, const 
         memcpy(login->data, data, len);
     }
     push(NetFlagsReliable, NetCommandLogin, sz, login);
-    delete[] tmp;
 }
 
 void MessageSequencer::login(data_len_t len, const void *data) throw (Exception) {
