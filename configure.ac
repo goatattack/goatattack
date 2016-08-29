@@ -20,9 +20,11 @@ AC_CHECK_LIB([png], [png_init_io], [], [missing_libraries="$missing_libraries li
 # --- compile args ---
 AC_ARG_ENABLE([dedicated-server], [  --enable-dedicated-server  Build dedicated server [[default=no]]], [DEDICATED_SERVER="yes"], [])
 AC_ARG_ENABLE([master-server], [  --enable-master-server  Build master server [[default=no]]], [MASTER_SERVER="yes"], [])
+AC_ARG_ENABLE([internal-zlib], [  --enable-internal-zlib  Build with the project copy of zlib [[default=no]]], [INTERNAL_ZLIB="yes"], [])
 AC_ARG_ENABLE([map-editor], [  --enable-map-editor     Build map editor [[default=no]]], [MAP_EDITOR="yes"], [])
 AM_CONDITIONAL([DEDICATED_SERVER], [test "x$DEDICATED_SERVER" = xyes])
 AM_CONDITIONAL([MASTER_SERVER], [test "x$MASTER_SERVER" = xyes])
+AM_CONDITIONAL([INTERNAL_ZLIB], [test "x$INTERNAL_ZLIB" = xyes])
 AM_CONDITIONAL([MAP_EDITOR], [test "x$MAP_EDITOR" = xyes])
 
 # --- check additional libraries ---
@@ -30,6 +32,11 @@ if test "x$DEDICATED_SERVER" != "xyes"; then
 	AC_CHECK_LIB([SDL2], [SDL_Init], [], [missing_libraries="$missing_libraries libSDL2"])
 	AC_CHECK_LIB([GL], [glClear], [], [missing_libraries="$missing_libraries libGL"])
 	AC_CHECK_LIB([SDL2_mixer], [Mix_Init], [], [missing_libraries="$missing_libraries libSDL2_mixer"])
+fi
+
+# --- check zlib ---
+if test "x$INTERNAL_ZLIB" != "xyes"; then
+	AC_CHECK_LIB([z], [gzread], [], [missing_libraries="$missing_libraires libz (you can use --enable-internal-zlib)"])
 fi
 
 # --- bail out on errors ---
@@ -71,5 +78,9 @@ else
 fi
 if test "x$MASTER_SERVER" = "xyes"; then
 	AC_MSG_NOTICE([   -> master server])
+fi
+if test "x$INTERNAL_ZLIB" = "xyes"; then
+	AC_MSG_NOTICE([])
+	AC_MSG_NOTICE([ * taking project copy of zlib])
 fi
 AC_MSG_NOTICE([])
