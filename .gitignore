@@ -39,3 +39,4 @@ src/MapEditor/goatattack-mapeditor
 src/MapEditor/Makefile.in
 src/MasterServer/goatattack-masterserver
 src/MasterServer/Makefile.in
+src/shared/libshared.a

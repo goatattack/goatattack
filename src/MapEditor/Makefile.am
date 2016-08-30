@@ -13,7 +13,7 @@ else
 goatattack_mapeditor_LDADD += -lz
 endif
 
-iconsdir = $(datarootdir)/icons/hicolor/64x64/apps
-dist_icons_DATA = ../../packages/linux/goatattack-mapeditor.png
+iconsdir = $(datarootdir)/icons/hicolor/scalable/apps
+dist_icons_DATA = ../../packages/linux/goatattack-mapeditor.svg
 desktopdir = $(datarootdir)/applications
 dist_desktop_DATA = ../../packages/linux/goatattack-mapeditor.desktop
