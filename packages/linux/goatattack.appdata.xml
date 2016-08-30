@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application>
+  <id type="desktop">goatattack.desktop</id>
+  <metadata_licence>CC0</metadata_licence>
+  <project_license>GPL-3.0</project_license>
+  <name>Goat Attack</name>
+  <summary>Multiplayer Pixel Art Shooter Game</summary>
+  <summary xml:lang="de">Multiplayer Pixel Art Shooter Spiel</summary>
+  <description>
+    <p>Goat Attack is a multiplayer 2D platformer pixel art shooter game. You can play it in a local network or over the Internet. Six gameplay modes are supported. Deathmatch, team deathmatch, capture the flag, speed race, catch the coin and goat of the hill.</p>
+    <p xml:lang="de">Goat Attack ist ein Multiplayer 2D Plattformer Pixel Art Shooter Spiel. Es kann im lokalen Netzwerk oder im Internet gespielt werden. Sechs Spielmodi werden angeboten. Deathmatch, Team Deathmatch, Capture The Flag, Speed Race, Catch The Coin und Goat Of The Hill</p>
+  </description>
+  <screenshots>
+    <screenshot type="default">https://raw.githubusercontent.com/goatattack/goatattack/master/pictures/ctc.png</screenshot>
+    <screenshot>https://raw.githubusercontent.com/goatattack/goatattack/master/pictures/dm.png</screenshot>
+    <screenshot>https://raw.githubusercontent.com/goatattack/goatattack/master/pictures/ctf.png</screenshot>
+    <screenshot>https://raw.githubusercontent.com/goatattack/goatattack/master/pictures/tdm.png</screenshot>
+    <screenshot>https://raw.githubusercontent.com/goatattack/goatattack/master/pictures/sr.png</screenshot>
+    <screenshot>https://raw.githubusercontent.com/goatattack/goatattack/master/pictures/goh.png</screenshot>
+  </screenshots>
+  <url type="homepage">https://www.goatattack.net</url>
+  <updatecontact>pw@goatattack.net</updatecontact>
+</application>
