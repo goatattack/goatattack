@@ -18,6 +18,8 @@ iconsdir = $(datarootdir)/icons/hicolor/scalable/apps
 dist_icons_DATA = ../../packages/linux/goatattack.svg
 desktopdir = $(datarootdir)/applications
 dist_desktop_DATA = ../../packages/linux/goatattack.desktop
+appdatadir = $(datarootdir)/appdata
+dist_appdata_DATA = ../../packages/linux/goatattack.appdata.xml
 endif
 
 goatattack_CXXFLAGS += -DDATA_DIRECTORY=$(pkgdatadir) -D__STDC_FORMAT_MACROS

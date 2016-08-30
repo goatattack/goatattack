@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <application>
   <id type="desktop">goatattack.desktop</id>
-  <metadata_licence>CC0</metadata_licence>
+  <metadata_licence>CC-BY-SA-4.0</metadata_licence>
   <project_license>GPL-3.0</project_license>
   <name>Goat Attack</name>
   <summary>Multiplayer Pixel Art Shooter Game</summary>
@@ -18,6 +18,6 @@
     <screenshot>https://raw.githubusercontent.com/goatattack/goatattack/master/pictures/sr.png</screenshot>
     <screenshot>https://raw.githubusercontent.com/goatattack/goatattack/master/pictures/goh.png</screenshot>
   </screenshots>
-  <url type="homepage">https://www.goatattack.net</url>
+  <url type="homepage">http://www.goatattack.net</url>
   <updatecontact>pw@goatattack.net</updatecontact>
 </application>
