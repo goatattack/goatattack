@@ -31,3 +31,6 @@ the game and the map editor can be compiled for all three platforms. the master 
 3. `./configure --enable-dedicated-server`
 4. `make`
 5. `make install`
+
+## Visit the forum
+If you have any question, visit the [Goat Attack forum](http://forum.goatattack.net).
