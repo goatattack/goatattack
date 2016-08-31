@@ -15,6 +15,23 @@
  *  along with Goat Attack.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "Cargo.hpp"
+
+#include <iostream>
+
 int main(int argc, char *argv[]) {
+    if (argc != 3) {
+        std::cout << "usage " << argv[0] << " path/to/files outfile" << std::endl;
+        return 2;
+    }
+
+    try {
+        Cargo cargo(argv[1], argv[2]);
+        cargo.pack();
+    } catch (const Exception& e) {
+        std::cout << "ERROR: " << e.what() << std::endl;
+        return 1;
+    }
+
     return 0;
 }

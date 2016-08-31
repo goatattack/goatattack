@@ -42,6 +42,7 @@ shared.mk
 shared.txt
 Cargo.mk
 Cargo.txt
+goatattack-cargo
 src/Engine/goatattack
 src/Engine/Makefile.in
 src/MapEditor/goatattack-mapeditor
