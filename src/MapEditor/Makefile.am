@@ -17,3 +17,5 @@ iconsdir = $(datarootdir)/icons/hicolor/scalable/apps
 dist_icons_DATA = ../../packages/linux/goatattack-mapeditor.svg
 desktopdir = $(datarootdir)/applications
 dist_desktop_DATA = ../../packages/linux/goatattack-mapeditor.desktop
+appdatadir = $(datarootdir)/appdata
+dist_appdata_DATA = ../../packages/linux/goatattack-mapeditor.appdata.xml
