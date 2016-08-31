@@ -34,6 +34,7 @@
 
 int main(int argc, char *argv[]) {
     std::ostream& stream = std::cout;
+    const char *parm = (argc > 1 ? argv[1] : 0);
 
     stream << "welcome to goat attack ";
     stream << GameVersion;
@@ -42,11 +43,12 @@ int main(int argc, char *argv[]) {
     init_hpet();
     start_net();
     try {
-        #ifdef DEDICATED_SERVER
-            SubsystemNull subsystem(stream, "Goat Attack");
-        #else
-            SubsystemSDL subsystem(stream, "Goat Attack");
-        #endif
+#ifdef DEDICATED_SERVER
+        SubsystemNull subsystem(stream, "Goat Attack");
+#else
+        SubsystemSDL subsystem(stream, "Goat Attack");
+#endif
+
 #ifdef __APPLE__
         CFBundleRef mainBundle = CFBundleGetMainBundle();
         CFURLRef resourcesURL = CFBundleCopyResourcesDirectoryURL(mainBundle);
@@ -60,10 +62,15 @@ int main(int argc, char *argv[]) {
         data_directory += "/data";
         Resources resources(subsystem, data_directory);
 #else
-        Resources resources(subsystem, STRINGIZE_VALUE_OF(DATA_DIRECTORY));
+# ifdef DEDICATED_SERVER
+        const char *data_directory = STRINGIZE_VALUE_OF(DATA_DIRECTORY);
+# else
+        const char *data_directory = (parm ? parm : STRINGIZE_VALUE_OF(DATA_DIRECTORY));
+# endif
+        Resources resources(subsystem, data_directory);
 #endif
         Game game(resources, subsystem);
-        game.run(argc > 1 ? argv[1] : "");
+        game.run(parm ? parm : "");
     } catch (const Exception& e) {
         stream << e.what() << std::endl;
     }
