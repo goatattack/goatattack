@@ -13,6 +13,7 @@
     <![CDATA[]]>
   </Environment>
   <Project Name="shared" Path="shared/shared.project" Active="No"/>
+  <Project Name="Cargo" Path="Cargo/Cargo.project"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Environment/>
@@ -20,6 +21,7 @@
       <Project Name="MapEditor" ConfigName="Debug"/>
       <Project Name="GoatAttack" ConfigName="Debug"/>
       <Project Name="shared" ConfigName="Debug"/>
+      <Project Name="Cargo" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="yes">
       <Environment/>
@@ -27,6 +29,7 @@
       <Project Name="MapEditor" ConfigName="Release"/>
       <Project Name="MasterServer" ConfigName="Release"/>
       <Project Name="shared" ConfigName="Release"/>
+      <Project Name="Cargo" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>

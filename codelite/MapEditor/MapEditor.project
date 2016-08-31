@@ -59,8 +59,6 @@
       <File Name="../../src/MapEditor/include/MapEditor.hpp"/>
     </VirtualDirectory>
   </VirtualDirectory>
-  <Dependencies Name="Debug"/>
-  <Dependencies Name="Release"/>
   <Settings Type="Executable">
     <GlobalSettings>
       <Compiler Options="-pedantic;-Wextra;-Wno-unused-result;-Wno-unused-parameter" C_Options="-Wextra;-Wno-unused-result;-Wno-unused-parameter" Assembler="">
@@ -168,4 +166,6 @@
       </Completion>
     </Configuration>
   </Settings>
+  <Dependencies Name="Debug"/>
+  <Dependencies Name="Release"/>
 </CodeLite_Project>

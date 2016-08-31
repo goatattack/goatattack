@@ -15,6 +15,8 @@ codelite/MasterServer/Debug
 codelite/MasterServer/Release
 codelite/shared/Debug
 codelite/shared/Release
+codelite/Cargo/Debug
+codelite/Cargo/Release
 .build-debug
 compile
 config.guess
@@ -38,6 +40,8 @@ MasterServer.mk
 MasterServer.txt
 shared.mk
 shared.txt
+Cargo.mk
+Cargo.txt
 src/Engine/goatattack
 src/Engine/Makefile.in
 src/MapEditor/goatattack-mapeditor
