@@ -3,8 +3,8 @@
   <id type="desktop">goatattack-mapeditor.desktop</id>
   <metadata_licence>CC-BY-SA-4.0</metadata_licence>
   <project_license>GPL-3.0</project_license>
-  <name>Goat Attack Editor</name>
-  <summary>Pixel Art Shooter Game Editor</summary>
+  <name>Goat Attack Map Editor</name>
+  <summary>Pixel Art Shooter Game Map Editor</summary>
   <summary xml:lang="de">Pixel Art Shooter Spiel Editor</summary>
   <description>
     <p>Goat Attack is a multiplayer 2D platformer pixel art shooter game. You can play it in a local network or over the Internet. Six gameplay modes are supported. Deathmatch, team deathmatch, capture the flag, speed race, catch the coin and goat of the hill. The Editor allows to create own maps.</p>
