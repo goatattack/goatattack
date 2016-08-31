@@ -13,6 +13,9 @@ codelite/MapEditor/Debug
 codelite/MapEditor/Release
 codelite/MasterServer/Debug
 codelite/MasterServer/Release
+codelite/shared/Debug
+codelite/shared/Release
+.build-debug
 compile
 config.guess
 config.log
@@ -33,6 +36,8 @@ MapEditor.mk
 MapEditor.txt
 MasterServer.mk
 MasterServer.txt
+shared.mk
+shared.txt
 src/Engine/goatattack
 src/Engine/Makefile.in
 src/MapEditor/goatattack-mapeditor
