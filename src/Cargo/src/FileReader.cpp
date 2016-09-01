@@ -1,4 +1,4 @@
-/*
+ /*
  *  This file is part of Goat Attack.
  *
  *  Goat Attack is free software: you can redistribute it and/or modify
@@ -15,24 +15,19 @@
  *  along with Goat Attack.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Cargo.hpp"
-#include "CRC32.hpp"
+#include "FileReader.hpp"
 
-#include <iostream>
-
-int main(int argc, char *argv[]) {
-    if (argc != 3) {
-        std::cout << "usage " << argv[0] << " path/to/files outfile" << std::endl;
-        return 2;
+FileReader::FileReader(const char *filename) throw (FileReaderException) {
+    f = fopen(filename, "rb");
+    if (!f) {
+        throw FileReaderException("Opening file failed.");
     }
+}
 
-    try {
-        Cargo cargo(argv[1], argv[2]);
-        cargo.pack();
-    } catch (const Exception& e) {
-        std::cout << "ERROR: " << e.what() << std::endl;
-        return 1;
-    }
+size_t FileReader::read(void *buffer, size_t len) throw (FileReaderException) {
+    return fread(buffer, 1, len, f);
+}
 
-    return 0;
+bool FileReader::eof() const {
+    return (feof(f) != 0);
 }

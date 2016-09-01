@@ -30,7 +30,7 @@ public:
     CRC32();
 
     void process(const unsigned char *message, size_t len);
-    uint64_t get_crc() const;
+    uint32_t get_crc() const;
     std::string get_hash() const;
 
 private:

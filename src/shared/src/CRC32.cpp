@@ -97,7 +97,7 @@ void CRC32::process(const unsigned char *message, size_t len) {
     }
 }
 
-uint64_t CRC32::get_crc() const {
+uint32_t CRC32::get_crc() const {
     return crc;
 }
 

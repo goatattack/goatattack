@@ -111,6 +111,8 @@
     <File Name="../../src/shared/zlib/adler32.c"/>
     <File Name="../../src/shared/zlib/crc32.c"/>
     <File Name="../../src/shared/zlib/crc32.h"/>
+    <File Name="../../src/shared/zlib/deflate.c"/>
+    <File Name="../../src/shared/zlib/deflate.h"/>
     <File Name="../../src/shared/zlib/gzguts.h"/>
     <File Name="../../src/shared/zlib/inffast.c"/>
     <File Name="../../src/shared/zlib/inffast.h"/>
@@ -119,6 +121,8 @@
     <File Name="../../src/shared/zlib/inflate.h"/>
     <File Name="../../src/shared/zlib/inftrees.c"/>
     <File Name="../../src/shared/zlib/inftrees.h"/>
+    <File Name="../../src/shared/zlib/trees.c"/>
+    <File Name="../../src/shared/zlib/trees.h"/>
     <File Name="../../src/shared/zlib/zconf.h"/>
     <File Name="../../src/shared/zlib/zlib.h"/>
     <File Name="../../src/shared/zlib/zutil.c"/>

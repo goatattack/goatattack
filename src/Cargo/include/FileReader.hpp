@@ -15,24 +15,31 @@
  *  along with Goat Attack.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Cargo.hpp"
-#include "CRC32.hpp"
+#ifndef _FILEREADER_HPP_
+#define _FILEREADER_HPP_
 
-#include <iostream>
+#include "Exception.hpp"
 
-int main(int argc, char *argv[]) {
-    if (argc != 3) {
-        std::cout << "usage " << argv[0] << " path/to/files outfile" << std::endl;
-        return 2;
-    }
+#include <cstdio>
 
-    try {
-        Cargo cargo(argv[1], argv[2]);
-        cargo.pack();
-    } catch (const Exception& e) {
-        std::cout << "ERROR: " << e.what() << std::endl;
-        return 1;
-    }
+class FileReaderException : public Exception {
+public:
+    FileReaderException(const char *msg) : Exception(msg) { }
+    FileReaderException(std::string msg) : Exception(msg) { }
+};
 
-    return 0;
-}
+class FileReader {
+private:
+    FileReader(const FileReader&);
+    FileReader& operator=(const FileReader&);
+
+public:
+    FileReader(const char *filename) throw (FileReaderException);
+    size_t read(void *buffer, size_t len) throw (FileReaderException);
+    bool eof() const;
+
+private:
+    FILE *f;
+};
+
+#endif
