@@ -107,9 +107,10 @@ void Cargo::pack_directory(const char *subdir) throw (CargoException) {
         /* recursively pack files */
         for (DirectoryEntries::iterator it = entries.begin(); it != entries.end(); it++) {
             const DirectoryEntry& entry = *it;
-            pack_file(entry);
             if (entry.is_directory) {
                 pack_directory(append_dir(subdir, entry.entry.c_str()).c_str());
+            } else {
+                pack_file(entry);
             }
         }
 
@@ -137,7 +138,7 @@ void Cargo::pack_file(const DirectoryEntry& entry) throw (CargoException) {
 
     long int rel_pos = ftell(f);
     write_string("PK\03\04", 4);        // file entry
-    write_uint16(0);                    // version needed
+    write_uint16(0x14);                 // version needed
     write_uint16(0);                    // general purpose flags
     write_uint16(method);               // compression method
     write_uint16(file_time);            // file time
@@ -157,44 +158,42 @@ void Cargo::pack_file(const DirectoryEntry& entry) throw (CargoException) {
     /* pack and write */
     uint32_t crc32 = 0;
     try {
-        if (!entry.is_directory) {
-            CRC32 crc;
-            std::string filename(directory);
-            filename += "/";
-            filename += entry.entry;
-            FileReader fr(filename.c_str());
-            z_stream z;
-            memset(&z, 0, sizeof(z_stream));
-            int status = deflateInit(&z, Z_DEFAULT_COMPRESSION);
-            if (status != Z_OK) {
-                throw_deflate_failed(&z);
-            }
-            unsigned char in[ChunkSize];
-            unsigned char out[ChunkSize];
-            int flush = 0;
-            do {
-                z.avail_in = fr.read(in, sizeof(in));
-                z.next_in = in;
-                flush = (fr.eof() ? Z_FINISH : Z_NO_FLUSH);
-                do {
-                    z.avail_out = sizeof(out);
-                    z.next_out = out;
-                    if (deflate(&z, flush) == Z_STREAM_ERROR) {
-                        throw_deflate_failed(&z);
-                    }
-                    size_t have = sizeof(out) - z.avail_out;
-                    sz_compressed += have;
-                    crc.process(out, have);
-                    try {
-                        write_string(out, have);
-                    } catch (const Exception& e) {
-                        throw_deflate_failed(&z);
-                    }
-                } while (z.avail_out == 0);
-            } while (flush != Z_FINISH);
-            deflateEnd(&z);
-            crc32 = crc.get_crc();
+        CRC32 crc;
+        std::string filename(directory);
+        filename += "/";
+        filename += entry.entry;
+        FileReader fr(filename.c_str());
+        z_stream z;
+        memset(&z, 0, sizeof(z_stream));
+        int status = deflateInit(&z, Z_DEFAULT_COMPRESSION);
+        if (status != Z_OK) {
+            throw_deflate_failed(&z);
         }
+        unsigned char in[ChunkSize];
+        unsigned char out[ChunkSize];
+        int flush = 0;
+        do {
+            z.avail_in = fr.read(in, sizeof(in));
+            z.next_in = in;
+            flush = (fr.eof() ? Z_FINISH : Z_NO_FLUSH);
+            do {
+                z.avail_out = sizeof(out);
+                z.next_out = out;
+                if (deflate(&z, flush) == Z_STREAM_ERROR) {
+                    throw_deflate_failed(&z);
+                }
+                size_t have = sizeof(out) - z.avail_out;
+                sz_compressed += have;
+                crc.process(out, have);
+                try {
+                    write_string(out, have);
+                } catch (const Exception& e) {
+                    throw_deflate_failed(&z);
+                }
+            } while (z.avail_out == 0);
+        } while (flush != Z_FINISH);
+        deflateEnd(&z);
+        crc32 = crc.get_crc();
     } catch (const Exception& e) {
         valid = false;
         throw CargoException(e.what());
@@ -236,24 +235,24 @@ void Cargo::add_central_directory() throw (CargoException) {
     for (PakEntries::iterator it = pak_entries.begin(); it != pak_entries.end(); it++) {
         const PakEntry& entry = *it;
 
-        write_string("PK\01\02", 4);            // entry magic
-        write_uint16(0x031e);                   // version
-        write_uint16(0);                        // version needed
-        write_uint16(0);                        // general purpose flags
-        write_uint16(entry.method);             // compression method
-        write_uint16(entry.file_time);          // file time
-        write_uint16(entry.file_date);          // file date
-        write_uint32(entry.crc32);              // crc32
-        write_uint32(entry.sz_compressed);      // compressed size
-        write_uint32(entry.sz_uncompressed);    // uncompressed size
-        write_uint16(entry.name.length());      // file name length
-        write_uint16(0);                        // extra field length
-        write_uint16(0);                        // comment length
-        write_uint16(0);                        // on disk nbr
-        write_uint16(0);                        // internal file attributes
-        write_uint32(0);                        // external file attributes
-        write_uint32(entry.relative_position);  // position
-        write_string(entry.name.c_str(), entry.name.length()); // file name
+        cd_sz += write_string("PK\01\02", 4);            // entry magic
+        cd_sz += write_uint16(0x0317);                   // version
+        cd_sz += write_uint16(0x14);                     // version needed
+        cd_sz += write_uint16(0);                        // general purpose flags
+        cd_sz += write_uint16(entry.method);             // compression method
+        cd_sz += write_uint16(entry.file_time);          // file time
+        cd_sz += write_uint16(entry.file_date);          // file date
+        cd_sz += write_uint32(entry.crc32);              // crc32
+        cd_sz += write_uint32(entry.sz_compressed);      // compressed size
+        cd_sz += write_uint32(entry.sz_uncompressed);    // uncompressed size
+        cd_sz += write_uint16(entry.name.length());      // file name length
+        cd_sz += write_uint16(0);                        // extra field length
+        cd_sz += write_uint16(0);                        // comment length
+        cd_sz += write_uint16(0);                        // on disk nbr
+        cd_sz += write_uint16(1);                        // internal file attributes
+        cd_sz += write_uint32(0x81a40000);               // external file attributes
+        cd_sz += write_uint32(entry.relative_position);  // position
+        cd_sz += write_string(entry.name.c_str(), entry.name.length()); // file name
     }
 
     /* eocd */
