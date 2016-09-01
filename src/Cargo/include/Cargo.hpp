@@ -42,6 +42,7 @@ public:
     ~Cargo();
 
     void pack() throw (CargoException);
+    size_t packaged() const;
 
 private:
     struct DirectoryEntry {

@@ -129,6 +129,7 @@ const char *ZipReader::extract(std::string filename, size_t *out_sz) throw (ZipR
     if (memcmp(buffer, "PK\003\004", 4)) {
         throw_inflate_failed(0, 0, filename);
     }
+    int cmpr_method = buffer[9] << 8 | buffer[8];
     int cmpr_sz = buffer[21] << 24 | buffer[20] << 16 | buffer[19] << 8 | buffer[18];
     int ucmpr_sz = buffer[25] << 24 | buffer[24] << 16 | buffer[23] << 8 | buffer[22];
     int len = buffer[27] << 8 | buffer[26];
@@ -137,7 +138,7 @@ const char *ZipReader::extract(std::string filename, size_t *out_sz) throw (ZipR
     /* extract */
     char *data = new char[ucmpr_sz];
     fseek(f, file.ofs + 30 + len + xln, SEEK_SET);
-    if (cmpr_sz == ucmpr_sz) {
+    if (cmpr_method == 0) {
         /* plain copy */
         sz = fread(data, 1, cmpr_sz, f);
         if (sz != static_cast<size_t>(cmpr_sz)) {

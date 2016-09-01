@@ -10,11 +10,9 @@
   <VirtualDirectory Name="Cargo">
     <VirtualDirectory Name="include">
       <File Name="../../src/Cargo/include/Cargo.hpp"/>
-      <File Name="../../src/Cargo/include/FileReader.hpp"/>
     </VirtualDirectory>
     <VirtualDirectory Name="src">
       <File Name="../../src/Cargo/src/Cargo.cpp"/>
-      <File Name="../../src/Cargo/src/FileReader.cpp"/>
     </VirtualDirectory>
     <File Name="../../src/Cargo/main.cpp"/>
   </VirtualDirectory>

@@ -17,7 +17,6 @@
 
 #include "Cargo.hpp"
 #include "Directory.hpp"
-#include "CRC32.hpp"
 #include "FileReader.hpp"
 
 #include <cerrno>
@@ -28,6 +27,8 @@
 #include <iostream>
 
 static const int ChunkSize = 1024;
+static const int ZipWindowBits = 15;
+static const int ZipGZipBit = 16;
 
 static void throw_deflate_failed(z_stream *z) throw (CargoException) {
     if (z) {
@@ -83,7 +84,12 @@ void Cargo::pack() throw (CargoException) {
     }
 
     /* done */
+    std::cout << std::endl;
     finished = true;
+}
+
+size_t Cargo::packaged() const {
+    return pak_entries.size();
 }
 
 void Cargo::pack_directory(const char *subdir) throw (CargoException) {
@@ -116,6 +122,7 @@ void Cargo::pack_directory(const char *subdir) throw (CargoException) {
 
     } catch (const Exception& e) {
         valid = false;
+        std::cout << std::endl;
         throw CargoException(e.what());
     }
 }
@@ -126,8 +133,7 @@ void Cargo::pack_file(const DirectoryEntry& entry) throw (CargoException) {
         name += "/";
     }
 
-    std::cout << name.c_str() << std::endl;
-    //return;
+    std::cout << "." << std::flush;
 
     /* create entry with placeholders */
     uint16_t file_time = 0;
@@ -156,16 +162,16 @@ void Cargo::pack_file(const DirectoryEntry& entry) throw (CargoException) {
     write_string(name.c_str(), name.length()); // file name
 
     /* pack and write */
-    uint32_t crc32 = 0;
+    uint32_t crc32sum = 0;
     try {
-        CRC32 crc;
+        //CRC32 crc;
         std::string filename(directory);
         filename += "/";
         filename += entry.entry;
         FileReader fr(filename.c_str());
         z_stream z;
         memset(&z, 0, sizeof(z_stream));
-        int status = deflateInit(&z, Z_DEFAULT_COMPRESSION);
+        int status = deflateInit2(&z, Z_DEFAULT_COMPRESSION, Z_DEFLATED, -ZipWindowBits, 8, Z_DEFAULT_STRATEGY);
         if (status != Z_OK) {
             throw_deflate_failed(&z);
         }
@@ -175,6 +181,7 @@ void Cargo::pack_file(const DirectoryEntry& entry) throw (CargoException) {
         do {
             z.avail_in = fr.read(in, sizeof(in));
             z.next_in = in;
+            crc32sum = crc32(crc32sum, in, z.avail_in);
             flush = (fr.eof() ? Z_FINISH : Z_NO_FLUSH);
             do {
                 z.avail_out = sizeof(out);
@@ -184,7 +191,6 @@ void Cargo::pack_file(const DirectoryEntry& entry) throw (CargoException) {
                 }
                 size_t have = sizeof(out) - z.avail_out;
                 sz_compressed += have;
-                crc.process(out, have);
                 try {
                     write_string(out, have);
                 } catch (const Exception& e) {
@@ -193,7 +199,6 @@ void Cargo::pack_file(const DirectoryEntry& entry) throw (CargoException) {
             } while (z.avail_out == 0);
         } while (flush != Z_FINISH);
         deflateEnd(&z);
-        crc32 = crc.get_crc();
     } catch (const Exception& e) {
         valid = false;
         throw CargoException(e.what());
@@ -202,14 +207,14 @@ void Cargo::pack_file(const DirectoryEntry& entry) throw (CargoException) {
     /* fill placeholders */
     long int current_pos = ftell(f);
     fseek(f, crc32_pos, SEEK_SET);
-    write_uint32(crc32);
+    write_uint32(crc32sum);
     fseek(f, compr_sz_pos, SEEK_SET);
     write_uint32(sz_compressed);
     fseek(f, current_pos, SEEK_SET);
 
     /* add cd entry */
     pak_entries.push_back(PakEntry(name.c_str(), sz_compressed, sz_uncompressed,
-        rel_pos, crc32, file_time, file_date, method));
+        rel_pos, crc32sum, file_time, file_date, method));
 }
 
 void Cargo::throw_write_error() throw (CargoException) {

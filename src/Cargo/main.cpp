@@ -16,19 +16,21 @@
  */
 
 #include "Cargo.hpp"
-#include "CRC32.hpp"
+#include "Globals.hpp"
 
 #include <iostream>
 
 int main(int argc, char *argv[]) {
+    std::cout << "Goat Attack base.pak packager tool (" << GameVersion << ")" << std::endl;
     if (argc != 3) {
-        std::cout << "usage " << argv[0] << " path/to/files outfile" << std::endl;
+        std::cout << "Usage " << argv[0] << " path/to/files outfile" << std::endl;
         return 2;
     }
 
     try {
         Cargo cargo(argv[1], argv[2]);
         cargo.pack();
+        std::cout << "Successfully " << cargo.packaged() << " files packaged." << std::endl;
     } catch (const Exception& e) {
         std::cout << "ERROR: " << e.what() << std::endl;
         return 1;
