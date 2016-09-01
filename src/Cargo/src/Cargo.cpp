@@ -28,7 +28,10 @@
 
 static const int ChunkSize = 1024;
 static const int ZipWindowBits = 15;
-static const int ZipGZipBit = 16;
+static const uint16_t ZipMinVersion = 0x14;
+static const uint16_t ZipArchiveFile = 1;
+static const uint32_t ZipExtAttribs = 0x81a40000;
+static const uint16_t ZipUnixVersion = 0x0317;
 
 static void throw_deflate_failed(z_stream *z) throw (CargoException) {
     if (z) {
@@ -74,6 +77,7 @@ void Cargo::pack() throw (CargoException) {
 
     /* go */
     pack_directory("");
+    std::cout << std::endl;
 
     /* append central directory */
     add_central_directory();
@@ -84,7 +88,6 @@ void Cargo::pack() throw (CargoException) {
     }
 
     /* done */
-    std::cout << std::endl;
     finished = true;
 }
 
@@ -128,23 +131,18 @@ void Cargo::pack_directory(const char *subdir) throw (CargoException) {
 }
 
 void Cargo::pack_file(const DirectoryEntry& entry) throw (CargoException) {
-    std::string name = entry.entry;
-    if (entry.is_directory) {
-        name += "/";
-    }
-
     std::cout << "." << std::flush;
 
     /* create entry with placeholders */
-    uint16_t file_time = 0;
-    uint16_t file_date = 0;
+    uint16_t file_time = 0;             // always zero
+    uint16_t file_date = 0;             // always zero
     uint32_t sz_compressed = 0;
     uint32_t sz_uncompressed = entry.file_size;
     uint16_t method = (entry.is_directory || entry.file_size == 0 ? 0 : 8);
 
     long int rel_pos = ftell(f);
     write_string("PK\03\04", 4);        // file entry
-    write_uint16(0x14);                 // version needed
+    write_uint16(ZipMinVersion);        // version needed
     write_uint16(0);                    // general purpose flags
     write_uint16(method);               // compression method
     write_uint16(file_time);            // file time
@@ -157,14 +155,13 @@ void Cargo::pack_file(const DirectoryEntry& entry) throw (CargoException) {
     write_uint32(0);                    // compressed size placeholder
 
     write_uint32(sz_uncompressed);      // uncompressed size
-    write_uint16(name.length());        // file name length
+    write_uint16(entry.entry.length()); // file name length
     write_uint16(0);                    // extra field length
-    write_string(name.c_str(), name.length()); // file name
+    write_string(entry.entry.c_str(), entry.entry.length()); // file name
 
     /* pack and write */
     uint32_t crc32sum = 0;
     try {
-        //CRC32 crc;
         std::string filename(directory);
         filename += "/";
         filename += entry.entry;
@@ -213,7 +210,7 @@ void Cargo::pack_file(const DirectoryEntry& entry) throw (CargoException) {
     fseek(f, current_pos, SEEK_SET);
 
     /* add cd entry */
-    pak_entries.push_back(PakEntry(name.c_str(), sz_compressed, sz_uncompressed,
+    pak_entries.push_back(PakEntry(entry.entry.c_str(), sz_compressed, sz_uncompressed,
         rel_pos, crc32sum, file_time, file_date, method));
 }
 
@@ -239,10 +236,9 @@ void Cargo::add_central_directory() throw (CargoException) {
     /* central directory */
     for (PakEntries::iterator it = pak_entries.begin(); it != pak_entries.end(); it++) {
         const PakEntry& entry = *it;
-
         cd_sz += write_string("PK\01\02", 4);            // entry magic
-        cd_sz += write_uint16(0x0317);                   // version
-        cd_sz += write_uint16(0x14);                     // version needed
+        cd_sz += write_uint16(ZipUnixVersion);           // version
+        cd_sz += write_uint16(ZipMinVersion);            // version needed
         cd_sz += write_uint16(0);                        // general purpose flags
         cd_sz += write_uint16(entry.method);             // compression method
         cd_sz += write_uint16(entry.file_time);          // file time
@@ -254,8 +250,8 @@ void Cargo::add_central_directory() throw (CargoException) {
         cd_sz += write_uint16(0);                        // extra field length
         cd_sz += write_uint16(0);                        // comment length
         cd_sz += write_uint16(0);                        // on disk nbr
-        cd_sz += write_uint16(1);                        // internal file attributes
-        cd_sz += write_uint32(0x81a40000);               // external file attributes
+        cd_sz += write_uint16(ZipArchiveFile);           // internal file attributes
+        cd_sz += write_uint32(ZipExtAttribs);            // external file attributes
         cd_sz += write_uint32(entry.relative_position);  // position
         cd_sz += write_string(entry.name.c_str(), entry.name.length()); // file name
     }
