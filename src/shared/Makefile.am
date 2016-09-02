@@ -3,6 +3,10 @@ libshared_a_SOURCES = ../shared/src/AABB.cpp ../shared/src/Animation.cpp ../shar
 
 libshared_a_CXXFLAGS = -I./include -I../shared/include -Wno-unused-result -pedantic -Wextra
 
+if DEDICATED_SERVER
+libshared_a_CXXFLAGS += -DDEDICATED_SERVER
+endif
+
 if INTERNAL_ZLIB
 libshared_a_SOURCES += ../shared/zlib/adler32.c ../shared/zlib/crc32.c ../shared/zlib/deflate.c ../shared/zlib/inffast.c ../shared/zlib/inflate.c ../shared/zlib/inftrees.c ../shared/zlib/trees.c ../shared/zlib/zutil.c
 libshared_a_CXXFLAGS += -I../shared/zlib
