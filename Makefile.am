@@ -11,4 +11,4 @@ endif
 SUBDIRS += src/Cargo
 SUBDIRS += data
 man6_MANS = man/goatattack.6
-EXTRA_DIST = src/Engine/include/* src/MapEditor/include/* src/MasterServer/include/* src/shared/include/* src/shared/zlib/*.h data/* man
+EXTRA_DIST = src/Cargo/include/* src/Engine/include/* src/MapEditor/include/* src/MasterServer/include/* src/shared/include/* src/shared/zlib/*.h data/* man
