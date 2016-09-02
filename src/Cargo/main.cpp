@@ -21,9 +21,9 @@
 #include <iostream>
 
 int main(int argc, char *argv[]) {
-    std::cout << "Goat Attack base.pak packager tool (" << GameVersion << ")" << std::endl;
+    std::cout << "Cargo, packager utility for Goat Attack paks (" << GameVersion << ")" << std::endl;
     if (argc != 3) {
-        std::cout << "Usage " << argv[0] << " path/to/files outfile" << std::endl;
+        std::cout << "Usage " << argv[0] << " path/to/files outfile.pak" << std::endl;
         return 2;
     }
 
