@@ -3,7 +3,11 @@
 - splitting shared from other projects
 - linking against system zlib (thanks to Rémi Verschelde)
 - build system cleanups (thanks to Rémi Verschelde)
-- desktop icon added, better ones are in work in progress (thanks to Rémi Verschelde)
+- vectorized desktop icon added (thanks to Rémi Verschelde)
+- new logtype "LogTypeMapClosed" added
+- creating base.pak using goatattack-cargo tool
+- optional data path as new game parameter (thanks to ObaniGemini)
+- upstream appdata files added (thanks to Rémi Verschelde)
 
 0.4.3
 - new rounded buttons
