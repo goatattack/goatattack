@@ -25,3 +25,6 @@ dist_appdata_DATA = ../../packages/linux/goatattack.appdata.xml
 endif
 
 goatattack_CXXFLAGS += -DDATA_DIRECTORY=$(pkgdatadir) -D__STDC_FORMAT_MACROS
+
+uninstall:
+	rm -fr $(datarootdir)/goatattack
