@@ -4,16 +4,18 @@ goatattack_SOURCES += src/Client.cpp src/ClientEvent.cpp src/ClientServer.cpp sr
 
 goatattack_CXXFLAGS = -I./include -I../shared/include -Wno-unused-result -pedantic -Wextra
 
-goatattack_LDADD = -L../shared -lshared -lpng
+goatattack_LDADD = -L../shared -lshared
 
-if !INTERNAL_ZLIB
+if INTERNAL_ZLIB
+goatattack_CXXFLAGS += -I../shared/zlib
+else
 goatattack_LDADD += -lz
 endif
 
 if DEDICATED_SERVER
 goatattack_CXXFLAGS += -DDEDICATED_SERVER
 else
-goatattack_LDADD += -lGL -lSDL2 -lSDL2_mixer
+goatattack_LDADD += -lGL -lSDL2 -lSDL2_mixer -lpng
 iconsdir = $(datarootdir)/icons/hicolor/scalable/apps
 dist_icons_DATA = ../../packages/linux/goatattack.svg
 desktopdir = $(datarootdir)/applications

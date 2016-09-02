@@ -17,7 +17,6 @@ AC_HEADER_STDC
 
 AC_CHECK_LIB([pthread], [pthread_create], [], [missing_libraries="$missing_libraries libpthread"])
 AC_CHECK_LIB([rt], [clock_gettime], [], [missing_libraries="$missing_libraries librt"])
-AC_CHECK_LIB([png], [png_init_io], [], [missing_libraries="$missing_libraries libpng"])
 
 # --- compile args ---
 AC_ARG_ENABLE([dedicated-server], [  --enable-dedicated-server  Build dedicated server [[default=no]]], [DEDICATED_SERVER="yes"], [])
@@ -31,6 +30,7 @@ AM_CONDITIONAL([MAP_EDITOR], [test "x$MAP_EDITOR" = xyes])
 
 # --- check additional libraries ---
 if test "x$DEDICATED_SERVER" != "xyes"; then
+	AC_CHECK_LIB([png], [png_init_io], [], [missing_libraries="$missing_libraries libpng"])
 	AC_CHECK_LIB([SDL2], [SDL_Init], [], [missing_libraries="$missing_libraries libSDL2"])
 	AC_CHECK_LIB([GL], [glClear], [], [missing_libraries="$missing_libraries libGL"])
 	AC_CHECK_LIB([SDL2_mixer], [Mix_Init], [], [missing_libraries="$missing_libraries libSDL2_mixer"])

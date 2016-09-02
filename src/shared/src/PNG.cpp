@@ -21,6 +21,36 @@
 #include <cstring>
 #include <cerrno>
 
+#ifndef DEDICATED_SERVER
+# ifdef __APPLE__
+#  include "png.h"
+# else
+#  include <png.h>
+# endif
+#endif
+
+struct PNGZipStream {
+    PNGZipStream (ZipReader *zip) : zip(zip), size(0), data(0), ptr(0) { }
+
+    ZipReader *zip;
+    size_t size;
+    const char *data;
+    const char *ptr;
+};
+
+#ifndef DEDICATED_SERVER
+static void user_data_read(png_structp png_ptr, png_bytep data, png_size_t len) {
+    PNGZipStream *zs = static_cast<PNGZipStream *>(png_get_io_ptr(png_ptr));
+    size_t remain = static_cast<size_t>(zs->size) - (zs->ptr - zs->data);
+    size_t my_len = static_cast<size_t>(len);
+    if (my_len > remain) {
+        my_len = remain;
+    }
+    memcpy(data, zs->ptr, my_len);
+    zs->ptr += my_len;
+}
+#endif
+
 PNG::PNG(const std::string& filename, ZipReader *zip) throw (PNGException) {
     if (zip) {
         read_png_from_zip(filename, zip);
@@ -119,8 +149,11 @@ unsigned char *PNG::get_pic() const {
 
 void PNG::read_png_from_file(const std::string& filename) throw (PNGException) {
     FILE *f;
+
+#ifndef DEDICATED_SERVER
     png_structp png_ptr;
     png_infop info_ptr;
+#endif
 
     /* try to open file */
     f = fopen(filename.c_str(), "rb");
@@ -129,6 +162,9 @@ void PNG::read_png_from_file(const std::string& filename) throw (PNGException) {
             std::string(strerror(errno)));
     }
 
+#ifdef DEDICATED_SERVER
+    setup_dummy();
+#else
     /* check header */
     unsigned char header[8];
     fread(header, 1, 8, f);
@@ -205,8 +241,11 @@ void PNG::read_png_from_file(const std::string& filename) throw (PNGException) {
         dest += row_bytes;
     }
 
-    /* clean up and close file */
+    /* clean up */
     png_destroy_read_struct(&png_ptr, &info_ptr, 0);
+#endif
+
+    /* close file */
     fclose(f);
 }
 
@@ -219,6 +258,9 @@ void PNG::read_png_from_zip(const std::string& filename, ZipReader *zip) throw (
         throw PNGException(e.what());
     }
 
+#ifdef DEDICATED_SERVER
+    setup_dummy();
+#else
     try {
         png_bytep pdta = reinterpret_cast<png_bytep>(const_cast<char *>(zs.data));
         png_structp png_ptr;
@@ -301,19 +343,19 @@ void PNG::read_png_from_zip(const std::string& filename, ZipReader *zip) throw (
         }
         throw;
     }
+#endif
 
     if (zs.data) {
         zip->destroy(zs.data);
     }
 }
 
-void PNG::user_data_read(png_structp png_ptr, png_bytep data, png_size_t len) {
-    PNGZipStream *zs = static_cast<PNGZipStream *>(png_get_io_ptr(png_ptr));
-    size_t remain = static_cast<size_t>(zs->size) - (zs->ptr - zs->data);
-    size_t my_len = static_cast<size_t>(len);
-    if (my_len > remain) {
-        my_len = remain;
-    }
-    memcpy(data, zs->ptr, my_len);
-    zs->ptr += my_len;
+void PNG::setup_dummy() {
+    width = 1;
+    height = 1;
+    color_format = ColorFormatRGBA;
+    bit_depth = 8;
+    unsigned int bytes_per_pixel = 4;
+    unsigned int row_bytes = width * bytes_per_pixel;
+    unsigned char *pic = new unsigned char[row_bytes * height];
 }

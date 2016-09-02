@@ -20,7 +20,7 @@
 
 #include "Exception.hpp"
 
-#include "zlib.h"
+#include <zlib.h>
 
 #include <string>
 #include <vector>

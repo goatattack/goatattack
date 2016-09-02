@@ -21,12 +21,6 @@
 #include "Exception.hpp"
 #include "ZipReader.hpp"
 
-#ifdef __APPLE__
-#include "png.h"
-#else
-#include <png.h>
-#endif
-
 #ifdef _WIN32
 #include "Win.hpp"
 #endif
@@ -61,15 +55,6 @@ public:
     unsigned char *get_pic() const;
 
 private:
-    struct PNGZipStream {
-        PNGZipStream (ZipReader *zip) : zip(zip), size(0), data(0), ptr(0) { }
-
-        ZipReader *zip;
-        size_t size;
-        const char *data;
-        const char *ptr;
-    };
-
     unsigned int width;
     unsigned int height;
     int bit_depth;
@@ -78,8 +63,7 @@ private:
 
     void read_png_from_file(const std::string& filename) throw (PNGException);
     void read_png_from_zip(const std::string& filename, ZipReader *zip) throw (PNGException);
-
-    static void user_data_read(png_structp png_ptr, png_bytep data, png_size_t len);
+    void setup_dummy();
 };
 
 #endif
