@@ -1,0 +1,4 @@
+include=base
+name=ctf
+author=Philippe Widmer
+description=Capture the flag game

@@ -1,0 +1,16 @@
+name=medikit_small
+author=Philippe Widmer
+description=Small Medikit object
+type=11
+width=16
+height=16
+speed=35
+pickup_animation=picked_up_1
+pickup_sound=picked_up_1
+spawn_animation=spawn
+spawn_sound=spawn
+spawn=300
+colbox_x=6
+colbox_y=0
+colbox_width=5
+colbox_height=16

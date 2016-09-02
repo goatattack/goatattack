@@ -1,0 +1,7 @@
+name=spawn_point_blue
+author=Philippe Widmer
+description=Spawn point object for team blue
+type=2
+width=16
+height=16
+speed=30

@@ -1,0 +1,6 @@
+name=hearts
+author=Philippe Widmer
+description=Hearts animation
+width=32
+height=32
+speed=30

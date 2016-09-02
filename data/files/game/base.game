@@ -1,0 +1,16 @@
+name=base
+error_sound=error
+ground_bump_sound=ground_bump
+shot=shot
+shot_start_sound=shot
+shot_y_offset=2
+shot_recoil=-0.5
+grenade=grenade
+grenade_start_sound=grenade_drop
+bomb=bomb
+bomb_start_sound=bomb_drop
+frog=frog
+frog_start_sound=frog_drop
+die_animation=die
+die_sound=die
+frog_spawn_init=750

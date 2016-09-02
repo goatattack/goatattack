@@ -1,0 +1,7 @@
+name=spawn_point_red
+author=Philippe Widmer
+description=Spawn point object for team red
+type=1
+width=16
+height=16
+speed=30

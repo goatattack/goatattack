@@ -1,0 +1,7 @@
+name=spawn_point_frog
+author=Philippe Widmer
+description=Spawn point object for the frog
+type=16
+width=16
+height=16
+speed=30

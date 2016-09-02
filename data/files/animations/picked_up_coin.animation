@@ -1,0 +1,6 @@
+name=picked_up_coin
+author=Philippe Widmer
+description=Picked up animation for coin
+width=32
+height=32
+speed=15

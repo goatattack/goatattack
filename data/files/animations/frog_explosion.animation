@@ -1,0 +1,14 @@
+name=frog_explosion
+author=Philippe Widmer
+description=Explosion animation
+sound_name=frog_explosion
+width=64
+height=64
+speed=25
+spread=140
+spread_count=50
+damage=200
+randomized_index=4
+x_offset=-32
+y_offset=-32
+screen_shaker=18

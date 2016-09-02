@@ -1,0 +1,4 @@
+include=base
+name=dm
+author=Philippe Widmer
+description=Death match

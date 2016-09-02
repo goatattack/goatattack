@@ -1,0 +1,17 @@
+name=gold_diamond
+author=Philippe Widmer
+description=Gold diamond object
+type=8
+points=250
+width=16
+height=16
+speed=30
+pickup_animation=picked_up_1
+pickup_sound=picked_up_1
+spawn_animation=spawn
+spawn_sound=spawn
+spawn=300
+colbox_x=2
+colbox_y=1
+colbox_width=12
+colbox_height=14

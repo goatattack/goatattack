@@ -1,0 +1,6 @@
+name=bubbles
+author=Philippe Widmer
+description=Bubbles animation
+width=32
+height=32
+speed=30

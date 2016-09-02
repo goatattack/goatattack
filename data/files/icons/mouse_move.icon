@@ -1,0 +1,5 @@
+name=mouse_move
+author=Philippe Widmer
+description=Mouse move pointer
+hotspot_x=6
+hotspot_y=6

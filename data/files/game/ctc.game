@@ -1,0 +1,4 @@
+include=base
+name=ctc
+author=Philippe Widmer
+description=Catch the coin

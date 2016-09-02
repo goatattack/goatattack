@@ -1,0 +1,16 @@
+name=key
+author=Philippe Widmer
+description=Key object
+type=15
+width=16
+height=16
+speed=30
+pickup_animation=picked_up_1
+pickup_sound=picked_up_1
+spawn_animation=spawn
+spawn_sound=spawn
+spawn=300
+colbox_x=2
+colbox_y=0
+colbox_width=12
+colbox_height=15

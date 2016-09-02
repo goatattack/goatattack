@@ -1,0 +1,6 @@
+name=player_spawn
+author=Philippe Widmer
+description=Player spawn animation
+width=32
+height=32
+speed=30

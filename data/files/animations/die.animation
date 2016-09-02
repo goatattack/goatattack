@@ -1,0 +1,7 @@
+name=die
+author=Philippe Widmer
+description=die animation
+background=1
+width=32
+height=32
+speed=30

@@ -1,0 +1,7 @@
+name=spawn_flag
+author=Philippe Widmer
+description=Place object animation for flags
+width=32
+height=32
+speed=25
+background=0

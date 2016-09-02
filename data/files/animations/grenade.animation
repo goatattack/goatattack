@@ -1,0 +1,16 @@
+name=grenade
+author=Philippe Widmer
+description=Grenade animation
+background=1
+width=16
+height=16
+speed=30
+duration=8
+impact=2.0
+springiness=0.75
+physics=1
+physics_colbox_x=6
+physics_colbox_y=0
+physics_colbox_width=4
+physics_colbox_height=2
+finished_animation=grenade_explosion

@@ -1,0 +1,6 @@
+name=player_afk
+author=Philippe Widmer
+description=Player in options or typing animation
+width=32
+height=32
+speed=200

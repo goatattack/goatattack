@@ -1,0 +1,7 @@
+name=spawn
+author=Philippe Widmer
+description=Place object animation
+width=32
+height=32
+speed=25
+background=0

@@ -1,0 +1,14 @@
+name=grenade_explosion
+author=Philippe Widmer
+description=Explosion animation
+sound_name=grenade_explosion
+width=64
+height=64
+speed=25
+spread=64
+spread_count=1
+damage=50
+randomized_index=4
+x_offset=-32
+y_offset=-32
+screen_shaker=9

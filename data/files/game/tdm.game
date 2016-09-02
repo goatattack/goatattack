@@ -1,0 +1,4 @@
+include=base
+name=tdm
+author=Philippe Widmer
+description=Team death match

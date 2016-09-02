@@ -1,0 +1,7 @@
+name=disappear
+author=Philippe Widmer
+description=Disappear animation
+background=1
+width=16
+height=16
+speed=10

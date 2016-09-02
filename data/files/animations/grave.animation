@@ -1,0 +1,13 @@
+name=grave
+author=Philippe Widmer
+description=Grave animation
+width=32
+height=32
+speed=30
+impact=0.75
+springiness=0.15
+physics=1
+physics_colbox_x=6
+physics_colbox_y=0
+physics_colbox_width=4
+physics_colbox_height=2

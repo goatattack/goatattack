@@ -1,0 +1,6 @@
+name=picked_up_flag
+author=Philippe Widmer
+description=Picked up animation for flags
+width=32
+height=32
+speed=15

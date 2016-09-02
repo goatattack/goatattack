@@ -1,0 +1,7 @@
+include=base
+name=goh
+author=Philippe Widmer
+description=Goat of the hill
+crested_sound=crested
+scored_sound=goh_scored
+leaved_sound=goh_leaved

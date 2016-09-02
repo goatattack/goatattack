@@ -13,3 +13,6 @@ goatattack_cargo_LDADD += -lz
 endif
 
 goatattack_cargo_CXXFLAGS += -D__STDC_FORMAT_MACROS
+
+all: goatattack-cargo
+	./goatattack-cargo ../../data/files ../../data/base.pak
