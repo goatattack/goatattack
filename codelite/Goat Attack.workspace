@@ -6,14 +6,14 @@
     <Include Path="../src/shared/include"/>
     <Include Path="../src/shared/zlib"/>
   </WorkspaceParserPaths>
-  <Project Name="GoatAttack" Path="GoatAttack/GoatAttack.project" Active="Yes"/>
+  <Project Name="GoatAttack" Path="GoatAttack/GoatAttack.project" Active="No"/>
   <Project Name="MapEditor" Path="MapEditor/MapEditor.project" Active="No"/>
   <Project Name="MasterServer" Path="MasterServer/MasterServer.project" Active="No"/>
   <Environment>
     <![CDATA[]]>
   </Environment>
   <Project Name="shared" Path="shared/shared.project" Active="No"/>
-  <Project Name="Cargo" Path="Cargo/Cargo.project" Active="No"/>
+  <Project Name="Cargo" Path="Cargo/Cargo.project" Active="Yes"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Environment/>

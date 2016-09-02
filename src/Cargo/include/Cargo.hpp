@@ -19,6 +19,7 @@
 #define _CARGO_HPP_
 
 #include "Exception.hpp"
+#include "CRC64.hpp"
 
 #include <cstdio>
 #include <string>
@@ -43,6 +44,7 @@ public:
 
     void pack() throw (CargoException);
     size_t packaged() const;
+    std::string get_hash() const;
 
 private:
     struct DirectoryEntry {
@@ -95,6 +97,7 @@ private:
     std::string pak_file;
 
     PakEntries pak_entries;
+    CRC64 crc64;
 
     void pack_directory(const char *subdir) throw (CargoException);
     void pack_file(const DirectoryEntry& entry) throw (CargoException);
@@ -104,6 +107,7 @@ private:
     size_t write_string(const void *s, size_t len) throw (CargoException);
     size_t write_uint16(uint16_t n) throw (CargoException);
     size_t write_uint32(uint32_t n) throw (CargoException);
+    void calc_crc64(size_t start_pos, size_t end_pos) throw (CargoException);
 };
 
 #endif

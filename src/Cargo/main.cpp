@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
     try {
         Cargo cargo(argv[1], argv[2]);
         cargo.pack();
-        std::cout << "Successfully " << cargo.packaged() << " files packaged." << std::endl;
+        std::cout << "Successfully " << cargo.packaged() << " files packaged. (hash: " << cargo.get_hash() << ")" << std::endl;
     } catch (const Exception& e) {
         std::cout << "ERROR: " << e.what() << std::endl;
         return 1;

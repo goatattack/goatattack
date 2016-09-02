@@ -54,7 +54,7 @@ static void file_status(const char *entry, bool& is_directory, size_t& file_size
 Cargo::Cargo(const char *directory, const char *pak_file) throw (CargoException)
     : f(0), valid(true), finished(false), directory(directory), pak_file(pak_file)
 {
-    f = fopen(pak_file, "wb");
+    f = fopen(pak_file, "w+b");
     if (!f) {
         throw CargoException("Cannot open file: " + std::string(strerror(errno)));
     }
@@ -93,6 +93,10 @@ void Cargo::pack() throw (CargoException) {
 
 size_t Cargo::packaged() const {
     return pak_entries.size();
+}
+
+std::string Cargo::get_hash() const {
+    return crc64.get_hash();
 }
 
 void Cargo::pack_directory(const char *subdir) throw (CargoException) {
@@ -207,7 +211,9 @@ void Cargo::pack_file(const DirectoryEntry& entry) throw (CargoException) {
     write_uint32(crc32sum);
     fseek(f, compr_sz_pos, SEEK_SET);
     write_uint32(sz_compressed);
-    fseek(f, current_pos, SEEK_SET);
+
+    /* calculate crc64 */
+    calc_crc64(rel_pos, current_pos);
 
     /* add cd entry */
     pak_entries.push_back(PakEntry(entry.entry.c_str(), sz_compressed, sz_uncompressed,
@@ -265,6 +271,10 @@ void Cargo::add_central_directory() throw (CargoException) {
     write_uint32(cd_sz);                // sz of central directory
     write_uint32(cd_offset);            // offset of cd
     write_uint16(0);                    // comment length
+
+    /* calculate crc64 */
+    long int current_pos = ftell(f);
+    calc_crc64(cd_offset, current_pos);
 }
 
 size_t Cargo::write_string(const void *s, size_t len) throw (CargoException) {
@@ -298,6 +308,18 @@ size_t Cargo::write_uint32(uint32_t n) throw (CargoException) {
     if (written != sizeof(data)) {
         throw_write_error();
     }
-
+ 
     return written;
+}
+
+void Cargo::calc_crc64(size_t start_pos, size_t end_pos) throw (CargoException) {
+    unsigned char hash_buf[ChunkSize];
+    size_t remain = end_pos - start_pos;
+    fseek(f, start_pos, SEEK_SET);
+    while (remain) {
+        size_t len = (remain >= ChunkSize ? ChunkSize : remain);
+        fread(hash_buf, 1, len, f);
+        crc64.process(hash_buf, len);
+        remain -= len;
+    }
 }
