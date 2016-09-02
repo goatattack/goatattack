@@ -148,6 +148,7 @@ Tournament::~Tournament() {
     }
 
     if (logger) {
+        logger->log(ServerLogger::LogTypeMapClosed, "current map closed");
         logger->set_map(0);
     }
 

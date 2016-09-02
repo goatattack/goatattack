@@ -68,6 +68,7 @@ public:
         LogTypeStatsGOHTeamBlue,    /* 036 */
         LogTypeJoin,                /* 037 */
         LogTypePlayerNameChange,    /* 038 */
+        LogTypeMapClosed,           /* 039 */
         _LogTypeMAX
     };
 
