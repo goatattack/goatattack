@@ -63,7 +63,6 @@ private:
 
     void read_png_from_file(const std::string& filename) throw (PNGException);
     void read_png_from_zip(const std::string& filename, ZipReader *zip) throw (PNGException);
-    void setup_dummy();
 };
 
 #endif

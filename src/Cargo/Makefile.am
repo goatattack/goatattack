@@ -4,11 +4,7 @@ goatattack_cargo_SOURCES += src/Cargo.cpp
 
 goatattack_cargo_CXXFLAGS = -I./include -I../shared/include -Wno-unused-result -pedantic -Wextra
 
-goatattack_cargo_LDADD = -L../shared -lshared
-
-if !DEDICATED_SERVER
-goatattack_cargo_LDADD += -lpng
-endif
+goatattack_cargo_LDADD = -L../shared -lshared -lpng
 
 if INTERNAL_ZLIB
 goatattack_cargo_CXXFLAGS += -I../shared/zlib
