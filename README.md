@@ -7,16 +7,16 @@ Goat Attack is a multiplayer 2D platformer pixel art shooter game for Linux, OS 
 the game and the map editor can be compiled for all three platforms. the master server is for linux only. the master server is a dedicated server responsible for collecting the connection information (IP address and port) of all available game servers and providing that to the users.
 
 ## Features
-# Game Play
+### Game Play
 Play in free fight or in team modes. Pick up grenades, bombs and throw them, Be aware not killing yourself. In some maps, you will find a frog. Pick it up und throw it against your opponents, but do not touch it. If you find a helmet, wear it. This helmet will protect you from damage.
 
-# Network
+### Network
 Create your own dedicated game server. Read carefully the configuration help in the forum. If your server has own map packages, a connecting client will download these packages automatically.
 
-# Map editor
+### Map editor
 Create your own tilesets and maps. If done, create a Goat Attack package and publish it with you dedicated server.
 
-# Logging
+### Logging
 Your dedicated server will create detailled log entries depending on each action. These log files can be easily used to create game play reports.
 
 ## Build client
