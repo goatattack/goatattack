@@ -442,12 +442,12 @@ void MapEditor::create_toolbox() {
 
     btn = create_button(window, 3, ofsy + (bh * l++), w, h, "", static_calculate_light_click, this);
     btn->show_bolts(false);
-    btn->set_tooltip_text("generator quick lightmap");
+    btn->set_tooltip_text("create quick lightmap");
     create_picture(btn, 1, 1, resources.get_icon("me_calclight")->get_tile()->get_tilegraphic());
 
     btn = create_button(window, 3, ofsy + (bh * l++), w, h, "", static_calculate_light_pixel_click, this);
     btn->show_bolts(false);
-    btn->set_tooltip_text("generator pixel precise lightmap");
+    btn->set_tooltip_text("create pixel precise lightmap");
     create_picture(btn, 1, 1, resources.get_icon("me_calclight_pixel")->get_tile()->get_tilegraphic());
 
     btn = create_button(window, 3, ofsy + (bh * l++), w, h, "", static_zap_click, this);
