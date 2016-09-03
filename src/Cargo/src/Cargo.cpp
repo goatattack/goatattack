@@ -273,8 +273,7 @@ void Cargo::add_central_directory() throw (CargoException) {
     write_uint16(0);                    // comment length
 
     /* calculate crc64 */
-    long int current_pos = ftell(f);
-    calc_crc64(cd_offset, current_pos);
+    calc_crc64(cd_offset, ftell(f));
 }
 
 size_t Cargo::write_string(const void *s, size_t len) throw (CargoException) {
