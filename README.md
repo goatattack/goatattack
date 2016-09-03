@@ -14,7 +14,7 @@ Play in free for all or in team modes. Pick up grenades, bombs and throw them. B
 Create your own dedicated game server. Read carefully the configuration help in the forum. If your server has own map packages, a connecting client will download these packages automatically.
 
 ### Map editor
-Create your own maps based on existing or created tilesets. If done, create a Goat Attack package and publish it with you dedicated server.
+Create your own maps based on existing or created tilesets. If done, create a Goat Attack package and publish it with your own dedicated server.
 
 ### Logging
 Your dedicated server will create detailed log entries depending on each action. These log files can be easily used to create game play statistics and reports.
