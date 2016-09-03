@@ -76,7 +76,7 @@ void Cargo::pack() throw (CargoException) {
     }
 
     /* go */
-    pack_directory("");
+    pack_directory("", true);
     std::cout << std::endl;
 
     /* append central directory */
@@ -99,7 +99,7 @@ std::string Cargo::get_hash() const {
     return crc64.get_hash();
 }
 
-void Cargo::pack_directory(const char *subdir) throw (CargoException) {
+void Cargo::pack_directory(const char *subdir, bool is_rootdir) throw (CargoException) {
     try {
         /* read entries in directory */
         DirectoryEntries entries;
@@ -122,7 +122,7 @@ void Cargo::pack_directory(const char *subdir) throw (CargoException) {
             const DirectoryEntry& entry = *it;
             if (entry.is_directory) {
                 pack_directory(append_dir(subdir, entry.entry.c_str()).c_str());
-            } else {
+            } else if (!is_rootdir) {
                 pack_file(entry);
             }
         }

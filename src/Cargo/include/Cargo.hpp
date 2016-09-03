@@ -99,7 +99,7 @@ private:
     PakEntries pak_entries;
     CRC64 crc64;
 
-    void pack_directory(const char *subdir) throw (CargoException);
+    void pack_directory(const char *subdir, bool is_rootdir = false) throw (CargoException);
     void pack_file(const DirectoryEntry& entry) throw (CargoException);
     void throw_write_error() throw (CargoException);
     std::string append_dir(const char *directory, const char *subdir);
