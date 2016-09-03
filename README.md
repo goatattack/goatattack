@@ -8,16 +8,16 @@ the game and the map editor can be compiled for all three platforms. the master 
 
 ## Features
 ### Game Play
-Play in free fight or in team modes. Pick up grenades, bombs and throw them, Be aware not killing yourself. In some maps, you will find a frog. Pick it up und throw it against your opponents, but do not touch it. If you find a helmet, wear it. This helmet will protect you from damage.
+Play in free for all or in team modes. Pick up grenades, bombs and throw them. Be aware not killing yourself. In some maps, you will find a frog. Pick it up und throw it against your opponents, but do not touch it. If you find a helmet, wear it. This helmet will protect you from damage.
 
 ### Network
 Create your own dedicated game server. Read carefully the configuration help in the forum. If your server has own map packages, a connecting client will download these packages automatically.
 
 ### Map editor
-Create your own tilesets and maps. If done, create a Goat Attack package and publish it with you dedicated server.
+Create your own maps based on existing or created tilesets. If done, create a Goat Attack package and publish it with you dedicated server.
 
 ### Logging
-Your dedicated server will create detailled log entries depending on each action. These log files can be easily used to create game play reports.
+Your dedicated server will create detailed log entries depending on each action. These log files can be easily used to create game play statistics and reports.
 
 ## Build client
 ### Requires
