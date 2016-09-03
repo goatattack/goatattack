@@ -1,0 +1,13 @@
+.TH GOATATTACK-CARGO 6 "September 2016" "goat attack" "Multiplayer shooter utility"
+.SH NAME
+goatattack-cargo \- packager utility for Goat Attack paks
+.SH SYNOPSIS
+.B goatattack-cargo path/to/files outfile.pak
+.SH DESCRIPTION
+Cargo is a packager utility to create map packages of own maps and tilesets. The directory structure of the pak file must follow the defined structure, you will find in the source package of Goat Attack in the data/files directory. A created pak file can be placed in the Goat Attack home directory, normally \fI~.goatattack\fP, or in the default directory, normally \fI/usr/share/goattack\fP or \fI/usr/local/share/goatattack\fP. A created pak file has a CRC64 hash, which must match with the hash of client's base.pak. A user's own pak will be sent to the game client, if a client connects to a dedicated server. 
+.SH EXAMPLES
+goatattack-cargo ~/.goatattack/files mymaps.pak
+.SH MORE INFORMATIONS
+Please read the README file or visit \fIwww.goatattack.net\fR for more informations.
+.SH AUTHORS
+Goat Attack and its manuals were written by Philippe Widmer <pw@earthwave.ch>, and are licensed under the terms of GPLv3 licenses.

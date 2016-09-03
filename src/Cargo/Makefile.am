@@ -1,4 +1,4 @@
-noinst_PROGRAMS = goatattack-cargo
+bin_PROGRAMS = goatattack-cargo
 goatattack_cargo_SOURCES = main.cpp
 goatattack_cargo_SOURCES += src/Cargo.cpp
 
@@ -13,6 +13,8 @@ goatattack_cargo_LDADD += -lz
 endif
 
 goatattack_cargo_CXXFLAGS += -D__STDC_FORMAT_MACROS
+
+man6_MANS = man/goatattack-cargo.6
 
 all: goatattack-cargo
 	./goatattack-cargo ../../data/files ../../data/base.pak

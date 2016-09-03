@@ -14,6 +14,7 @@ endif
 
 if DEDICATED_SERVER
 goatattack_CXXFLAGS += -DDEDICATED_SERVER
+man6_MANS = man/dedicated/goatattack.6
 else
 goatattack_LDADD += -lGL -lSDL2 -lSDL2_mixer
 iconsdir = $(datarootdir)/icons/hicolor/scalable/apps
@@ -22,9 +23,14 @@ desktopdir = $(datarootdir)/applications
 dist_desktop_DATA = ../../packages/linux/goatattack.desktop
 appdatadir = $(datarootdir)/appdata
 dist_appdata_DATA = ../../packages/linux/goatattack.appdata.xml
+man6_MANS = man/game/goatattack.6
 endif
 
 goatattack_CXXFLAGS += -DDATA_DIRECTORY=$(pkgdatadir) -D__STDC_FORMAT_MACROS
 
 uninstall:
+	rm -f $(bindir)/goatattack
 	rm -fr $(datarootdir)/goatattack
+	rm -f $(datarootdir)/icons/hicolor/scalable/apps/goatattack.svg
+	rm -f $(datarootdir)/appdata/goatattack.appdata.xml
+	rm -f $(datarootdir)/applications/goatattack.desktop

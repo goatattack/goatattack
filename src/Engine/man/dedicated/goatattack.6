@@ -1,0 +1,166 @@
+.TH GOATATTACK 6 "September 2016" "goat attack" "Multiplayer shooter"
+.SH NAME
+goatattack \- dedicated server for a multiplayer pixel art shooter game
+.SH SYNOPSIS
+.B goatattack
+.I conffile
+.SH DESCRIPTION
+Goat Attack dedicated server for a fast-paced multiplayer pixel art shooter game.
+The server uses UDP sockets for communication.
+.RE
+.SH CONFIGURATION
+Create a configuration file as described below and run the dedicated server with
+that configuration file as parameter. You should find a couple of configuration
+files in the source package of Goat Attack.
+.SS FIELD TYPES
+.TP
+\fBalphanumeric\fP
+This field allows to hold a text.
+.TP
+\fBnumeric\fP
+This field can hold numeric values.
+.TP
+\fBboolean\fP
+This field is a true or false field. You can use \fI0\fP for false/no and \fI1\fP
+for true/yes.
+.SS VALID FIELDS
+.TP
+\fBserver_name\fP (required, alphanumeric)
+\fIserver_name=schlachttempel DM #1\fP
+.br
+Sets the name of the dedicated server.
+.TP
+\fBserver_message\fP (optional, alphanumeric)
+\fIserver_message=hello player :)|welcome to schlachttempel DM #1.\fP
+.br
+If a player connects to your server, this greeting message will be shown. Use the pipe
+symbol to break lines.
+.TP
+\fBserver_password\fP (optional, numeric)
+\fIserver_password=12345\fP
+.br
+You can protect your server with a password. The ingame server list will mark your
+server as password protected.
+.TP
+\fBnum_players\fP (required, numeric)
+\fInum_players=12\fP
+.br
+Define here, how many players can connect to your server.
+.TP
+\fBport\fP (required, numeric)
+\fIport=25111\fP
+.br
+Your dedicated server will listen on this port.
+.TP
+\fBmaster_server\fP (optional, alphanumeric)
+\fImaster_server=master.goatattack.net\fP
+.br
+Fill out this field, if you want to register your dedicated server to the master
+server. The official master is \fImaster.goatattack.net\fR.
+.TP
+\fBhold_disconnected_player\fP (optional, boolean)
+\fIhold_disconnected_player=1\fP
+.br
+If a player disconnects (in due to network lags) and reconnects again, the score is
+preserved. The server will hold the scores for about 60 seconds.
+.TP
+\fBreconnect_kills\fP (optional, numeric)
+\fIreconnect_kills=10\fP
+.br
+Here you can define a reconnect penalty, how many kills the reconnecting player will get.
+.TP
+\fBshuffle_maps\fP (optional, boolean)
+\fIshuffle_maps=1\fP
+.br
+Set to 1 (true), if you want to shuffle the map rotation list.
+.TP
+\fBmap_count\fP (required, numeric)
+\fImap_count=2\fP
+.br
+Define, how many maps in your rotation list are.
+.TP
+\fBnameX\fP (required, alphanumeric)
+\fIname0=dm1\fP
+.br
+Define the name of the map (do not use the map description). Set X to the index of the
+current map, zero based.
+.TP
+\fBwarmupX\fP (optional, numeric)
+\fIwarmup0=30\fP
+.br
+If you want to begin with a warm up, define it in seconds. Set X to the index of the
+current map, zero based.
+.TP
+\fBdurationX\fP (required, numeric)
+\fIduration0=10\fP
+.br
+Define the duration in minutes. Set X to the index of the current map, zero based.
+.TP
+\fBlogfile\fP (optional, alphanumeric)
+\fIlogfile=/var/log/serverstat.log\fP
+.br
+Define a log output file for creating statistics and reports.
+.TP
+\fBclan_red_name\fP (optional, alphanumeric)
+\fIclan_red_name=sharks\fP
+.br
+Define the name of the red team.
+.TP
+\fBblue_red_name\fP (optional, alphanumeric)
+\fIblue_red_name=jets\fP
+.br
+Define the name of the blue team.
+.TP
+\fBadmin_password\fP (optional, alphanumeric)
+\fIadmin_password=master\fP
+.br
+Define the password to authenticate to manage the dedicated server. You can enter the
+server mode using the chat window. To submit server command, use the slash before
+commands, eg. /op master.
+.TP
+\fBfriendly_fire_alarm\fP (optional, boolean)
+\fIfriendly_fire_alarm=1\fP
+.br
+Set to 1 (true), if you want to hear an alarm if a team mate is shot. Set to 0 to turn
+the alarm off.
+.SH SERVER COMMANDS
+The server commands only work on a dedicated server. Servers created in a game play do
+not accept server commands.
+.SS COMMANDS
+.TP
+\fB/op\fP \fI<password>\fP
+Become operator/administrator.
+.TP
+\fB/deop\fP
+Exit operator mode.
+.TP
+\fB/kick\fP \fI<player_name>\fP
+Kick immediately a player from the arena.
+.TP
+\fB/next\fP
+Select the next map in the map rotation list.
+.TP
+\fB/next\fP
+Select the next map in the map rotation list.
+.TP
+\fB/map\fP \fI<map_name> <warmup> <duration>\fP
+Load map, warmup are in seconds, duration in minutes.
+.TP
+\fB/reload\fP
+Reloads the server configuration file.
+.TP
+\fB/get\fP \fI<variable>\fP
+Shows the server configuration variable.
+.TP
+\fB/set\fP \fI<variable> <value>\fP
+Sets the server configuration variable.
+.TP
+\fB/reset\fP \fI<variable>\fP
+Clears the server configuration variable.
+.TP
+\fB/save\fP
+Saves the server configuration file.
+.SH MORE INFORMATIONS
+Please read the README file or visit \fIwww.goatattack.net\fR for more informations.
+.SH AUTHORS
+Goat Attack and its manuals were written by Philippe Widmer <pw@earthwave.ch>, and are licensed under the terms of GPLv3 licenses.

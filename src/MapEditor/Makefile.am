@@ -19,3 +19,4 @@ desktopdir = $(datarootdir)/applications
 dist_desktop_DATA = ../../packages/linux/goatattack-mapeditor.desktop
 appdatadir = $(datarootdir)/appdata
 dist_appdata_DATA = ../../packages/linux/goatattack-mapeditor.appdata.xml
+man6_MANS = man/goatattack-mapeditor.6 
