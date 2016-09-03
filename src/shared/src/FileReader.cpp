@@ -17,10 +17,14 @@
 
 #include "FileReader.hpp"
 
+#include <string>
+#include <cerrno>
+#include <cstring>
+
 FileReader::FileReader(const char *filename) throw (FileReaderException) {
     f = fopen(filename, "rb");
     if (!f) {
-        throw FileReaderException("Opening file failed.");
+        throw FileReaderException(std::string("Opening file failed: ") + filename + " (" + strerror(errno) + ")");
     }
 }
 
