@@ -52,13 +52,12 @@ const Audio *Music::get_audio() const throw (MusicException) {
 }
 
 ScopeMusicStopper::ScopeMusicStopper(Subsystem& subsystem, Music *music)
-    : subsystem(subsystem), music(music), volume(subsystem.get_music_volume())
+    : subsystem(subsystem), music(music)
 {
     subsystem.stop_music();
 }
 
 ScopeMusicStopper::~ScopeMusicStopper() {
-    subsystem.set_music_volume(volume);
     if (music) {
         subsystem.play_music(music);
     }

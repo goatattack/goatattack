@@ -131,13 +131,11 @@ bool SubsystemNull::get_input(InputData& input) {
     return false;
 }
 
-void SubsystemNull::set_music_volume(int v, bool in_game) { }
+void SubsystemNull::set_music_volume(int v) { }
 
 int SubsystemNull::get_music_volume() {
     return 0;
 }
-
-void SubsystemNull::set_relative_music_volume(int v) { }
 
 void SubsystemNull::set_sound_volume(int v) { }
 

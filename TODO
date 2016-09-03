@@ -99,6 +99,7 @@ DONE:
 * upstream appdata files added
 * man page created
 * Logtype "LogTypeChatMessage" changed
+* fishy map volume removed
 
 DEFERRED:
 * OSX: too short filename buffer -> hardegger bug (not reproducable)

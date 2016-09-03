@@ -10,6 +10,7 @@
 - upstream appdata files added (thanks to Rémi Verschelde)
 - man pages created
 - Logtype "LogTypeChatMessage" changed
+- fishy map volume removed (thanks to ObaniGemini)
 
 0.4.3
 - new rounded buttons

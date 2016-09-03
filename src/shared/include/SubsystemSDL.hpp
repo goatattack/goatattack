@@ -78,9 +78,8 @@ public:
     virtual void skip_music_player_song();
     virtual void stop_music_player();
 
-    virtual void set_music_volume(int v, bool in_game = false);
+    virtual void set_music_volume(int v);
     virtual int get_music_volume();
-    virtual void set_relative_music_volume(int v);
     virtual void set_sound_volume(int v);
 
     virtual bool get_input(InputData& input);

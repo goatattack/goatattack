@@ -62,7 +62,6 @@ public:
 private:
     Subsystem& subsystem;
     Music *music;
-    int volume;
 };
 
 #endif

@@ -85,7 +85,6 @@ private:
     static void static_graphics_and_sound_click(GuiVirtualButton *sender, void *data);
     static void static_scanlines_intensity_changed(GuiVirtualScroll *sender, void *data, int value);
     static void static_music_volume_changed(GuiVirtualScroll *sender, void *data, int value);
-    static void static_map_volume_changed(GuiVirtualScroll *sender, void *data, int value);
     static void static_sfx_volume_changed(GuiVirtualScroll *sender, void *data, int value);
     static void static_text_fade_speed_changed(GuiVirtualScroll *sender, void *data, int value);
     static void static_controller_and_keyboard_click(GuiVirtualButton *sender, void *data);
@@ -129,7 +128,6 @@ private:
     void graphics_and_sound_click();
     void scanlines_intensity_changed(int value);
     void music_volume_changed(int value);
-    void map_volume_changed(int value);
     void sfx_volume_changed(int value);
     void text_fade_speed_changed(int value);
     void controller_and_keyboard_click();

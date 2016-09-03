@@ -45,7 +45,6 @@ Configuration::Configuration(const std::string& directory,
     cdef("show_scanlines", "1");
     cdef("scanlines_intensity", "50");
     cdef("music_volume", "128");
-    cdef("map_volume", "75");
     cdef("sfx_volume", "128");
     cdef("master_server", "master.goatattack.net");
     cdef("master_port", "25113");

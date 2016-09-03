@@ -106,7 +106,7 @@ SubsystemSDL::SubsystemSDL(std::ostream& stream, const std::string& window_title
     : Subsystem(stream, window_title), window(0), joyaxis(0), fullscreen(false),
       draw_scanlines(false), scanlines_intensity(0.5f),
       deadzone_horizontal(3200), deadzone_vertical(3200), selected_tex(0),
-      music_volume(0), relative_music_volume(100)
+      music_volume(100)
 {
     stream << "starting SubsystemSDL" << std::endl;
 
@@ -517,28 +517,13 @@ void SubsystemSDL::stop_music_player() {
     stop_music();
 }
 
-void SubsystemSDL::set_music_volume(int v, bool in_game) {
+void SubsystemSDL::set_music_volume(int v) {
     music_volume = v;
-    if (in_game) {
-        set_relative_music_volume(relative_music_volume);
-    } else {
-        Mix_VolumeMusic(v);
-    }
+    Mix_VolumeMusic(v);
 }
 
 int SubsystemSDL::get_music_volume() {
     return music_volume;
-}
-
-void SubsystemSDL::set_relative_music_volume(int v) {
-    relative_music_volume = v;
-    float p = static_cast<float>(v);
-    if (v < 0 || v > 100) {
-        p = 100.0f;
-    }
-
-    int rv = static_cast<int>(music_volume / 100.0f * p);
-    Mix_VolumeMusic(rv);
 }
 
 void SubsystemSDL::set_sound_volume(int v) {
