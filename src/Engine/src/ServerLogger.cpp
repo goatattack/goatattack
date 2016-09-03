@@ -59,6 +59,14 @@ void ServerLogger::log(LogType type, const std::string& text, Player *p1, Player
                 break;
 
             case LogTypeChatMessage:
+                /* TIME LOG MAP MAP_DESC TEXT PLAYER_NAME */
+                sprintf(buffer, "%s %03d %s %s %s %s", time_buffer, type,
+                    map_name.c_str(),
+                    map_description.c_str(),
+                    make_quote(text).c_str(),
+                    make_quote(p1->get_player_name()).c_str());
+                break;
+
             case LogTypeWarmUp:
             case LogTypeGameBegins:
             case LogTypeGameOver:

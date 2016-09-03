@@ -98,6 +98,7 @@ DONE:
 * optional data path as new game parameter
 * upstream appdata files added
 * man page created
+* Logtype "LogTypeChatMessage" changed
 
 DEFERRED:
 * OSX: too short filename buffer -> hardegger bug (not reproducable)

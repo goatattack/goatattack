@@ -682,9 +682,9 @@ void Server::event_data(const Connection *c, data_len_t len, void *data) throw (
                             send_data(c, factory.get_tournament_id(), GPCTextMessage, NetFlagsReliable, strlen(e.what()), e.what());
                         }
                     } else {
-                        std::string msg(p->get_player_name() + ": ");
-                        msg.append(reinterpret_cast<char *>(t->data), t->len);
-                        logger.log(ServerLogger::LogTypeChatMessage, msg);
+                        std::string msg(reinterpret_cast<char *>(t->data), t->len);
+                        logger.log(ServerLogger::LogTypeChatMessage, msg, p);
+                        msg = p->get_player_name() + ": " + msg;
                         broadcast_data(0, GPCChatMessage, NetFlagsReliable, msg.length(), msg.c_str());
                     }
                     break;

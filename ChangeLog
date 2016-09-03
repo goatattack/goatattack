@@ -9,6 +9,7 @@
 - optional data path as new game parameter (thanks to ObaniGemini)
 - upstream appdata files added (thanks to Rémi Verschelde)
 - man pages created
+- Logtype "LogTypeChatMessage" changed
 
 0.4.3
 - new rounded buttons

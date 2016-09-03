@@ -160,6 +160,282 @@ Clears the server configuration variable.
 .TP
 \fB/save\fP
 Saves the server configuration file.
+
+.SH LOG FILE
+If configured, a dedicated server will generate log entries on each action. Eg. if a
+player connects, on fragging, or if a game play is finished.
+.SS ENTRY FORMAT
+Each entry begins with date, time and logtype. All following fields depend on log type. Alphanumeric fields are quoted. The field delimiter is the space character (0x20). Example:
+.br
+2016-09-02 22:26:31 000 "freanux connected" "freanux"
+.SS FIELDS
+.TP
+\fBDATE\fP
+Represents the date of log entry. The format is YYYY-MM-DD.
+.TP
+\fBTIME\fP
+Represents the time of log entry. The format is hh:mm:ss.
+.TP
+\fBLOG\fP
+This numeric field represents the type of the log entry. The format is nnn.
+.TP
+\fBMAP\fP
+This alphanumeric field represents the short name of a map.
+.TP
+\fBMAP_DESC\fP
+This alphanumeric field represents the full description of a map.
+.TP
+\fBPLAYER\fP
+This alphanumeric field represents the name of the player.
+.TP
+\fBTEXT\fP
+This alphanumeric field represents a text.
+.TP
+\fBFRAG_PLAYER\fP
+This alphanumeric field represents the player who has fragged another player.
+.TP
+\fBKILL_PLAYER\fP
+This alphanumeric field represents the player who was kill by another player.
+.TP
+\fBREASON\fP
+This alphanumeric field represents the reason, why a player was killed.
+.TP
+\fBTIME_IN_S\fP
+This numeric field represents how many seconds a player has needed to complete a lap.
+.TP
+\fBRANK\fP
+This numeric field represents the ranking.
+.TP
+\fBSCORE\fP
+This numeric field represents the score.
+.TP
+\fBFRAGS\fP
+This numeric field represents the number of frags.
+.TP
+\fBKILLS\fP
+This numeric field represents the number of kills. The reconnection penalty will be added as well, if configured.
+.TP
+\fBTEAM_RED\fP
+This alphanumeric field represents the name of the team red.
+.TP
+\fBTEAM_BLUE\fP
+This alphanumeric field represents the name of the team blue.
+.TP
+\fBLAPS\fP
+This numeric field represents the number of done laps in a speed race game type.
+.TP
+\fBBEST\fP
+This numeric field represents the best time of all laps in a speed race game type. The format is n.n, eg. 18.30.
+.TP
+\fBLAST\fP
+This numeric field represents the time number of last lap in a speed race game type. The format is n.n, eg. 18.30.
+.TP
+\fBMIN:SEC\fP
+This special field represents the time in minutes and seconds of carrying the big coin in a CTC game play, eg. 5:12.
+.TP
+\fBOLD_NAME\fP and \fBNEW_NAME\fP
+This alphanumeric field represents the name before and after changing the nick of a player.
+.SS LOGTYPES
+.TP
+\fB000\fP \fILogTypePlayerConnect\fP
+DATE TIME LOG TEXT PLAYER
+.br
+A player has connected to the game server.
+.TP
+\fB001\fP \fILogTypePlayerDisconnect\fP
+DATE TIME LOG TEXT PLAYER
+.br
+A player has disconnected the game server.
+.TP
+\fB002\fP \fILogTypeNewMap\fP
+DATE TIME LOG MAP MAP_DESC TEXT
+.br
+A new map was created and is ready for playing.
+.TP
+\fB003\fP \fILogTypeChatMessage\fP
+DATE TIME LOG MAP MAP_DESC TEXT PLAYER
+.br
+A player has sent a chat message.
+.TP
+\fB004\fP \fILogTypeWarmUp\fP
+DATE TIME LOG MAP MAP_DESC TEXT
+.br
+The warm up begins.
+.TP
+\fB005\fP \fILogTypeGameBegins\fP
+DATE TIME LOG MAP MAP_DESC TEXT
+.br
+The game begins.
+.TP
+\fB006\fP \fILogTypeGameOver\fP
+DATE TIME LOG MAP MAP_DESC TEXT
+.br
+The game is over.
+.TP
+\fB007\fP \fILogTypeFrag\fP
+DATE TIME LOG MAP MAP_DESC TEXT FRAG_PLAYER KILL_PLAYER REASON
+.br
+A player has fragged another player.
+.TP
+\fB008\fP \fILogTypeKill\fP
+DATE TIME LOG MAP MAP_DESC TEXT PLAYER REASON
+.br
+A player was killed by falling off the stage or touching lava, or stings.
+.TP
+\fB009\fP \fILogTypeRedTeamJoin\fP
+DATE TIME LOG MAP MAP_DESC TEXT PLAYER
+.br
+A player joins the red team. Belongs to TDM, CTF and GOH.
+.TP
+\fB010\fP \fILogTypeBlueTeamJoin\fP
+DATE TIME LOG MAP MAP_DESC TEXT PLAYER
+.br
+A player joins the blue team. Belongs to TDM, CTF and GOH.
+.TP
+\fB011\fP \fILogTypeRedFlagPicked\fP
+DATE TIME LOG MAP MAP_DESC TEXT PLAYER
+.br
+The red flag was picked by a player of the opposite team. Belongs to CTF.
+.TP
+\fB012\fP \fILogTypeRedFlagDropped\fP
+DATE TIME LOG MAP MAP_DESC TEXT PLAYER
+.br
+The red flag was dropped by a player of the opposite team. Belongs to CTF.
+.TP
+\fB013\fP \fILogTypeRedFlagSaved\fP
+DATE TIME LOG MAP MAP_DESC TEXT PLAYER
+.br
+A Player has saved his red team flag. Belongs to CTF.
+.TP
+\fB014\fP \fILogTypeRedFlagReturned\fP
+DATE TIME LOG MAP MAP_DESC TEXT
+.br
+The red flag was returned to base without intervention of a player. Belongs to CTF.
+.TP
+\fB015\fP \fILogTypeBlueFlagPicked\fP
+DATE TIME LOG MAP MAP_DESC TEXT PLAYER
+.br
+The blue flag was picked by a player of the opposite team. Belongs to CTF.
+.TP
+\fB016\fP \fILogTypeBlueFlagDropped\fP
+DATE TIME LOG MAP MAP_DESC TEXT PLAYER
+.br
+The blue flag was dropped by a player of the opposite team. Belongs to CTF.
+.TP
+\fB017\fP \fILogTypeBlueFlagSaved\fP
+DATE TIME LOG MAP MAP_DESC TEXT PLAYER
+.br
+A Player has saved his blue team flag. Belongs to CTF.
+.TP
+\fB018\fP \fILogTypeBlueFlagReturned\fP
+DATE TIME LOG MAP MAP_DESC TEXT
+.br
+The blue flag was returned to base without intervention of a player. Belongs to CTF.
+.TP
+\fB019\fP \fILogTypeCoinPicked\fP
+DATE TIME LOG MAP MAP_DESC TEXT PLAYER
+.br
+A player has picked the big coin. Belongs to CTC.
+.TP
+\fB020\fP \fILogTypeCoinDropped\fP
+DATE TIME LOG MAP MAP_DESC TEXT PLAYER
+.br
+The player, who carried the coin has dropped the big coin. Belongs to CTC.
+.TP
+\fB021\fP \fILogTypeTeamRedScored\fP
+DATE TIME LOG MAP MAP_DESC TEXT PLAYER
+.br
+The red team scored. Belongs to TDM, CTF and GOH.
+.TP
+\fB022\fP \fILogTypeTeamBlueScored\fP
+DATE TIME LOG MAP MAP_DESC TEXT PLAYER
+.br
+The blue team scored. Belongs to TDM, CTF and GOH.
+.TP
+\fB023\fP \fILogTypeRoundFinished\fP
+DATE TIME LOG MAP MAP_DESC TEXT PLAYER TIME_IN_S
+.br
+A player has finished a speed race round. Belongs to SR.
+.TP
+\fB024\fP \fILogTypeEndOfStats\fP
+DATE TIME LOG MAP MAP_DESC TEXT
+.br
+If all statistics where logged, this type of log marks the end of statistics. Belongs to all game modes.
+.TP
+\fB025\fP \fILogTypeStatsDM\fP
+DATE TIME LOG MAP MAP_DESC TEXT RANK PLAYER SCORE FRAGS KILLS
+.br
+After a match, this statistic entry is logged for all players. Belongs to DM.
+.TP
+\fB026\fP \fILogTypeStatsTDMTeamScore\fP
+DATE TIME LOG MAP MAP_DESC TEXT TEAM_RED SCORE TEAM_BLUE SCORE
+.br
+After a match, this team statistic is logged. Belongs to TDM.
+.TP
+\fB027\fP \fILogTypeStatsTDMTeamRed\fP
+DATE TIME LOG MAP MAP_DESC TEXT RANK PLAYER SCORE FRAGS KILLS
+.br
+After a match, this statistic is logged for all players of team red. Belongs to TDM.
+.TP
+\fB028\fP \fILogTypeStatsTDMTeamBlue\fP
+DATE TIME LOG MAP MAP_DESC TEXT RANK PLAYER SCORE FRAGS KILLS
+.br
+After a match, this statistic is logged for all players of team blue. Belongs to TDM.
+.TP
+\fB029\fP \fILogTypeStatsCTFTeamScore\fP
+DATE TIME LOG MAP MAP_DESC TEXT TEAM_RED SCORE TEAM_BLUE SCORE
+.br
+After a match, this team statistic is logged. Belongs to CTF.
+.TP
+\fB030\fP \fILogTypeStatsCTFTeamRed\fP
+DATE TIME LOG MAP MAP_DESC TEXT RANK PLAYER SCORE FRAGS KILLS
+.br
+After a match, this statistic is logged for all players of team red. Belongs to CTF.
+.TP
+\fB031\fP \fILogTypeStatsCTFTeamBlue\fP
+DATE TIME LOG MAP MAP_DESC TEXT RANK PLAYER SCORE FRAGS KILLS
+.br
+After a match, this statistic is logged for all players of team blue. Belongs to CTF.
+.TP
+\fB032\fP \fILogTypeStatsSR\fP
+DATE TIME LOG MAP MAP_DESC TEXT RANK PLAYER LAPS BEST LAST
+.br
+After a match, this statistic entry is logged for all players. Belongs to SR.
+.TP
+\fB033\fP \fILogTypeStatsCTC\fP
+DATE TIME LOG MAP MAP_DESC TEXT RANK PLAYER MIN:SEC
+.br
+After a match, this statistic entry is logged for all players. Belongs to CTC.
+.TP
+\fB034\fP \fILogTypeStatsGOHTeamScore\fP
+DATE TIME LOG MAP MAP_DESC TEXT TEAM_RED SCORE TEAM_BLUE SCORE
+.br
+After a match, this team statistic is logged. Belongs to GOH.
+.TP
+\fB035\fP \fILogTypeStatsGOHTeamRed\fP
+DATE TIME LOG MAP MAP_DESC TEXT RANK PLAYER SCORE FRAGS KILLS
+.br
+After a match, this statistic is logged for all players of team red. Belongs to GOH.
+.TP
+\fB036\fP \fILogTypeStatsGOHTeamBlue\fP
+DATE TIME LOG MAP MAP_DESC TEXT RANK PLAYER SCORE FRAGS KILLS
+.br
+After a match, this statistic is logged for all players of team blue. Belongs to GOH.
+.TP
+\fB037\fP \fILogTypeJoin\fP
+DATE TIME LOG MAP MAP_DESC TEXT PLAYER
+.br
+A player joins the game. Belongs to DM, CTC and SR.
+.TP
+\fB038\fP \fILogTypePlayerNameChange\fP
+DATE TIME LOG TEXT OLD_NAME NEW_NAME
+.br
+A player has changed his nick.
+.TP
+\fB039\fP \fILogTypeMapClosed\fP
+DATE TIME LOG MAP MAP_DESC TEXT
+.br
+If a match is finished or the last player has left the arena, the current map will be closed.
 .SH MORE INFORMATIONS
 Please read the README file or visit \fIwww.goatattack.net\fR for more informations.
 .SH AUTHORS
