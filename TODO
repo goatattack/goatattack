@@ -1,6 +1,3 @@
-WORKING ON:
-
-
 PENDING:
 * spectator mode -> following other players
 * server filter (sort out full or protected server)
@@ -91,7 +88,16 @@ DONE:
 * hasher switched from SHA256 to CRC64
 * changed protocol version to 3
 * ingame music player added (thanks to daniel & marcel for this masterpieces)
-
+* changing text fading speed
+* splitting shared from other projects
+* linking against system zlib
+* build system cleanups
+* vectorized desktop icon added
+* new logtype "LogTypeMapClosed" added
+* creating base.pak using goatattack-cargo tool
+* optional data path as new game parameter
+* upstream appdata files added
+* man page created
 
 DEFERRED:
 * OSX: too short filename buffer -> hardegger bug (not reproducable)
