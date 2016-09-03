@@ -35,6 +35,8 @@ private:
 
 public:
     FileReader(const char *filename) throw (FileReaderException);
+    ~FileReader();
+
     size_t read(void *buffer, size_t len) throw (FileReaderException);
     bool eof() const;
 

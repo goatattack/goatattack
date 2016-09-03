@@ -24,6 +24,10 @@ FileReader::FileReader(const char *filename) throw (FileReaderException) {
     }
 }
 
+FileReader::~FileReader() {
+    fclose(f);
+}
+
 size_t FileReader::read(void *buffer, size_t len) throw (FileReaderException) {
     return fread(buffer, 1, len, f);
 }
