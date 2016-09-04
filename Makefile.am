@@ -11,3 +11,9 @@ endif
 SUBDIRS += src/Cargo
 SUBDIRS += data
 EXTRA_DIST = src/Cargo/include/* src/Engine/include/* src/MapEditor/include/* src/MasterServer/include/* src/shared/include/* src/shared/zlib/*.h data/* man
+
+no-data-clean:
+	cd data && make save && cd ..
+	make clean
+	cd data && make restore && cd ..
+
