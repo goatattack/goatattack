@@ -34,7 +34,6 @@ AM_CONDITIONAL([BUILD_PAK], [test "x$BUILD_PAK" = xyes])
 
 # --- cargo only? ---
 AM_CONDITIONAL([CARGO_ONLY], [test "x$CARGO_ONLY" = xyes])
-AM_CONDITIONAL([DEDICATED_SERVER], [test "x$CARGO_ONLY" = xyes])
 
 # --- check additional libraries ---
 if test "x$DEDICATED_SERVER" != "xyes"; then
