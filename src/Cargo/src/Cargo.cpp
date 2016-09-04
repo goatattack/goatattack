@@ -33,22 +33,36 @@ static const uint16_t ZipArchiveFile = 1;
 static const uint32_t ZipExtAttribs = 0x81a40000;
 static const uint16_t ZipUnixVersion = 0x0317;
 
+enum FileType {
+    FileTypeNone = 0,
+    FileTypeRegular,
+    FileTypeDirectory
+};
+
+static FileType file_status(const char *entry, size_t& file_size) throw (CargoException) {
+    struct stat sinfo;
+    if (stat(entry, &sinfo)) {
+        throw CargoException("Retrieving file information failed: " + std::string(strerror(errno)));
+    }
+
+    FileType ft = FileTypeNone;
+    file_size = 0;
+    if (S_ISDIR(sinfo.st_mode) != 0) {
+        ft = FileTypeDirectory;
+    } else if (S_ISREG(sinfo.st_mode) != 0) {
+        ft = FileTypeRegular;
+        file_size = sinfo.st_size;
+    }
+
+    return ft;
+}
+
 static void throw_deflate_failed(z_stream *z) throw (CargoException) {
     if (z) {
         deflateEnd(z);
     }
 
     throw CargoException("Deflate failed.");
-}
-
-static void file_status(const char *entry, bool& is_directory, size_t& file_size) throw (CargoException) {
-    struct stat sinfo;
-    if (stat(entry, &sinfo)) {
-        throw CargoException("Retrieving file information failed: " + std::string(strerror(errno)));
-    }
-
-    is_directory = (S_ISDIR(sinfo.st_mode) != 0);
-    file_size = (is_directory ? 0 : sinfo.st_size);
 }
 
 Cargo::Cargo(const char *directory, const char *pak_file) throw (CargoException)
@@ -107,12 +121,13 @@ void Cargo::pack_directory(const char *subdir, bool is_rootdir) throw (CargoExce
         Directory dir(root, "", 0);
         const char *entry = 0;
         size_t file_size = 0;
-        bool is_dir = false;
         while ((entry = dir.get_entry())) {
             if (strcmp(entry, ".") && strcmp(entry, "..") && strcmp(entry, pak_file.c_str())) {
                 std::string new_entry = append_dir(subdir, entry);
-                file_status(append_dir(directory.c_str(), new_entry.c_str()).c_str(), is_dir, file_size);
-                entries.push_back(DirectoryEntry(is_dir, new_entry.c_str(), file_size));
+                FileType ft = file_status(append_dir(directory.c_str(), new_entry.c_str()).c_str(), file_size);
+                if (ft != FileTypeNone) {
+                    entries.push_back(DirectoryEntry(ft == FileTypeDirectory, new_entry.c_str(), file_size));
+                }
             }
         }
         std::sort(entries.begin(), entries.end());

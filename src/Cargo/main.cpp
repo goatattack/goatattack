@@ -23,8 +23,49 @@
 
 #include <iostream>
 #include <cstring>
+#include <cstdio>
+#include <cerrno>
+
+#include <sys/stat.h>
+#include <unistd.h>
+
+/*
+ * TODO:
+ * cargo is not os independent yet. Works under *NIX only.
+ */
 
 static const int ChunkSize = 1024;
+
+static void create_directory(const char *root, const char *dir) throw (CargoException) {
+    const char *separator = dir;
+    while (true) {
+        /* find separator */
+        bool found = false;
+        while (separator) {
+            separator++;
+            if (*separator == 0) {
+                break;
+            }
+            if (*separator == '/') {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            break;
+        }
+
+        /* create directory */
+        std::string new_dir(root);
+        new_dir += "/";
+        new_dir.append(dir, separator - dir);
+
+        struct stat st;
+        if (stat(new_dir.c_str(), &st) == -1) {
+            mkdir(new_dir.c_str(), 0700);
+        }
+    }
+}
 
 int main(int argc, char *argv[]) {
     std::cout << "Cargo, packager utility for Goat Attack paks (" << GameVersion << ")" << std::endl;
@@ -38,7 +79,34 @@ int main(int argc, char *argv[]) {
                     std::cout << "Successfully " << cargo.packaged() << " files packaged. (hash: " << cargo.get_hash() << ")" << std::endl;
                     return 0;
                 } else if (!strcmp(argv[1], "-x") || !strcmp(argv[1], "--extract")) {
-                    std::cout << "Not implemented yet." << std::endl;
+                    ZipReader zr(argv[2]);
+                    const Zip::Files& files = zr.get_files();
+                    for (Zip::Files::const_iterator it = files.begin(); it != files.end(); it++) {
+                        create_directory(argv[3], it->filename.c_str());
+                        FILE *f = 0;
+                        const char *data = 0;
+                        try {
+                            std::string new_file(argv[3]);
+                            new_file += "/" + it->filename;
+                            f = fopen(new_file.c_str(), "wb");
+                            if (!f) {
+                                throw CargoException(std::string("Cannot open file for writing: ") + it->filename + " (" + strerror(errno) + ")");
+                            }
+                            size_t sz;
+                            data = zr.extract(it->filename, &sz);
+                            fwrite(data, 1, sz, f);
+                            zr.destroy(data);
+                            fclose(f);
+                        } catch (const Exception& e) {
+                            if (f) {
+                                fclose(f);
+                            }
+                            if (data) {
+                                zr.destroy(data);
+                            }
+                            throw;
+                        }
+                    }
                     return 1;
                 }
                 break;
