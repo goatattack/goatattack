@@ -1,7 +1,13 @@
-if BUILD_PAK
 gamedatadir = $(pkgdatadir)
 gamedata_DATA = base.pak
-endif
+
+no-data-clean:
+
+save:
+	cp base.pak base.pak_dist
+
+restore:
+	mv base.pak_dist base.pak
 
 clean:
 	rm -f base.pak

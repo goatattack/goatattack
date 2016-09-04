@@ -1,3 +1,4 @@
+if !CARGO_ONLY
 bin_PROGRAMS = goatattack-mapeditor
 goatattack_mapeditor_SOURCES = main.cpp
 goatattack_mapeditor_SOURCES += src/CompileThreadBlock.cpp src/CompileThread.cpp src/CompileThreadPixel.cpp src/EditableLight.cpp src/EditableMap.cpp src/EditableObject.cpp src/MapEditor.cpp src/MapEditorLightmap.cpp
@@ -19,4 +20,5 @@ desktopdir = $(datarootdir)/applications
 dist_desktop_DATA = ../../packages/linux/goatattack-mapeditor.desktop
 appdatadir = $(datarootdir)/appdata
 dist_appdata_DATA = ../../packages/linux/goatattack-mapeditor.appdata.xml
-man6_MANS = man/goatattack-mapeditor.6 
+man6_MANS = man/goatattack-mapeditor.6
+endif
