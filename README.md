@@ -47,7 +47,7 @@ Your dedicated server will create detailed log entries depending on each action.
 
 ## OSX and Windows submodules
 If you want to checkout these submodules, do this:
-`$ git submodule init && git submodule update`
+`$ git submodule update --init`
 
 ## Visit the forum
 If you have any question, visit the [Goat Attack forum](http://forum.goatattack.net).
