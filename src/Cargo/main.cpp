@@ -67,6 +67,39 @@ static void create_directory(const char *root, const char *dir) throw (CargoExce
     }
 }
 
+static void extract(const char *pakfile, const char *root) {
+    ZipReader zr(pakfile);
+    const Zip::Files& files = zr.get_files();
+    for (Zip::Files::const_iterator it = files.begin(); it != files.end(); it++) {
+        create_directory(root, it->filename.c_str());
+        FILE *f = 0;
+        const char *data = 0;
+        try {
+            std::string new_file(root);
+            new_file += "/" + it->filename;
+            f = fopen(new_file.c_str(), "wb");
+            if (!f) {
+                throw CargoException(std::string("Cannot open file for writing: ") + it->filename + " (" + strerror(errno) + ")");
+            }
+            size_t sz;
+            data = zr.extract(it->filename, &sz);
+            fwrite(data, 1, sz, f);
+            zr.destroy(data);
+            fclose(f);
+        } catch (const Exception& e) {
+            if (f) {
+                fclose(f);
+            }
+            if (data) {
+                zr.destroy(data);
+            }
+            throw;
+        }
+    }
+
+    std::cout << zr.get_files().size() << " files extracted." << std::endl;
+}
+
 int main(int argc, char *argv[]) {
     std::cout << "Cargo, packager utility for Goat Attack paks (" << GameVersion << ")" << std::endl;
 
@@ -79,34 +112,7 @@ int main(int argc, char *argv[]) {
                     std::cout << "Successfully " << cargo.packaged() << " files packaged. (hash: " << cargo.get_hash() << ")" << std::endl;
                     return 0;
                 } else if (!strcmp(argv[1], "-x") || !strcmp(argv[1], "--extract")) {
-                    ZipReader zr(argv[2]);
-                    const Zip::Files& files = zr.get_files();
-                    for (Zip::Files::const_iterator it = files.begin(); it != files.end(); it++) {
-                        create_directory(argv[3], it->filename.c_str());
-                        FILE *f = 0;
-                        const char *data = 0;
-                        try {
-                            std::string new_file(argv[3]);
-                            new_file += "/" + it->filename;
-                            f = fopen(new_file.c_str(), "wb");
-                            if (!f) {
-                                throw CargoException(std::string("Cannot open file for writing: ") + it->filename + " (" + strerror(errno) + ")");
-                            }
-                            size_t sz;
-                            data = zr.extract(it->filename, &sz);
-                            fwrite(data, 1, sz, f);
-                            zr.destroy(data);
-                            fclose(f);
-                        } catch (const Exception& e) {
-                            if (f) {
-                                fclose(f);
-                            }
-                            if (data) {
-                                zr.destroy(data);
-                            }
-                            throw;
-                        }
-                    }
+                    extract(argv[2], argv[3]);
                     return 1;
                 }
                 break;
@@ -130,6 +136,9 @@ int main(int argc, char *argv[]) {
                     }
                     std::cout << "Hash: " << crc.get_hash() << std::endl;
                     return 0;
+                } else if (!strcmp(argv[1], "-x") || !strcmp(argv[1], "--extract")) {
+                    extract(argv[2], ".");
+                    return 1;
                 }
                 break;
         }
@@ -140,7 +149,7 @@ int main(int argc, char *argv[]) {
 
     std::cout << "Usage " << argv[0] << " OPTION PARAMETERS" << std::endl;
     std::cout << "  -p, --pack      pack, path/to/files outfile.pak" << std::endl;
-    std::cout << "  -x, --extract   extract, pakfile.pak destination" << std::endl;
+    std::cout << "  -x, --extract   extract, pakfile.pak [destination]" << std::endl;
     std::cout << "  -l, --list      list, pakfile.pak" << std::endl;
     std::cout << "  -h, --hash      hash, pakfile.pak" << std::endl;
     std::cout << std::endl;
