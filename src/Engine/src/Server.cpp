@@ -49,10 +49,12 @@ const char *logout_messages[] = {
     0
 };
 
+/*
 const char *non_downloadable_pak_files[] = {
     "base.pak",
     0
 };
+*/
 
 const char *DefaultTeamRed = "team red";
 const char *DefaultTeamBlue = "team blue";
@@ -803,7 +805,7 @@ void Server::event_data(const Connection *c, data_len_t len, void *data) throw (
                                 }
                             } else {
                                 /* non downloadable pak file? */
-                                const char **ptr = non_downloadable_pak_files;
+                                const char **ptr = Resources::NonDownloadableMainPaks;
                                 while (*ptr) {
                                     if (!strcmp(*ptr, pak_name.c_str())) {
                                         quit_client(c, p, "Main pak '" + pak_name + "' has a different hash.");

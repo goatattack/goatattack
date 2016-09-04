@@ -23,6 +23,11 @@
 #include <ctime>
 #include <algorithm>
 
+const char *Resources::NonDownloadableMainPaks[] = {
+    "base.pak",
+    0
+};
+
 /* static helpers */
 template<class T> static bool erase_resource_object_home_only(Resources::ResourceObject& elem) {
     if (!elem.base_resource) {
@@ -70,7 +75,7 @@ template<class T> static T *find_object(Resources::ResourceObjects& objects, con
 }
 
 /* class implementation begins here */
-Resources::Resources(Subsystem& subsystem, const std::string& resource_directory) throw (ResourcesException)
+Resources::Resources(Subsystem& subsystem, const std::string& resource_directory) throw (ResourcesException, ResourcesMissingException)
     : subsystem(subsystem), resource_directory(resource_directory)
 {
     subsystem << "initializing resources" << std::endl;
@@ -434,7 +439,7 @@ void Resources::read_game_settings(const std::string& directory, ZipReader *zip,
     }
 }
 
-void Resources::load_resources(bool home_paks_only) throw (ResourcesException) {
+void Resources::load_resources(bool home_paks_only) throw (ResourcesException, ResourcesMissingException) {
     try {
         if (!home_paks_only) {
             /* scan main directories */
@@ -475,9 +480,24 @@ void Resources::load_resources(bool home_paks_only) throw (ResourcesException) {
             }
         }
 
+        /* check if main paks are there */
+        const char **pak = Resources::NonDownloadableMainPaks;
+        while (*pak) {
+            if (std::find(loaded_paks.begin(), loaded_paks.end(), *pak) == loaded_paks.end()) {
+                throw ResourcesMissingException(std::string(*pak) + " is missing.");
+            }
+            pak++;
+        }
+
         /* prepare all resources for quick accesses */
         subsystem.set_scanlines_icon(get_icon("scanlines"));
         prepare_resources();
+    } catch (const ResourcesMissingException&) {
+        destroy_resources(false);
+        throw;
+    } catch (const DirectoryException& e) {
+        destroy_resources(false);
+        throw ResourcesMissingException(e.what());
     } catch (const Exception& e) {
         destroy_resources(false);
         throw ResourcesException(e.what());

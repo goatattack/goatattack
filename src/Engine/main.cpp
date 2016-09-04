@@ -71,7 +71,17 @@ int main(int argc, char *argv[]) {
 #endif
         Game game(resources, subsystem);
         game.run(parm ? parm : "");
+    } catch (const ResourcesMissingException& e) {
+        stream << std::endl << "ERROR: ";
+#ifdef DEDICATED_SERVER
+        stream << e.what() << std::endl;
+#else
+        stream << e.what() << std::endl;
+        stream << "Ensure that you can add a data folder as parameter." << std::endl;
+        stream << "Example: " << argv[0] << " path/to/your/data/folder" << std::endl;
+#endif
     } catch (const Exception& e) {
+        stream << std::endl << "ERROR: ";
         stream << e.what() << std::endl;
     }
     stop_net();

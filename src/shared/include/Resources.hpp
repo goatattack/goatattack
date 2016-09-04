@@ -37,11 +37,18 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <cstring>
 
 class ResourcesException : public Exception {
 public:
     ResourcesException(const char *msg) : Exception(msg) { }
     ResourcesException(const std::string& msg) : Exception(msg) { }
+};
+
+class ResourcesMissingException : public ResourcesException {
+public:
+    ResourcesMissingException(const char *msg) : ResourcesException(msg) { }
+    ResourcesMissingException(const std::string& msg) : ResourcesException(msg) { }
 };
 
 class Tournament;
@@ -52,6 +59,8 @@ private:
     Resources& operator=(const Resources&);
 
 public:
+    static const char *NonDownloadableMainPaks[];
+
     struct LoadedPak {
         LoadedPak(const std::string& pak_name, const std::string& pak_short_name,
             const std::string& pak_hash, bool from_home_dir)
@@ -62,6 +71,10 @@ public:
         std::string pak_short_name;
         std::string pak_hash;
         bool from_home_dir;
+
+        bool operator==(const char *short_name) const {
+            return (!strcmp(pak_short_name.c_str(), short_name));
+        }
     };
 
     typedef std::vector<LoadedPak> LoadedPaks;
@@ -74,7 +87,7 @@ public:
 
     typedef std::vector<ResourceObject> ResourceObjects;
 
-    Resources(Subsystem& subystem, const std::string& resource_directory) throw (ResourcesException);
+    Resources(Subsystem& subystem, const std::string& resource_directory) throw (ResourcesException, ResourcesMissingException);
     virtual ~Resources();
 
     void reload_resources() throw (ResourcesException);
@@ -140,7 +153,7 @@ private:
     void read_musics(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception);
     void read_game_settings(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception);
 
-    void load_resources(bool home_paks_only) throw (ResourcesException);
+    void load_resources(bool home_paks_only) throw (ResourcesException, ResourcesMissingException);
     void read_all(const std::string& fdir, ZipReader *fzip, bool base_resource) throw (Exception);
     void destroy_resources(bool home_paks_only);
     void prepare_resources() throw (ResourcesException);
