@@ -1,0 +1,6 @@
+[submodule "osx"]
+	path = osx
+	url = https://github.com/goatattack/goatattack-osx.git
+[submodule "windows"]
+	path = windows
+	url = https://github.com/goatattack/goatattack-windows.git
