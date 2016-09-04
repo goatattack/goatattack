@@ -575,6 +575,14 @@ void MainMenu::create_server_click() {
     /* map selector */
     Icon *no_map = resources.get_icon("map_preview");
     cs_map_preview = create_picture(window, ww - 64 - 15, 193, no_map->get_tile()->get_tilegraphic());
+
+    try {
+        Icon *map_border = resources.get_icon("map_border");
+        create_picture(window, ww - 64 - 15, 193, map_border->get_tile()->get_tilegraphic());
+    } catch (...) {
+        /* chomp */
+    }
+
     cs_map_name = create_label(window, ww - 64 - 15, 193 + 64 + 3, "");
 
     create_label(window, 15, 175, "select map:");
