@@ -20,6 +20,7 @@ AC_CHECK_LIB([rt], [clock_gettime], [], [missing_libraries="$missing_libraries l
 AC_CHECK_LIB([png], [png_init_io], [], [missing_libraries="$missing_libraries libpng"])
 
 # --- compile args ---
+AC_ARG_ENABLE([build-pak], [  --disable-build-pak  Building base.pak [[default=yes]]], [], [BUILD_PAK="yes"])
 AC_ARG_ENABLE([dedicated-server], [  --enable-dedicated-server  Build dedicated server [[default=no]]], [DEDICATED_SERVER="yes"], [])
 AC_ARG_ENABLE([master-server], [  --enable-master-server  Build master server [[default=no]]], [MASTER_SERVER="yes"], [])
 AC_ARG_ENABLE([internal-zlib], [  --enable-internal-zlib  Build with the project copy of zlib [[default=no]]], [INTERNAL_ZLIB="yes"], [])
@@ -28,6 +29,7 @@ AM_CONDITIONAL([DEDICATED_SERVER], [test "x$DEDICATED_SERVER" = xyes])
 AM_CONDITIONAL([MASTER_SERVER], [test "x$MASTER_SERVER" = xyes])
 AM_CONDITIONAL([INTERNAL_ZLIB], [test "x$INTERNAL_ZLIB" = xyes])
 AM_CONDITIONAL([MAP_EDITOR], [test "x$MAP_EDITOR" = xyes])
+AM_CONDITIONAL([BUILD_PAK], [test "x$BUILD_PAK" = xyes])
 
 # --- check additional libraries ---
 if test "x$DEDICATED_SERVER" != "xyes"; then
@@ -81,8 +83,12 @@ fi
 if test "x$MASTER_SERVER" = "xyes"; then
 	AC_MSG_NOTICE([   -> master server])
 fi
+AC_MSG_NOTICE([])
 if test "x$INTERNAL_ZLIB" = "xyes"; then
-	AC_MSG_NOTICE([])
 	AC_MSG_NOTICE([ * taking project copy of zlib])
 fi
+if test "x$BUILD_PAK" != "xyes"; then
+	AC_MSG_NOTICE([ * base.pak will no be created])
+fi
+
 AC_MSG_NOTICE([])

@@ -16,5 +16,7 @@ goatattack_cargo_CXXFLAGS += -D__STDC_FORMAT_MACROS
 
 man6_MANS = man/goatattack-cargo.6
 
+if BUILD_PAK
 all: goatattack-cargo
 	./goatattack-cargo --pack ../../data/files ../../data/base.pak
+endif

@@ -34,3 +34,4 @@ uninstall:
 	rm -f $(datarootdir)/icons/hicolor/scalable/apps/goatattack.svg
 	rm -f $(datarootdir)/appdata/goatattack.appdata.xml
 	rm -f $(datarootdir)/applications/goatattack.desktop
+	rm -f $(datarootdir)/man/man6/goatattack.6
