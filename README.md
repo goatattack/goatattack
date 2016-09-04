@@ -45,5 +45,10 @@ Your dedicated server will create detailed log entries depending on each action.
 4. `make`
 5. `make install`
 
+## OSX and Windows submodules
+If you want to checkout these submodules, do this:
+`$ git submodule init`
+`$ git submodule update`
+
 ## Visit the forum
 If you have any question, visit the [Goat Attack forum](http://forum.goatattack.net).
