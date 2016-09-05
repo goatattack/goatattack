@@ -27,7 +27,7 @@ dist_appdata_DATA = ../../packages/linux/goatattack.appdata.xml
 man6_MANS = man/game/goatattack.6
 endif
 
-goatattack_CXXFLAGS += -DDATA_DIRECTORY=$(pkgdatadir) -D__STDC_FORMAT_MACROS
+goatattack_CXXFLAGS += -DDATA_DIRECTORY=$(targetdatadir) -D__STDC_FORMAT_MACROS
 
 uninstall:
 	rm -f $(bindir)/goatattack

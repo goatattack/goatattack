@@ -26,6 +26,10 @@ AC_ARG_ENABLE([master-server],    [  --enable-master-server  Build master server
 AC_ARG_ENABLE([internal-zlib],    [  --enable-internal-zlib  Build with the project copy of zlib [[default=no]]], [INTERNAL_ZLIB="yes"], [])
 AC_ARG_ENABLE([map-editor],       [  --enable-map-editor     Build map editor [[default=no]]], [MAP_EDITOR="yes"], [])
 AC_ARG_ENABLE([cargo-only],       [  --enable-cargo-only     Build cargo tool only [[default=no]]], [CARGO_ONLY="yes"], [])
+
+AC_ARG_WITH([targetdatadir], [AS_HELP_STRING([--with-targetdatadir=DIR], [data directory on the target])], [targetdatadir=$withval], [targetdatadir="\${pkgdatadir}"])
+AC_SUBST([targetdatadir], [$targetdatadir])
+
 AM_CONDITIONAL([DEDICATED_SERVER], [test "x$DEDICATED_SERVER" = xyes])
 AM_CONDITIONAL([MASTER_SERVER], [test "x$MASTER_SERVER" = xyes])
 AM_CONDITIONAL([INTERNAL_ZLIB], [test "x$INTERNAL_ZLIB" = xyes])

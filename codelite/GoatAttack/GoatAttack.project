@@ -175,7 +175,7 @@
     </GlobalSettings>
     <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
       <Compiler Options="-g;-O0;-Wall" C_Options="-g;-O0;-Wall" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
-        <Preprocessor Value="DATA_DIRECTORY=${HOME}/Programming/goatattack/datax"/>
+        <Preprocessor Value="DATA_DIRECTORY=${HOME}/Programming/goatattack/data"/>
       </Compiler>
       <Linker Options="" Required="yes">
         <LibraryPath Value="../shared/Debug"/>

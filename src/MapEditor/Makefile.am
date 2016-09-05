@@ -4,7 +4,7 @@ goatattack_mapeditor_SOURCES = main.cpp
 goatattack_mapeditor_SOURCES += src/CompileThreadBlock.cpp src/CompileThread.cpp src/CompileThreadPixel.cpp src/EditableLight.cpp src/EditableMap.cpp src/EditableObject.cpp src/MapEditor.cpp src/MapEditorLightmap.cpp
 
 goatattack_mapeditor_CXXFLAGS = -I./include -I../shared/include -Wno-unused-result -pedantic -Wextra
-goatattack_mapeditor_CXXFLAGS += -DDATA_DIRECTORY=$(pkgdatadir)
+goatattack_mapeditor_CXXFLAGS += -DDATA_DIRECTORY=$(targetdatadir)
 goatattack_mapeditor_LDADD = -L../shared -lshared -lpng -lGL -lSDL2 -lSDL2_mixer
 
 if INTERNAL_ZLIB
