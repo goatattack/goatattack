@@ -11,6 +11,9 @@
 - man pages created
 - Logtype "LogTypeChatMessage" changed
 - fishy map volume removed (thanks to ObaniGemini)
+- netcode structures reordered (alignment fixes)
+- changed protocol version to 4 (due to reordering netcode structures)
+- servers with wrong protocol version are hidden now
 
 0.4.3
 - new rounded buttons

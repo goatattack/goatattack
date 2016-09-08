@@ -100,6 +100,9 @@ DONE:
 * man page created
 * Logtype "LogTypeChatMessage" changed
 * fishy map volume removed
+* netcode structures reordered (alignment fixes)
+* changed protocol version to 4 (due to reordering netcode structures)
+* servers with wrong protocol version are hidden now
 
 DEFERRED:
 * OSX: too short filename buffer -> hardegger bug (not reproducable)

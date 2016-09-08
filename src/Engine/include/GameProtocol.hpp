@@ -123,13 +123,14 @@ enum GPS {
 
 const int TransportFlagMorePackets = 1;
 
+// OK
 #pragma pack(1)
 struct GTransport {
-    command_t cmd;
-    transflag_t flags;
-    unsigned char tournament_id;
-    data_len_t len;
-    data_t data[1];
+    command_t cmd;                  // 1
+    transflag_t flags;              // 1
+    unsigned char tournament_id;    // 1
+    data_len_t len;                 // 1
+    data_t data[1];                 // 1
 
     inline void from_net() {
         len = ntohs(len);
@@ -143,14 +144,15 @@ struct GTransport {
 
 const int TournamentFlagWarmup = 1;
 
+// OK
 #pragma pack(1)
 struct GTournament {
-    char map_name[NameLength];
-    unsigned char gametype;
-    unsigned char tournament_id;
-    scounter_t duration;
-    scounter_t warmup;
-    flags_t flags;
+    char map_name[NameLength];      // 32
+    unsigned char gametype;         // 1
+    unsigned char tournament_id;    // 1
+    scounter_t duration;            // 2
+    scounter_t warmup;              // 2
+    flags_t flags;                  // 1
 
     inline void from_net() {
         duration = ntohs(duration);
@@ -164,6 +166,7 @@ struct GTournament {
 };
 #pragma pack()
 
+// OK
 #pragma pack(1)
 struct GGameState {
     GGameState() : seconds_remaining(0) { }
@@ -191,6 +194,7 @@ const int PlayerClientFlagBombReleased = 64;
 const int PlayerClientFlagFrogReleased = 128;
 const int PlayerClientFlagDoShotAnimation = 256;
 
+// OK
 #pragma pack(1)
 struct GPlayerClientState {
     playerflags_t flags;         // 2
@@ -214,8 +218,13 @@ const int PlayerServerFlagHasOppositeFlag = 8;
 const int PlayerServerFlagHasShotgunBelt = 16;
 const int PlayerServerFlagHasCoin = 32;
 
+// OK (rearranged)
 #pragma pack(1)
 struct GPlayerServerState {
+    pico_size_t ping_time;       // 2
+    sscore_t score;              // 2
+    score_t frags;               // 2
+    score_t kills;               // 2
     playerflags_t flags;         // 1
     unsigned char health;        // 1
     unsigned char ammo;          // 1
@@ -223,10 +232,6 @@ struct GPlayerServerState {
     unsigned char bombs;         // 1
     unsigned char grenades;      // 1
     unsigned char frogs;         // 1
-    pico_size_t ping_time;       // 2
-    sscore_t score;              // 2
-    score_t frags;               // 2
-    score_t kills;               // 2
 
     inline void from_net() {
         flags = ntohs(flags);
@@ -249,17 +254,19 @@ struct GPlayerServerState {
 const int PlayerClientServerFlagWriting = 1;
 const int PlayerClientServerFlagForceBroadcast = 2;
 
+// OK (rearranged)
 #pragma pack(1)
 struct GPlayerClientServerState {
-    keystates_t key_states;      // 2
-    joyaxis_t jaxis;             // 1
-    unsigned char direction;     // 1
-    playerflags_t flags;         // 2
     double x;                    // 8
     double y;                    // 8
     double accel_x;              // 8
     double accel_y;              // 8
     double jump_accel_y;         // 8
+    keystates_t key_states;      // 2
+    playerflags_t flags;         // 2
+    joyaxis_t jaxis;             // 1
+    unsigned char direction;     // 1
+
 
     inline void from_net() {
         key_states = htons(key_states);
@@ -283,6 +290,7 @@ struct GPlayerClientServerState {
 };
 #pragma pack()
 
+// OK
 #pragma pack(1)
 struct GPlayerState {
     player_id_t id;              // 2
@@ -307,6 +315,7 @@ struct GPlayerState {
 #pragma pack()
 
 /* game player transport helper structs with id */
+// OK
 #pragma pack(1)
 struct GPTAllStates {
     identifier_t id;
@@ -328,6 +337,7 @@ struct GPTAllStates {
 #pragma pack()
 
 /* other structs */
+// OK
 #pragma pack(1)
 struct GPlayerDescription {
     player_id_t id;
@@ -350,6 +360,7 @@ struct GGenericName {
 };
 #pragma pack()
 
+// OK
 #pragma pack(1)
 struct GPlayerInfo {
     player_id_t id;
@@ -374,17 +385,18 @@ struct GPlayerInfo {
 };
 #pragma pack()
 
+// OK (rearranged)
 #pragma pack(1)
 struct GAnimation {
     char animation_name[NameLength];
     char sound_name[NameLength];
-    identifier_t id;            // 2
-    scounter_t duration;        // 2
-    identifier_t owner;         // 2
     double x;                   // 8
     double y;                   // 8
     double accel_x;             // 8
     double accel_y;             // 8
+    identifier_t id;            // 2
+    scounter_t duration;        // 2
+    identifier_t owner;         // 2
     inline void from_net() {
         id = ntohs(id);
         duration = ntohs(duration);
@@ -409,14 +421,15 @@ struct GAnimation {
 
 const int GTextAnimationFlagCenterScreen = 1;
 
+// OK
 #pragma pack(1)
 struct GTextAnimation {
     char font_name[NameLength];
     char display_text[TextLength];
-    double x;
-    double y;
-    scounter_t max_counter;
-    flags_t flags;
+    double x;                           // 8
+    double y;                           // 8
+    scounter_t max_counter;             // 2
+    flags_t flags;                      // 1
 
     inline void from_net() {
         byte_swap<double>(x);
@@ -432,9 +445,10 @@ struct GTextAnimation {
 };
 #pragma pack()
 
+// OK
 #pragma pack(1)
 struct GPickObject {
-    identifier_t id;
+    identifier_t id;                    // 2
 
     inline void from_net() {
         id = ntohs(id);
@@ -452,12 +466,13 @@ const int PlaceObjectWithScoredSound = 4;
 const int PlaceObjectWithDropSound = 8;
 const int PlaceObjectResetVelocity = 16;
 
+// OK (rearranged)
 #pragma pack(1)
 struct GPlaceObject {
-    identifier_t id;
-    flags_t flags;
-    pos_t x;
-    pos_t y;
+    pos_t x;                    // 4
+    pos_t y;                    // 4
+    identifier_t id;            // 2
+    flags_t flags;              // 1
 
     inline void from_net() {
         id = ntohs(id);
@@ -473,13 +488,14 @@ struct GPlaceObject {
 };
 #pragma pack()
 
+// OK (rearranged)
 #pragma pack(1)
 struct GSpawnObject {
     char object_name[NameLength];
-    identifier_t id;
-    flags_t flags;
-    pos_t x;
-    pos_t y;
+    pos_t x;                    // 4
+    pos_t y;                    // 4
+    identifier_t id;            // 2
+    flags_t flags;              // 1
 
     inline void from_net() {
         id = ntohs(id);
@@ -495,13 +511,14 @@ struct GSpawnObject {
 };
 #pragma pack()
 
+// OK (rearranged)
 #pragma pack(1)
 struct GObjectState {
-    identifier_t id;
     double x;                   // 8
     double y;                   // 8
     double accel_x;             // 8
     double accel_y;             // 8
+    identifier_t id;            // 2
 
     inline void from_net() {
         id = ntohs(id);
@@ -521,18 +538,19 @@ struct GObjectState {
 };
 #pragma pack()
 
+// OK (rearranged)
 #pragma pack(1)
 struct GSpawnNPC {
     char npc_name[NameLength];
     char sound_name[NameLength];
-    identifier_t id;
-    identifier_t owner;
-    unsigned char direction;
-    unsigned char icon;
-    double x;
-    double y;
-    double accel_x;
-    double accel_y;
+    double x;                           // 8
+    double y;                           // 8
+    double accel_x;                     // 8
+    double accel_y;                     // 8
+    identifier_t id;                    // 2
+    identifier_t owner;                 // 2
+    unsigned char direction;            // 1
+    unsigned char icon;                 // 1
 
     inline void from_net() {
         id = ntohs(id);
@@ -554,9 +572,10 @@ struct GSpawnNPC {
 };
 #pragma pack()
 
+// OK
 #pragma pack(1)
 struct GRemoveNPC {
-    identifier_t id;
+    identifier_t id;                // 2
 
     inline void from_net() {
         id = ntohs(id);
@@ -568,16 +587,17 @@ struct GRemoveNPC {
 };
 #pragma pack()
 
+// OK (rearranged)
 #pragma pack(1)
 struct GNPCState {
-    identifier_t id;
-    identifier_t owner;
-    unsigned char direction;
-    playerflags_t flags;
-    double x;
-    double y;
-    double accel_x;
-    double accel_y;
+    double x;                       // 8
+    double y;                       // 8
+    double accel_x;                 // 8
+    double accel_y;                 // 8
+    identifier_t id;                // 2
+    identifier_t owner;             // 2
+    playerflags_t flags;            // 2
+    unsigned char direction;        // 1
 
     inline void from_net() {
         id = ntohs(id);
@@ -601,15 +621,16 @@ struct GNPCState {
 };
 #pragma pack()
 
+// OK (rearranged)
 #pragma pack(1)
 struct GAnimationState {
-    identifier_t id;            // 2
-    scounter_t duration;        // 2
-    identifier_t owner;         // 2
     double x;                   // 8
     double y;                   // 8
     double accel_x;             // 8
     double accel_y;             // 8
+    identifier_t id;            // 2
+    scounter_t duration;        // 2
+    identifier_t owner;         // 2
 
     inline void from_net() {
         id = ntohs(id);
@@ -633,10 +654,11 @@ struct GAnimationState {
 };
 #pragma pack()
 
+// OK (rearranged)
 #pragma pack(1)
 struct GPlayerRecoil {
-    identifier_t id;
-    double x_recoil;
+    double x_recoil;                // 8
+    identifier_t id;                // 2
 
     inline void from_net() {
         id = ntohs(id);
@@ -650,10 +672,11 @@ struct GPlayerRecoil {
 };
 #pragma pack()
 
+// OK
 #pragma pack(1)
 struct GTimeRemaining {
-    flags_t flags;
-    pos_t remaining;
+    pos_t remaining;                // 4
+    flags_t flags;                  // 1
 
     inline void from_net() {
         remaining = ntohl(remaining);
@@ -665,6 +688,7 @@ struct GTimeRemaining {
 };
 #pragma pack()
 
+// OK
 #pragma pack(1)
 struct GTeamScore {
     GTeamScore() : score_red(0), score_blue(0) { }
@@ -686,6 +710,7 @@ struct GTeamScore {
 };
 #pragma pack()
 
+// OK
 #pragma pack(1)
 struct GFriendyFireAlarm {
     identifier_t owner;
@@ -700,10 +725,11 @@ struct GFriendyFireAlarm {
 };
 #pragma pack()
 
+// OK (rearranged)
 #pragma pack(1)
 struct GTransportTime {
-    player_id_t id;
-    sr_milliseconds_t ms;
+    sr_milliseconds_t ms;           // 4
+    player_id_t id;                 // 2
 
     inline void from_net() {
         id = ntohs(id);
@@ -717,11 +743,12 @@ struct GTransportTime {
 };
 #pragma pack()
 
+// OK (rearranged)
 #pragma pack(1)
 struct GTransportTotalAndTime {
-    player_id_t id;
-    sr_milliseconds_t total;
-    sr_milliseconds_t current;
+    sr_milliseconds_t total;        // 4
+    sr_milliseconds_t current;      // 4
+    player_id_t id;                 // 2
 
     inline void from_net() {
         id = ntohs(id);
@@ -737,6 +764,7 @@ struct GTransportTotalAndTime {
 };
 #pragma pack()
 
+// OK
 #pragma pack(1)
 struct GClanNames {
     char red_name[NameLength];
@@ -747,6 +775,7 @@ struct GClanNames {
 };
 #pragma pack()
 
+// OK
 #pragma pack(1)
 struct GXferHeader {
     char filename[FilenameLen];
@@ -762,6 +791,7 @@ struct GXferHeader {
 };
 #pragma pack()
 
+// OK
 #pragma pack(1)
 struct GXferDataChunk {
     datasize_t chunksize;
@@ -777,10 +807,11 @@ struct GXferDataChunk {
 };
 #pragma pack()
 
+// OK (rearranged)
 #pragma pack(1)
 struct GHillCounter {
-    player_id_t id;
-    pos_t counter;
+    pos_t counter;                  // 4
+    player_id_t id;                 // 2
 
     inline void from_net() {
         id = ntohs(id);
@@ -794,6 +825,7 @@ struct GHillCounter {
 };
 #pragma pack()
 
+// OK
 #pragma pack(1)
 struct GPakHash {
     static const int HashLength = 16;

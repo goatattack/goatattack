@@ -32,7 +32,7 @@
 
 
 /* increase, if protocol changes */
-const int ProtocolVersion = 3;
+const int ProtocolVersion = 4;
 
 /* --- */
 typedef uint32_t hostaddr_t;
@@ -63,15 +63,16 @@ enum NetCommand {
     _NetCommandMAX
 };
 
+// OK
 #pragma pack(1)
 struct NetMessage {
     NetMessage(sequence_no_t seq_no, flags_t flags, command_t cmd)
         : seq_no(seq_no), flags(flags), cmd(cmd) { }
 
-    sequence_no_t seq_no;
-    flags_t flags;
-    command_t cmd;
-    data_t data[1];     /* good old struct hack (must be 1, pedantic c++) */
+    sequence_no_t seq_no;           // 4
+    flags_t flags;                  // 1
+    command_t cmd;                  // 1
+    data_t data[1];                 // 1
 
     inline void from_net() {
         seq_no = ntohl(seq_no);
@@ -83,6 +84,7 @@ struct NetMessage {
 };
 #pragma pack()
 
+// OK
 #pragma pack(1)
 struct NetMessageData {
     NetMessageData() : len(0) { }
@@ -91,8 +93,8 @@ struct NetMessageData {
     {
         memcpy(data, var.c_str(), len);
     }
-    data_len_t len;
-    data_t data[1];
+    data_len_t len;                 // 1
+    data_t data[1];                 // 1
 
     inline void from_net() {
         len = ntohs(len);
@@ -106,18 +108,20 @@ struct NetMessageData {
 
 const int ServerStatusFlagNeedPassword = 1;
 
+// OK
 #pragma pack(1)
 struct ServerStatusMsg {
     union {
         gametime_t ping;
         char padding[16];
     };
-    pico_size_t max_heaps;
-    pico_size_t cur_heaps;
-    pico_size_t protocol_version;
-    flags_t flags;
-    data_len_t len;
-    data_t name[1];
+    pico_size_t max_heaps;              // 2
+    pico_size_t cur_heaps;              // 2
+    pico_size_t protocol_version;       // 2
+    flags_t flags;                      // 1
+    char padding1[1];                   // 1
+    data_len_t len;                     // 2
+    data_t name[1];                     // 1
 
     inline void from_net() {
         max_heaps = ntohs(max_heaps);
@@ -137,6 +141,7 @@ struct ServerStatusMsg {
 
 const int NetLoginPasswordLen = 16;
 
+// OK
 #pragma pack(1)
 struct NetLogin {
     char pwd[NetLoginPasswordLen];
