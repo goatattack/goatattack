@@ -384,7 +384,7 @@ void MainMenu::play_connect_lan_click() {
     int sz = static_cast<int>(hosts.size());
 
     if (index >= 0 && index < sz) {
-        const GameserverInformation *info = hosts[index];
+        const GameserverInformation *info = static_cast<const GameserverInformation *>(play_lan_list->get_entry(index)->get_ptr_tag());
         hostaddr_t host = info->host;
         hostport_t port = info->port;
         std::string pwd;
@@ -448,7 +448,7 @@ void MainMenu::play_connect_wan_click() {
     int sz = static_cast<int>(hosts.size());
 
     if (index >= 0 && index < sz) {
-        MasterQueryClient *info = static_cast<MasterQueryClient *>(hosts[index]);
+        const MasterQueryClient *info = static_cast<const MasterQueryClient *>(play_wan_list->get_entry(index)->get_ptr_tag());
         std::string pwd;
         if (info->secured) {
             if (show_inputbox("Enter password:", pwd, true) != MessageBoxResponseYes) {
