@@ -65,6 +65,8 @@ void MasterServer::run() throw (MasterServerException) {
                 client.send(buffer, strlen(buffer));
             }
         }
+
+        dump_entries();
     }
 }
 
