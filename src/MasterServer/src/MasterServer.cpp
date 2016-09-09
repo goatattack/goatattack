@@ -24,14 +24,17 @@
 #include <cstring>
 #include <cstdlib>
 
+#include <iostream>
+
 Record::Record(const std::string& address, uint16_t port)
     : address(address), port(port), last_update(time(0)), delete_me(false) { }
 
 Record::~Record() { }
 
-MasterServer::MasterServer(uint16_t heartbeat_port, uint16_t query_port)
+MasterServer::MasterServer(uint16_t heartbeat_port, uint16_t query_port, const char *filename)
     throw (MasterServerException)
-    : udp_socket(heartbeat_port), query_port(query_port) { }
+    : udp_socket(heartbeat_port), query_port(query_port),
+      filename(filename), last_write(time(0)) { }
 
 MasterServer::~MasterServer() { }
 
@@ -108,4 +111,25 @@ void MasterServer::delete_old_entries() {
 
     records.erase(std::remove_if(records.begin(), records.end(),
         erase_entry<Record>), records.end());
+}
+
+void MasterServer::dump_entries() {
+    if (filename.length()) {
+        time_t now = time(0);
+        if (now - last_write > 30) {
+            std::string tmpfilename = filename + "_tmp";
+            char buffer[1024];
+            FILE *f = fopen(tmpfilename.c_str(), "w");
+            if (f) {
+                for (Records::iterator it = records.begin(); it != records.end(); it++) {
+                    Record& r = *it;
+                    sprintf(buffer, "%s %hu\n", r.address.c_str(), r.port);
+                    fwrite(buffer, 1, strlen(buffer), f);
+                }
+                fclose(f);
+                rename(tmpfilename.c_str(), filename.c_str());
+            }
+            last_write = time(0);
+        }
+    }
 }
