@@ -34,7 +34,7 @@ Record::~Record() { }
 MasterServer::MasterServer(uint16_t heartbeat_port, uint16_t query_port, const char *filename)
     throw (MasterServerException)
     : udp_socket(heartbeat_port), query_port(query_port),
-      filename(filename), last_write(time(0)) { }
+      filename(filename), last_write(0) { }
 
 MasterServer::~MasterServer() { }
 

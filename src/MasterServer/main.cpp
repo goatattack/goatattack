@@ -18,7 +18,7 @@
 #include "MasterServer.hpp"
 
 int main(int argc, char *argv[]) {
-    MasterServer master(25112, 25113, ((argc > 1 && argv[1]) ? argv[1] : 0));
+    MasterServer master(25112, 25113, ((argc > 1 && argv[1]) ? argv[1] : ""));
     master.run();
 
     return 0;
