@@ -19,8 +19,10 @@
 #include "Timing.hpp"
 #include "MasterQuery.hpp"
 
+const int MaxTries = 10;
 MasterQueryClient::MasterQueryClient(MasterQuery& master_query, hostaddr_t host, hostport_t port) throw (Exception)
-    : GameserverInformation(host, port), MessageSequencer(host, port), master_query(master_query), received(false)
+    : GameserverInformation(host, port), MessageSequencer(host, port), master_query(master_query),
+      received(false), tries(0)
 {
     get_now(last_update);
 }
@@ -33,10 +35,11 @@ void MasterQueryClient::refresh() {
 }
 
 void MasterQueryClient::timed_refresh(gametime_t& now) {
-    if (!received) {
+    if (!received && tries < MaxTries) {
         if (diff_ms(last_update, now) > 250) {
             refresh();
             last_update = now;
+            tries++;
         }
     }
 }

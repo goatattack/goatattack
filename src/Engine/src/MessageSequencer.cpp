@@ -183,13 +183,14 @@ bool MessageSequencer::cycle() throw (Exception) {
             if (is_client || !max_heaps) {
                 ServerStatusMsg *stat = reinterpret_cast<ServerStatusMsg *>(pdata->data);
                 stat->from_net();
+                ms_t ping_time = diff_ms(stat->ping, touch);
+                bool secured = ((stat->flags & ServerStatusFlagNeedPassword) != 0);
+                const char *payload = "???";
                 if (stat->protocol_version == ProtocolVersion) {
-                    ms_t ping_time = diff_ms(stat->ping, touch);
                     stat->name[stat->len] = 0;
-                    char *payload = reinterpret_cast<char *>(stat->name);
-                    bool secured = ((stat->flags & ServerStatusFlagNeedPassword) != 0);
-                    event_status(host, port, payload, stat->max_heaps, stat->cur_heaps, ping_time, secured, stat->protocol_version);
+                    payload = reinterpret_cast<const char *>(stat->name);
                 }
+                event_status(host, port, payload, stat->max_heaps, stat->cur_heaps, ping_time, secured, stat->protocol_version);
             }
         } else if (pmsg->cmd == NetCommandServerFull) {
             if (is_client) {

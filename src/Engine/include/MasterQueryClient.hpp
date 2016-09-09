@@ -34,6 +34,7 @@ public:
 
     MasterQuery& master_query;
     bool received;
+    int tries;
 
     gametime_t last_update;
 
