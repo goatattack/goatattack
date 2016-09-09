@@ -31,10 +31,10 @@ Record::Record(const std::string& address, uint16_t port)
 
 Record::~Record() { }
 
-MasterServer::MasterServer(uint16_t heartbeat_port, uint16_t query_port, const char *filename)
+MasterServer::MasterServer(uint16_t heartbeat_port, uint16_t query_port, const char *filename, int refresh)
     throw (MasterServerException)
     : udp_socket(heartbeat_port), query_port(query_port),
-      filename(filename), last_write(0) { }
+      filename(filename), refresh(refresh), last_write(0) { }
 
 MasterServer::~MasterServer() { }
 
@@ -116,9 +116,9 @@ void MasterServer::delete_old_entries() {
 }
 
 void MasterServer::dump_entries() {
-    if (filename.length()) {
+    if (refresh) {
         time_t now = time(0);
-        if (now - last_write > 30) {
+        if (now - last_write >= refresh) {
             char buffer[1024];
             FILE *f = fopen(filename.c_str(), "w");
             if (f) {

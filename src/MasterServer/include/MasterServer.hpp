@@ -46,7 +46,7 @@ typedef std::vector<Record> Records;
 
 class MasterServer {
 public:
-    MasterServer(uint16_t heartbeat_port, uint16_t query_port, const char *filename) throw (MasterServerException);
+    MasterServer(uint16_t heartbeat_port, uint16_t query_port, const char *filename, int refresh) throw (MasterServerException);
     virtual ~MasterServer();
 
     void run() throw (MasterServerException);
@@ -55,6 +55,7 @@ private:
     UDPSocket udp_socket;
     uint16_t query_port;
     std::string filename;
+    int refresh;
     time_t last_write;
 
     Records records;

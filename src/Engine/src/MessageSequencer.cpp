@@ -32,6 +32,9 @@ static const int PingTimeout = 5000; /* 5 seconds */
 static const int PingInterval = 500; /* 500 ms    */
 static const int MaxResends = 7;     /* 6250 ms   */
 
+/* protocol v4 changed status request structure */
+static const int NewStatusProtocolVersion = 4;
+
 /* subtract 1 of the name[1] -> c++ forbids zero arrays eg. name[0] */
 static const int MsgHeaderLength = sizeof(NetMessage) - 1 + sizeof(NetMessageData) - 1;
 static const int ServerStatusLength = sizeof(ServerStatusMsg) - 1;
@@ -185,8 +188,8 @@ bool MessageSequencer::cycle() throw (Exception) {
                 stat->from_net();
                 ms_t ping_time = diff_ms(stat->ping, touch);
                 bool secured = ((stat->flags & ServerStatusFlagNeedPassword) != 0);
-                const char *payload = "???";
-                if (stat->protocol_version == ProtocolVersion) {
+                const char *payload = "---[ server too old ]---";
+                if (stat->protocol_version >= NewStatusProtocolVersion) {
                     stat->name[stat->len] = 0;
                     payload = reinterpret_cast<const char *>(stat->name);
                 }

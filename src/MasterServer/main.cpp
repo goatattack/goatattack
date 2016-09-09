@@ -17,8 +17,23 @@
 
 #include "MasterServer.hpp"
 
+#include <cstdlib>
+
 int main(int argc, char *argv[]) {
-    MasterServer master(25112, 25113, ((argc > 1 && argv[1]) ? argv[1] : ""));
+    const char *filename = "";
+    int refresh = 0;
+    if (argc > 1 && argv[1]) {
+        filename = argv[1];
+    }
+    if (argc > 2) {
+        refresh = atoi(argv[2]);
+        if (refresh < 5) {
+            refresh = 5;
+        } else if (refresh > 30) {
+            refresh = 30;
+        }
+    }
+    MasterServer master(25112, 25113, filename, refresh);
     master.run();
 
     return 0;
