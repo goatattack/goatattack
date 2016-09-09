@@ -119,9 +119,8 @@ void MasterServer::dump_entries() {
     if (filename.length()) {
         time_t now = time(0);
         if (now - last_write > 30) {
-            std::string tmpfilename = filename + "_tmp";
             char buffer[1024];
-            FILE *f = fopen(tmpfilename.c_str(), "w");
+            FILE *f = fopen(filename.c_str(), "w");
             if (f) {
                 for (Records::iterator it = records.begin(); it != records.end(); it++) {
                     Record& r = *it;
@@ -129,7 +128,6 @@ void MasterServer::dump_entries() {
                     fwrite(buffer, 1, strlen(buffer), f);
                 }
                 fclose(f);
-                rename(tmpfilename.c_str(), filename.c_str());
             }
             last_write = time(0);
         }
