@@ -87,7 +87,7 @@ public:
 
     typedef std::vector<ResourceObject> ResourceObjects;
 
-    Resources(Subsystem& subystem, const std::string& resource_directory) throw (ResourcesException, ResourcesMissingException);
+    Resources(Subsystem& subystem, const std::string& resource_directory, bool skip_maps = false) throw (ResourcesException, ResourcesMissingException);
     virtual ~Resources();
 
     void reload_resources() throw (ResourcesException);
@@ -125,6 +125,7 @@ public:
 private:
     Subsystem& subsystem;
     std::string resource_directory;
+    bool skip_maps;
 
     LoadedPaks loaded_paks;
     ResourceObjects tilesets;

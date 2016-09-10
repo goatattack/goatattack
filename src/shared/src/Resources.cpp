@@ -18,6 +18,7 @@
 #include "Resources.hpp"
 #include "Utils.hpp"
 #include "Globals.hpp"
+#include "AutoPtr.hpp"
 
 #include <cstdlib>
 #include <ctime>
@@ -51,6 +52,19 @@ template<class T> static void erase_resource_objects(Resources::ResourceObjects&
     }
 }
 
+static bool is_not_a_main_pak(const std::string& pakname) {
+    const char **pak = Resources::NonDownloadableMainPaks;
+    std::string pakfile = pakname + ".pak";
+    while (*pak) {
+        if (!strcmp(*pak, pakfile.c_str())) {
+            return false;
+        }
+        pak++;
+    }
+
+    return true;
+}
+
 static bool erase_loaded_pak_home_only(Resources::LoadedPak& pak) {
     return pak.from_home_dir;
 }
@@ -74,9 +88,17 @@ template<class T> static T *find_object(Resources::ResourceObjects& objects, con
     return 0;
 }
 
+template<class T> static bool check_duplicate(Subsystem& subsystem, Resources::ResourceObjects& objects, const std::string& objectgroup, const std::string& name) {
+    if (find_object<T>(objects, name)) {
+        subsystem << "WARNING: object '" << name << "' in '" << objectgroup << "' already found, skipping." << std::endl;
+        return true;
+    }
+    return false;
+}
+
 /* class implementation begins here */
-Resources::Resources(Subsystem& subsystem, const std::string& resource_directory) throw (ResourcesException, ResourcesMissingException)
-    : subsystem(subsystem), resource_directory(resource_directory)
+Resources::Resources(Subsystem& subsystem, const std::string& resource_directory, bool skip_maps) throw (ResourcesException, ResourcesMissingException)
+    : subsystem(subsystem), resource_directory(resource_directory), skip_maps(skip_maps)
 {
     subsystem << "initializing resources" << std::endl;
     srand(static_cast<unsigned int>(time(0)));
@@ -253,7 +275,10 @@ void Resources::read_tilesets(const std::string& directory, ZipReader *zip, bool
         Directory dir(directory, ".tileset", zip);
         while ((entry = dir.get_entry())) {
             try {
-                tilesets.push_back(ResourceObject(new Tileset(subsystem, (zip ? "" : directory + dir_separator) + entry, zip), base_resource));
+                AutoPtr<Tileset> new_object(new Tileset(subsystem, (zip ? "" : directory + dir_separator) + entry, zip));
+                if (!check_duplicate<Tileset>(subsystem, tilesets, "tilesets", new_object->get_name())) {
+                    tilesets.push_back(ResourceObject(new_object.release(), base_resource));
+                }
             } catch (const Exception& e) {
                 subsystem << e.what() << std::endl;
             }
@@ -269,7 +294,10 @@ void Resources::read_objects(const std::string& directory, ZipReader *zip, bool 
         Directory dir(directory, ".object", zip);
         while ((entry = dir.get_entry())) {
             try {
-                objects.push_back(ResourceObject(new Object(subsystem, (zip ? "" : directory + dir_separator) + entry, zip), base_resource));
+                AutoPtr<Object> new_object(new Object(subsystem, (zip ? "" : directory + dir_separator) + entry, zip));
+                if (!check_duplicate<Object>(subsystem, objects, "objects", new_object->get_name())) {
+                    objects.push_back(ResourceObject(new_object.release(), base_resource));
+                }
             } catch (const Exception& e) {
                 subsystem << e.what() << std::endl;
             }
@@ -285,7 +313,10 @@ void Resources::read_charactersets(const std::string& directory, ZipReader *zip,
         Directory dir(directory, ".characterset", zip);
         while ((entry = dir.get_entry())) {
             try {
-                charactersets.push_back(ResourceObject(new Characterset(subsystem, (zip ? "" : directory + dir_separator) + entry, zip), base_resource));
+                AutoPtr<Characterset> new_object(new Characterset(subsystem, (zip ? "" : directory + dir_separator) + entry, zip));
+                if (!check_duplicate<Characterset>(subsystem, charactersets, "charactersets", new_object->get_name())) {
+                    charactersets.push_back(ResourceObject(new_object.release(), base_resource));
+                }
             } catch (const Exception& e) {
                 subsystem << e.what() << std::endl;
             }
@@ -301,7 +332,10 @@ void Resources::read_npcs(const std::string& directory, ZipReader *zip, bool bas
         Directory dir(directory, ".npc", zip);
         while ((entry = dir.get_entry())) {
             try {
-                npcs.push_back(ResourceObject(new NPC(subsystem, (zip ? "" : directory + dir_separator) + entry, zip), base_resource));
+                AutoPtr<NPC> new_object(new NPC(subsystem, (zip ? "" : directory + dir_separator) + entry, zip));
+                if (!check_duplicate<NPC>(subsystem, npcs, "npcs", new_object->get_name())) {
+                    npcs.push_back(ResourceObject(new_object.release(), base_resource));
+                }
             } catch (const Exception& e) {
                 subsystem << e.what() << std::endl;
             }
@@ -317,7 +351,10 @@ void Resources::read_animations(const std::string& directory, ZipReader *zip, bo
         Directory dir(directory, ".animation", zip);
         while ((entry = dir.get_entry())) {
             try {
-                animations.push_back(ResourceObject(new Animation(subsystem, (zip ? "" : directory + dir_separator) + entry, zip), base_resource));
+                AutoPtr<Animation> new_object(new Animation(subsystem, (zip ? "" : directory + dir_separator) + entry, zip));
+                if (!check_duplicate<Animation>(subsystem, animations, "animations", new_object->get_name())) {
+                    animations.push_back(ResourceObject(new_object.release(), base_resource));
+                }
             } catch (const Exception& e) {
                 subsystem << e.what() << std::endl;
             }
@@ -328,18 +365,23 @@ void Resources::read_animations(const std::string& directory, ZipReader *zip, bo
 }
 
 void Resources::read_maps(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception) {
-    const char *entry = 0;
-    try {
-        Directory dir(directory, ".map", zip);
-        while ((entry = dir.get_entry())) {
-            try {
-                maps.push_back(ResourceObject(new Map(subsystem, (zip ? "" : directory + dir_separator) + entry, zip), base_resource));
-            } catch (const Exception& e) {
-                subsystem << e.what() << std::endl;
+    if (!skip_maps) {
+        const char *entry = 0;
+        try {
+            Directory dir(directory, ".map", zip);
+            while ((entry = dir.get_entry())) {
+                try {
+                    AutoPtr<Map> new_object(new Map(subsystem, (zip ? "" : directory + dir_separator) + entry, zip));
+                    if (!check_duplicate<Map>(subsystem, maps, "maps", new_object->get_name())) {
+                        maps.push_back(ResourceObject(new_object.release(), base_resource));
+                    }
+                } catch (const Exception& e) {
+                    subsystem << e.what() << std::endl;
+                }
             }
+        } catch (const DirectoryException&) {
+            /* chomp */
         }
-    } catch (const DirectoryException&) {
-        /* chomp */
     }
 }
 
@@ -349,7 +391,10 @@ void Resources::read_backgrounds(const std::string& directory, ZipReader *zip, b
         Directory dir(directory, ".background", zip);
         while ((entry = dir.get_entry())) {
             try {
-                backgrounds.push_back(ResourceObject(new Background(subsystem, (zip ? "" : directory + dir_separator) + entry, zip), base_resource));
+                AutoPtr<Background> new_object(new Background(subsystem, (zip ? "" : directory + dir_separator) + entry, zip));
+                if (!check_duplicate<Background>(subsystem, backgrounds, "backgrounds", new_object->get_name())) {
+                    backgrounds.push_back(ResourceObject(new_object.release(), base_resource));
+                }
             } catch (const Exception& e) {
                 subsystem << e.what() << std::endl;
             }
@@ -365,7 +410,10 @@ void Resources::read_fonts(const std::string& directory, ZipReader *zip, bool ba
         Directory dir(directory, ".font", zip);
         while ((entry = dir.get_entry())) {
             try {
-                fonts.push_back(ResourceObject(new Font(subsystem, (zip ? "" : directory + dir_separator) + entry, zip), base_resource));
+                AutoPtr<Font> new_object(new Font(subsystem, (zip ? "" : directory + dir_separator) + entry, zip));
+                if (!check_duplicate<Font>(subsystem, fonts, "fonts", new_object->get_name())) {
+                    fonts.push_back(ResourceObject(new_object.release(), base_resource));
+                }
             } catch (const Exception& e) {
                 subsystem << e.what() << std::endl;
             }
@@ -381,7 +429,10 @@ void Resources::read_icons(const std::string& directory, ZipReader *zip, bool ba
         Directory dir(directory, ".icon", zip);
         while ((entry = dir.get_entry())) {
             try {
-                icons.push_back(ResourceObject(new Icon(subsystem, (zip ? "" : directory + dir_separator) + entry, zip), base_resource));
+                AutoPtr<Icon> new_object(new Icon(subsystem, (zip ? "" : directory + dir_separator) + entry, zip));
+                if (!check_duplicate<Icon>(subsystem, icons, "icons", new_object->get_name())) {
+                    icons.push_back(ResourceObject(new_object.release(), base_resource));
+                }
             } catch (const Exception& e) {
                 subsystem << e.what() << std::endl;
             }
@@ -397,7 +448,10 @@ void Resources::read_sounds(const std::string& directory, ZipReader *zip, bool b
         Directory dir(directory, ".sound", zip);
         while ((entry = dir.get_entry())) {
             try {
-                sounds.push_back(ResourceObject(new Sound(subsystem, (zip ? "" : directory + dir_separator) + entry, zip), base_resource));
+                AutoPtr<Sound> new_object(new Sound(subsystem, (zip ? "" : directory + dir_separator) + entry, zip));
+                if (!check_duplicate<Sound>(subsystem, sounds, "sounds", new_object->get_name())) {
+                    sounds.push_back(ResourceObject(new_object.release(), base_resource));
+                }
             } catch (const Exception& e) {
                 subsystem << e.what() << std::endl;
             }
@@ -413,7 +467,10 @@ void Resources::read_musics(const std::string& directory, ZipReader *zip, bool b
         Directory dir(directory, ".music", zip);
         while ((entry = dir.get_entry())) {
             try {
-                musics.push_back(ResourceObject(new Music(subsystem, (zip ? "" : directory + dir_separator) + entry, zip), base_resource));
+                AutoPtr<Music> new_object(new Music(subsystem, (zip ? "" : directory + dir_separator) + entry, zip));
+                if (!check_duplicate<Music>(subsystem, musics, "musics", new_object->get_name())) {
+                    musics.push_back(ResourceObject(new_object.release(), base_resource));
+                }
             } catch (const Exception& e) {
                 subsystem << e.what() << std::endl;
             }
@@ -429,7 +486,10 @@ void Resources::read_game_settings(const std::string& directory, ZipReader *zip,
         Directory dir(directory, ".game", zip);
         while ((entry = dir.get_entry())) {
             try {
-                game_settings.push_back(ResourceObject(new Properties((zip ? "" : directory + dir_separator) + entry + ".game", zip), base_resource));
+                AutoPtr<Properties> new_object(new Properties((zip ? "" : directory + dir_separator) + entry + ".game", zip));
+                if (!check_duplicate<Properties>(subsystem, game_settings, "game_settings", new_object->get_name())) {
+                    game_settings.push_back(ResourceObject(new_object.release(), base_resource));
+                }
             } catch (const Exception& e) {
                 subsystem << e.what() << std::endl;
             }
@@ -441,32 +501,52 @@ void Resources::read_game_settings(const std::string& directory, ZipReader *zip,
 
 void Resources::load_resources(bool home_paks_only) throw (ResourcesException, ResourcesMissingException) {
     try {
+        const char **pak = 0;
+
         if (!home_paks_only) {
             /* scan main directories */
-            subsystem << "scanning main directories" << std::endl;
-            read_all(resource_directory + dir_separator, 0, true);
+            subsystem << "looking into: " << resource_directory << std::endl;
 
             /* read main paks */
-            Directory dir(resource_directory, ".pak");
-            const char *entry = 0;
-            while ((entry = dir.get_entry())) {
-                subsystem << "scanning " << entry << ".pak" << std::endl;
+            pak = Resources::NonDownloadableMainPaks;
+            while (*pak) {
+                subsystem << "scanning " << *pak << std::endl;
                 try {
-                    ZipReader zip(resource_directory + dir_separator + entry + ".pak");
+                    ZipReader zip(resource_directory + dir_separator + *pak);
                     read_all("", &zip, true);
                     loaded_paks.push_back(LoadedPak(zip.get_zip_filename(), zip.get_zip_short_filename(), zip.get_hash(), false));
                 } catch (const ZipException& e) {
                     subsystem << e.what() << std::endl;
                 }
+
+                pak++;
             }
+
+            /* read additional paks */
+            Directory dir(resource_directory, ".pak");
+            const char *entry = 0;
+            while ((entry = dir.get_entry())) {
+                if (is_not_a_main_pak(entry)) {
+                    subsystem << "scanning " << entry << ".pak" << std::endl;
+                    try {
+                        ZipReader zip(resource_directory + dir_separator + entry + ".pak");
+                        read_all("", &zip, true);
+                        loaded_paks.push_back(LoadedPak(zip.get_zip_filename(), zip.get_zip_short_filename(), zip.get_hash(), false));
+                    } catch (const ZipException& e) {
+                        subsystem << e.what() << std::endl;
+                    }
+                }
+            }
+
+            /* read open directory */
+            read_all(resource_directory + dir_separator, 0, true);
         }
 
         /* scan user directories */
-        subsystem << "scanning user directories" << std::endl;
-        read_all(get_home_directory() + dir_separator + UserDirectory + dir_separator, 0, false);
-
-        /* read home directory */
         std::string hdir = get_home_directory() + dir_separator + UserDirectory;
+        subsystem << "looking into: " << hdir << std::endl;
+
+        /* read additional paks in home directory */
         Directory dir(hdir, ".pak");
         const char *entry = 0;
         while ((entry = dir.get_entry())) {
@@ -480,8 +560,11 @@ void Resources::load_resources(bool home_paks_only) throw (ResourcesException, R
             }
         }
 
+        /* read open directory */
+        read_all(get_home_directory() + dir_separator + UserDirectory + dir_separator, 0, false);
+
         /* check if main paks are there */
-        const char **pak = Resources::NonDownloadableMainPaks;
+        pak = Resources::NonDownloadableMainPaks;
         while (*pak) {
             if (std::find(loaded_paks.begin(), loaded_paks.end(), *pak) == loaded_paks.end()) {
                 throw ResourcesMissingException(std::string(*pak) + " is missing.");

@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
         /* load SDL subsystem */
         SubsystemSDL subsystem(stream, "Goat Attack Map Editor");
         subsystem.set_keep_pictures(true);
-        Resources resources(subsystem, STRINGIZE_VALUE_OF(DATA_DIRECTORY));
+        Resources resources(subsystem, STRINGIZE_VALUE_OF(DATA_DIRECTORY), true);
 
         /* setup base view options */
         Configuration config(UserDirectory, ConfigFilename);

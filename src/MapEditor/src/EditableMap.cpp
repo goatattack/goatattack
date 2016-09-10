@@ -22,10 +22,8 @@
 #include <cstdlib>
 
 EditableMap::EditableMap(Resources& resources, Subsystem& subsystem) throw (Exception)
-    : Map(subsystem), resources(resources), subsystem(subsystem)
+    : Map(subsystem), resources(resources), subsystem(subsystem), ptileset(0), pbackground(0)
 {
-    set_background(get_background());
-    set_tileset(get_tileset());
     untouch();
 }
 

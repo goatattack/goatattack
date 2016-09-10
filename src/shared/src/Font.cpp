@@ -78,7 +78,6 @@ Font::Font(Subsystem& subsystem, const std::string& filename, ZipReader *zip)
     } catch (const Exception& e) {
         throw FontException(e.what());
     }
-
 }
 
 Font::~Font() {

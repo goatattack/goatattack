@@ -61,6 +61,7 @@ private:
     Subsystem& subsystem;
     Tileset *ptileset;
     Background *pbackground;
+
     Objects objects;
     Lights lights;
 

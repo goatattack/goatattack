@@ -1731,6 +1731,8 @@ void MapEditor::hcopy_click() {
             deco_array[y][newx] = deco_array[y][x];
         }
     }
+
+    wmap->touch();
 }
 
 /* ************************************************************************** */

@@ -23,7 +23,7 @@
       <Project Name="shared" ConfigName="Debug"/>
       <Project Name="Cargo" ConfigName="Debug"/>
     </WorkspaceConfiguration>
-    <WorkspaceConfiguration Name="Release" Selected="yes">
+    <WorkspaceConfiguration Name="Release" Selected="no">
       <Environment/>
       <Project Name="GoatAttack" ConfigName="Release"/>
       <Project Name="MapEditor" ConfigName="Release"/>
