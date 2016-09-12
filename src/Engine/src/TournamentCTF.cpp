@@ -343,7 +343,7 @@ bool TournamentCTF::test_and_drop_flag(Player *p) {
             int fy = p->get_characterset()->get_flag_drop_offset_y();
 
             flag->state.accel_x = p->state.client_server_state.accel_x;
-            flag->state.accel_y = p->state.client_server_state.accel_y;
+            flag->state.accel_y = p->state.client_server_state.accel_y + p->state.client_server_state.jump_accel_y;
 
             GPlaceObject *gpo = new GPlaceObject;
             memset(gpo, 0, sizeof(GPlaceObject));

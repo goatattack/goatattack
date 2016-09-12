@@ -533,7 +533,7 @@ bool TournamentCTC::test_and_drop_coin(Player *p) {
             int fy = p->get_characterset()->get_coin_drop_offset_y();
 
             coin->state.accel_x = p->state.client_server_state.accel_x;
-            coin->state.accel_y = p->state.client_server_state.accel_y;
+            coin->state.accel_y = p->state.client_server_state.accel_y + p->state.client_server_state.jump_accel_y;
 
             GPlaceObject *gpo = new GPlaceObject;
             memset(gpo, 0, sizeof(GPlaceObject));
