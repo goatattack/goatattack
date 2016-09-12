@@ -34,6 +34,7 @@ public:
     EditableMap(Resources& resources, Subsystem& subsystem, const std::string& filename) throw (Exception);
     virtual ~EditableMap();
 
+    bool is_valid_map() const;
     Tileset *get_tileset_ptr() const;
     Background *get_background_ptr() const;
 

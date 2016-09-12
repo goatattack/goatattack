@@ -33,18 +33,34 @@ public:
     CargoException(std::string msg) : Exception(msg) { }
 };
 
+class SelectedFiles {
+    friend class Cargo;
+
+public:
+    typedef std::vector<std::string> Files;
+
+    void push(const char *filename);
+    const Files& get_files() const;
+
+private:
+    Files files;
+};
+
 class Cargo {
 private:
     Cargo(const Cargo&);
     Cargo& operator=(const Cargo&);
 
 public:
-    Cargo(const char *directory, const char *pak_file) throw (CargoException);
+    Cargo(const char *directory, const char *pak_file, const SelectedFiles *files = 0) throw (CargoException);
     ~Cargo();
+
+    static bool file_exists(const std::string& filename);
 
     void pack() throw (CargoException);
     size_t packaged() const;
     std::string get_hash() const;
+
 
 private:
     struct DirectoryEntry {
@@ -91,11 +107,13 @@ private:
     typedef std::vector<PakEntry> PakEntries;
 
     FILE *f;
+    bool has_selected_files;
     bool valid;
     bool finished;
     std::string directory;
     std::string pak_file;
 
+    SelectedFiles selected_files;
     PakEntries pak_entries;
     CRC64 crc64;
 

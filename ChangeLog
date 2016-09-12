@@ -13,7 +13,8 @@
 - fishy map volume removed (thanks to ObaniGemini)
 - netcode structures reordered (alignment fixes)
 - changed protocol version to 4 (due to reordering netcode structures)
-- servers with wrong protocol version are hidden now
+- create packages in map editor
+- goat attack now is ready for cross compiling
 
 0.4.3
 - new rounded buttons

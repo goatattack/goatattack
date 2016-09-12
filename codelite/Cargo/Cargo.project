@@ -8,19 +8,11 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="Cargo">
-    <VirtualDirectory Name="include">
-      <File Name="../../src/Cargo/include/Cargo.hpp"/>
-    </VirtualDirectory>
-    <VirtualDirectory Name="src">
-      <File Name="../../src/Cargo/src/Cargo.cpp"/>
-    </VirtualDirectory>
     <File Name="../../src/Cargo/main.cpp"/>
   </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>
       <Compiler Options="-pedantic;-Wall;-Wextra;-Wno-unused-result;-Wno-unused-parameter" C_Options="-pedantic;-Wall;-Wextra;-Wno-unused-result;-Wno-unused-parameter" Assembler="">
-        <IncludePath Value="."/>
-        <IncludePath Value="../../src/Cargo/include"/>
         <IncludePath Value="../../src/shared/include"/>
         <IncludePath Value="../../src/shared/zlib"/>
         <Preprocessor Value="__unix__"/>
@@ -39,7 +31,7 @@
         <LibraryPath Value="../shared/Debug"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
-      <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="./$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="./$(ProjectName)" CommandArguments="-p ${HOME}/Bastel/goatattack/data/files ${HOME}/out.pak" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
       <BuildSystem Name="Default"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>

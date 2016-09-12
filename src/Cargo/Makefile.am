@@ -1,6 +1,5 @@
 bin_PROGRAMS = goatattack-cargo
 goatattack_cargo_SOURCES = main.cpp
-goatattack_cargo_SOURCES += src/Cargo.cpp
 
 goatattack_cargo_CXXFLAGS = -I./include -I../shared/include -Wno-unused-result -pedantic -Wextra
 

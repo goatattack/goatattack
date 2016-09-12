@@ -18,6 +18,7 @@
 #include "MapEditor.hpp"
 #include "Utils.hpp"
 #include "Globals.hpp"
+#include "Cargo.hpp"
 
 #include <cstdlib>
 #include <algorithm>
@@ -390,7 +391,7 @@ void MapEditor::create_toolbox() {
     int l = 0;
     GuiButton *btn;
 
-    int wh = 244;
+    int wh = 262;
     GuiWindow *window = push_window(5, get_subsystem().get_view_height() / 2 - wh / 2, 26, wh, "Tool");
     window->show_screws(false);
 
@@ -449,6 +450,11 @@ void MapEditor::create_toolbox() {
     btn->show_bolts(false);
     btn->set_tooltip_text("create pixel precise lightmap");
     create_picture(btn, 1, 1, resources.get_icon("me_calclight_pixel")->get_tile()->get_tilegraphic());
+
+    btn = create_button(window, 3, ofsy + (bh * l++), w, h, "", static_pack_click, this);
+    btn->show_bolts(false);
+    btn->set_tooltip_text("create map package");
+    create_picture(btn, 1, 1, resources.get_icon("me_pack")->get_tile()->get_tilegraphic());
 
     btn = create_button(window, 3, ofsy + (bh * l++), w, h, "", static_zap_click, this);
     btn->show_bolts(false);
@@ -1195,9 +1201,9 @@ void MapEditor::mp_ok_click() {
     }
 
     int width = atoi(mp_width->get_text().c_str());
-    if (width < 10) {
+    if (width < 40) {
         mp_width->set_focus();
-        show_messagebox(Gui::MessageBoxIconExclamation, "Width", FieldMsg + " (min. width is 10)");
+        show_messagebox(Gui::MessageBoxIconExclamation, "Width", FieldMsg + " (min. width is 40)");
         return;
     }
 
@@ -1208,9 +1214,9 @@ void MapEditor::mp_ok_click() {
     }
 
     int height = atoi(mp_height->get_text().c_str());
-    if (height < 10) {
+    if (height < 22) {
         mp_height->set_focus();
-        show_messagebox(Gui::MessageBoxIconExclamation, "Height", FieldMsg + " (min. height is 10)");
+        show_messagebox(Gui::MessageBoxIconExclamation, "Height", FieldMsg + " (min. height is 22)");
         return;
     }
 
@@ -1733,6 +1739,51 @@ void MapEditor::hcopy_click() {
     }
 
     wmap->touch();
+}
+
+/* ************************************************************************** */
+/* pack map                                                                   */
+/* ************************************************************************** */
+void MapEditor::static_pack_click(GuiVirtualButton *sender, void *data) {
+    (reinterpret_cast<MapEditor *>(data))->pack_click();
+}
+
+void MapEditor::pack_click() {
+    if (!wmap || !wmap->is_valid_map()) {
+        show_messagebox(Gui::MessageBoxIconError, "No Map", "Please create or load a map first, before you can create a package.");
+        return;
+    }
+
+    if (wmap->is_modified()) {
+        show_messagebox(Gui::MessageBoxIconError, "Unsaved Map", "Please save your map first.");
+        return;
+    }
+
+    std::string pak_name = home_workdir + dir_separator + wmap->get_name() + ".pak";
+    if (Cargo::file_exists(pak_name)) {
+        if (show_questionbox("Overwrite?", "Overwrite existing package?") == MessageBoxResponseNo) {
+            return;
+        }
+    }
+
+    /* create package */
+    try {
+        SelectedFiles files;
+        std::string name = "maps";
+        name += dir_separator + wmap->get_name();
+        files.push((name + ".map").c_str());
+        if (Cargo::file_exists(home_workdir + dir_separator + name + ".lmp")) {
+            files.push((name + ".lmp").c_str());
+        }
+        if (Cargo::file_exists(home_workdir + dir_separator + name + ".png")) {
+            files.push((name + ".png").c_str());
+        }
+        Cargo cargo(home_workdir.c_str(), pak_name.c_str(), &files);
+        cargo.pack();
+        show_messagebox(Gui::MessageBoxIconInformation, "Done", "Your package '" + wmap->get_name() + ".pak" + "' has been created.");
+    } catch (const Exception& e) {
+        show_messagebox(Gui::MessageBoxIconError, "Error", e.what());
+    }
 }
 
 /* ************************************************************************** */

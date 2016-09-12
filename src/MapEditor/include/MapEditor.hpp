@@ -224,6 +224,10 @@ private:
     void calculate_light(bool pixel_precise);
     void finalise_lightmap();
 
+    /* create package */
+    static void static_pack_click(GuiVirtualButton *sender, void *data);
+    void pack_click();
+
     /* zap */
     static void static_zap_click(GuiVirtualButton *sender, void *data);
     void zap_click();

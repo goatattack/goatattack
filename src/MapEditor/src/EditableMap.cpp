@@ -84,6 +84,10 @@ EditableMap::~EditableMap() {
     lights.clear();
 }
 
+bool EditableMap::is_valid_map() const {
+    return  (get_tileset_ptr() != 0);
+}
+
 Tileset *EditableMap::get_tileset_ptr() const {
     return ptileset;
 }

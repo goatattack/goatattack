@@ -102,7 +102,8 @@ DONE:
 * fishy map volume removed
 * netcode structures reordered (alignment fixes)
 * changed protocol version to 4 (due to reordering netcode structures)
-* servers with wrong protocol version are hidden now
+* create packages in map editor
+* goat attack now is ready for cross compiling
 
 DEFERRED:
 * OSX: too short filename buffer -> hardegger bug (not reproducable)

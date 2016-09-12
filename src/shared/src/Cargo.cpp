@@ -21,8 +21,13 @@
 
 #include <cerrno>
 #include <algorithm>
-#include <sys/stat.h>
 #include <zlib.h>
+
+#ifndef _WIN32
+#include <sys/stat.h>
+#else
+#include <Win.hpp>
+#endif
 
 #include <iostream>
 
@@ -33,6 +38,16 @@ static const uint16_t ZipArchiveFile = 1;
 static const uint32_t ZipExtAttribs = 0x81a40000;
 static const uint16_t ZipUnixVersion = 0x0317;
 
+void SelectedFiles::push(const char *filename) {
+    if (filename) {
+        files.push_back(filename);
+    }
+}
+
+const SelectedFiles::Files& SelectedFiles::get_files() const {
+    return files;
+}
+
 enum FileType {
     FileTypeNone = 0,
     FileTypeRegular,
@@ -40,6 +55,7 @@ enum FileType {
 };
 
 static FileType file_status(const char *entry, size_t& file_size) throw (CargoException) {
+#ifndef _WIN32
     struct stat sinfo;
     if (stat(entry, &sinfo)) {
         throw CargoException("Retrieving file information failed: " + std::string(strerror(errno)));
@@ -54,7 +70,15 @@ static FileType file_status(const char *entry, size_t& file_size) throw (CargoEx
         file_size = sinfo.st_size;
     }
 
+#else
+    #error "For Windows, function file_status() is not implemented yet."
+#endif
+
     return ft;
+}
+
+static bool file_compare(const std::string& lhs, const std::string& rhs) {
+    return (strcmp(lhs.c_str(), rhs.c_str()) < 0);
 }
 
 static void throw_deflate_failed(z_stream *z) throw (CargoException) {
@@ -65,9 +89,20 @@ static void throw_deflate_failed(z_stream *z) throw (CargoException) {
     throw CargoException("Deflate failed.");
 }
 
-Cargo::Cargo(const char *directory, const char *pak_file) throw (CargoException)
-    : f(0), valid(true), finished(false), directory(directory), pak_file(pak_file)
+Cargo::Cargo(const char *directory, const char *pak_file, const SelectedFiles *files) throw (CargoException)
+    : f(0), has_selected_files(false), valid(true), finished(false),
+      directory(directory), pak_file(pak_file)
 {
+    /* if there are specified files to pack, take only them */
+    if (files) {
+        if (files->files.size()) {
+            selected_files = *files;
+            std::sort(selected_files.files.begin(), selected_files.files.end(), file_compare);
+            has_selected_files = true;
+        }
+    }
+
+    /* open out file */
     f = fopen(pak_file, "w+b");
     if (!f) {
         throw CargoException("Cannot open file: " + std::string(strerror(errno)));
@@ -76,6 +111,17 @@ Cargo::Cargo(const char *directory, const char *pak_file) throw (CargoException)
 
 Cargo::~Cargo() {
     fclose(f);
+}
+
+bool Cargo::file_exists(const std::string& filename) {
+    size_t file_size = 0;
+    try {
+        return (file_status(filename.c_str(), file_size) == FileTypeRegular);
+    } catch (...) {
+        /* chomp */
+    }
+
+    return false;
 }
 
 void Cargo::pack() throw (CargoException) {
@@ -91,7 +137,9 @@ void Cargo::pack() throw (CargoException) {
 
     /* go */
     pack_directory("", true);
-    std::cout << std::endl;
+    if (!has_selected_files) {
+        std::cout << std::endl;
+    }
 
     /* append central directory */
     add_central_directory();
@@ -115,42 +163,57 @@ std::string Cargo::get_hash() const {
 
 void Cargo::pack_directory(const char *subdir, bool is_rootdir) throw (CargoException) {
     try {
-        /* read entries in directory */
-        DirectoryEntries entries;
-        std::string root = directory + "/" + subdir;
-        Directory dir(root, "", 0);
-        const char *entry = 0;
-        size_t file_size = 0;
-        while ((entry = dir.get_entry())) {
-            if (strcmp(entry, ".") && strcmp(entry, "..") && strcmp(entry, pak_file.c_str())) {
-                std::string new_entry = append_dir(subdir, entry);
-                FileType ft = file_status(append_dir(directory.c_str(), new_entry.c_str()).c_str(), file_size);
-                if (ft != FileTypeNone) {
-                    entries.push_back(DirectoryEntry(ft == FileTypeDirectory, new_entry.c_str(), file_size));
+        if (has_selected_files) {
+            /* pack only specified files */
+            for (SelectedFiles::Files::iterator it = selected_files.files.begin(); it !=selected_files.files.end(); it++) {
+                size_t file_size = 0;
+                const std::string& entry = *it;
+                FileType ft = file_status(append_dir(directory.c_str(), entry.c_str()).c_str(), file_size);
+                if (ft == FileTypeRegular) {
+                    pack_file(DirectoryEntry(false, entry.c_str(), file_size));
+                }
+            }
+        } else {
+            /* read entries in directory */
+            DirectoryEntries entries;
+            std::string root = directory + "/" + subdir;
+            Directory dir(root, "", 0);
+            const char *entry = 0;
+            size_t file_size = 0;
+            while ((entry = dir.get_entry())) {
+                if (strcmp(entry, ".") && strcmp(entry, "..") && strcmp(entry, pak_file.c_str())) {
+                    std::string new_entry = append_dir(subdir, entry);
+                    FileType ft = file_status(append_dir(directory.c_str(), new_entry.c_str()).c_str(), file_size);
+                    if (ft != FileTypeNone) {
+                        entries.push_back(DirectoryEntry(ft == FileTypeDirectory, new_entry.c_str(), file_size));
+                    }
+                }
+            }
+            std::sort(entries.begin(), entries.end());
+
+            /* recursively pack files */
+            for (DirectoryEntries::iterator it = entries.begin(); it != entries.end(); it++) {
+                const DirectoryEntry& entry = *it;
+                if (entry.is_directory) {
+                    pack_directory(append_dir(subdir, entry.entry.c_str()).c_str());
+                } else if (!is_rootdir) {
+                    pack_file(entry);
                 }
             }
         }
-        std::sort(entries.begin(), entries.end());
-
-        /* recursively pack files */
-        for (DirectoryEntries::iterator it = entries.begin(); it != entries.end(); it++) {
-            const DirectoryEntry& entry = *it;
-            if (entry.is_directory) {
-                pack_directory(append_dir(subdir, entry.entry.c_str()).c_str());
-            } else if (!is_rootdir) {
-                pack_file(entry);
-            }
-        }
-
     } catch (const Exception& e) {
         valid = false;
-        std::cout << std::endl;
+        if (!has_selected_files) {
+            std::cout << std::endl;
+        }
         throw CargoException(e.what());
     }
 }
 
 void Cargo::pack_file(const DirectoryEntry& entry) throw (CargoException) {
-    std::cout << "." << std::flush;
+    if (!has_selected_files) {
+        std::cout << "." << std::flush;
+    }
 
     /* create entry with placeholders */
     uint16_t file_time = 0;             // always zero
@@ -322,7 +385,7 @@ size_t Cargo::write_uint32(uint32_t n) throw (CargoException) {
     if (written != sizeof(data)) {
         throw_write_error();
     }
- 
+
     return written;
 }
 

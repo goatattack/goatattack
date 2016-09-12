@@ -351,7 +351,7 @@ Gui::MessageBoxResponse Gui::show_messagebox(MessageBoxIcon icon, const std::str
         create_picture(window, 15, 13, msg_icon->get_tile()->get_tilegraphic());
     }
     create_label(window, 15 + icw + ics, 15, text);
-    create_button(window, width / 2- bw / 2, height - bh - 25, bw, bh, "Ok", static_ok_click, this);
+    create_button(window, width / 2- bw / 2, height - bh - 26, bw, bh, "Ok", static_ok_click, this);
 
     idleloop(static_cast<int>(windows.size()) - 1);
 
