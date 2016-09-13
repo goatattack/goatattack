@@ -1,4 +1,9 @@
+if !INSTALL_CARGO
+noinst_PROGRAMS = goatattack-cargo
+else
 bin_PROGRAMS = goatattack-cargo
+endif
+
 goatattack_cargo_SOURCES = main.cpp
 
 goatattack_cargo_CXXFLAGS = -I./include -I../shared/include -Wno-unused-result -pedantic -Wextra
@@ -13,7 +18,9 @@ endif
 
 goatattack_cargo_CXXFLAGS += -D__STDC_FORMAT_MACROS
 
+if INSTALL_CARGO
 man6_MANS = man/goatattack-cargo.6
+endif
 
 if BUILD_PAK
 all: goatattack-cargo

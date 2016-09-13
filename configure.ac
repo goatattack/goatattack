@@ -26,6 +26,7 @@ AC_ARG_ENABLE([master-server],    [  --enable-master-server  Build master server
 AC_ARG_ENABLE([internal-zlib],    [  --enable-internal-zlib  Build with the project copy of zlib [[default=no]]], [INTERNAL_ZLIB="yes"], [])
 AC_ARG_ENABLE([map-editor],       [  --enable-map-editor     Build map editor [[default=no]]], [MAP_EDITOR="yes"], [])
 AC_ARG_ENABLE([cargo-only],       [  --enable-cargo-only     Build cargo tool only [[default=no]]], [CARGO_ONLY="yes"], [])
+AC_ARG_ENABLE([install-cargo],    [  --enable-install-cargo  Installing cargo [[default=no]]], [INSTALL_CARGO="yes"], [])
 
 AC_ARG_WITH([targetdatadir], [AS_HELP_STRING([--with-targetdatadir=DIR], [data directory on the target])], [targetdatadir=$withval], [targetdatadir="\${pkgdatadir}"])
 AC_SUBST([targetdatadir], [$targetdatadir])
@@ -36,8 +37,9 @@ AM_CONDITIONAL([INTERNAL_ZLIB], [test "x$INTERNAL_ZLIB" = xyes])
 AM_CONDITIONAL([MAP_EDITOR], [test "x$MAP_EDITOR" = xyes])
 AM_CONDITIONAL([BUILD_PAK], [test "x$BUILD_PAK" = xyes])
 
-# --- cargo only? ---
+# --- cargo ---
 AM_CONDITIONAL([CARGO_ONLY], [test "x$CARGO_ONLY" = xyes])
+AM_CONDITIONAL([INSTALL_CARGO], [test "x$INSTALL_CARGO" = xyes])
 
 # --- check additional libraries ---
 if test "x$DEDICATED_SERVER" != "xyes"; then
@@ -61,7 +63,7 @@ if test ! -z "$missing_headers"; then
 fi
 
 # --- ready ---
-AC_CONFIG_FILES([Makefile src/shared/Makefile src/Cargo/Makefile src/Engine/Makefile])
+AC_CONFIG_FILES([Makefile src/Cargo/Makefile src/shared/Makefile src/Engine/Makefile])
 if test "x$MAP_EDITOR" = "xyes"; then
 	if test "x$DEDICATED_SERVER" != "xyes"; then
 		AC_CONFIG_FILES([src/MapEditor/Makefile])
@@ -102,6 +104,9 @@ if test "x$INTERNAL_ZLIB" = "xyes"; then
 	AC_MSG_NOTICE([ * taking project copy of zlib])
 fi
 if test "x$BUILD_PAK" != "xyes"; then
-	AC_MSG_NOTICE([ * base.pak will no be created])
+	AC_MSG_NOTICE([ * base.pak will not be created])
+fi
+if test "x$INSTALL_CARGO" != "xyes"; then
+	AC_MSG_NOTICE([ * cargo will not be installed])
 fi
 AC_MSG_NOTICE([])
