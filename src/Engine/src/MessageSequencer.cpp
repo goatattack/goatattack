@@ -222,7 +222,7 @@ bool MessageSequencer::cycle() throw (Exception) {
                     std::string pwd(login->pwd);
                     if (login->protocol_version != ProtocolVersion) {
                         slack_send(host, port, 0, 0, NetCommandWrongProtocol, 0, 0);
-                    } else if (password.length() && pwd != password) {
+                    } else if (pwd != password) {
                         slack_send(host, port, 0, 0, NetCommandWrongPassword, 0, 0);
                     } else if (heaps.size() < max_heaps) {
                         h = new SequencerHeap(host, port);
