@@ -34,6 +34,8 @@ const ns_t CalcCycleNS = CycleS / CalcCyclesPerS;
 const int BroadcastsPerS = 15;
 const int BroadcastCount = CalcCyclesPerS / BroadcastsPerS;
 
+const uint16_t MasterHeartbeatPort = 25112;
+
 const char *logout_messages[] = {
     "gone, gone... gone",
     "ended in smoke",
@@ -48,13 +50,6 @@ const char *logout_messages[] = {
     "i took the blue pill",
     0
 };
-
-/*
-const char *non_downloadable_pak_files[] = {
-    "base.pak",
-    0
-};
-*/
 
 const char *DefaultTeamRed = "team red";
 const char *DefaultTeamBlue = "team blue";
@@ -476,13 +471,13 @@ void Server::thread() {
                     }
                 }
 
-                /* update master server all 5 seconds */
+                /* update master server all approx. 10 seconds */
                 if (master_server) {
                     ms_counter++;
                     if (ms_counter >= 10000) {
                         ms_counter = 0;
                         sprintf(msbuf, "%hu", get_port());
-                        master_socket.send(master_server, 25112, msbuf, strlen(msbuf));
+                        master_socket.send(master_server, MasterHeartbeatPort, msbuf, strlen(msbuf));
                     }
                 }
 

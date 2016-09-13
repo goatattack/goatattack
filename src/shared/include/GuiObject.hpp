@@ -62,6 +62,7 @@ public:
     bool get_visible() const;
     void set_visible(bool state);
     void set_focus();
+    void set_focus_on_first_child();
 
     void set_tag(int tag);
     int get_tag() const;

@@ -15,6 +15,7 @@
 - changed protocol version to 4 (due to reordering netcode structures)
 - create packages in map editor
 - goat attack now is ready for cross compiling
+- selecting custom server (thanks to IBPX)
 
 0.4.3
 - new rounded buttons

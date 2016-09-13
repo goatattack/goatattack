@@ -24,18 +24,27 @@ void Client::event_status(hostaddr_t host, hostport_t port, const std::string& n
     int max_clients, int cur_clients, ms_t ping_time, bool secured,
     int protocol_version) throw (Exception)
 {
-    sprintf(buffer, "%ld", ping_time);
-    std::string msg = "connecting to " + name + ", ping = ";
-    msg += buffer;
-    if (secured) {
-        msg += ", needs password";
+    if (protocol_version != ProtocolVersion) {
+        const char *msg ="Both protocols differ, you cannot connect to this server.";
+        size_t sz = strlen(msg);
+        char *p = new char[sz];
+        memcpy(p, msg, sz);
+        server_events.push(ServerEvent(EventTypeAccessDenied, 0, p, sz));
+        throw_exception = true;
+    } else {
+        sprintf(buffer, "%ld", ping_time);
+        std::string msg = "connecting to " + name + ", ping = ";
+        msg += buffer;
+        if (secured) {
+            msg += ", needs password";
+        }
+        sprintf(buffer, " (clients: %d/%d)", cur_clients, max_clients);
+        msg += buffer;
+        size_t sz = msg.length();
+        char *p = new char[sz];
+        memcpy(p, msg.c_str(), sz);
+        server_events.push(ServerEvent(EventTypeStatus, 0, p, sz));
     }
-    sprintf(buffer, " (clients: %d/%d)", cur_clients, max_clients);
-    msg += buffer;
-    size_t sz = msg.length();
-    char *p = new char[sz];
-    memcpy(p, msg.c_str(), sz);
-    server_events.push(ServerEvent(EventTypeStatus, 0, p, sz));
 }
 
 void Client::event_access_denied(MessageSequencer::RefusalReason reason) throw (Exception) {
@@ -49,6 +58,9 @@ void Client::event_access_denied(MessageSequencer::RefusalReason reason) throw (
             msg = "Login failed: wrong password.";
             break;
 
+        case MessageSequencer::RefusalReasonWrongProtocol:
+            msg = "Both protocols differ, you cannot connect to this server.";
+            break;
     }
     if (msg) {
         size_t sz = strlen(msg);

@@ -121,7 +121,8 @@ public:
 
     enum RefusalReason {
         RefusalReasonServerFull = 0,
-        RefusalReasonWrongPassword
+        RefusalReasonWrongPassword,
+        RefusalReasonWrongProtocol
     };
 
     MessageSequencer(hostport_t port, pico_size_t num_heaps, const std::string& name, const std::string& password) throw (Exception);

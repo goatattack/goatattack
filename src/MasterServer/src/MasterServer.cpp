@@ -81,7 +81,7 @@ void MasterServer::add_entry(uint32_t host, char *buffer, size_t sz) {
         bool found = false;
         buffer[sz] = 0;
         int port = atoi(buffer);
-        if (port) {
+        if (port > 0 && port < 65536) {
             for (Records::iterator it = records.begin(); it != records.end(); it++) {
                 Record& r = *it;
                 if (r.address == address && r.port == port) {

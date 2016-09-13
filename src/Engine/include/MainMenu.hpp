@@ -112,6 +112,9 @@ private:
     GuiListbox *cs_maps;
     GuiListbox *play_lan_list;
     GuiListbox *play_wan_list;
+    GuiTextbox *custom_ipaddress;
+    GuiTextbox *custom_port;
+    GuiTextbox *custom_password;
     GuiRoundedButton *rb[6];
 
     const void *wan_list_selected_entry;

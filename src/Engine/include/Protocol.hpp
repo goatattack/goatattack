@@ -32,7 +32,7 @@
 
 
 /* increase, if protocol changes */
-const int ProtocolVersion = 4;
+const int ProtocolVersion = 5;
 
 /* --- */
 typedef uint32_t hostaddr_t;
@@ -60,6 +60,7 @@ enum NetCommand {
     NetCommandLogin,
     NetCommandLogout,
     NetCommandData,
+    NetCommandWrongProtocol,
     _NetCommandMAX
 };
 
@@ -93,7 +94,7 @@ struct NetMessageData {
     {
         memcpy(data, var.c_str(), len);
     }
-    data_len_t len;                 // 1
+    data_len_t len;                 // 2
     data_t data[1];                 // 1
 
     inline void from_net() {
@@ -146,10 +147,18 @@ const int NetLoginPasswordLen = 16;
 struct NetLogin {
     char pwd[NetLoginPasswordLen];
     data_len_t len;
+    pico_size_t protocol_version;
     data_t data[1];
 
-    inline void from_net() { }
-    inline void to_net() { }
+    inline void from_net() {
+        len = ntohs(len);
+        protocol_version = ntohs(protocol_version);
+    }
+
+    inline void to_net() {
+        len = htons(len);
+        protocol_version = htons(protocol_version);
+    }
 };
 #pragma pack()
 

@@ -279,9 +279,6 @@ void MainMenu::play_click() {
     //int bw2 = 170;
     create_button(window, wcw / 2 - bw / 2, window->get_client_height() - bh - Spc, bw, bh, "Close", static_play_close, this);
 
-    //create_button(window, wcw - bw - Spc, window->get_client_height() - bh - Spc, bw, bh, "Close", static_play_close, this);
-    //create_button(window, Spc, window->get_client_height() - bh - Spc, bw2, bh, "Enter Address And Connect", static_play_manual, this);
-
     GuiTab *tab = create_tab(window, Spc, Spc, wcw - (2 * Spc), wch - bh - (3 * Spc));
 
     bw = 60;
@@ -316,6 +313,19 @@ void MainMenu::play_click() {
     title_bar->add_column("\x7f", 8);
     title_bar->add_column("Players", 50);
     title_bar->add_column("Ping", 40);
+
+    /* custom server */
+    GuiFrame *frcustom = tab->create_tab("Custom Server");
+    create_label(frcustom, 0, 0, "Enter here the hostname or IP address and port:");
+    create_label(frcustom, 0, 21, "address:");
+    custom_ipaddress = create_textbox(frcustom, 70, 20, tab->get_width() - (2 * Spc) - 70 + 2, config.get_string("last_custom_address"));
+    create_label(frcustom, 0, 41, "port:");
+    custom_port = create_textbox(frcustom, 70, 40, 100, config.get_string("last_custom_port"));
+    create_label(frcustom, 0, 61, "password:");
+    custom_password = create_textbox(frcustom, 70, 60, 100, "");
+    custom_password->set_hide_characters(true);
+
+    create_button(frcustom, frlan->get_width() - bw, frlan->get_height() - bh, bw, bh, "Connect", static_play_manual, this);
 
     /* install sort handlers */
     wan_list_selected_entry = 0;
@@ -483,7 +493,34 @@ void MainMenu::static_play_manual(GuiVirtualButton *sender, void *data) {
 }
 
 void MainMenu::play_manual() {
+    hostaddr_t host = resolve_host(custom_ipaddress->get_text());
+    hostport_t port = atoi(custom_port->get_text().c_str());
 
+    /* tests */
+    if (!host) {
+        show_messagebox(Gui::MessageBoxIconExclamation, "Server", "Server not found or unknown.");
+        custom_ipaddress->set_focus();
+        return;
+    }
+    if (!port) {
+        show_messagebox(Gui::MessageBoxIconExclamation, "Port", "Enter valid port number.");
+        custom_port->set_focus();
+        return;
+    }
+
+    /* persist */
+    config.set_string("last_custom_address", custom_ipaddress->get_text());
+    config.set_int("last_custom_port", static_cast<int>(port));
+
+    /* go */
+    try {
+        ScopeMusicStopper stop_music(subsystem, resources.get_music(TitleMusic));
+        Client client(resources, subsystem, host, port, config, custom_password->get_text());
+        client.link_mouse(*this);
+        client.run();
+    } catch (const Exception& e) {
+        show_messagebox(Gui::MessageBoxIconError, "Error", e.what());
+    }
 }
 
 /* ************************************************************************** */

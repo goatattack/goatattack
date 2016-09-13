@@ -136,6 +136,16 @@ void GuiObject::set_focus() {
     gui.set_focus(this);
 }
 
+void GuiObject::set_focus_on_first_child() {
+    for (Children::iterator it = children.begin(); it != children.end(); it++) {
+        GuiObject *obj = *it;
+        if (obj->can_have_focus()) {
+            gui.set_focus(obj);
+            break;
+        }
+    }
+}
+
 void GuiObject::set_tag(int tag) {
     this->tag = tag;
 }
@@ -1384,6 +1394,7 @@ GuiFrame *GuiTab::create_tab(const std::string& name) {
     if (!current_tab) {
         current_tab = tab;
         tab->tab->set_visible(true);
+        tab->tab->set_focus_on_first_child();
     }
 
     current_button_x += width - 1;
@@ -1400,6 +1411,7 @@ void GuiTab::select_tab(int index) {
         }
         Tab *tab = tabs[index];
         tab->tab->set_visible(true);
+        tab->tab->set_focus_on_first_child();
     }
 }
 

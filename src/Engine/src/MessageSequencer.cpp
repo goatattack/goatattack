@@ -86,11 +86,13 @@ void MessageSequencer::login(const std::string& password, data_len_t len, const 
     AutoPtr<char []> tmp(new char[sz]);
     NetLogin *login = reinterpret_cast<NetLogin *>(&tmp[0]);
     memset(login, 0, sizeof(NetLogin));
+    login->protocol_version = ProtocolVersion;
     strncpy(login->pwd, password.c_str(), NetLoginPasswordLen - 1);
     login->len = len;
     if (len) {
         memcpy(login->data, data, len);
     }
+    login->to_net();
     push(NetFlagsReliable, NetCommandLogin, sz, login);
 }
 
@@ -205,14 +207,22 @@ bool MessageSequencer::cycle() throw (Exception) {
                 event_access_denied(RefusalReasonWrongPassword);
                 delete_all_heaps();
             }
+        } else if (pmsg->cmd == NetCommandWrongProtocol) {
+            if (is_client) {
+                event_access_denied(RefusalReasonWrongProtocol);
+                delete_all_heaps();
+            }
         } else {
             /* login attempt, create new heap */
             SequencerHeap *h = 0;
             if (pmsg->cmd == NetCommandLogin) {
                 if (!is_client && !find_heap(host, port)) {
                     NetLogin *login = reinterpret_cast<NetLogin *>(pdata->data);
+                    login->from_net();
                     std::string pwd(login->pwd);
-                    if (password.length() && pwd != password) {
+                    if (login->protocol_version != ProtocolVersion) {
+                        slack_send(host, port, 0, 0, NetCommandWrongProtocol, 0, 0);
+                    } else if (password.length() && pwd != password) {
                         slack_send(host, port, 0, 0, NetCommandWrongPassword, 0, 0);
                     } else if (heaps.size() < max_heaps) {
                         h = new SequencerHeap(host, port);

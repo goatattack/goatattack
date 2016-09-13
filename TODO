@@ -104,6 +104,7 @@ DONE:
 * changed protocol version to 4 (due to reordering netcode structures)
 * create packages in map editor
 * goat attack now is ready for cross compiling
+* selecting custom server
 
 DEFERRED:
 * OSX: too short filename buffer -> hardegger bug (not reproducable)

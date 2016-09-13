@@ -109,7 +109,6 @@ private:
     int deadzone_vertical;
     GLuint selected_tex;
     int music_volume;
-    int relative_music_volume;
 
     SDL_GLContext glcontext;
     SDL_Event event;
