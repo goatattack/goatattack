@@ -205,6 +205,7 @@ void Client::sevt_data(ServerEvent& evt) {
                 tournament->set_following_id(my_id);
                 tournament->set_player_configuration(&player_config);
                 tournament->set_team_names(team_red_name, team_blue_name);
+                add_text_msg("map: " + tournament->get_map().get_description());
 
                 /* reopen, if join request window is already open */
                 if (me && me->joining) {

@@ -318,11 +318,11 @@ void MainMenu::play_click() {
     GuiFrame *frcustom = tab->create_tab("Custom Server");
     create_label(frcustom, 0, 0, "Enter here the hostname or IP address and port:");
     create_label(frcustom, 0, 21, "address:");
-    custom_ipaddress = create_textbox(frcustom, 70, 20, tab->get_width() - (2 * Spc) - 70 + 2, config.get_string("last_custom_address"));
+    custom_ipaddress = create_textbox(frcustom, 70, 20, tab->get_width() - (2 * Spc) - 70 + 4, config.get_string("last_custom_address"));
     create_label(frcustom, 0, 41, "port:");
     custom_port = create_textbox(frcustom, 70, 40, 100, config.get_string("last_custom_port"));
     create_label(frcustom, 0, 61, "password:");
-    custom_password = create_textbox(frcustom, 70, 60, 100, "");
+    custom_password = create_textbox(frcustom, 70, 60, tab->get_width() - (2 * Spc) - 70 + 4, "");
     custom_password->set_hide_characters(true);
 
     create_button(frcustom, frlan->get_width() - bw, frlan->get_height() - bh, bw, bh, "Connect", static_play_manual, this);
