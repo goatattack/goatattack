@@ -30,7 +30,6 @@ void Client::event_status(hostaddr_t host, hostport_t port, const std::string& n
         char *p = new char[sz];
         memcpy(p, msg, sz);
         server_events.push(ServerEvent(EventTypeAccessDenied, 0, p, sz));
-        throw_exception = true;
     } else {
         sprintf(buffer, "%ld", ping_time);
         std::string msg = "connecting to " + name + ", ping = ";
@@ -68,8 +67,6 @@ void Client::event_access_denied(MessageSequencer::RefusalReason reason) throw (
         memcpy(p, msg, sz);
         server_events.push(ServerEvent(EventTypeAccessDenied, 0, p, sz));
     }
-
-    throw_exception = true;
 }
 
 void Client::event_login(const Connection *c, data_len_t len, void *data) throw (Exception) {
