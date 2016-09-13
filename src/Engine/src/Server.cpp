@@ -174,7 +174,6 @@ void Server::thread() {
         gametime_t last;
 
         ns_t diff_now = 0;
-        ns_t diff_last = 0;
         ms_t diff_milliseconds = 0;
 
         /* init */
@@ -193,10 +192,9 @@ void Server::thread() {
 
                 /* time over? */
                 get_now(now);
-                diff_now = diff_ns(last, now) + diff_last;
+                diff_now = diff_ns(last, now);
                 if (diff_now >= CalcCycleNS) {
                     diff_milliseconds = diff_ms(last, now);
-                    diff_last = diff_now - CalcCycleNS;
                     last = now;
 
                     /* tournament update */
