@@ -67,7 +67,7 @@ AC_CONFIG_FILES([Makefile src/shared/Makefile src/Cargo/Makefile])
 if test "x$DEDICATED_SERVER" != "xyes"; then
 	AC_CONFIG_FILES([src/Game/Makefile])
 else
-	AC_CONFIG_FILES([src/Dedicated/Makefile])
+	AC_CONFIG_FILES([src/Server/Makefile])
 fi
 if test "x$MAP_EDITOR" = "xyes"; then
 	if test "x$DEDICATED_SERVER" != "xyes"; then

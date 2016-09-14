@@ -3,7 +3,7 @@ ACLOCAL_AMFLAGS = -I m4
 SUBDIRS = src/shared src/Cargo
 LDADD = -lpthread -lrt
 if DEDICATED_SERVER
-SUBDIRS += src/Dedicated
+SUBDIRS += src/Server
 else
 SUBDIRS += src/Game
 endif

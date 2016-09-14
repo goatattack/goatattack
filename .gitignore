@@ -44,6 +44,8 @@ Cargo.mk
 Cargo.txt
 goatattack-cargo
 src/Engine/goatattack
+src/Game/goatattack
+src/Server/goatattack-server
 src/Engine/Makefile.in
 src/MapEditor/goatattack-mapeditor
 src/MapEditor/Makefile.in
