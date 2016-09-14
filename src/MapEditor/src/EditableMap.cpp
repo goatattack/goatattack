@@ -24,6 +24,9 @@
 EditableMap::EditableMap(Resources& resources, Subsystem& subsystem) throw (Exception)
     : Map(subsystem), resources(resources), subsystem(subsystem), ptileset(0), pbackground(0)
 {
+    set_decoration_brightness(0.9);
+    set_lightmap_alpha(0.85);
+    set_parallax_shift(2);
     untouch();
 }
 
