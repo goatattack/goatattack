@@ -432,7 +432,7 @@ void MessageSequencer::process_incoming(SequencerHeap *heap, NetMessage *msg) th
 }
 
 void MessageSequencer::sorted_insert(SequencerHeap::QueuedMessages& msg_queue,
-QueueMessage *smsg)
+    QueueMessage *smsg)
 {
     SequencerHeap::QueuedMessages::iterator it;
     for (it = msg_queue.begin(); it != msg_queue.end(); it++) {

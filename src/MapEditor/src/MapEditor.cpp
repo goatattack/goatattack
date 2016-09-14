@@ -1523,7 +1523,8 @@ void MapEditor::ts_properties_click() {
     int wh = 178 + Spc;
     char buffer[64];
 
-    GuiWindow *window = push_window(width / 2 - ww / 2, height / 2 - wh / 2, ww, wh, "Tile Properties");
+    sprintf(buffer, "Tile Properties (%d)", selected_tile_index);
+    GuiWindow *window = push_window(width / 2 - ww / 2, height / 2 - wh / 2, ww, wh, buffer);
     ww = window->get_client_width();
     wh = window->get_client_height();
 
