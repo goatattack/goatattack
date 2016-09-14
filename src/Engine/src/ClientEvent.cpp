@@ -17,6 +17,7 @@
 
 #include "Client.hpp"
 #include "Scope.hpp"
+#include "ScopeAllocator.hpp"
 
 #include <cerrno>
 
@@ -134,11 +135,19 @@ void Client::sevt_data(ServerEvent& evt) {
 
     while (true) {
         t->from_net();
+
+#ifdef SAFE_ALIGNMENT
+            ScopeArrayAllocator<data_t> aligned_data(t->len);
+            data_t *data_ptr = *aligned_data;
+            memcpy(data_ptr, t->data, t->len);
+#else
+            data_t *data_ptr = t->data;
+#endif
         switch (t->cmd) {
             case GPCServerMessage:
             {
                 size_t sz = 0;
-                std::string msg(reinterpret_cast<char *>(t->data), t->len);
+                std::string msg(reinterpret_cast<char *>(data_ptr), t->len);
                 std::vector<std::string> lines;
                 while (true) {
                     sz++;
@@ -183,7 +192,7 @@ void Client::sevt_data(ServerEvent& evt) {
 
             case GPCMapState:
             {
-                GTournament *tour = reinterpret_cast<GTournament *>(t->data);
+                GTournament *tour = reinterpret_cast<GTournament *>(data_ptr);
                 tour->from_net();
                 if (tournament) {
                     delete tournament;
@@ -217,7 +226,7 @@ void Client::sevt_data(ServerEvent& evt) {
 
             case GPCIdentifyPlayer:
             {
-                player_id_t *nid = reinterpret_cast<player_id_t *>(t->data);
+                player_id_t *nid = reinterpret_cast<player_id_t *>(data_ptr);
                 my_id = ntohs(*nid);
                 if (tournament) {
                     tournament->set_following_id(my_id);
@@ -238,7 +247,7 @@ void Client::sevt_data(ServerEvent& evt) {
 
             case GPCAddPlayer:
             {
-                GPlayerInfo *info = reinterpret_cast<GPlayerInfo *>(t->data);
+                GPlayerInfo *info = reinterpret_cast<GPlayerInfo *>(data_ptr);
                 info->from_net();
 
                 Player *p = new Player(resources, 0, info->id,
@@ -263,7 +272,7 @@ void Client::sevt_data(ServerEvent& evt) {
 
             case GPCResetPlayer:
             {
-                GPlayerInfo *info = reinterpret_cast<GPlayerInfo *>(t->data);
+                GPlayerInfo *info = reinterpret_cast<GPlayerInfo *>(data_ptr);
                 info->from_net();
 
                 for (Players::iterator it = players.begin();
@@ -285,7 +294,7 @@ void Client::sevt_data(ServerEvent& evt) {
 
             case GPCRemovePlayer:
             {
-                player_id_t *nid = reinterpret_cast<player_id_t *>(t->data);
+                player_id_t *nid = reinterpret_cast<player_id_t *>(data_ptr);
                 player_id_t id = ntohs(*nid);
                 for (Players::iterator it = players.begin();
                     it != players.end(); it++)
@@ -310,7 +319,7 @@ void Client::sevt_data(ServerEvent& evt) {
 
             case GPCSpawnPlayer:
             {
-                GPlayerState *state = reinterpret_cast<GPlayerState *>(t->data);
+                GPlayerState *state = reinterpret_cast<GPlayerState *>(data_ptr);
                 state->from_net();
                 for (Players::iterator it = players.begin();
                     it != players.end(); it++)
@@ -335,7 +344,7 @@ void Client::sevt_data(ServerEvent& evt) {
             case GPCUpdateGameState:
             {
                 if (t->tournament_id == factory.get_tournament_id()) {
-                    GGameState *state = reinterpret_cast<GGameState *>(t->data);
+                    GGameState *state = reinterpret_cast<GGameState *>(data_ptr);
                     state->from_net();
                     if (tournament) {
                         tournament->get_game_state() = *state;
@@ -347,7 +356,7 @@ void Client::sevt_data(ServerEvent& evt) {
             case GPCUpdatePlayerState:
             {
                 if (t->tournament_id== factory.get_tournament_id()) {
-                    GPTAllStates *state = reinterpret_cast<GPTAllStates *>(t->data);
+                    GPTAllStates *state = reinterpret_cast<GPTAllStates *>(data_ptr);
                     state->from_net();
 
                     for (Players::iterator it = players.begin();
@@ -370,7 +379,7 @@ void Client::sevt_data(ServerEvent& evt) {
             {
                 if (tournament) {
                     if (t->tournament_id == factory.get_tournament_id()) {
-                        GObjectState *state = reinterpret_cast<GObjectState *>(t->data);
+                        GObjectState *state = reinterpret_cast<GObjectState *>(data_ptr);
                         state->from_net();
                         Tournament::GameObjects& objects = tournament->get_game_objects();
                         for (Tournament::GameObjects::iterator it = objects.begin();
@@ -391,7 +400,7 @@ void Client::sevt_data(ServerEvent& evt) {
             {
                 if (tournament) {
                     if (t->tournament_id == factory.get_tournament_id()) {
-                        GAnimationState *state = reinterpret_cast<GAnimationState *>(t->data);
+                        GAnimationState *state = reinterpret_cast<GAnimationState *>(data_ptr);
                         state->from_net();
                         Tournament::GameAnimations& animations = tournament->get_game_animations();
                         for (Tournament::GameAnimations::iterator it = animations.begin();
@@ -412,7 +421,7 @@ void Client::sevt_data(ServerEvent& evt) {
             {
                 if (tournament) {
                     if (t->tournament_id == factory.get_tournament_id()) {
-                        GNPCState *state = reinterpret_cast<GNPCState *>(t->data);
+                        GNPCState *state = reinterpret_cast<GNPCState *>(data_ptr);
                         state->from_net();
                         Tournament::SpawnableNPCs& spawnable_npcs = tournament->get_spawnable_npcs();
                         for (Tournament::SpawnableNPCs::iterator it = spawnable_npcs.begin();
@@ -433,7 +442,7 @@ void Client::sevt_data(ServerEvent& evt) {
             {
                 if (tournament) {
                     if (t->tournament_id == factory.get_tournament_id()) {
-                        GSpawnNPC *state = reinterpret_cast<GSpawnNPC *>(t->data);
+                        GSpawnNPC *state = reinterpret_cast<GSpawnNPC *>(data_ptr);
                         state->from_net();
                         tournament->add_spawnable_npc(state);
                     }
@@ -445,7 +454,7 @@ void Client::sevt_data(ServerEvent& evt) {
             {
                 if (tournament) {
                     if (t->tournament_id == factory.get_tournament_id()) {
-                        GRemoveNPC *rnpc = reinterpret_cast<GRemoveNPC *>(t->data);
+                        GRemoveNPC *rnpc = reinterpret_cast<GRemoveNPC *>(data_ptr);
                         rnpc->from_net();
                         tournament->remove_spawnable_npc(rnpc);
                     }
@@ -455,14 +464,14 @@ void Client::sevt_data(ServerEvent& evt) {
 
             case GPCTextMessage:
             {
-                std::string msg(reinterpret_cast<char *>(t->data), t->len);
+                std::string msg(reinterpret_cast<char *>(data_ptr), t->len);
                 add_text_msg(msg);
                 break;
             }
 
             case GPCPlaySound:
             {
-                GGenericName *name = reinterpret_cast<GGenericName *>(t->data);
+                GGenericName *name = reinterpret_cast<GGenericName *>(data_ptr);
                 try {
                     subsystem.play_sound(resources.get_sound(name->name), 0);
                 } catch (...) {
@@ -473,7 +482,7 @@ void Client::sevt_data(ServerEvent& evt) {
 
             case GPCChatMessage:
             {
-                std::string msg(reinterpret_cast<char *>(t->data), t->len);
+                std::string msg(reinterpret_cast<char *>(data_ptr), t->len);
                 add_text_msg(msg);
                 subsystem.play_sound(resources.get_sound("chat"), 0);
                 break;
@@ -481,7 +490,7 @@ void Client::sevt_data(ServerEvent& evt) {
 
             case GPCAddAnimation:
             {
-                GAnimation *ani = reinterpret_cast<GAnimation *>(t->data);
+                GAnimation *ani = reinterpret_cast<GAnimation *>(data_ptr);
                 ani->from_net();
                 if (tournament) {
                     tournament->add_animation(ani);
@@ -491,7 +500,7 @@ void Client::sevt_data(ServerEvent& evt) {
 
             case GPCAddTextAnimation:
             {
-                GTextAnimation *ani = reinterpret_cast<GTextAnimation *>(t->data);
+                GTextAnimation *ani = reinterpret_cast<GTextAnimation *>(data_ptr);
                 ani->from_net();
                 if (tournament) {
                     tournament->add_text_animation(ani);
@@ -501,7 +510,7 @@ void Client::sevt_data(ServerEvent& evt) {
 
             case GPCPlayerRecoil:
             {
-                GPlayerRecoil *prec = reinterpret_cast<GPlayerRecoil *>(t->data);
+                GPlayerRecoil *prec = reinterpret_cast<GPlayerRecoil *>(data_ptr);
                 prec->from_net();
                 for (Players::iterator it = players.begin(); it != players.end(); it++) {
                     Player *p = *it;
@@ -525,7 +534,7 @@ void Client::sevt_data(ServerEvent& evt) {
 
             case GPCPickObject:
             {
-                GPickObject *po = reinterpret_cast<GPickObject *>(t->data);
+                GPickObject *po = reinterpret_cast<GPickObject *>(data_ptr);
                 po->from_net();
                 if (tournament) {
                     tournament->add_pick_object(po);
@@ -535,7 +544,7 @@ void Client::sevt_data(ServerEvent& evt) {
 
             case GPCPlaceObject:
             {
-                GPlaceObject *po = reinterpret_cast<GPlaceObject *>(t->data);
+                GPlaceObject *po = reinterpret_cast<GPlaceObject *>(data_ptr);
                 po->from_net();
                 if (tournament) {
                     tournament->add_place_object(po);
@@ -545,7 +554,7 @@ void Client::sevt_data(ServerEvent& evt) {
 
             case GPCSpawnObject:
             {
-                GSpawnObject *so = reinterpret_cast<GSpawnObject *>(t->data);
+                GSpawnObject *so = reinterpret_cast<GSpawnObject *>(data_ptr);
                 so->from_net();
                 if (tournament) {
                     tournament->spawn_object(so);
@@ -573,7 +582,7 @@ void Client::sevt_data(ServerEvent& evt) {
 
             case GPCTeamScore:
             {
-                GTeamScore *ts = reinterpret_cast<GTeamScore *>(t->data);
+                GTeamScore *ts = reinterpret_cast<GTeamScore *>(data_ptr);
                 ts->from_net();
                 if (tournament) {
                     tournament->add_team_score(ts);
@@ -583,7 +592,7 @@ void Client::sevt_data(ServerEvent& evt) {
 
             case GPCTimeRemaining:
             {
-                GTimeRemaining *remain = reinterpret_cast<GTimeRemaining *>(t->data);
+                GTimeRemaining *remain = reinterpret_cast<GTimeRemaining *>(data_ptr);
                 remain->from_net();
                 if (tournament) {
                     tournament->update_wearable_remaining(remain);
@@ -593,7 +602,7 @@ void Client::sevt_data(ServerEvent& evt) {
 
             case GPCFriendlyFire:
             {
-                GFriendyFireAlarm *alarm = reinterpret_cast<GFriendyFireAlarm *>(t->data);
+                GFriendyFireAlarm *alarm = reinterpret_cast<GFriendyFireAlarm *>(data_ptr);
                 alarm->from_net();
                 if (tournament) {
                     if (tournament->friendly_fire_alarm(alarm)) {
@@ -642,7 +651,7 @@ void Client::sevt_data(ServerEvent& evt) {
 
             case GPCPlayerChanged:
             {
-                GPlayerDescription *pdesc = reinterpret_cast<GPlayerDescription *>(t->data);
+                GPlayerDescription *pdesc = reinterpret_cast<GPlayerDescription *>(data_ptr);
                 pdesc->from_net();
                 for (Players::iterator it = players.begin(); it != players.end(); it++) {
                     Player *p = *it;
@@ -677,14 +686,14 @@ void Client::sevt_data(ServerEvent& evt) {
             case GPCScoreTransportRaw:
             {
                 if (tournament) {
-                    tournament->score_transport_raw(t->data);
+                    tournament->score_transport_raw(data_ptr);
                 }
                 break;
             }
 
             case GPCClanNames:
             {
-                GClanNames *names = reinterpret_cast<GClanNames *>(t->data);
+                GClanNames *names = reinterpret_cast<GClanNames *>(data_ptr);
                 names->from_net();
                 team_red_name = names->red_name;
                 team_blue_name = names->blue_name;
@@ -697,7 +706,7 @@ void Client::sevt_data(ServerEvent& evt) {
             case GPCXferHeader:
             {
                 reload_resources = true;
-                GXferHeader *header = reinterpret_cast<GXferHeader *>(t->data);
+                GXferHeader *header = reinterpret_cast<GXferHeader *>(data_ptr);
                 header->from_net();
                 if (!fhnd) {
                     xfer_filename = header->filename;
@@ -716,7 +725,7 @@ void Client::sevt_data(ServerEvent& evt) {
 
             case GPCXferDataChunk:
             {
-                GXferDataChunk *chunk = reinterpret_cast<GXferDataChunk *>(t->data);
+                GXferDataChunk *chunk = reinterpret_cast<GXferDataChunk *>(data_ptr);
                 chunk->from_net();
                 if (fhnd) {
                     fwrite(chunk->data, chunk->chunksize, 1, fhnd);
@@ -737,14 +746,14 @@ void Client::sevt_data(ServerEvent& evt) {
             case GPCGenericData:
             {
                 if (tournament) {
-                    tournament->generic_data_delivery(t->data);
+                    tournament->generic_data_delivery(data_ptr);
                 }
                 break;
             }
 
             case GPCServerQuit:
             {
-                exception_msg.assign(reinterpret_cast<char *>(t->data), t->len);
+                exception_msg.assign(reinterpret_cast<char *>(data_ptr), t->len);
                 throw_exception = true;
                 return;
                 /* not necessary */

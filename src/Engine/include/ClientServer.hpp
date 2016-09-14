@@ -52,11 +52,6 @@ protected:
     Server *server;
     Tournament *tournament;
     GTransport *gtrans;
-    GGameState *ggamestat;
-    GPlayerState *gplayerstat;
-    GPlayerInfo *gplayerinfo;
-    GPlayerDescription *gplayerdesc;
-    GPlaceObject *gplaceobject;
 
     Players players;
 

@@ -129,7 +129,7 @@ struct GTransport {
     command_t cmd;                  // 1
     transflag_t flags;              // 1
     unsigned char tournament_id;    // 1
-    data_len_t len;                 // 1
+    data_len_t len;                 // 2
     data_t data[1];                 // 1
 
     inline void from_net() {

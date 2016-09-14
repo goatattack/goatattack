@@ -27,7 +27,7 @@ AC_ARG_ENABLE([internal-zlib],    [  --enable-internal-zlib  Build with the proj
 AC_ARG_ENABLE([map-editor],       [  --enable-map-editor     Build map editor [[default=no]]], [MAP_EDITOR="yes"], [])
 AC_ARG_ENABLE([cargo-only],       [  --enable-cargo-only     Build cargo tool only [[default=no]]], [CARGO_ONLY="yes"], [])
 AC_ARG_ENABLE([install-cargo],    [  --enable-install-cargo  Installing cargo [[default=no]]], [INSTALL_CARGO="yes"], [])
-
+AC_ARG_ENABLE([safe-alignment],   [  --enable-safe-alignment Copy memory to aligned location [[default=no]]], [SAFE_ALIGNMENT="yes"], [])
 AC_ARG_WITH([targetdatadir], [AS_HELP_STRING([--with-targetdatadir=DIR], [data directory on the target])], [targetdatadir=$withval], [targetdatadir="\${pkgdatadir}"])
 AC_SUBST([targetdatadir], [$targetdatadir])
 
@@ -36,6 +36,7 @@ AM_CONDITIONAL([MASTER_SERVER], [test "x$MASTER_SERVER" = xyes])
 AM_CONDITIONAL([INTERNAL_ZLIB], [test "x$INTERNAL_ZLIB" = xyes])
 AM_CONDITIONAL([MAP_EDITOR], [test "x$MAP_EDITOR" = xyes])
 AM_CONDITIONAL([BUILD_PAK], [test "x$BUILD_PAK" = xyes])
+AM_CONDITIONAL([SAFE_ALIGNMENT], [test "x$SAFE_ALIGNMENT" = xyes])
 
 # --- cargo ---
 AM_CONDITIONAL([CARGO_ONLY], [test "x$CARGO_ONLY" = xyes])
@@ -107,6 +108,9 @@ fi
 AC_MSG_NOTICE([])
 if test "x$INTERNAL_ZLIB" = "xyes"; then
 	AC_MSG_NOTICE([ * taking project copy of zlib])
+fi
+if test "x$SAFE_ALIGNMENT" = "xyes"; then
+	AC_MSG_NOTICE([ * safe alignment enabled])
 fi
 if test "x$BUILD_PAK" != "xyes"; then
 	AC_MSG_NOTICE([ * base.pak will not be created])

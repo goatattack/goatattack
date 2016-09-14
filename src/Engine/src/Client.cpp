@@ -57,12 +57,13 @@ Client::Client(Resources& resources, Subsystem& subsystem, hostaddr_t host,
     }
 
     /* login */
-    memset(gplayerdesc, 0, sizeof(GPlayerDescription));
-    strncpy(gplayerdesc->player_name, player_config.get_player_name().c_str(), NameLength - 1);
-    strncpy(gplayerdesc->characterset_name, player_config.get_player_skin().c_str(), NameLength - 1);
+    GPlayerDescription player_desc;
+    memset(&player_desc, 0, sizeof(GPlayerDescription));
+    strncpy(player_desc.player_name, player_config.get_player_name().c_str(), NameLength - 1);
+    strncpy(player_desc.characterset_name, player_config.get_player_skin().c_str(), NameLength - 1);
     {
         Scope<Mutex> lock(mtx);
-        login(password, GPlayerDescriptionLen, gplayerdesc);
+        login(password, GPlayerDescriptionLen, &player_desc);
     }
     binding.extract_from_config(player_config);
 

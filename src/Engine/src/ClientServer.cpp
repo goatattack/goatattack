@@ -24,21 +24,11 @@ ClientServer::ClientServer(hostport_t port, pico_size_t num_players,
     const std::string& server_name, const std::string& password)
     : MessageSequencer(port, num_players, server_name, password), server(0), tournament(0),
       gtrans(reinterpret_cast<GTransport *>(buffer)),
-      ggamestat(reinterpret_cast<GGameState *>(gtrans->data)),
-      gplayerstat(reinterpret_cast<GPlayerState *>(gtrans->data)),
-      gplayerinfo(reinterpret_cast<GPlayerInfo *>(gtrans->data)),
-      gplayerdesc(reinterpret_cast<GPlayerDescription *>(gtrans->data)),
-      gplaceobject(reinterpret_cast<GPlaceObject *>(gtrans->data)),
       pb(gtrans), packet_len(0), port(port), has_temp_map_config(false) { }
 
 ClientServer::ClientServer(hostaddr_t host, hostport_t port)
     : MessageSequencer(host, port), server(0), tournament(0),
       gtrans(reinterpret_cast<GTransport *>(buffer)),
-      ggamestat(reinterpret_cast<GGameState *>(gtrans->data)),
-      gplayerstat(reinterpret_cast<GPlayerState *>(gtrans->data)),
-      gplayerinfo(reinterpret_cast<GPlayerInfo *>(gtrans->data)),
-      gplayerdesc(reinterpret_cast<GPlayerDescription *>(gtrans->data)),
-      gplaceobject(reinterpret_cast<GPlaceObject *>(gtrans->data)),
       pb(gtrans), packet_len(0), port(port), has_temp_map_config(false) { }
 
 ClientServer::~ClientServer() {

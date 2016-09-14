@@ -18,6 +18,7 @@
 #include "Server.hpp"
 #include "Timing.hpp"
 #include "Utils.hpp"
+#include "ScopeAllocator.hpp"
 
 #include <string>
 #include <cstdlib>
@@ -570,27 +571,21 @@ void Server::event_login(const Connection *c, data_len_t len, void *data) throw 
     send_data(c, factory.get_tournament_id(), GPCIdentifyPlayer, NetFlagsReliable, sizeof(net_player_id), &net_player_id);
 
     /* send all player states */
+    GPlayerInfo info;
     for (size_t i = 0; i < sz; i++) {
         Player *p = players[i];
-
-        memset(gplayerinfo, 0, sizeof(GPlayerInfo));
-
-        strncpy(gplayerinfo->desc.player_name, p->get_player_name().c_str(),
-            NameLength - 1);
-
-        strncpy(gplayerinfo->desc.characterset_name, p->get_characterset()->get_name().c_str(),
-            NameLength - 1);
-
-        gplayerinfo->id = p->state.id;
-        gplayerinfo->server_state = p->state.server_state;
-        gplayerinfo->client_server_state = p->state.client_server_state;
-        gplayerinfo->client_state = p->state.client_state;
-        gplayerinfo->to_net();
-
+        memset(&info, 0, sizeof(GPlayerInfo));
+        strncpy(info.desc.player_name, p->get_player_name().c_str(), NameLength - 1);
+        strncpy(info.desc.characterset_name, p->get_characterset()->get_name().c_str(), NameLength - 1);
+        info.id = p->state.id;
+        info.server_state = p->state.server_state;
+        info.client_server_state = p->state.client_server_state;
+        info.client_state = p->state.client_state;
+        info.to_net();
         if (p->get_connection() == c) {
-            broadcast_data(factory.get_tournament_id(), GPCAddPlayer, NetFlagsReliable, GPlayerInfoLen, gplayerinfo);
+            broadcast_data(factory.get_tournament_id(), GPCAddPlayer, NetFlagsReliable, GPlayerInfoLen, &info);
         } else {
-            send_data(c, factory.get_tournament_id(), GPCAddPlayer, NetFlagsReliable, GPlayerInfoLen, gplayerinfo);
+            send_data(c, factory.get_tournament_id(), GPCAddPlayer, NetFlagsReliable, GPlayerInfoLen, &info);
         }
     }
 
@@ -621,14 +616,23 @@ void Server::event_data(const Connection *c, data_len_t len, void *data) throw (
 
     if (p) {
         GTransport *t = reinterpret_cast<GTransport *>(data);
+
         while (true) {
             t->from_net();
+
+#ifdef SAFE_ALIGNMENT
+            ScopeArrayAllocator<data_t> aligned_data(t->len);
+            data_t *data_ptr = *aligned_data;
+            memcpy(data_ptr, t->data, t->len);
+#else
+            data_t *data_ptr = t->data;
+#endif
             switch (t->cmd) {
                 case GPSUpdatePlayerClientServerState:
                 {
                     if (t->tournament_id == factory.get_tournament_id()) {
                         if (p->client_synced) {
-                            GPlayerClientServerState *state = reinterpret_cast<GPlayerClientServerState *>(t->data);
+                            GPlayerClientServerState *state = reinterpret_cast<GPlayerClientServerState *>(data_ptr);
                             state->from_net();
                             p->state.client_server_state = *state;
                         }
@@ -650,7 +654,7 @@ void Server::event_data(const Connection *c, data_len_t len, void *data) throw (
                 {
                     if (t->tournament_id == factory.get_tournament_id()) {
                         if (p->client_synced) {
-                            playerflags_t *flags = reinterpret_cast<playerflags_t *>(t->data);
+                            playerflags_t *flags = reinterpret_cast<playerflags_t *>(data_ptr);
                             if (tournament) {
                                 if (tournament->get_game_state().seconds_remaining) {
                                     if (!tournament->player_joins(p, *flags)) {
@@ -670,14 +674,14 @@ void Server::event_data(const Connection *c, data_len_t len, void *data) throw (
 
                 case GPSChatMessage:
                 {
-                    if (t->len && t->data[0] == '/') {
+                    if (t->len && data_ptr[0] == '/') {
                         try {
-                            parse_command(c, p, t->len, t->data);
+                            parse_command(c, p, t->len, data_ptr);
                         } catch (const Exception& e) {
                             send_data(c, factory.get_tournament_id(), GPCTextMessage, NetFlagsReliable, strlen(e.what()), e.what());
                         }
                     } else {
-                        std::string msg(reinterpret_cast<char *>(t->data), t->len);
+                        std::string msg(reinterpret_cast<char *>(data_ptr), t->len);
                         logger.log(ServerLogger::LogTypeChatMessage, msg, p);
                         msg = p->get_player_name() + ": " + msg;
                         broadcast_data(0, GPCChatMessage, NetFlagsReliable, msg.length(), msg.c_str());
@@ -690,7 +694,7 @@ void Server::event_data(const Connection *c, data_len_t len, void *data) throw (
                     if (t->tournament_id == factory.get_tournament_id()) {
                         if (p->client_synced) {
                             if (tournament) {
-                                unsigned char *dir = reinterpret_cast<unsigned char *>(t->data);
+                                unsigned char *dir = reinterpret_cast<unsigned char *>(data_ptr);
                                 tournament->fire_shot(p, *dir);
                             }
                         }
@@ -703,7 +707,7 @@ void Server::event_data(const Connection *c, data_len_t len, void *data) throw (
                     if (t->tournament_id == factory.get_tournament_id()) {
                         if (p->client_synced) {
                             if (tournament) {
-                                unsigned char *dir = reinterpret_cast<unsigned char *>(t->data);
+                                unsigned char *dir = reinterpret_cast<unsigned char *>(data_ptr);
                                 tournament->fire_grenade(p, *dir);
                             }
                         }
@@ -716,7 +720,7 @@ void Server::event_data(const Connection *c, data_len_t len, void *data) throw (
                     if (t->tournament_id == factory.get_tournament_id()) {
                         if (p->client_synced) {
                             if (tournament) {
-                                unsigned char *dir = reinterpret_cast<unsigned char *>(t->data);
+                                unsigned char *dir = reinterpret_cast<unsigned char *>(data_ptr);
                                 tournament->fire_bomb(p, *dir);
                             }
                         }
@@ -729,7 +733,7 @@ void Server::event_data(const Connection *c, data_len_t len, void *data) throw (
                     if (t->tournament_id == factory.get_tournament_id()) {
                         if (p->client_synced) {
                             if (tournament) {
-                                unsigned char *dir = reinterpret_cast<unsigned char *>(t->data);
+                                unsigned char *dir = reinterpret_cast<unsigned char *>(data_ptr);
                                 tournament->fire_frog(p, *dir);
                             }
                         }
@@ -739,7 +743,7 @@ void Server::event_data(const Connection *c, data_len_t len, void *data) throw (
 
                 case GPSPlayerChanged:
                 {
-                    GPlayerDescription *pdesc = reinterpret_cast<GPlayerDescription *>(t->data);
+                    GPlayerDescription *pdesc = reinterpret_cast<GPlayerDescription *>(data_ptr);
                     std::string old_name = p->get_player_name();
                     std::string new_name(pdesc->player_name);
                     std::string new_skin(pdesc->characterset_name);
@@ -757,7 +761,7 @@ void Server::event_data(const Connection *c, data_len_t len, void *data) throw (
                         }
                         pdesc->id = p->state.id;
                         pdesc->to_net();
-                        broadcast_data(factory.get_tournament_id(), GPCPlayerChanged, NetFlagsReliable, t->len, t->data);
+                        broadcast_data(factory.get_tournament_id(), GPCPlayerChanged, NetFlagsReliable, t->len, data_ptr);
                     }
                     break;
                 }
@@ -767,7 +771,7 @@ void Server::event_data(const Connection *c, data_len_t len, void *data) throw (
                     if (t->tournament_id == factory.get_tournament_id()) {
                         if (p->client_synced) {
                             if (tournament) {
-                                GTransportTime *race = reinterpret_cast<GTransportTime *>(t->data);
+                                GTransportTime *race = reinterpret_cast<GTransportTime *>(data_ptr);
                                 race->from_net();
                                 tournament->round_finished_set_time(p, race);
                             }
@@ -778,7 +782,7 @@ void Server::event_data(const Connection *c, data_len_t len, void *data) throw (
 
                 case GPSPakSyncHash:
                 {
-                    GPakHash *hash = reinterpret_cast<GPakHash *>(t->data);
+                    GPakHash *hash = reinterpret_cast<GPakHash *>(data_ptr);
                     hash->from_net();
                     std::string pak_name = hash->pak_name;
                     std::string pak_hash(hash->pak_hash, GPakHash::HashLength);
