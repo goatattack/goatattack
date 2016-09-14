@@ -63,7 +63,12 @@ if test ! -z "$missing_headers"; then
 fi
 
 # --- ready ---
-AC_CONFIG_FILES([Makefile src/Cargo/Makefile src/shared/Makefile src/Engine/Makefile])
+AC_CONFIG_FILES([Makefile src/shared/Makefile src/Cargo/Makefile])
+if test "x$DEDICATED_SERVER" != "xyes"; then
+	AC_CONFIG_FILES([src/Game/Makefile])
+else
+	AC_CONFIG_FILES([src/Dedicated/Makefile])
+fi
 if test "x$MAP_EDITOR" = "xyes"; then
 	if test "x$DEDICATED_SERVER" != "xyes"; then
 		AC_CONFIG_FILES([src/MapEditor/Makefile])
