@@ -55,6 +55,10 @@ protected:
 
     Players players;
 
+#ifdef SAFE_ALIGNMENT
+    data_t aligned_buffer[1024];
+#endif
+
 public:
     void stacked_send_data(const Connection *c, unsigned char tournament_id, command_t cmd, flags_t flags,
         data_len_t len, const void *data) throw (Exception);

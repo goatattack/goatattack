@@ -621,8 +621,7 @@ void Server::event_data(const Connection *c, data_len_t len, void *data) throw (
             t->from_net();
 
 #ifdef SAFE_ALIGNMENT
-            ScopeArrayAllocator<data_t> aligned_data(t->len);
-            data_t *data_ptr = *aligned_data;
+            data_t *data_ptr = aligned_buffer;
             memcpy(data_ptr, t->data, t->len);
 #else
             data_t *data_ptr = t->data;

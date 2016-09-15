@@ -137,8 +137,7 @@ void Client::sevt_data(ServerEvent& evt) {
         t->from_net();
 
 #ifdef SAFE_ALIGNMENT
-            ScopeArrayAllocator<data_t> aligned_data(t->len);
-            data_t *data_ptr = *aligned_data;
+            data_t *data_ptr = aligned_buffer;
             memcpy(data_ptr, t->data, t->len);
 #else
             data_t *data_ptr = t->data;
