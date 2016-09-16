@@ -18,6 +18,7 @@
 #include "Cargo.hpp"
 #include "Directory.hpp"
 #include "FileReader.hpp"
+#include "Utils.hpp"
 
 #include <cerrno>
 #include <algorithm>
@@ -55,8 +56,8 @@ enum FileType {
 };
 
 static FileType file_status(const char *entry, size_t& file_size) throw (CargoException) {
-	FileType ft = FileTypeNone;
-	file_size = 0;
+    FileType ft = FileTypeNone;
+    file_size = 0;
 
 #ifndef _WIN32
     struct stat sinfo;
@@ -70,24 +71,23 @@ static FileType file_status(const char *entry, size_t& file_size) throw (CargoEx
         ft = FileTypeRegular;
         file_size = sinfo.st_size;
     }
-
 #else
-	BY_HANDLE_FILE_INFORMATION fileinfo;
-	HANDLE filehandle = CreateFileA(entry, 0, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
-	if (filehandle == INVALID_HANDLE_VALUE) {
-		throw CargoException("Retrieving file information failed.");
-	}
-	if (!GetFileInformationByHandle(filehandle, &fileinfo)) {
-		CloseHandle(filehandle);
-		throw CargoException("Retrieving file information failed.");
-	}
-	if (fileinfo.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-		ft = FileTypeDirectory;
-	} else {
-		ft = FileTypeRegular;
-		file_size = fileinfo.nFileSizeLow; // omit upper size halves (maybe ugly)
-	}
-	CloseHandle(filehandle);
+    BY_HANDLE_FILE_INFORMATION fileinfo;
+    HANDLE filehandle = CreateFileA(entry, 0, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+    if (filehandle == INVALID_HANDLE_VALUE) {
+        throw CargoException("Retrieving file information failed.");
+    }
+    if (!GetFileInformationByHandle(filehandle, &fileinfo)) {
+        CloseHandle(filehandle);
+        throw CargoException("Retrieving file information failed.");
+    }
+    if (fileinfo.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+        ft = FileTypeDirectory;
+    } else {
+        ft = FileTypeRegular;
+        file_size = fileinfo.nFileSizeLow; // omit upper size halves (maybe ugly)
+    }
+    CloseHandle(filehandle);
 #endif
 
     return ft;
@@ -173,11 +173,9 @@ size_t Cargo::packaged() const {
     return pak_entries.size();
 }
 
-#ifndef _WIN32
 std::string Cargo::get_hash() const {
     return crc64.get_hash();
 }
-#endif
 
 void Cargo::pack_directory(const char *subdir, bool is_rootdir) throw (CargoException) {
     try {
@@ -233,9 +231,9 @@ void Cargo::pack_file(const DirectoryEntry& entry) throw (CargoException) {
         std::cout << "." << std::flush;
     }
 
-	/* replace backslash to slash for package */
-	std::string filename = entry.entry;
-	std::replace(filename.begin(), filename.end(), '\\', '/');
+    /* replace backslash to slash for package */
+    std::string filename = entry.entry;
+    std::replace(filename.begin(), filename.end(), '\\', '/');
 
     /* create entry with placeholders */
     uint16_t file_time = 0;             // always zero
@@ -261,7 +259,7 @@ void Cargo::pack_file(const DirectoryEntry& entry) throw (CargoException) {
     write_uint32(sz_uncompressed);      // uncompressed size
     write_uint16(entry.entry.length()); // file name length
     write_uint16(0);                    // extra field length
-	write_string(filename.c_str(), filename.length()); // file name
+    write_string(filename.c_str(), filename.length()); // file name
 
     /* pack and write */
     uint32_t crc32sum = 0;
@@ -313,9 +311,7 @@ void Cargo::pack_file(const DirectoryEntry& entry) throw (CargoException) {
     write_uint32(sz_compressed);
 
     /* calculate crc64 */
-#ifndef _WIN32
     calc_crc64(rel_pos, current_pos);
-#endif
 
     /* add cd entry */
     pak_entries.push_back(PakEntry(filename.c_str(), sz_compressed, sz_uncompressed,
@@ -379,13 +375,13 @@ void Cargo::add_central_directory() throw (CargoException) {
 }
 
 size_t Cargo::write_string(const void *s, size_t len) throw (CargoException) {
-	size_t written = 0;
-	if (len) {
-		written = fwrite(s, 1, len, f);
-		if (written != len) {
-			throw_write_error();
-		}
-	}
+    size_t written = 0;
+    if (len) {
+        written = fwrite(s, 1, len, f);
+        if (written != len) {
+            throw_write_error();
+        }
+    }
 
     return written;
 }
