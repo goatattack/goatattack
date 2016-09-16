@@ -55,14 +55,15 @@ enum FileType {
 };
 
 static FileType file_status(const char *entry, size_t& file_size) throw (CargoException) {
+	FileType ft = FileTypeNone;
+	file_size = 0;
+
 #ifndef _WIN32
     struct stat sinfo;
     if (stat(entry, &sinfo)) {
         throw CargoException("Retrieving file information failed: " + std::string(strerror(errno)));
     }
 
-    FileType ft = FileTypeNone;
-    file_size = 0;
     if (S_ISDIR(sinfo.st_mode) != 0) {
         ft = FileTypeDirectory;
     } else if (S_ISREG(sinfo.st_mode) != 0) {
@@ -71,7 +72,22 @@ static FileType file_status(const char *entry, size_t& file_size) throw (CargoEx
     }
 
 #else
-    #error "For Windows, function file_status() is not implemented yet."
+	BY_HANDLE_FILE_INFORMATION fileinfo;
+	HANDLE filehandle = CreateFileA(entry, 0, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+	if (filehandle == INVALID_HANDLE_VALUE) {
+		throw CargoException("Retrieving file information failed.");
+	}
+	if (GetFileInformationByHandle(filehandle, &fileinfo)) {
+		CloseHandle(filehandle);
+		throw CargoException("Retrieving file information failed.");
+	}
+	if (fileinfo.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+		ft = FileTypeDirectory;
+	} else if (fileinfo.dwFileAttributes & FILE_ATTRIBUTE_NORMAL) {
+		ft = FileTypeRegular;
+		file_size = fileinfo.nFileIndexLow; // omit upper size halves (maybe ugly)
+	}
+	CloseHandle(filehandle);
 #endif
 
     return ft;
