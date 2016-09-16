@@ -59,8 +59,9 @@ public:
 
     void pack() throw (CargoException);
     size_t packaged() const;
+#ifndef _WIN32
     std::string get_hash() const;
-
+#endif
 
 private:
     struct DirectoryEntry {
