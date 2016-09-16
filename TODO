@@ -105,6 +105,7 @@ DONE:
 * create packages in map editor
 * goat attack now is ready for cross compiling
 * selecting custom server
+* jukebox can play user defined music
 
 DEFERRED:
 * OSX: too short filename buffer -> hardegger bug (not reproducable)

@@ -68,7 +68,7 @@ Client::Client(Resources& resources, Subsystem& subsystem, hostaddr_t host,
     binding.extract_from_config(player_config);
 
     /* start music player */
-    subsystem.start_music_player(resources, *this);
+    subsystem.start_music_player(resources, *this, config.get_string("external_music").c_str());
 }
 
 Client::~Client() {

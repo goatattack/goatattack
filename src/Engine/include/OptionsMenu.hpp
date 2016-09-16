@@ -69,6 +69,8 @@ private:
     GuiTextbox *ck_dz_h;
     GuiTextbox *ck_dz_v;
 
+    GuiTextbox *gs_music_path;
+
     GuiTextbox *create_field(GuiWindow *parent, int x, int y,
         const std::string& text, GuiVirtualButton::OnClick on_click, bool erase_pic);
     void capture_key(GuiTextbox *ck_selected);
@@ -104,6 +106,8 @@ private:
     static void static_capture_escape_click(GuiVirtualButton *sender, void *data);
     static bool static_capture_keydown(GuiWindow *sender, void *data, int keycode, bool repeat);
     static bool static_capture_joybuttondown(GuiWindow *sender, void *data, int button);
+
+    static void static_close_sound_window_click(GuiVirtualButton *sender, void *data);
 
     static void static_ck_erase_horz(GuiVirtualButton *sender, void *data);
     static void static_ck_erase_vert(GuiVirtualButton *sender, void *data);
@@ -149,6 +153,7 @@ private:
     bool capture_joybuttondown(int button);
     void capture_draw();
     void capture_draw(MappedKey& mk, GuiTextbox *mktb);
+    void close_sound_window_click();
     const char *capture_get_config_id();
 
     void toggle_fullscreen_click(bool state);

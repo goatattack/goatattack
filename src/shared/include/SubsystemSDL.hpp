@@ -74,7 +74,7 @@ public:
 
     virtual bool play_music(Music *music);
     virtual void stop_music();
-    virtual void start_music_player(Resources& resources, TextMessageSystem& tms);
+    virtual void start_music_player(Resources& resources, TextMessageSystem& tms, const char *directory = 0);
     virtual void skip_music_player_song();
     virtual void stop_music_player();
 

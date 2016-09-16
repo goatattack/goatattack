@@ -121,7 +121,7 @@ bool SubsystemNull::play_music(Music *music) {
     return false;
 }
 
-void SubsystemNull::start_music_player(Resources& resources, TextMessageSystem& tms) { }
+void SubsystemNull::start_music_player(Resources& resources, TextMessageSystem& tms, const char *directory) { }
 
 void SubsystemNull::skip_music_player_song() { }
 

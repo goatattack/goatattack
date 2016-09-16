@@ -170,7 +170,7 @@ public:
 
     virtual bool play_music(Music *music) = 0;
     virtual void stop_music() = 0;
-    virtual void start_music_player(Resources& resources, TextMessageSystem& tms) = 0;
+    virtual void start_music_player(Resources& resources, TextMessageSystem& tms, const char *directory = 0) = 0;
     virtual void skip_music_player_song() = 0;
     virtual void stop_music_player() = 0;
 

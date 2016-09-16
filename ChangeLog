@@ -16,6 +16,7 @@
 - create packages in map editor
 - goat attack now is ready for cross compiling
 - selecting custom server (thanks to IBPX)
+- jukebox can play user defined music
 
 0.4.3
 - new rounded buttons

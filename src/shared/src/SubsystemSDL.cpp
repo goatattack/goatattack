@@ -73,32 +73,93 @@ int music_player_current_index = -1;
 TextMessageSystem *music_player_tms = 0;
 MusicPlayerMusics music_player_musics;
 
+struct ExternalMusic {
+    ExternalMusic(const std::string& filename, const std::string& shortname)
+        : filename(filename), shortname(shortname) { }
+
+    std::string filename;
+    std::string shortname;
+};
+
+typedef std::vector<ExternalMusic> MusicPlayerExternalMusics;
+bool music_player_external = false;
+MusicPlayerExternalMusics music_player_external_musics;
+Mix_Music *music_player_external_music_handle = 0;
+int music_player_current_external_index = -1;
+time_t music_player_external_last_played = 0;
+std::string music_player_external_last_song;
+
 static void play_next_song() {
     if (music_player_tms) {
-        Music *music = 0;
-        int sz = static_cast<int>(music_player_musics.size());
-        if (sz) {
-            music_player_current_index++;
-            if (music_player_current_index >= sz) {
-                music_player_current_index = 0;
+        if (music_player_external) {
+            if (music_player_external_music_handle) {
+                Mix_FreeMusic(music_player_external_music_handle);
+                music_player_external_music_handle = 0;
             }
-            music = music_player_musics[music_player_current_index];
-            if (music != music_player_current_music) {
-                music_player_current_music = music;
-                std::string msg("music: " + music->get_description() + " by " + music->get_author());
+            if (time(0) - music_player_external_last_played < 2) {
+                std::string msg("ERROR: " + music_player_external_last_song + " played too fast, stopping.");
                 music_player_tms->add_text_msg(msg);
+            } else {
+                bool ok = false;
+                int count = 0;
+                int sz = static_cast<int>(music_player_external_musics.size());
+                while (count < sz) {
+                    music_player_current_external_index++;
+                    if (music_player_current_external_index >= sz) {
+                        music_player_current_external_index = 0;
+                    }
+                    const ExternalMusic& em = music_player_external_musics[music_player_current_external_index];
+                    music_player_external_music_handle = Mix_LoadMUS(em.filename.c_str());
+                    if (music_player_external_music_handle) {
+                        if (Mix_PlayMusic(music_player_external_music_handle, 0)) {
+                            Mix_FreeMusic(music_player_external_music_handle);
+                            music_player_external_music_handle = 0;
+                        } else {
+                            music_player_external_last_played = time(0);
+                            music_player_external_last_song = em.shortname;
+                            music_player_tms->add_text_msg("music: " + em.shortname);
+                            ok = true;
+                            break;
+                        }
+                    }
+                    /* try next one */
+                    count++;
+                }
+                if (!ok) {
+                    std::string msg("ERROR: no valid music found.");
+                    music_player_tms->add_text_msg(msg);
+                }
             }
-        }
-        if (music_player_current_music) {
-            const AudioSDL *audio = static_cast<const AudioSDL *>(music_player_current_music->get_audio());
-            Mix_PlayMusic(audio->get_music(), 0);
+        } else {
+            Music *music = 0;
+            int sz = static_cast<int>(music_player_musics.size());
+            if (sz) {
+                music_player_current_index++;
+                if (music_player_current_index >= sz) {
+                    music_player_current_index = 0;
+                }
+                music = music_player_musics[music_player_current_index];
+                if (music != music_player_current_music) {
+                    music_player_current_music = music;
+                    std::string msg("music: " + music->get_description() + " by " + music->get_author());
+                    music_player_tms->add_text_msg(msg);
+                }
+            }
+            if (music_player_current_music) {
+                const AudioSDL *audio = static_cast<const AudioSDL *>(music_player_current_music->get_audio());
+                Mix_PlayMusic(audio->get_music(), 0);
+            }
         }
     }
 }
 
 static void music_finished() {
-    if (music_player_current_music) {
+    if (music_player_external) {
         play_next_song();
+    } else {
+        if (music_player_current_music) {
+            play_next_song();
+        }
     }
 }
 
@@ -171,7 +232,7 @@ SubsystemSDL::SubsystemSDL(std::ostream& stream, const std::string& window_title
     init_gl(gl_width, gl_height);
 
     /* init audio */
-    if (!(Mix_Init(MIX_INIT_OGG) & MIX_INIT_OGG)) {
+    if (!(Mix_Init(MIX_INIT_OGG | MIX_INIT_MP3) & MIX_INIT_OGG)) {
         throw SubsystemException("Could not initialize mixer: " +
             std::string(Mix_GetError()));
     }
@@ -492,25 +553,66 @@ void SubsystemSDL::stop_music() {
     music_player_current_music = 0;
     music_player_musics.clear();
     Mix_HaltMusic();
+
+    /* stop external music */
+    if (music_player_external_music_handle) {
+        Mix_FreeMusic(music_player_external_music_handle);
+        music_player_external_music_handle = 0;
+    }
 }
 
-void SubsystemSDL::start_music_player(Resources& resources, TextMessageSystem& tms) {
+void SubsystemSDL::start_music_player(Resources& resources, TextMessageSystem& tms, const char *directory) {
     music_player_tms = &tms;
-    music_player_musics.clear();
-    Resources::ResourceObjects& musics = resources.get_musics();
-    for (Resources::ResourceObjects::iterator it = musics.begin(); it != musics.end(); it++) {
-        Resources::ResourceObject& obj = *it;
-        Music *music = static_cast<Music *>(obj.object);
-        if (!music->get_do_not_play_in_music_player()) {
-            music_player_musics.push_back(music);
+    bool take_internal_music = true;
+
+    /* check if external music files exist */
+    if (directory && strlen(directory)) {
+        music_player_external = true;
+        const char *entry = 0;
+        const char *suffixes[] = { ".ogg", ".mp3", ".flac", 0 };
+        try {
+            const char **suffix = suffixes;
+            while (*suffix) {
+                Directory dir(directory, *suffix, 0);
+                while ((entry = dir.get_entry())) {
+                    music_player_external_musics.push_back(ExternalMusic(std::string(directory) + dir_separator + entry + *suffix, std::string(entry) + *suffix));
+                }
+                suffix++;
+            }
+        } catch (const Exception& e) {
+            music_player_external_musics.clear();
+            tms.add_text_msg(std::string("ERROR: Cannot read files: ") + e.what());
+        }
+        if (!music_player_external_musics.size()) {
+            tms.add_text_msg("ERROR: No .ogg or .mp3 files found, playing from internal pak.");
+        } else {
+            std::random_shuffle(music_player_external_musics.begin(), music_player_external_musics.end());
+            music_player_current_external_index = -1;
+            music_player_external_last_played = 0;
+            take_internal_music = false;
         }
     }
-    std::random_shuffle(music_player_musics.begin(), music_player_musics.end());
+
+    /* take internal music list? */
+    if (take_internal_music) {
+        music_player_external = false;
+        music_player_musics.clear();
+        Resources::ResourceObjects& musics = resources.get_musics();
+        for (Resources::ResourceObjects::iterator it = musics.begin(); it != musics.end(); it++) {
+            Resources::ResourceObject& obj = *it;
+            Music *music = static_cast<Music *>(obj.object);
+            if (!music->get_do_not_play_in_music_player()) {
+                music_player_musics.push_back(music);
+            }
+        }
+        std::random_shuffle(music_player_musics.begin(), music_player_musics.end());
+    }
 
     play_next_song();
 }
 
 void SubsystemSDL::skip_music_player_song() {
+    music_player_external_last_played = 0;
     play_next_song();
 }
 
