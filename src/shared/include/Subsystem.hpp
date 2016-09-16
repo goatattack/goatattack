@@ -70,6 +70,8 @@ struct InputData {
         InputDataTypeJoyButtonDown,
         InputDataTypeJoyButtonUp,
         InputDataTypeText,
+        InputDataMouseLeftWindow,
+        InputDataMouseEnteredWindow,
         _InputDataTypeMAX
     };
 

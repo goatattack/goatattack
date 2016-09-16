@@ -149,7 +149,7 @@ SubsystemSDL::SubsystemSDL(std::ostream& stream, const std::string& window_title
         SDL_WINDOWPOS_UNDEFINED,
         current_width,
         current_height,
-        SDL_WINDOW_OPENGL | SDL_WINDOW_INPUT_GRABBED);
+        SDL_WINDOW_OPENGL);
     if (!window) {
         throw SubsystemException("Could not create window: " +
             std::string(SDL_GetError()));
@@ -262,6 +262,7 @@ void SubsystemSDL::toggle_fullscreen() {
     if (!fullscreen) {
         SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
     }
+    SDL_SetWindowGrab(window, (fullscreen ? SDL_TRUE : SDL_FALSE));
 }
 
 bool SubsystemSDL::is_fullscreen() const {
@@ -580,6 +581,24 @@ bool SubsystemSDL::get_input(InputData& input) {
                         break;
                 }
                 break;
+
+            case SDL_WINDOWEVENT:
+            {
+                switch (event.window.event) {
+                    case SDL_WINDOWEVENT_LEAVE:
+                        input.data_type = InputData::InputDataMouseLeftWindow;
+                        break;
+
+                    case SDL_WINDOWEVENT_ENTER:
+                        input.data_type = InputData::InputDataMouseEnteredWindow;
+                        break;
+
+                    default:
+                        input.data_type = InputData::InputDataTypeNothing;
+                        break;
+                }
+                break;
+            }
 
             case SDL_TEXTINPUT:
             {
