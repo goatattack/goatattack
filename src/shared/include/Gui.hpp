@@ -162,6 +162,7 @@ private:
     bool blink_on;
     bool running;
     bool mouse_is_down;
+    bool mouse_is_visible;
     int local_mousex;
     int local_mousey;
     int *pmousex;

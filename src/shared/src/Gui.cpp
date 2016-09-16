@@ -24,8 +24,8 @@ Gui::Gui(Resources& resources, Subsystem& subsystem, Font *font)
     throw (GuiException, ResourcesException)
     : resources(resources), subsystem(subsystem), font(font), current_window(0),
       active_object(0), blink_on(true), running(false), mouse_is_down(false),
-      local_mousex(0), local_mousey(0), pmousex(&local_mousex), pmousey(&local_mousey),
-      tooltip(0), tooltip_object(0), tooltip_x(0), tooltip_y(0)
+      mouse_is_visible(true), local_mousex(0), local_mousey(0), pmousex(&local_mousex),
+      pmousey(&local_mousey), tooltip(0), tooltip_object(0), tooltip_x(0), tooltip_y(0)
 {
     if (!font) {
         throw GuiException("no valid font declared");
@@ -476,7 +476,7 @@ void Gui::idleloop(int stack_counter) throw (Exception) {
                         *pmousey = 1;
                         warp = true;
                     }
-                    if (warp) {
+                    if (warp && subsystem.is_fullscreen()) {
                         subsystem.set_mouse_position(*pmousex, *pmousey);
                     }
 
@@ -485,6 +485,14 @@ void Gui::idleloop(int stack_counter) throw (Exception) {
                     }
                     break;
                 }
+
+                case InputData::InputDataMouseLeftWindow:
+                    mouse_is_visible = false;
+                    break;
+
+                case InputData::InputDataMouseEnteredWindow:
+                    mouse_is_visible = true;
+                    break;
 
                 case InputData::InputDataTypeMouseLeftDown:
                     if (!process_mousedown(0)) {
@@ -585,7 +593,7 @@ void Gui::idleloop(int stack_counter) throw (Exception) {
         }
         subsystem.reset_color();
 
-        if (windows.size()) {
+        if (windows.size() && mouse_is_visible) {
             subsystem.draw_icon(mouse, *pmousex - mouse->get_hotspot_x(), *pmousey - mouse->get_hotspot_y());
         }
 
