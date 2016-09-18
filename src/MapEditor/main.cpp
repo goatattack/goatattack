@@ -38,6 +38,7 @@ int main(int argc, char *argv[]) {
 
         /* setup base view options */
         Configuration config(UserDirectory, ConfigFilename);
+        subsystem.initialize(resources);
         if (config.get_bool("fullscreen")) {
             subsystem.toggle_fullscreen();
         }
