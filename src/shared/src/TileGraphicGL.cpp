@@ -67,8 +67,9 @@ void TileGraphicGL::add_tile(int bytes_per_pixel, const void *pic, bool desc, bo
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     }
-    glTexImage2D(GL_TEXTURE_2D, 0, bytes_per_pixel, width, height, 0,
-        (bytes_per_pixel == 4 ? GL_RGBA : GL_RGB), GL_UNSIGNED_BYTE, pic);
+    glTexImage2D(GL_TEXTURE_2D, 0, (bytes_per_pixel == 4 ? GL_RGBA : GL_RGB),
+        width, height, 0, (bytes_per_pixel == 4 ? GL_RGBA : GL_RGB),
+        GL_UNSIGNED_BYTE, pic);
 
     if (desc) {
         textures.push_front(tex);

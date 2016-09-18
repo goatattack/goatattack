@@ -21,6 +21,7 @@
 #include "Exception.hpp"
 #include "Tile.hpp"
 #include "TextMessageSystem.hpp"
+#include "ZipReader.hpp"
 
 #include <iostream>
 
@@ -112,6 +113,7 @@ class Font;
 class Icon;
 class Sound;
 class Music;
+class Shader;
 
 class Subsystem {
 private:
@@ -132,6 +134,7 @@ public:
     bool get_keep_pictures() const;
     std::ostream& get_stream() const;
 
+    virtual void initialize(Resources& resources) = 0;
     virtual const char *get_subsystem_name() const = 0;
     virtual bool is_dedicated_server() const = 0;
 
@@ -150,6 +153,7 @@ public:
 
     virtual TileGraphic *create_tilegraphic(int width, int height) = 0;
     virtual Audio *create_audio() = 0;
+    virtual Shader *create_shader(const std::string& filename, ZipReader *zip) = 0;
 
     virtual void begin_drawings() = 0;
     virtual void end_drawings() = 0;

@@ -34,10 +34,13 @@ MultiReader::MultiReader(const std::string& filename, ZipReader *zip) throw (Mul
         if (!f) {
             throw MultiReaderException("Cannot open file: " + filename + std::string(strerror(errno)));
         }
+        fseek(f, SEEK_END, 0);
+        size = static_cast<size_t>(ftell(f));
+        fseek(f, SEEK_SET, 0);
     }
 }
 
-MultiReader::MultiReader() {
+MultiReader::~MultiReader() {
     if (f) {
         fclose(f);
     }
@@ -48,6 +51,10 @@ MultiReader::MultiReader() {
 
 const std::string& MultiReader::get_filename() const {
     return filename;
+}
+
+size_t MultiReader::get_size() const {
+    return size;
 }
 
 size_t MultiReader::read(void *dest, size_t sz) {

@@ -15,18 +15,10 @@
  *  along with Goat Attack.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DEDICATED_SERVER
-
 #include "Shader.hpp"
 
-Shader::Shader(const std::string& filename, ZipReader *zip) throw (ShaderException) {
-    if (zip) {
-        //zip->extract()
-    }
-}
+Shader::Shader(const std::string& filename, ZipReader *zip)
+    throw (KeyValueException, ShaderException)
+    : Properties(filename + ".shader", zip) { }
 
-Shader::~Shader() {
-
-}
-
-#endif
+Shader::~Shader() { }

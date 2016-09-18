@@ -38,6 +38,8 @@ Game::Game(Resources& resources, Subsystem& subsystem)
 Game::~Game() { }
 
 void Game::run(const std::string& parm) {
+    subsystem.initialize(resources);
+
 #ifdef DEDICATED_SERVER
     Server server(resources, subsystem, parm);
     server.start();
@@ -51,7 +53,6 @@ void Game::run(const std::string& parm) {
     subsystem.set_sound_volume(config.get_int("sfx_volume"));
     subsystem.set_deadzone_horizontal(config.get_int("deadzone_horizontal"));
     subsystem.set_deadzone_vertical(config.get_int("deadzone_vertical"));
-
     MainMenu menu(resources, subsystem, config);
     menu.run();
 #endif

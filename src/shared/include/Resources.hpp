@@ -33,6 +33,7 @@
 #include "Icon.hpp"
 #include "Sound.hpp"
 #include "Music.hpp"
+#include "Shader.hpp"
 
 #include <string>
 #include <map>
@@ -106,6 +107,7 @@ public:
     Sound *get_sound(const std::string& name) throw (ResourcesException);
     Music *get_music(const std::string& name) throw (ResourcesException);
     Properties *get_game_settings(const std::string& name) throw (ResourcesException);
+    Shader *get_shader(const std::string& name) throw (ResourcesException);
 
     ResourceObjects& get_tilesets();
     ResourceObjects& get_objects();
@@ -119,6 +121,7 @@ public:
     ResourceObjects& get_sounds();
     ResourceObjects& get_musics();
     ResourceObjects& get_game_settings();
+    ResourceObjects& get_shaders();
 
     const LoadedPaks& get_loaded_paks() const;
 
@@ -140,6 +143,7 @@ private:
     ResourceObjects sounds;
     ResourceObjects musics;
     ResourceObjects game_settings;
+    ResourceObjects shaders;
 
     void read_tilesets(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception);
     void read_objects(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception);
@@ -153,6 +157,7 @@ private:
     void read_sounds(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception);
     void read_musics(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception);
     void read_game_settings(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception);
+    void read_shaders(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception);
 
     void load_resources(bool home_paks_only) throw (ResourcesException, ResourcesMissingException);
     void read_all(const std::string& fdir, ZipReader *fzip, bool base_resource) throw (Exception);

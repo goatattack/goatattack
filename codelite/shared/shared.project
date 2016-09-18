@@ -55,8 +55,10 @@
     <File Name="../../src/shared/src/ZipWriter.cpp"/>
     <File Name="../../src/shared/src/FileReader.cpp"/>
     <File Name="../../src/shared/src/Cargo.cpp"/>
-    <File Name="../../src/shared/src/Shader.cpp"/>
     <File Name="../../src/shared/src/MultiReader.cpp"/>
+    <File Name="../../src/shared/src/ShaderNull.cpp"/>
+    <File Name="../../src/shared/src/ShaderGL.cpp"/>
+    <File Name="../../src/shared/src/Shader.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="../../src/shared/include/AABB.hpp"/>
@@ -112,6 +114,9 @@
     <File Name="../../src/shared/include/Cargo.hpp"/>
     <File Name="../../src/shared/include/Shader.hpp"/>
     <File Name="../../src/shared/include/MultiReader.hpp"/>
+    <File Name="../../src/shared/include/Matrix4x4.hpp"/>
+    <File Name="../../src/shared/include/ShaderNull.hpp"/>
+    <File Name="../../src/shared/include/ShaderGL.hpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="zlib">
     <File Name="../../src/shared/zlib/adler32.c"/>
@@ -144,6 +149,7 @@
         <IncludePath Value="../../src/shared/include"/>
         <IncludePath Value="../../src/shared/zlib"/>
         <Preprocessor Value="__unix__"/>
+        <Preprocessor Value="GL_GLEXT_PROTOTYPES"/>
       </Compiler>
       <Linker Options="">
         <LibraryPath Value="."/>

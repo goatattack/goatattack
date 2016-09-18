@@ -217,6 +217,12 @@ Properties *Resources::get_game_settings(const std::string& name) throw (Resourc
     throw ResourcesException("game settings " + name + " not found");
 }
 
+Shader *Resources::get_shader(const std::string& name) throw (ResourcesException) {
+    Shader *o = find_object<Shader>(shaders, name);
+    if (o) return o;
+    throw ResourcesException("shader " + name + " not found");
+}
+
 const Resources::LoadedPaks& Resources::get_loaded_paks() const {
     return loaded_paks;
 }
@@ -267,6 +273,10 @@ Resources::ResourceObjects& Resources::get_musics() {
 
 Resources::ResourceObjects& Resources::get_game_settings() {
     return game_settings;
+}
+
+Resources::ResourceObjects& Resources::get_shaders() {
+    return shaders;
 }
 
 void Resources::read_tilesets(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception) {
@@ -499,6 +509,26 @@ void Resources::read_game_settings(const std::string& directory, ZipReader *zip,
     }
 }
 
+void Resources::read_shaders(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception) {
+    const char *entry = 0;
+    try {
+        Directory dir(directory, ".shader", zip);
+        while ((entry = dir.get_entry())) {
+            try {
+                //AutoPtr<Shader> new_object(new Shader(subsystem, (zip ? "" : directory + dir_separator) + entry, zip));
+                AutoPtr<Shader> new_object(subsystem.create_shader((zip ? "" : directory + dir_separator) + entry, zip));
+                if (!check_duplicate<Shader>(subsystem, shaders, "shaders", new_object->get_name())) {
+                    shaders.push_back(ResourceObject(new_object.release(), base_resource));
+                }
+            } catch (const Exception& e) {
+                subsystem << e.what() << std::endl;
+            }
+        }
+    } catch (const DirectoryException&) {
+        /* chomp */
+    }
+}
+
 void Resources::load_resources(bool home_paks_only) throw (ResourcesException, ResourcesMissingException) {
     try {
         const char **pak = 0;
@@ -600,6 +630,7 @@ void Resources::read_all(const std::string& fdir, ZipReader *fzip, bool base_res
     read_sounds(fdir + "sounds", fzip, base_resource);
     read_musics(fdir + "music", fzip, base_resource);
     read_game_settings(fdir + "game", fzip, base_resource);
+    read_shaders(fdir + "shaders", fzip, base_resource);
 }
 
 void Resources::destroy_resources(bool home_paks_only) {
@@ -615,6 +646,7 @@ void Resources::destroy_resources(bool home_paks_only) {
     erase_resource_objects<Characterset>(charactersets, home_paks_only);
     erase_resource_objects<Object>(objects, home_paks_only);
     erase_resource_objects<Tileset>(tilesets, home_paks_only);
+    erase_resource_objects<Shader>(shaders, home_paks_only);
 
     erase_loaded_pak(loaded_paks, home_paks_only);
 }

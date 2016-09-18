@@ -24,7 +24,9 @@
 #include "AudioSDL.hpp"
 #include "Font.hpp"
 #include "Icon.hpp"
+#include "ShaderGL.hpp"
 #include "Resources.hpp"
+#include "AutoPtr.hpp"
 
 #include <cstring>
 #include <algorithm>
@@ -41,8 +43,10 @@
 #endif
 
 static const int ViewWidth = 640;
-static const int ViewHeight = 340;
+static const int ViewHeight = 340; // 340
 static const int WindowedZoomFactor = 2;
+static const int DefaultOpenGLMajor = 3;
+static const int DefaultOpenGLMinor = 1;
 
 typedef std::vector<Sound *> PlayingSounds;
 
@@ -163,11 +167,20 @@ static void music_finished() {
     }
 }
 
+static const int VertexCount = 2;
+static const int TexUVCount = 2;
+static const int ColorCount = 4;
+static const int Stride = (VertexCount + TexUVCount + ColorCount);
+static const size_t StrideSize = Stride * sizeof(float);
+static const void *VertexOffset = reinterpret_cast<void *>((0) * sizeof(float));
+static const void *TexUVOffset = reinterpret_cast<void *>((0 + VertexCount) * sizeof(float));
+static const void *ColorOffset = reinterpret_cast<void *>((0 + VertexCount + TexUVCount) * sizeof(float));
+
 SubsystemSDL::SubsystemSDL(std::ostream& stream, const std::string& window_title) throw (SubsystemException)
     : Subsystem(stream, window_title), window(0), joyaxis(0), fullscreen(false),
       draw_scanlines(false), scanlines_intensity(0.5f),
       deadzone_horizontal(3200), deadzone_vertical(3200), selected_tex(0),
-      music_volume(100)
+      music_volume(100), vao(0), vbo(0), base_shader(0), blank_tex(0)
 {
     stream << "starting SubsystemSDL" << std::endl;
 
@@ -176,6 +189,9 @@ SubsystemSDL::SubsystemSDL(std::ostream& stream, const std::string& window_title
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER)) {
         throw SubsystemException(SDL_GetError());
     }
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, DefaultOpenGLMajor);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, DefaultOpenGLMinor);
 
     /* get native desktop size */
     SDL_DisplayMode display;
@@ -201,6 +217,8 @@ SubsystemSDL::SubsystemSDL(std::ostream& stream, const std::string& window_title
     gl_height = current_height;
     box_width = gl_width / current_zoom;
     box_height = gl_height / current_zoom;
+    box_width_factor = 2.0f / static_cast<float>(box_width);
+    box_height_factor = 2.0f / static_cast<float>(box_height);
 
     /* create window */
     stream << "creating SDL window" << std::endl;
@@ -231,6 +249,28 @@ SubsystemSDL::SubsystemSDL(std::ostream& stream, const std::string& window_title
     }
     init_gl(gl_width, gl_height);
 
+    /* setup dynamic vao and vbo */
+    glGenVertexArrays(1, &vao);
+    glGenBuffers(1, &vbo);
+    glBindVertexArray(vao);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, 6 * StrideSize, 0, GL_DYNAMIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, VertexCount, GL_FLOAT, GL_FALSE, StrideSize, VertexOffset);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, TexUVCount, GL_FLOAT, GL_FALSE, StrideSize, TexUVOffset);
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, ColorCount, GL_FLOAT, GL_FALSE, StrideSize, ColorOffset);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    vertices[0][2] = 0.0f; vertices[0][3] = 0.0f;
+    vertices[1][2] = 0.0f; vertices[1][3] = 1.0f;
+    vertices[2][2] = 1.0f; vertices[2][3] = 1.0f;
+    vertices[3][2] = 0.0f; vertices[3][3] = 0.0f;
+    vertices[4][2] = 1.0f; vertices[4][3] = 1.0f;
+    vertices[5][2] = 1.0f; vertices[5][3] = 0.0f;
+    reset_color();
+
     /* init audio */
     if (!(Mix_Init(MIX_INIT_OGG | MIX_INIT_MP3) & MIX_INIT_OGG)) {
         throw SubsystemException("Could not initialize mixer: " +
@@ -248,17 +288,32 @@ SubsystemSDL::SubsystemSDL(std::ostream& stream, const std::string& window_title
 
 SubsystemSDL::~SubsystemSDL() {
     stream << "cleaning SubsystemSDL" << std::endl;
+
 #ifdef __APPLE__
     if (is_fullscreen()) {
         toggle_fullscreen();
     }
 #endif
+
+    glDeleteBuffers(1, &vbo);
+    glDeleteVertexArrays(1, &vao);
+
     close_joysticks();
     SDL_GL_DeleteContext(glcontext);
     SDL_DestroyWindow(window);
     Mix_CloseAudio();
     Mix_Quit();
     SDL_Quit();
+}
+
+void SubsystemSDL::initialize(Resources& resources) {
+    Matrix4x4 ortho;
+    ortho.load_identity();
+    base_shader = resources.get_shader("base");
+    base_shader->activate();
+    base_shader->set_value(base_shader->get_location("projection_matrix"), ortho);
+    base_shader->set_value(base_shader->get_location("tex"), 0);
+    blank_tex = static_cast<TileGraphicGL *>(resources.get_icon("blank")->get_tile()->get_tilegraphic())->get_texture();
 }
 
 const char *SubsystemSDL::get_subsystem_name() const {
@@ -319,6 +374,8 @@ void SubsystemSDL::toggle_fullscreen() {
     init_gl(gl_width, gl_height);
     box_width = gl_width / current_zoom;
     box_height = gl_height / current_zoom;
+    box_width_factor = 2.0f / static_cast<float>(box_width);
+    box_height_factor = 2.0f / static_cast<float>(box_height);
 
     if (!fullscreen) {
         SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
@@ -374,6 +431,10 @@ Audio *SubsystemSDL::create_audio() {
     return new AudioSDL;
 }
 
+Shader *SubsystemSDL::create_shader(const std::string& filename, ZipReader *zip) {
+    return new ShaderGL(*this, filename, zip);
+}
+
 void SubsystemSDL::begin_drawings() {
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -382,42 +443,35 @@ void SubsystemSDL::begin_drawings() {
 void SubsystemSDL::end_drawings() {
     if (scanlines && draw_scanlines) {
         set_color(1.0f, 1.0f, 1.0f, scanlines_intensity);
-        float x, y;
+        int x, y;
         TileGraphicGL *tg = static_cast<TileGraphicGL *>(scanlines->get_tile()->get_tilegraphic());
-        float zf = current_zoom / 2.0f;
-        float w = tg->get_width() * zf;
-        float h = tg->get_height() * zf;
+        int w = tg->get_width() / 2;
+        int h = tg->get_height() / 2;
         glBindTexture(GL_TEXTURE_2D, tg->get_texture(tg->get_current_index()));
         y = 0;
-        while (y < gl_height) {
+        while (y < ViewHeight) {
             x = 0;
-            while (x < gl_width) {
-                glBegin(GL_QUADS);
-                glTexCoord2i(0, 0);
-                glVertex2f(x, y);
-                glTexCoord2i(0, 1);
-                glVertex2f(x, y + h);
-                glTexCoord2i(1, 1);
-                glVertex2f(x + w, y + h);
-                glTexCoord2i(1, 0);
-                glVertex2f(x + w, y);
-                glEnd();
+            while (x < ViewWidth) {
+                draw_vbo(x, y, w, h);
                 x += w;
             }
             y += h;
         }
     }
+
     reset_color();
     draw_boxes();
     SDL_GL_SwapWindow(window);
 }
 
 void SubsystemSDL::set_color(float r, float g, float b, float a) {
-    glColor4f(r, g, b, a);
+    for (int i = 0; i <6; i++) {
+        vertices[i][4] = r; vertices[i][5] = g; vertices[i][6] = b; vertices[i][7] = a;
+    }
 }
 
 void SubsystemSDL::reset_color() {
-    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    set_color(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 void SubsystemSDL::draw_tile(Tile *tile, int x, int y) {
@@ -440,22 +494,15 @@ void SubsystemSDL::draw_tilegraphic(TileGraphic *tilegraphic, int index, int x, 
         glBindTexture(GL_TEXTURE_2D, tex);
         selected_tex = tex;
     }
-
-    /* draw quad */
-    glBegin(GL_QUADS);
-    glTexCoord2i(0, 0);
-    glVertex2i(((x_offset + x) * current_zoom), ((y_offset + y) * current_zoom));
-    glTexCoord2i(0, 1);
-    glVertex2i(((x_offset + x) * current_zoom), ((y_offset + y + height) * current_zoom));
-    glTexCoord2i(1, 1);
-    glVertex2i(((x_offset + x + width) * current_zoom), ((y_offset + y + height) * current_zoom));
-    glTexCoord2i(1, 0);
-    glVertex2i(((x_offset + x + width) * current_zoom), ((y_offset + y) * current_zoom));
-    glEnd();
+    draw_vbo(x, y, width, height);
 }
 
 void SubsystemSDL::draw_box(int x, int y, int width, int height) {
-    glDisable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, blank_tex);
+    draw_vbo(x, y, width, height);
+    //glDisable(GL_TEXTURE_2D);
+    //glEnable(GL_TEXTURE_2D);
+    /*
     glBegin(GL_QUADS);
     glVertex2i(((x_offset + x) * current_zoom), ((y_offset + y) * current_zoom));
     glVertex2i(((x_offset + x) * current_zoom), ((y_offset + y + height) * current_zoom));
@@ -463,6 +510,7 @@ void SubsystemSDL::draw_box(int x, int y, int width, int height) {
     glVertex2i(((x_offset + x + width) * current_zoom), ((y_offset + y) * current_zoom));
     glEnd();
     glEnable(GL_TEXTURE_2D);
+    */
 }
 
 void SubsystemSDL::draw_text(Font *font, int x, int y, const std::string& text) {
@@ -871,13 +919,9 @@ void SubsystemSDL::init_gl(int width, int height) {
     stream << "initializing OpenGL" << std::endl;
     /* init gl scene */
     glViewport(0, 0, width, height);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0, width, height, 0, 0, 1);
 
+    /* no depth testing */
     glDisable(GL_DEPTH_TEST);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
 
     /* enable alpha channel */
     glEnable(GL_BLEND);
@@ -887,11 +931,8 @@ void SubsystemSDL::init_gl(int width, int height) {
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
 
-    /* enable 2d textures */
-    glEnable(GL_TEXTURE_2D);
-
     /* make screen black initially */
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     SDL_GL_SwapWindow(window);
 }
@@ -979,6 +1020,36 @@ void SubsystemSDL::set_window_icon(SDL_Window *window) {
         DestroyIcon(icon);
     }
 #endif
+}
+
+void SubsystemSDL::draw_vbo(int x, int y, int width, int height) {
+    float xpos = ((x_offset + x) * box_width_factor) - 1.0f;
+    float ypos = -(((y_offset + y + height) * box_height_factor) - 1.0f);
+    float w = width * box_width_factor;
+    float h = height * box_height_factor;
+
+    vertices[0][0] = xpos;     vertices[0][1] = ypos + h;
+    vertices[1][0] = xpos;     vertices[1][1] = ypos;
+    vertices[2][0] = xpos + w; vertices[2][1] = ypos;
+
+    vertices[3][0] = xpos;     vertices[3][1] = ypos + h;
+    vertices[4][0] = xpos + w; vertices[4][1] = ypos;
+    vertices[5][0] = xpos + w; vertices[5][1] = ypos + h;
+    /*
+    GLfloat vertices[6][8] = {
+        { xpos,     ypos + h,   0.0f, 0.0f, cur_r, cur_g, cur_b, cur_a },
+        { xpos,     ypos,       0.0f, 1.0f, cur_r, cur_g, cur_b, cur_a },
+        { xpos + w, ypos,       1.0f, 1.0f, cur_r, cur_g, cur_b, cur_a },
+
+        { xpos,     ypos + h,   0.0f, 0.0f, cur_r, cur_g, cur_b, cur_a },
+        { xpos + w, ypos,       1.0f, 1.0f, cur_r, cur_g, cur_b, cur_a },
+        { xpos + w, ypos + h,   1.0f, 0.0f, cur_r, cur_g, cur_b, cur_a }
+    };
+    */
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
 #endif

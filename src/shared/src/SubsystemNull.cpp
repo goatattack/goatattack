@@ -18,6 +18,7 @@
 #include "SubsystemNull.hpp"
 #include "TileGraphicNull.hpp"
 #include "AudioNull.hpp"
+#include "ShaderNull.hpp"
 
 SubsystemNull::SubsystemNull(std::ostream& stream, const std::string& window_title) throw (SubsystemException)
     : Subsystem(stream, window_title)
@@ -28,6 +29,8 @@ SubsystemNull::SubsystemNull(std::ostream& stream, const std::string& window_tit
 SubsystemNull::~SubsystemNull() {
     stream << "cleaning SubsystemNull" << std::endl;
 }
+
+void SubsystemNull::initialize(Resources& resources) { }
 
 const char *SubsystemNull::get_subsystem_name() const {
     return "SubsystemNull";
@@ -75,6 +78,10 @@ TileGraphic *SubsystemNull::create_tilegraphic(int width, int height) {
 
 Audio *SubsystemNull::create_audio() {
     return new AudioNull;
+}
+
+Shader *SubsystemNull::create_shader(const std::string& filename, ZipReader *zip) {
+    return new ShaderNull(filename, zip);
 }
 
 void SubsystemNull::begin_drawings() { }

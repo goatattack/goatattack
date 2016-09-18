@@ -27,6 +27,7 @@ public:
     SubsystemNull(std::ostream& stream, const std::string& window_title) throw (SubsystemException);
     virtual ~SubsystemNull();
 
+    virtual void initialize(Resources& resources);
     virtual const char *get_subsystem_name() const;
     virtual bool is_dedicated_server() const;
 
@@ -45,6 +46,7 @@ public:
 
     virtual TileGraphic *create_tilegraphic(int width, int height);
     virtual Audio *create_audio();
+    virtual Shader *create_shader(const std::string& filename, ZipReader *zip);
 
     virtual void begin_drawings();
     virtual void end_drawings();

@@ -20,12 +20,9 @@
 
 #include "Exception.hpp"
 #include "ZipReader.hpp"
-
-#ifdef __unix__
-#include <SDL2/SDL_opengl.h>
-#elif _WIN32
-#include <SDL_opengl.h>
-#endif
+#include "Properties.hpp"
+#include "Subsystem.hpp"
+#include "Matrix4x4.hpp"
 
 class ShaderException : public Exception {
 public:
@@ -33,19 +30,29 @@ public:
     ShaderException(const std::string& msg) : Exception(msg) { }
 };
 
-class Shader {
+class Shader : public Properties {
 private:
     Shader(const Shader&);
     Shader& operator=(const Shader&);
 
 public:
-    Shader(const std::string& filename, ZipReader *zip) throw (ShaderException);
-    ~Shader();
+    typedef int ID;
 
-private:
-    GLuint program_id;
-    GLuint vert_id;
-    GLuint frag_id;
+    Shader(const std::string& filename, ZipReader *zip) throw (KeyValueException, ShaderException);
+    virtual ~Shader();
+
+    virtual ID get_location(const char *name) throw (ShaderException) = 0;
+    virtual ID get_attrib_location(const char *name) throw (ShaderException) = 0;
+    virtual void set_value(ID location, int value) = 0;
+    virtual void set_value(ID location, float value) = 0;
+    virtual void set_value(ID location, float v1, float v2) = 0;
+    virtual void set_value(ID location, float v1, float v2, float v3) = 0;
+    virtual void set_value(ID location, float v1, float v2, float v3, float v4) = 0;
+    virtual void set_value(ID location, size_t sz, int *value) = 0;
+    virtual void set_value(ID location, size_t sz, float *value) = 0;
+    virtual void set_value(ID location, const Matrix4x4& mat) = 0;
+    virtual void activate() = 0;
+    virtual void deactivate() = 0;
 };
 
 #endif

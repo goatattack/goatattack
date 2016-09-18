@@ -19,6 +19,8 @@
 #define _SUBSYSTEMSDL_HPP_
 
 #include "Subsystem.hpp"
+#include "Shader.hpp"
+#include "TileGraphicGL.hpp"
 
 #include <vector>
 #ifdef __unix__
@@ -36,6 +38,7 @@ public:
     SubsystemSDL(std::ostream& stream, const std::string& window_title) throw (SubsystemException);
     virtual ~SubsystemSDL();
 
+    virtual void initialize(Resources& resources);
     virtual const char *get_subsystem_name() const;
     virtual bool is_dedicated_server() const;
 
@@ -54,6 +57,7 @@ public:
 
     virtual TileGraphic *create_tilegraphic(int width, int height);
     virtual Audio *create_audio();
+    virtual Shader *create_shader(const std::string& filename, ZipReader *zip);
 
     virtual void begin_drawings();
     virtual void end_drawings();
@@ -109,6 +113,10 @@ private:
     int deadzone_vertical;
     GLuint selected_tex;
     int music_volume;
+    GLuint vao;
+    GLuint vbo;
+    Shader *base_shader;
+    GLuint blank_tex;
 
     SDL_GLContext glcontext;
     SDL_Event event;
@@ -124,6 +132,9 @@ private:
     int gl_height;
     int box_width;
     int box_height;
+    float box_width_factor;
+    float box_height_factor;
+    GLfloat vertices[6][8];
     int fullscreen_zoom;
     int x_offset;
     int y_offset;
@@ -136,6 +147,7 @@ private:
     void draw_boxes();
 
     void set_window_icon(SDL_Window *window);
+    void draw_vbo(int x, int y, int width, int height);
 };
 
 #endif

@@ -150,7 +150,6 @@
   </VirtualDirectory>
   <Description/>
   <Dependencies/>
-  <Dependencies Name="Debug"/>
   <Dependencies Name="Release"/>
   <Settings Type="Executable">
     <GlobalSettings>
@@ -258,4 +257,7 @@
       </Completion>
     </Configuration>
   </Settings>
+  <Dependencies Name="Debug">
+    <Project Name="shared"/>
+  </Dependencies>
 </CodeLite_Project>

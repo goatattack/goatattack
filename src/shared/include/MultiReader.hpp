@@ -37,9 +37,10 @@ private:
 
 public:
     MultiReader(const std::string& filename, ZipReader *zip) throw (MultiReaderException);
-    MultiReader();
+    ~MultiReader();
 
     const std::string& get_filename() const;
+    size_t get_size() const;
     size_t read(void *dest, size_t sz);
 
 private:
