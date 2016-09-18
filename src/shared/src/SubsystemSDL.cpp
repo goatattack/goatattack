@@ -495,6 +495,7 @@ void SubsystemSDL::draw_tilegraphic(TileGraphic *tilegraphic, int index, int x, 
 
 void SubsystemSDL::draw_box(int x, int y, int width, int height) {
     glBindTexture(GL_TEXTURE_2D, blank_tex);
+    selected_tex = blank_tex;
     draw_vbo(x, y, width, height);
 }
 
