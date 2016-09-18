@@ -55,6 +55,8 @@
     <File Name="../../src/shared/src/ZipWriter.cpp"/>
     <File Name="../../src/shared/src/FileReader.cpp"/>
     <File Name="../../src/shared/src/Cargo.cpp"/>
+    <File Name="../../src/shared/src/Shader.cpp"/>
+    <File Name="../../src/shared/src/MultiReader.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="../../src/shared/include/AABB.hpp"/>
@@ -108,6 +110,8 @@
     <File Name="../../src/shared/include/AutoPtr.hpp"/>
     <File Name="../../src/shared/include/FileReader.hpp"/>
     <File Name="../../src/shared/include/Cargo.hpp"/>
+    <File Name="../../src/shared/include/Shader.hpp"/>
+    <File Name="../../src/shared/include/MultiReader.hpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="zlib">
     <File Name="../../src/shared/zlib/adler32.c"/>

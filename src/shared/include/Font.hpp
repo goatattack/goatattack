@@ -59,24 +59,6 @@ public:
     int get_char_width(unsigned char c);
 
 private:
-    struct FontOperations {
-        FontOperations() : handle(0), data(0), ptr(0), size(0), open(0), read(0), close(0) { }
-        virtual ~FontOperations() {
-            if (close) {
-                close(*this);
-            }
-        }
-
-        void *handle;
-        const char *data;
-        const char *ptr;
-        size_t size;
-
-        void (*open)(FontOperations& op, const std::string& filename) throw (FontException);
-        void (*read)(FontOperations& op, void *data, size_t sz);
-        void (*close)(FontOperations& op);
-    };
-
     Subsystem& subsystem;
 
     int offset;
@@ -85,14 +67,6 @@ private:
     int fh[NumOfChars];
     int32_t font_height;
     int spacing;
-
-    static void fo_file_open(FontOperations& op, const std::string& filename) throw (FontException);
-    static void fo_file_read(FontOperations& op, void *data, size_t sz);
-    static void fo_file_close(FontOperations& op);
-
-    static void fo_zip_open(FontOperations& op, const std::string& filename) throw (FontException);
-    static void fo_zip_read(FontOperations& op, void *data, size_t sz);
-    static void fo_zip_close(FontOperations& op);
 };
 
 #endif
