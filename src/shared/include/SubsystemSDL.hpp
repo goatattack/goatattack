@@ -134,11 +134,14 @@ private:
     int box_height;
     float box_width_factor;
     float box_height_factor;
-    GLfloat vertices[6][8];
+    GLfloat vertices[6][4];
     int fullscreen_zoom;
     int x_offset;
     int y_offset;
     WindowMode window_mode;
+    Shader::ID shader_loc_color;
+    Shader::ID shader_loc_projection_matrix;
+    Shader::ID shader_loc_offset;
 
     void init_gl(int width, int height);
     void close_joysticks();
@@ -147,6 +150,7 @@ private:
     void draw_boxes();
 
     void set_window_icon(SDL_Window *window);
+    void setup_projection();
     void draw_vbo(int x, int y, int width, int height);
 };
 
