@@ -171,32 +171,34 @@ void OptionsMenu::graphics_and_sound_click() {
     int vw = subsystem.get_view_width();
     int vh = subsystem.get_view_height();
     int ww = 343;
-    int wh = 230;
+    int wh = 243;
     int bw = 140;
 
     GuiWindow *window = gui.push_window(vw / 2 - ww / 2, vh / 2- wh / 2, ww, wh, "Graphics And Sound");
     window->set_cancelable(true);
 
     gui.create_checkbox(window, 15, 15, "fullscreen graphics mode", subsystem.is_fullscreen(), static_toggle_fullscreen_click, this);
-    gui.create_checkbox(window, 15, 30, "draw scanlines", subsystem.has_scanlines(), static_toggle_scanlines_click, this);
-    gui.create_label(window, 15, 45, "intensity:");
-    gui.create_hscroll(window, 125, 46, 203, 25, 100, config.get_int("scanlines_intensity"), static_scanlines_intensity_changed, this);
-    gui.create_box(window, 15, 66, ww - 30, 1);
-    gui.create_label(window, 15, 75, "music volume:");
-    gui.create_hscroll(window, 125, 76, 203, 0, 100, config.get_int("music_volume"), static_music_volume_changed, this);
+    gui.create_checkbox(window, 15, 30, "use fixed pipeline for drawing (change requires restart)", config.get_bool("fixed_pipeline"), static_toggle_render_mode_click, this);
+    gui.create_checkbox(window, 15, 45, "draw scanlines", subsystem.has_scanlines(), static_toggle_scanlines_click, this);
 
-    gui.create_label(window, 15, 90, "sfx volume:");
-    gui.create_hscroll(window, 125, 91, 203, 0, 128, config.get_int("sfx_volume"), static_sfx_volume_changed, this);
+    gui.create_label(window, 15, 60, "intensity:");
+    gui.create_hscroll(window, 125, 61, 203, 25, 100, config.get_int("scanlines_intensity"), static_scanlines_intensity_changed, this);
+    gui.create_box(window, 15, 81, ww - 30, 1);
+    gui.create_label(window, 15, 90, "music volume:");
+    gui.create_hscroll(window, 125, 91, 203, 0, 100, config.get_int("music_volume"), static_music_volume_changed, this);
 
-    gui.create_box(window, 15, 111, ww - 30, 1);
+    gui.create_label(window, 15, 105, "sfx volume:");
+    gui.create_hscroll(window, 125, 106, 203, 0, 128, config.get_int("sfx_volume"), static_sfx_volume_changed, this);
 
-    gui.create_label(window, 15, 120, "text fade speed:");
-    gui.create_hscroll(window, 125, 121, 203, 5, 15, config.get_int("text_fade_speed"), static_text_fade_speed_changed, this);
+    gui.create_box(window, 15, 126, ww - 30, 1);
 
-    gui.create_box(window, 15, 141, ww - 30, 1);
-    gui.create_label(window, 15, 150, "music player path:");
-    gs_music_path = gui.create_textbox(window, 125, 150, 203, config.get_string("external_music"));
-    gui.create_label(window, 125, 165, "(ogg and mp3, empty for internal)");
+    gui.create_label(window, 15, 135, "text fade speed:");
+    gui.create_hscroll(window, 125, 136, 203, 5, 15, config.get_int("text_fade_speed"), static_text_fade_speed_changed, this);
+
+    gui.create_box(window, 15, 156, ww - 30, 1);
+    gui.create_label(window, 15, 165, "music player path:");
+    gs_music_path = gui.create_textbox(window, 125, 165, 203, config.get_string("external_music"));
+    gui.create_label(window, 125, 180, "(ogg and mp3, empty for internal)");
 
     bw = 55;
     gui.create_button(window, ww / 2 - bw / 2, wh - 43, bw, 18, "Close", static_close_sound_window_click, this);
@@ -218,6 +220,14 @@ void OptionsMenu::static_toggle_scanlines_click(GuiCheckbox *sender, void *data,
 void OptionsMenu::toggle_scanlines_click(bool state) {
     subsystem.set_scanlines(state);
     config.set_bool("show_scanlines", state);
+}
+
+void OptionsMenu::static_toggle_render_mode_click(GuiCheckbox *sender, void *data, bool state) {
+    (reinterpret_cast<OptionsMenu *>(data))->toggle_render_mode_click(state);
+}
+
+void OptionsMenu::toggle_render_mode_click(bool state) {
+    config.set_bool("fixed_pipeline", state);
 }
 
 void OptionsMenu::static_scanlines_intensity_changed(GuiVirtualScroll *sender, void *data, int value) {

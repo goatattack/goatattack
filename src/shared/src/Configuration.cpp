@@ -48,6 +48,7 @@ Configuration::Configuration(const std::string& directory,
     cdef("sfx_volume", "128");
     cdef("master_server", "master.goatattack.net");
     cdef("master_port", "25113");
+    cdef("fixed_pipeline_drawing", "1");
 
     cdef("server_name", "frederic's temple");
     cdef("server_port", "25111");

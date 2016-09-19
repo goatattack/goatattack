@@ -35,7 +35,7 @@ private:
     Game& operator=(const Game&);
 
 public:
-    Game(Resources& resources, Subsystem& subsystem);
+    Game(Resources& resources, Subsystem& subsystem, Configuration& config);
     virtual ~Game();
 
     void run(const std::string& parm);
@@ -43,7 +43,7 @@ public:
 private:
     Resources& resources;
     Subsystem& subsystem;
-    Configuration config;
+    Configuration& config;
 };
 
 #endif

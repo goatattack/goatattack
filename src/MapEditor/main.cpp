@@ -31,13 +31,14 @@ int main(int argc, char *argv[]) {
 
         init_hpet();
 
+        Configuration config(UserDirectory, ConfigFilename);
+
         /* load SDL subsystem */
-        SubsystemSDL subsystem(stream, "Goat Attack Map Editor");
+        SubsystemSDL subsystem(stream, "Goat Attack Map Editor", config.get_bool("fixed_pipeline"));
         subsystem.set_keep_pictures(true);
         Resources resources(subsystem, STRINGIZE_VALUE_OF(DATA_DIRECTORY), true);
 
         /* setup base view options */
-        Configuration config(UserDirectory, ConfigFilename);
         subsystem.initialize(resources);
         if (config.get_bool("fullscreen")) {
             subsystem.toggle_fullscreen();

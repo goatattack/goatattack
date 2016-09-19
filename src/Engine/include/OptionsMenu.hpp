@@ -115,6 +115,7 @@ private:
     static void static_close_window_click(GuiVirtualButton *sender, void *data);
     static void static_toggle_fullscreen_click(GuiCheckbox *sender, void *data, bool state);
     static void static_toggle_scanlines_click(GuiCheckbox *sender, void *data, bool state);
+    static void static_toggle_render_mode_click(GuiCheckbox *sender, void *data, bool state);
 
     static void static_close_capture_window_click(GuiVirtualButton *sender, void *data);
 
@@ -158,6 +159,7 @@ private:
 
     void toggle_fullscreen_click(bool state);
     void toggle_scanlines_click(bool state);
+    void toggle_render_mode_click(bool state);
 
     virtual void options_closed() { }
 };

@@ -43,10 +43,12 @@ int main(int argc, char *argv[]) {
     init_hpet();
     start_net();
     try {
+        Configuration config(UserDirectory, ConfigFilename);
+
 #ifdef DEDICATED_SERVER
         SubsystemNull subsystem(stream, "Goat Attack");
 #else
-        SubsystemSDL subsystem(stream, "Goat Attack");
+        SubsystemSDL subsystem(stream, "Goat Attack", config.get_bool("fixed_pipeline"));
 #endif
 
 #ifdef __APPLE__
@@ -69,7 +71,7 @@ int main(int argc, char *argv[]) {
 # endif
         Resources resources(subsystem, data_directory);
 #endif
-        Game game(resources, subsystem);
+        Game game(resources, subsystem, config);
         game.run(parm ? parm : "");
     } catch (const ResourcesMissingException& e) {
         stream << std::endl << "ERROR: ";

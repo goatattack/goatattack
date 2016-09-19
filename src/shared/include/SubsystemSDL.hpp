@@ -35,7 +35,7 @@ class Resources;
 
 class SubsystemSDL : public Subsystem {
 public:
-    SubsystemSDL(std::ostream& stream, const std::string& window_title) throw (SubsystemException);
+    SubsystemSDL(std::ostream& stream, const std::string& window_title, bool fixed_pipeline) throw (SubsystemException);
     virtual ~SubsystemSDL();
 
     virtual void initialize(Resources& resources);
@@ -104,6 +104,8 @@ private:
         WindowModeFullscreen
     };
 
+    typedef void (SubsystemSDL::*QuadDrawer)(int x, int y, int w, int h, bool no_tex);
+
     SDL_Window *window;
     int joyaxis;
     bool fullscreen;
@@ -117,6 +119,8 @@ private:
     GLuint vbo;
     Shader *base_shader;
     GLuint blank_tex;
+    bool fixed_pipeline;
+    QuadDrawer draw_quad;
 
     SDL_GLContext glcontext;
     SDL_Event event;
@@ -151,7 +155,8 @@ private:
 
     void set_window_icon(SDL_Window *window);
     void setup_projection();
-    void draw_vbo(int x, int y, int width, int height);
+    void draw_immediate(int x, int y, int width, int height, bool no_tex);
+    void draw_vbo(int x, int y, int width, int height, bool no_tex);
 };
 
 #endif

@@ -151,6 +151,9 @@
   <Description/>
   <Dependencies/>
   <Dependencies Name="Release"/>
+  <Dependencies Name="Debug">
+    <Project Name="shared"/>
+  </Dependencies>
   <Settings Type="Executable">
     <GlobalSettings>
       <Compiler Options="-pedantic;-Wextra;-Wno-unused-result;-Wno-unused-parameter" C_Options="-pedantic;-Wextra;-Wno-unused-result;-Wno-unused-parameter" Assembler="">
@@ -180,7 +183,7 @@
         <LibraryPath Value="../shared/Debug"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
-      <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="./$(ProjectName)" CommandArguments="/usr/local/share/goatattack" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="./$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
       <BuildSystem Name="Default"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>
@@ -257,7 +260,4 @@
       </Completion>
     </Configuration>
   </Settings>
-  <Dependencies Name="Debug">
-    <Project Name="shared"/>
-  </Dependencies>
 </CodeLite_Project>

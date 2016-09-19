@@ -26,9 +26,8 @@
 
 #include <cstdlib>
 
-Game::Game(Resources& resources, Subsystem& subsystem)
-    : resources(resources), subsystem(subsystem),
-      config(UserDirectory, ConfigFilename)
+Game::Game(Resources& resources, Subsystem& subsystem, Configuration& config)
+    : resources(resources), subsystem(subsystem), config(config)
 {
     subsystem << "working with " << subsystem.get_subsystem_name() << std::endl;
     subsystem << "mode is " << (subsystem.is_dedicated_server() ?
