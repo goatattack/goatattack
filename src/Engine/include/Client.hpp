@@ -56,6 +56,12 @@ public:
         throw (Exception);
     virtual ~Client();
 
+    bool is_game_over() const;
+    bool is_spectating() const;
+    void spectate();
+    void change_team();
+
+    // Gui
     virtual void idle() throw (Exception);
     virtual void on_input_event(const InputData& input);
 
@@ -159,6 +165,7 @@ private:
     void chat_send_message();
     void show_options_menu();
     void update_text_fade_speed();
+    void update_options_window();
 };
 
 #endif

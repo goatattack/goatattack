@@ -175,13 +175,13 @@ static const size_t StrideSize = Stride * sizeof(float);
 static const void *VertexOffset = reinterpret_cast<void *>((0) * sizeof(float));
 static const void *TexUVOffset = reinterpret_cast<void *>((0 + VertexCount) * sizeof(float));
 
-SubsystemSDL::SubsystemSDL(std::ostream& stream, const std::string& window_title, bool fixed_pipeline) throw (SubsystemException)
+SubsystemSDL::SubsystemSDL(std::ostream& stream, const std::string& window_title, bool shading_pipeline) throw (SubsystemException)
     : Subsystem(stream, window_title), window(0), joyaxis(0), fullscreen(false),
       draw_scanlines(false), scanlines_intensity(0.5f),
       deadzone_horizontal(3200), deadzone_vertical(3200), selected_tex(0),
       music_volume(100), vao(0), vbo(0), base_shader(0), blank_tex(0),
-      fixed_pipeline(fixed_pipeline),
-      draw_quad(fixed_pipeline ? &SubsystemSDL::draw_immediate : &SubsystemSDL::draw_vbo)
+      shading_pipeline(shading_pipeline),
+      draw_quad(shading_pipeline ? &SubsystemSDL::draw_vbo : &SubsystemSDL::draw_immediate)
 {
     stream << "starting SubsystemSDL" << std::endl;
 
@@ -190,7 +190,7 @@ SubsystemSDL::SubsystemSDL(std::ostream& stream, const std::string& window_title
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER)) {
         throw SubsystemException(SDL_GetError());
     }
-    if (!fixed_pipeline) {
+    if (shading_pipeline) {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, DefaultOpenGLMajor);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, DefaultOpenGLMinor);
@@ -288,8 +288,8 @@ SubsystemSDL::~SubsystemSDL() {
 }
 
 void SubsystemSDL::initialize(Resources& resources) {
-    if (!fixed_pipeline) {
-        stream << "using shader pipeline" << std::endl;
+    if (shading_pipeline) {
+        stream << "using shading pipeline" << std::endl;
         /* setup dynamic vao and vbo */
         glGenVertexArrays(1, &vao);
         glGenBuffers(1, &vbo);
@@ -318,8 +318,6 @@ void SubsystemSDL::initialize(Resources& resources) {
         base_shader->set_value(base_shader->get_location("tex"), 0);
         blank_tex = static_cast<TileGraphicGL *>(resources.get_icon("blank")->get_tile()->get_tilegraphic())->get_texture();
         setup_projection();
-    } else {
-        stream << "using fixed pipeline" << std::endl;
     }
     reset_color();
 }
@@ -441,10 +439,10 @@ Audio *SubsystemSDL::create_audio() {
 }
 
 Shader *SubsystemSDL::create_shader(const std::string& filename, ZipReader *zip) {
-    if (fixed_pipeline) {
-        return new ShaderNull(filename, zip);
+    if (shading_pipeline) {
+        return new ShaderGL(*this, filename, zip);
     }
-    return new ShaderGL(*this, filename, zip);
+    return new ShaderNull(filename, zip);
 }
 
 void SubsystemSDL::begin_drawings() {
@@ -477,10 +475,10 @@ void SubsystemSDL::end_drawings() {
 }
 
 void SubsystemSDL::set_color(float r, float g, float b, float a) {
-    if (fixed_pipeline) {
-        glColor4f(r, g, b, a);
-    } else {
+    if (shading_pipeline) {
         base_shader->set_value(shader_loc_color, r, g, b, a);
+    } else {
+        glColor4f(r, g, b, a);
     }
 }
 
@@ -922,8 +920,8 @@ void SubsystemSDL::init_gl(int width, int height) {
     /* init gl scene */
     glViewport(0, 0, width, height);
 
-    /* immediate settings */
-    if (fixed_pipeline) {
+    /* immediate mode settings */
+    if (!shading_pipeline) {
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
         glMatrixMode(GL_MODELVIEW);
@@ -1035,7 +1033,7 @@ void SubsystemSDL::set_window_icon(SDL_Window *window) {
 }
 
 void SubsystemSDL::setup_projection() {
-    if (!fixed_pipeline) {
+    if (shading_pipeline) {
         Matrix4x4 ortho;
         ortho.set_ortho(0.0f, box_width, 0.0f, box_height, 0.0f, 1.0f);
         base_shader->set_value(shader_loc_projection_matrix, ortho);

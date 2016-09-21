@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
         Configuration config(UserDirectory, ConfigFilename);
 
         /* load SDL subsystem */
-        SubsystemSDL subsystem(stream, "Goat Attack Map Editor", config.get_bool("fixed_pipeline"));
+        SubsystemSDL subsystem(stream, "Goat Attack Map Editor", config.get_bool("shading_pipeline"));
         subsystem.set_keep_pictures(true);
         Resources resources(subsystem, STRINGIZE_VALUE_OF(DATA_DIRECTORY), true);
 

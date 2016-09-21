@@ -176,6 +176,9 @@ public:
     void set_ready();
     void set_team_names(const std::string& team_red, const std::string& team_blue);
     bool is_ready() const;
+    bool is_game_over() const;
+    void spectate_request();
+    void spectate_accepted();
     void show_stats(bool state);
     void update_states(ns_t ns);
 

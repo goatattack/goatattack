@@ -17,7 +17,8 @@
 - goat attack now is ready for cross compiling
 - selecting custom server (thanks to IBPX)
 - jukebox can play user defined music
-- changed from fixed pipeline to OpenGL 3.1
+- optionally fixed pipeline or OpenGL 3.1 rendering
+- spectate button added
 
 0.4.3
 - new rounded buttons

@@ -38,7 +38,7 @@ public:
     void install_handlers(GuiWindow *window,
         OnCancel on_cancel, void *on_cancel_data);
 
-    void add_button(GuiButton *btn);
+    GuiButton *add_button(GuiButton *btn);
     void clear();
     void set_button_focus();
 

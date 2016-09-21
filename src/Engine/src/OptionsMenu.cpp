@@ -16,28 +16,30 @@
  */
 
 #include "OptionsMenu.hpp"
+#include "Client.hpp"
 
 #include <cstdlib>
 
 OptionsMenu::OptionsMenu(Gui& gui, Resources& resources, Subsystem& subsystem,
-    Configuration& config, bool in_game)
+    Configuration& config, Client *client)
     : gui(gui), resources(resources), subsystem(subsystem), config(config),
-      in_game(in_game), options_visible(false), nav(gui, config) { }
+      client(client), options_visible(false), nav(gui, config), window(0) { }
 
 OptionsMenu::~OptionsMenu() { }
 
-void OptionsMenu::show_options() {
+void OptionsMenu::show_options(bool force_game_over, int x, int y) {
     if (!options_visible) {
         options_visible = true;
         int vw = subsystem.get_view_width();
         int vh = subsystem.get_view_height();
         int ww = 213;
-        int wh = (in_game ? 235 : 165);
+        int wh = 165; //(in_game ? 235 : 165);
         int bw = 140;
+        int dh = 0;
 
         nav.clear();
-        GuiWindow *window = gui.push_window(vw / 2 - ww / 2, vh / 2- wh / 2, ww, wh, "Options And Settings");
-        if (!in_game) {
+        window = gui.push_window(vw / 2 - ww / 2, vh / 2- wh / 2, ww, wh, "Options And Settings");
+        if (!client) {
             window->set_cancelable(true);
             window->set_cancel_callback(static_cancel_click, this);
         }
@@ -45,22 +47,60 @@ void OptionsMenu::show_options() {
         nav.add_button(gui.create_button(window, ww / 2 - bw / 2, 10, bw, 26, "Player", static_player_click, this));
         nav.add_button(gui.create_button(window, ww / 2 - bw / 2, 45, bw, 26, "Graphics And Sound", static_graphics_and_sound_click, this));
         nav.add_button(gui.create_button(window, ww / 2 - bw / 2, 80, bw, 26, "Controller And Keyboard", static_controller_and_keyboard_click, this));
-        if (in_game) {
-            nav.add_button(gui.create_button(window, ww / 2 - bw / 2, 115, bw, 26, "Skip song", static_skip_song_click, this));
-            nav.add_button(gui.create_button(window, ww / 2 - bw / 2, 150, bw, 26, "Return To Main Menu", static_back_options_click, this));
+        int top = 115;
+        if (client) {
+            if (!force_game_over && !client->is_game_over()) {
+                if (!client->is_spectating()) {
+                    nav.add_button(gui.create_button(window, ww / 2 - bw / 2, top + dh, bw, 26, "Spectate", static_spectate_click, this));
+                    dh += 35;
+                }
+            }
+
+            nav.add_button(gui.create_button(window, ww / 2 - bw / 2, top + dh, bw, 26, "Skip Song", static_skip_song_click, this));
+            dh += 35;
+            nav.add_button(gui.create_button(window, ww / 2 - bw / 2, top + dh, bw, 26, "Return To Main Menu", static_back_options_click, this));
+            dh += 35;
         }
 
-        nav.add_button(gui.create_button(window, ww / 2 - bw / 2, 185 - (in_game ? 0 : 70), bw, 26, "Close", static_close_options_click, this));
+        //nav.add_button(gui.create_button(window, ww / 2 - bw / 2, 185 - (in_game ? 0 : 70), bw, 26, "Close", static_close_options_click, this));
+        nav.add_button(gui.create_button(window, ww / 2 - bw / 2, top + dh, bw, 26, "Close", static_close_options_click, this));
 
-        if (in_game) {
+        if (client) {
             nav.install_handlers(window, static_nav_close, this);
             nav.set_button_focus();
         }
+
+        /* readjust window */
+        wh += dh;
+        window->set_height(wh);
+        if (x != -1 && y != -1) {
+            window->set_x(x);
+            window->set_y(y);
+        } else {
+            window->set_y(vh / 2- wh / 2);
+        }
+    }
+}
+
+void OptionsMenu::close_options() {
+    if (options_visible) {
+        options_visible = false;
+        gui.pop_window();
+        options_closed();
     }
 }
 
 bool OptionsMenu::are_options_visible() const {
     return options_visible;
+}
+
+void OptionsMenu::get_options_window_position(int& x, int& y) {
+    if (options_visible) {
+        x = window->get_x();
+        y = window->get_y();
+    } else {
+        x = y = -1;
+    }
 }
 
 void OptionsMenu::static_nav_close(void *data) {
@@ -76,10 +116,16 @@ void OptionsMenu::static_close_options_click(GuiVirtualButton *sender, void *dat
 }
 
 void OptionsMenu::close_options_click() {
-    if (options_visible) {
-        options_visible = false;
-        gui.pop_window();
-        options_closed();
+    close_options();
+}
+
+void OptionsMenu::static_spectate_click(GuiVirtualButton *sender, void *data) {
+    (reinterpret_cast<OptionsMenu *>(data))->spectate_click();
+}
+
+void OptionsMenu::spectate_click() {
+    if (client) {
+        client->spectate();
     }
 }
 
@@ -170,38 +216,32 @@ void OptionsMenu::static_graphics_and_sound_click(GuiVirtualButton *sender, void
 void OptionsMenu::graphics_and_sound_click() {
     int vw = subsystem.get_view_width();
     int vh = subsystem.get_view_height();
-    int ww = 343;
-    int wh = 243;
+    int ww = 273;
+    int wh = 184;
     int bw = 140;
 
     GuiWindow *window = gui.push_window(vw / 2 - ww / 2, vh / 2- wh / 2, ww, wh, "Graphics And Sound");
     window->set_cancelable(true);
 
     gui.create_checkbox(window, 15, 15, "fullscreen graphics mode", subsystem.is_fullscreen(), static_toggle_fullscreen_click, this);
-    gui.create_checkbox(window, 15, 30, "use fixed pipeline for drawing (change requires restart)", config.get_bool("fixed_pipeline"), static_toggle_render_mode_click, this);
-    gui.create_checkbox(window, 15, 45, "draw scanlines", subsystem.has_scanlines(), static_toggle_scanlines_click, this);
+    gui.create_checkbox(window, 15, 30, "draw scanlines", subsystem.has_scanlines(), static_toggle_scanlines_click, this);
 
-    gui.create_label(window, 15, 60, "intensity:");
-    gui.create_hscroll(window, 125, 61, 203, 25, 100, config.get_int("scanlines_intensity"), static_scanlines_intensity_changed, this);
-    gui.create_box(window, 15, 81, ww - 30, 1);
-    gui.create_label(window, 15, 90, "music volume:");
-    gui.create_hscroll(window, 125, 91, 203, 0, 100, config.get_int("music_volume"), static_music_volume_changed, this);
+    gui.create_label(window, 15, 45, "intensity:");
+    gui.create_hscroll(window, 115, 46, 143, 25, 100, config.get_int("scanlines_intensity"), static_scanlines_intensity_changed, this);
+    gui.create_box(window, 15, 66, ww - 30, 1);
+    gui.create_label(window, 15, 75, "music volume:");
+    gui.create_hscroll(window, 115, 76, 143, 0, 100, config.get_int("music_volume"), static_music_volume_changed, this);
 
-    gui.create_label(window, 15, 105, "sfx volume:");
-    gui.create_hscroll(window, 125, 106, 203, 0, 128, config.get_int("sfx_volume"), static_sfx_volume_changed, this);
+    gui.create_label(window, 15, 90, "sfx volume:");
+    gui.create_hscroll(window, 115, 91, 143, 0, 128, config.get_int("sfx_volume"), static_sfx_volume_changed, this);
 
-    gui.create_box(window, 15, 126, ww - 30, 1);
+    gui.create_box(window, 15, 111, ww - 30, 1);
 
-    gui.create_label(window, 15, 135, "text fade speed:");
-    gui.create_hscroll(window, 125, 136, 203, 5, 15, config.get_int("text_fade_speed"), static_text_fade_speed_changed, this);
-
-    gui.create_box(window, 15, 156, ww - 30, 1);
-    gui.create_label(window, 15, 165, "music player path:");
-    gs_music_path = gui.create_textbox(window, 125, 165, 203, config.get_string("external_music"));
-    gui.create_label(window, 125, 180, "(ogg and mp3, empty for internal)");
+    gui.create_label(window, 15, 120, "text fade speed:");
+    gui.create_hscroll(window, 115, 121, 143, 5, 15, config.get_int("text_fade_speed"), static_text_fade_speed_changed, this);
 
     bw = 55;
-    gui.create_button(window, ww / 2 - bw / 2, wh - 43, bw, 18, "Close", static_close_sound_window_click, this);
+    gui.create_button(window, ww / 2 - bw / 2, wh - 43, bw, 18, "Close", static_close_window_click, this);
 }
 
 void OptionsMenu::static_toggle_fullscreen_click(GuiCheckbox *sender, void *data, bool state) {
@@ -220,14 +260,6 @@ void OptionsMenu::static_toggle_scanlines_click(GuiCheckbox *sender, void *data,
 void OptionsMenu::toggle_scanlines_click(bool state) {
     subsystem.set_scanlines(state);
     config.set_bool("show_scanlines", state);
-}
-
-void OptionsMenu::static_toggle_render_mode_click(GuiCheckbox *sender, void *data, bool state) {
-    (reinterpret_cast<OptionsMenu *>(data))->toggle_render_mode_click(state);
-}
-
-void OptionsMenu::toggle_render_mode_click(bool state) {
-    config.set_bool("fixed_pipeline", state);
 }
 
 void OptionsMenu::static_scanlines_intensity_changed(GuiVirtualScroll *sender, void *data, int value) {
@@ -264,22 +296,6 @@ void OptionsMenu::static_text_fade_speed_changed(GuiVirtualScroll *sender, void 
 
 void OptionsMenu::text_fade_speed_changed(int value) {
     config.set_int("text_fade_speed", value);
-}
-
-void OptionsMenu::static_close_sound_window_click(GuiVirtualButton *sender, void *data) {
-    (reinterpret_cast<OptionsMenu *>(data))->close_sound_window_click();
-}
-
-void OptionsMenu::close_sound_window_click() {
-    std::string directory(gs_music_path->get_text());
-    instant_trim(directory);
-    if (config.get_string("external_music") != directory) {
-        if (in_game) {
-            gui.show_messagebox(Gui::MessageBoxIconInformation, "Music", "You need to rejoin for changes to take effect.");
-        }
-        config.set_string("external_music", directory);
-    }
-    gui.pop_window();
 }
 
 /* ************************************************************************** */

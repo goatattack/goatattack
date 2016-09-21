@@ -35,11 +35,13 @@ void ButtonNavigator::install_handlers(GuiWindow *window,
     this->on_cancel_data = on_cancel_data;
 }
 
-void ButtonNavigator::add_button(GuiButton *btn) {
+GuiButton *ButtonNavigator::add_button(GuiButton *btn) {
     navigator_buttons.push_back(btn);
     if (current_index < 0) {
         current_index = 0;
     }
+
+    return btn;
 }
 
 void ButtonNavigator::clear() {

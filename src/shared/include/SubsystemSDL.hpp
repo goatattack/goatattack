@@ -35,7 +35,7 @@ class Resources;
 
 class SubsystemSDL : public Subsystem {
 public:
-    SubsystemSDL(std::ostream& stream, const std::string& window_title, bool fixed_pipeline) throw (SubsystemException);
+    SubsystemSDL(std::ostream& stream, const std::string& window_title, bool shading_pipeline) throw (SubsystemException);
     virtual ~SubsystemSDL();
 
     virtual void initialize(Resources& resources);
@@ -119,7 +119,7 @@ private:
     GLuint vbo;
     Shader *base_shader;
     GLuint blank_tex;
-    bool fixed_pipeline;
+    bool shading_pipeline;
     QuadDrawer draw_quad;
 
     SDL_GLContext glcontext;

@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
 #ifdef DEDICATED_SERVER
         SubsystemNull subsystem(stream, "Goat Attack");
 #else
-        SubsystemSDL subsystem(stream, "Goat Attack", config.get_bool("fixed_pipeline"));
+        SubsystemSDL subsystem(stream, "Goat Attack", config.get_bool("shading_pipeline"));
 #endif
 
 #ifdef __APPLE__

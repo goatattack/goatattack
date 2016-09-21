@@ -645,6 +645,7 @@ void Client::sevt_data(ServerEvent& evt) {
                     subsystem.play_system_sound(resources.get_sound("game_over"));
                     add_text_msg("GAME IS OVER");
                 }
+                update_options_window();
                 break;
             }
 
@@ -758,6 +759,32 @@ void Client::sevt_data(ServerEvent& evt) {
                 /* not necessary */
                 break;
             }
+
+            case GPCSpectate:
+            {
+                if (tournament) {
+                    if (t->tournament_id == factory.get_tournament_id()) {
+                        player_id_t *nid = reinterpret_cast<player_id_t *>(data_ptr);
+                        player_id_t id = ntohs(*nid);
+
+                        for (Players::iterator it = players.begin();
+                            it != players.end(); it++)
+                        {
+                            Player *p = *it;
+                            if (p->state.id == id) {
+                                tournament->player_removed(p);
+                                tournament->player_added(p);
+                                if (id == my_id) {
+                                    tournament->spectate_accepted();
+                                    update_options_window();
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+                break;
+            }
         }
 
         /* advance to next element */
@@ -769,5 +796,15 @@ void Client::sevt_data(ServerEvent& evt) {
         } else {
             break;
         }
+    }
+}
+
+void Client::update_options_window() {
+    if (are_options_visible()) {
+        int x;
+        int y;
+        get_options_window_position(x, y);
+        close_options();
+        show_options(true, x, y);
     }
 }

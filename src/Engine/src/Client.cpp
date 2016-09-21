@@ -40,7 +40,7 @@ Client::Client(Resources& resources, Subsystem& subsystem, hostaddr_t host,
     throw (Exception)
     : ClientServer(host, port),
       Gui(resources, subsystem, resources.get_font("normal")),
-      OptionsMenu(*this, resources, subsystem, config, true),
+      OptionsMenu(*this, resources, subsystem, config, this),
       resources(resources), subsystem(subsystem), player_config(config),
       logged_in(false), me(0), updatecnt(0),
       factory(resources, subsystem, this), my_id(0), login_sent(false),
@@ -102,6 +102,34 @@ Client::~Client() {
     /* delete partial downloaded file */
     if (current_download_filename.length()) {
         remove(current_download_filename.c_str());
+    }
+}
+
+bool Client::is_game_over() const {
+    if (tournament && !tournament->is_game_over()) {
+        return false;
+    }
+
+    return true;
+}
+
+bool Client::is_spectating() const {
+    if (me && me->state.server_state.flags & PlayerServerFlagSpectating) {
+        return true;
+    }
+
+    return false;
+}
+
+void Client::spectate() {
+    if (tournament) {
+        tournament->spectate_request();
+    }
+}
+
+void Client::change_team() {
+    if (tournament) {
+        // tournament->change_team();
     }
 }
 

@@ -137,6 +137,7 @@ void TournamentGOH::subintegrate(ns_t ns) {
 
 void TournamentGOH::player_removed(Player *p) {
     test_and_remove_player_from_hill(p);
+    Tournament::player_removed(p);
 }
 
 void TournamentGOH::player_died(Player *p) {

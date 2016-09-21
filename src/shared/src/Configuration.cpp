@@ -48,7 +48,6 @@ Configuration::Configuration(const std::string& directory,
     cdef("sfx_volume", "128");
     cdef("master_server", "master.goatattack.net");
     cdef("master_port", "25113");
-    cdef("fixed_pipeline_drawing", "1");
 
     cdef("server_name", "frederic's temple");
     cdef("server_port", "25111");
@@ -85,6 +84,13 @@ Configuration::Configuration(const std::string& directory,
 
     cdef("deadzone_horizontal", "3200");
     cdef("deadzone_vertical", "3200");
+
+    /*
+     * undocumented settings:
+     * ----------------------
+     * shading_pipeline=[0/1]  (use OpenGL 3.1 VBO streaming for drawing)
+     * external_music=[string] (use external music for jukebox during gameplay)
+     */
 
     /* extract -> ready for quick access */
     extract();

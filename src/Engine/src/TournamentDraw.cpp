@@ -518,9 +518,7 @@ void Tournament::draw_player_addons() { }
 
 void Tournament::draw_team_colours() { }
 
-void Tournament::draw_statistics() {
-
-}
+void Tournament::draw_statistics() { }
 
 void Tournament::draw_enemies_on_hud() {
     int view_width = subsystem.get_view_width();

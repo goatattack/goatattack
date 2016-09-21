@@ -32,7 +32,7 @@ const char *TitleMusic = "norway";
 
 MainMenu::MainMenu(Resources& resources, Subsystem& subsystem, Configuration& config)
     : Gui(resources, subsystem, resources.get_font("normal")),
-      OptionsMenu(*this, resources, subsystem, config, false),
+      OptionsMenu(*this, resources, subsystem, config, 0),
       resources(resources), subsystem(subsystem), config(config),
       x(0), y(0), bgox(0), bgoy(0), goat(0), title(0), gw(0), gh(0),
       shown(MenuButtonStateNone), lan_broadcaster(0), master_query(0),

@@ -5,7 +5,6 @@ PENDING:
 * change to font rendering system freetype (static or dynamic)
 * ded server: sending clan badges png files via udp
 * map voting
-* switch team
 * client server handshake to prevent clientside cheating
 * editor: map shifter
 * ipv6 support
@@ -105,7 +104,9 @@ DONE:
 * goat attack now is ready for cross compiling
 * selecting custom server
 * jukebox can play user defined music
-* working with vbo
+* optionally working with vbo
+* spectate button added
+* switch team done with specate and rejoining other team
 
 DEFERRED:
 * OSX: too short filename buffer -> hardegger bug (not reproducable)

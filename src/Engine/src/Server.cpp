@@ -826,6 +826,37 @@ void Server::event_data(const Connection *c, data_len_t len, void *data) throw (
                     }
                     break;
                 }
+
+                case GPSSpectate:
+                {
+                    if (t->tournament_id == factory.get_tournament_id()) {
+                        /* send disappear animation */
+                        if (p->is_alive_and_playing()) {
+                            GAnimation ani;
+                            memset(&ani, 0, sizeof(GAnimation));
+                            strncpy(ani.animation_name, "disappear", NameLength - 1);
+                            const CollisionBox& colbox = p->get_characterset()->get_colbox();
+                            ani.id = tournament->create_animation_id();
+                            ani.x = p->state.client_server_state.x + colbox.x;
+                            ani.y = p->state.client_server_state.y - (p->get_characterset()->get_height() / 2.0f);
+                            ani.to_net();
+                            broadcast_data(factory.get_tournament_id(), GPCAddAnimation, NetFlagsReliable, GAnimationLen, &ani);
+                        }
+
+                        /* send information text */
+                        std::string msg(p->get_player_name() + " is spectating now");
+                        broadcast_data(0, GPCTextMessage, NetFlagsReliable, msg.length(), msg.c_str());
+
+                        /* remove player from tournament and reset */
+                        logger.log(ServerLogger::LogTypeLeft, msg, p);
+                        tournament->player_removed(p);
+                        tournament->player_added(p);
+                        p->reset();
+                        player_id_t id = htons(p->state.id);
+                        broadcast_data(factory.get_tournament_id(), GPCSpectate, NetFlagsReliable, sizeof(id), &id);
+                    }
+                    break;
+                }
             }
 
             /* advance to next element */

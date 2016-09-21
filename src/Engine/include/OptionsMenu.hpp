@@ -26,6 +26,8 @@
 #include "KeyBinding.hpp"
 #include "ButtonNavigator.hpp"
 
+class Client;
+
 class OptionsMenu {
 private:
     OptionsMenu(const OptionsMenu&);
@@ -33,20 +35,23 @@ private:
 
 public:
     OptionsMenu(Gui& gui, Resources& resources, Subsystem& subsystem,
-    Configuration& config, bool in_game);
+    Configuration& config, Client *client);
     virtual ~OptionsMenu();
 
-    void show_options();
+    void show_options(bool force_game_over = false, int x = -1, int y = -1);
+    void close_options();
     bool are_options_visible() const;
+    void get_options_window_position(int& x, int& y);
 
 private:
     Gui& gui;
     Resources& resources;
     Subsystem& subsystem;
     Configuration& config;
-    bool in_game;
+    Client *client;
     bool options_visible;
     ButtonNavigator nav;
+    GuiWindow *window;
 
     GuiTextbox *player_name;
     GuiCheckbox *show_player_name;
@@ -79,6 +84,7 @@ private:
 
     static void static_cancel_click(GuiObject *sender, void *data);
     static void static_close_options_click(GuiVirtualButton *sender, void *data);
+    static void static_spectate_click(GuiVirtualButton *sender, void *data);
     static void static_skip_song_click(GuiVirtualButton *sender, void *data);
     static void static_back_options_click(GuiVirtualButton *sender, void *data);
     static void static_player_click(GuiVirtualButton *sender, void *data);
@@ -107,15 +113,12 @@ private:
     static bool static_capture_keydown(GuiWindow *sender, void *data, int keycode, bool repeat);
     static bool static_capture_joybuttondown(GuiWindow *sender, void *data, int button);
 
-    static void static_close_sound_window_click(GuiVirtualButton *sender, void *data);
-
     static void static_ck_erase_horz(GuiVirtualButton *sender, void *data);
     static void static_ck_erase_vert(GuiVirtualButton *sender, void *data);
 
     static void static_close_window_click(GuiVirtualButton *sender, void *data);
     static void static_toggle_fullscreen_click(GuiCheckbox *sender, void *data, bool state);
     static void static_toggle_scanlines_click(GuiCheckbox *sender, void *data, bool state);
-    static void static_toggle_render_mode_click(GuiCheckbox *sender, void *data, bool state);
 
     static void static_close_capture_window_click(GuiVirtualButton *sender, void *data);
 
@@ -124,6 +127,7 @@ private:
 
     void close_capture_window_click();
     void close_options_click();
+    void spectate_click();
     void skip_song();
     void back_click();
     void close_window_click();
@@ -154,12 +158,10 @@ private:
     bool capture_joybuttondown(int button);
     void capture_draw();
     void capture_draw(MappedKey& mk, GuiTextbox *mktb);
-    void close_sound_window_click();
     const char *capture_get_config_id();
 
     void toggle_fullscreen_click(bool state);
     void toggle_scanlines_click(bool state);
-    void toggle_render_mode_click(bool state);
 
     virtual void options_closed() { }
 };

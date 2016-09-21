@@ -211,6 +211,25 @@ bool Tournament::is_ready() const {
     return ready;
 }
 
+bool Tournament::is_game_over() const {
+    return game_over;
+}
+
+void Tournament::spectate_request() {
+    if (!server) {
+        add_state_response(GPSSpectate, 0, 0);
+    }
+}
+
+void Tournament::spectate_accepted() {
+    if (!server) {
+        Player *me = get_me();
+        if (me) {
+            me->reset();
+        }
+    }
+}
+
 void Tournament::show_stats(bool state) {
     show_statistics = ((!game_state.seconds_remaining && !warmup) ? true : state);
 }

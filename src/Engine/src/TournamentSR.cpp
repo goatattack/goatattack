@@ -145,6 +145,7 @@ void TournamentSR::player_removed(Player *p) {
             break;
         }
     }
+    Tournament::player_removed(p);
 }
 
 void TournamentSR::player_died(Player *p) {

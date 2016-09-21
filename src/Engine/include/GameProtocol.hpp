@@ -101,7 +101,8 @@ enum GPC {
     GPCXferDataChunk,
     GPCGenericData,
     GPCPakHash,
-    GPCServerQuit
+    GPCServerQuit,
+    GPCSpectate
 };
 
 /* game protocol client to server */
@@ -118,7 +119,8 @@ enum GPS {
     GPSRoundFinished,
     GPSPakSyncHash,
     GPSPakSyncHashFinished,
-    GPSPakSyncAck
+    GPSPakSyncAck,
+    GPSSpectate
 };
 
 const int TransportFlagMorePackets = 1;

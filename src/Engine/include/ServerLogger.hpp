@@ -69,6 +69,7 @@ public:
         LogTypeJoin,                /* 037 */
         LogTypePlayerNameChange,    /* 038 */
         LogTypeMapClosed,           /* 039 */
+        LogTypeLeft,                /* 040 */
         _LogTypeMAX
     };
 
