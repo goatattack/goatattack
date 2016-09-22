@@ -77,7 +77,7 @@ private:
         ClientPaks client_paks;
     };
 
-    typedef std::vector<PlayerClientPak> PlayerClientPaks;
+    typedef std::vector<PlayerClientPak *> PlayerClientPaks;
 
     struct PlayerStats {
         unsigned char tournament_id;

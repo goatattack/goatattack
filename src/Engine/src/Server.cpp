@@ -547,8 +547,10 @@ void Server::event_login(const Connection *c, data_len_t len, void *data) throw 
                     found = true;
                     p->state.server_state = ps->server_state;
                     p->state.client_server_state = ps->client_server_state;
-                    p->state.server_state.kills += reconnect_kills;
-                    p->state.server_state.score -= reconnect_kills;
+                    if (tournament && !tournament->is_game_over()) {
+                        p->state.server_state.kills += reconnect_kills;
+                        p->state.server_state.score -= reconnect_kills;
+                    }
                     p->state.server_state.flags |= PlayerServerFlagDead;
                 }
                 delete ps;
@@ -593,8 +595,8 @@ void Server::event_login(const Connection *c, data_len_t len, void *data) throw 
     broadcast_data(factory.get_tournament_id(), GPCTextMessage, NetFlagsReliable, static_cast<data_len_t>(msg.length()), msg.c_str());
 
     /* fill server pak list */
-    player_client_paks.push_back(PlayerClientPak(p));
-    PlayerClientPak *pcpak = get_player_client_pak(p);
+    PlayerClientPak *pcpak = new PlayerClientPak(p);
+    player_client_paks.push_back(pcpak);
     const Resources::LoadedPaks& my_paks = resources.get_loaded_paks();
     for (Resources::LoadedPaks::const_iterator it = my_paks.begin(); it != my_paks.end(); it++) {
         const Resources::LoadedPak& my_pak = *it;
@@ -840,12 +842,12 @@ void Server::event_data(const Connection *c, data_len_t len, void *data) throw (
                             ani.x = p->state.client_server_state.x + colbox.x;
                             ani.y = p->state.client_server_state.y - (p->get_characterset()->get_height() / 2.0f);
                             ani.to_net();
-                            broadcast_data(factory.get_tournament_id(), GPCAddAnimation, NetFlagsReliable, GAnimationLen, &ani);
+                            stacked_broadcast_data_synced(factory.get_tournament_id(), GPCAddAnimation, NetFlagsReliable, GAnimationLen, &ani);
                         }
 
                         /* send information text */
                         std::string msg(p->get_player_name() + " is spectating now");
-                        broadcast_data(0, GPCTextMessage, NetFlagsReliable, msg.length(), msg.c_str());
+                        stacked_broadcast_data_synced(0, GPCTextMessage, NetFlagsReliable, msg.length(), msg.c_str());
 
                         /* remove player from tournament and reset */
                         logger.log(ServerLogger::LogTypeLeft, msg, p);
@@ -853,7 +855,10 @@ void Server::event_data(const Connection *c, data_len_t len, void *data) throw (
                         tournament->player_added(p);
                         p->reset();
                         player_id_t id = htons(p->state.id);
-                        broadcast_data(factory.get_tournament_id(), GPCSpectate, NetFlagsReliable, sizeof(id), &id);
+                        stacked_broadcast_data_synced(factory.get_tournament_id(), GPCSpectate, NetFlagsReliable, sizeof(id), &id);
+
+                        /* flush */
+                        flush_stacked_broadcast_data_synced(NetFlagsReliable);
                     }
                     break;
                 }
@@ -908,15 +913,15 @@ void Server::event_logout(const Connection *c, LogoutReason reason) throw (Excep
                     break;
             }
 
+            /* inform clients */
+            broadcast_data(factory.get_tournament_id(), GPCRemovePlayer, NetFlagsReliable, sizeof(id), &id);
+
             /* send remove to all clients if client is synced */
             if (p->client_synced) {
                 /* inform tournament */
                 if (tournament) {
                     tournament->player_removed(p);
                 }
-
-                /* inform clients */
-                stacked_broadcast_data_synced(factory.get_tournament_id(), GPCRemovePlayer, NetFlagsReliable, sizeof(id), &id);
 
                 /* get tilegraphic to center animation and text */
                 TileGraphic *tg = p->get_characterset()->get_tile(DirectionLeft,
@@ -1187,9 +1192,9 @@ Server::PlayerClientPak *Server::get_player_client_pak(Player *p) {
     for (PlayerClientPaks::iterator it = player_client_paks.begin();
         it != player_client_paks.end(); it++)
     {
-        PlayerClientPak& pak = *it;
-        if (pak.p == p) {
-            return &pak;
+        PlayerClientPak *pak = *it;
+        if (pak->p == p) {
+            return pak;
         }
     }
 
@@ -1269,11 +1274,12 @@ void Server::destroy_paks(Player *p) {
     for (PlayerClientPaks::iterator pit = player_client_paks.begin();
         pit != player_client_paks.end(); pit++)
     {
-        PlayerClientPak& pak = *pit;
-        if (!p || pak.p == p) {
-            if (pak.f) {
-                fclose(pak.f);
+        PlayerClientPak *pak = *pit;
+        if (!p || pak->p == p) {
+            if (pak->f) {
+                fclose(pak->f);
             }
+            delete pak;
             if (p) {
                 player_client_paks.erase(pit);
                 break;
