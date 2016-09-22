@@ -51,6 +51,7 @@ public:
     int get_tile_height();
     Tile *get_tile(int index);
     size_t get_tile_count();
+    bool is_hidden_in_mapeditor() const;
 
 private:
     typedef std::vector<Tile *> Tiles;
@@ -59,6 +60,7 @@ private:
 
     int tile_width;
     int tile_height;
+    bool hidden_in_mapeditor;
     Tiles tiles;
     int sz;
 

@@ -3,3 +3,4 @@ author=Philippe Widmer
 description=Tileset for big clock digits
 width=16
 height=16
+hidden_in_editor=1

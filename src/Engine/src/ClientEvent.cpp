@@ -804,7 +804,6 @@ void Client::update_options_window() {
         int x;
         int y;
         get_options_window_position(x, y);
-        close_options();
-        show_options(true, x, y);
+        refresh_options(true, x, y);
     }
 }

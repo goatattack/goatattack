@@ -34,6 +34,7 @@ Tileset::Tileset(Subsystem& subsystem, const std::string& filename, ZipReader *z
         if (tile_width != tile_height || tile_width < 16 || tile_width > static_cast<int>(sizeof(mask_t) * 8)) {
             throw TilesetException("Malformed tile size: " + filename);
         }
+        hidden_in_mapeditor = (atoi(get_value("hidden_in_editor").c_str()) != 0);
         create_tile(filename + ".png", zip);
     } catch (const TilesetException&) {
         throw;
@@ -64,6 +65,10 @@ Tile *Tileset::get_tile(int index) {
 
 size_t Tileset::get_tile_count() {
     return sz;
+}
+
+bool Tileset::is_hidden_in_mapeditor() const {
+    return hidden_in_mapeditor;
 }
 
 void Tileset::create_tile(const std::string& filename, ZipReader *zip) throw (Exception) {

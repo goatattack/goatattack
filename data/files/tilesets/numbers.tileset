@@ -3,3 +3,4 @@ author=Philippe Widmer
 description=Tileset for score digits
 width=32
 height=32
+hidden_in_editor=1

@@ -38,6 +38,7 @@ public:
     Configuration& config, Client *client);
     virtual ~OptionsMenu();
 
+    void refresh_options(bool force_game_over = false, int x = -1, int y = -1);
     void show_options(bool force_game_over = false, int x = -1, int y = -1);
     void close_options();
     bool are_options_visible() const;

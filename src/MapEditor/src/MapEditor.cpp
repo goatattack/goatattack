@@ -1060,9 +1060,13 @@ void MapEditor::map_properties_click() {
     Tileset *mts = wmap->get_tileset_ptr();
     for (size_t i = 0; i < sz; i++) {
         Tileset *ts = static_cast<Tileset *>(tilesets[i].object);
-        mp_tileset->add_entry(ts->get_description());
-        if (ts == mts) {
-            mp_tileset->set_selected_index(i);
+        if (!ts->is_hidden_in_mapeditor()) {
+            GuiListboxEntry *entry = mp_tileset->add_entry(ts->get_description());
+            entry->set_ptr_tag(ts);
+            if (ts == mts) {
+                mp_tileset->set_selected_index(i);
+                mp_tileset->set_top_index(i);
+            }
         }
     }
 
@@ -1070,12 +1074,14 @@ void MapEditor::map_properties_click() {
     mp_background = create_listbox(window, hx, Spc + 135, lw, 100, "", 0, 0);
     Resources::ResourceObjects& backgrounds = resources.get_backgrounds();
     sz = backgrounds.size();
+    Background *mbg = wmap->get_background_ptr();
     for (size_t i = 0; i < sz; i++) {
         Background *bg = static_cast<Background *>(backgrounds[i].object);
-        mp_background->add_entry(bg->get_description());
-        Background *mbg = wmap->get_background_ptr();
+        GuiListboxEntry *entry = mp_background->add_entry(bg->get_description());
+        entry->set_ptr_tag(bg);
         if (bg == mbg) {
             mp_background->set_selected_index(i);
+            mp_background->set_top_index(i);
         }
     }
 
@@ -1230,19 +1236,21 @@ void MapEditor::mp_ok_click() {
         return;
     }
 
-    int tileset = mp_tileset->get_selected_index();
-    if (tileset < 0) {
+    int tileset_index = mp_tileset->get_selected_index();
+    if (tileset_index < 0) {
         mp_tileset->set_focus();
         show_messagebox(Gui::MessageBoxIconExclamation, "Tileset", "Select a tileset.");
         return;
     }
+    const Tileset *tileset = static_cast<const Tileset *>(mp_tileset->get_entry(tileset_index)->get_ptr_tag());
 
-    int background = mp_background->get_selected_index();
-    if (background < 0) {
+    int background_index = mp_background->get_selected_index();
+    if (background_index < 0) {
         mp_background->set_focus();
         show_messagebox(Gui::MessageBoxIconExclamation, "Background", "Select a background.");
         return;
     }
+    const Background *background = static_cast<const Background *>(mp_background->get_entry(background_index)->get_ptr_tag());
 
     /* ok */
     wmap->set_name(mp_name->get_text());
@@ -1252,8 +1260,8 @@ void MapEditor::mp_ok_click() {
     wmap->set_lightmap_alpha(lightmap_alpha);
     wmap->set_parallax_shift(parallax);
     wmap->resize_map(width, height);
-    wmap->set_tileset(static_cast<Tileset *>(resources.get_tilesets()[tileset].object)->get_name());
-    wmap->set_background(static_cast<Background *>(resources.get_backgrounds()[background].object)->get_name());
+    wmap->set_tileset(tileset->get_name());
+    wmap->set_background(background->get_name());
     wmap->set_frog_spawn_init(frog_spawn_init);
 
     if (wmap->get_lightmap()) {

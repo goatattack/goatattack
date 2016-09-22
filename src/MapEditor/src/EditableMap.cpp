@@ -158,6 +158,32 @@ void EditableMap::resize_map(int new_width, int new_height) {
 
     width = new_width;
     height = new_height;
+
+    /* erase objects */
+    Objects objects_to_erase;
+    for (Objects::iterator it = objects.begin(); it != objects.end(); it++) {
+        EditableObject *obj = *it;
+        if (obj->x >= width || obj->y >= height) {
+            objects_to_erase.push_back(obj);
+        }
+    }
+    for (Objects::iterator it = objects_to_erase.begin(); it != objects_to_erase.end(); it++) {
+        EditableObject *obj = *it;
+        erase_object(obj->x, obj->y);
+    }
+
+    /* erase lights */
+    Lights lights_to_erase;
+    for (Lights::iterator it = lights.begin(); it != lights.end(); it++) {
+        EditableLight *obj = *it;
+        if (obj->x >= width || obj->y >= height) {
+            lights_to_erase.push_back(obj);
+        }
+    }
+    for (Lights::iterator it = lights_to_erase.begin(); it != lights_to_erase.end(); it++) {
+        EditableLight *obj = *it;
+        erase_light(obj->x, obj->y);
+    }
 }
 
 short **EditableMap::create_new_array(short **from, int new_width, int new_height) {

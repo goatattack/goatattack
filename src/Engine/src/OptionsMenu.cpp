@@ -27,6 +27,13 @@ OptionsMenu::OptionsMenu(Gui& gui, Resources& resources, Subsystem& subsystem,
 
 OptionsMenu::~OptionsMenu() { }
 
+void OptionsMenu::refresh_options(bool force_game_over, int x, int y) {
+    if (options_visible) {
+        options_visible = false;
+        show_options(force_game_over, x, y);
+    }
+}
+
 void OptionsMenu::show_options(bool force_game_over, int x, int y) {
     if (!options_visible) {
         options_visible = true;
@@ -38,7 +45,12 @@ void OptionsMenu::show_options(bool force_game_over, int x, int y) {
         int dh = 0;
 
         nav.clear();
-        window = gui.push_window(vw / 2 - ww / 2, vh / 2- wh / 2, ww, wh, "Options And Settings");
+        if (window && force_game_over) {
+            window->remove_all_objects();
+        }
+        if (!force_game_over) {
+            window = gui.push_window(vw / 2 - ww / 2, vh / 2- wh / 2, ww, wh, "Options And Settings");
+        }
         if (!client) {
             window->set_cancelable(true);
             window->set_cancel_callback(static_cancel_click, this);
@@ -87,6 +99,7 @@ void OptionsMenu::close_options() {
         options_visible = false;
         gui.pop_window();
         options_closed();
+        window = 0;
     }
 }
 
@@ -656,7 +669,7 @@ bool OptionsMenu::capture_joybuttondown(int button) {
 }
 
 /* ************************************************************************** */
-/* Close editor                                                               */
+/* Close window                                                               */
 /* ************************************************************************** */
 void OptionsMenu::static_close_window_click(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<OptionsMenu *>(data))->close_window_click();
