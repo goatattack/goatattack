@@ -172,9 +172,12 @@ void Tournament::integrate(ns_t ns) {
                     sgani->accel_y = 0.0f;
                     sgani->to_net();
                     add_state_response(GPCAddAnimation, GAnimationLen, sgani);
-                    check_killing_animation(static_cast<int>(gani->state.x),
-                        static_cast<int>(gani->state.y), ani, gani->state.owner,
-                        false, 0);
+                    check_killing_animation(
+                        static_cast<int>(gani->state.x + gani->animation->get_tile()->get_tilegraphic()->get_width() / 2),
+                        static_cast<int>(gani->state.y + gani->animation->get_tile()->get_tilegraphic()->get_height() / 2),
+                        ani, gani->state.owner,
+                        false, 0
+                    );
                 }
             }
         }

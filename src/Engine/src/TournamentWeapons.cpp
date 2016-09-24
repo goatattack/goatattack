@@ -135,31 +135,31 @@ void Tournament::check_attack(Player *p, const CollisionBox& colbox,
 void Tournament::fire_shot(Player *p, unsigned char direction) {
     firing_animation(p, PlayerClientFlagFireReleased, properties.get_value("shot"),
         "shot_start_sound", atoi(properties.get_value("shot_y_offset").c_str()), direction,
-        &p->state.server_state.ammo);
+        p->state.server_state.ammo);
 }
 
 void Tournament::fire_grenade(Player *p, unsigned char direction) {
     firing_animation(p, PlayerClientFlagGrenadeReleased, properties.get_value("grenade"),
         "grenade_start_sound", atoi(properties.get_value("grenade_y_offset").c_str()), direction,
-        &p->state.server_state.grenades);
+        p->state.server_state.grenades);
 }
 
 void Tournament::fire_bomb(Player *p, unsigned char direction) {
     firing_animation(p, PlayerClientFlagBombReleased, properties.get_value("bomb"),
         "bomb_start_sound", atoi(properties.get_value("bomb_y_offset").c_str()), direction,
-        &p->state.server_state.bombs);
+        p->state.server_state.bombs);
 }
 
 void Tournament::fire_frog(Player *p, unsigned char direction) {
     firing_npc(p, PlayerClientFlagFrogReleased, properties.get_value("frog"),
         "frog_start_sound", atoi(properties.get_value("frog_y_offset").c_str()), direction,
-        &p->state.server_state.frogs);
+        p->state.server_state.frogs);
 }
 
 void Tournament::firing_animation(Player *p, int flag, const std::string& animation_name,
-    const std::string& start_sound, int yoffset, unsigned char direction, unsigned char *mun)
+    const std::string& start_sound, int yoffset, unsigned char direction, unsigned char& mun)
 {
-    (*mun)--;
+    mun--;
     const CollisionBox& colbox = p->get_characterset()->get_colbox();
     Animation *animation = resources.get_animation(animation_name);
     const CollisionBox& a_colbox = animation->get_physics_colbox();
@@ -197,9 +197,9 @@ void Tournament::firing_animation(Player *p, int flag, const std::string& animat
 }
 
 void Tournament::firing_npc(Player *p, int flag, const std::string& npc_name,
-    const std::string& start_sound, int yoffset, unsigned char direction, unsigned char *mun)
+    const std::string& start_sound, int yoffset, unsigned char direction, unsigned char& mun)
 {
-    (*mun)--;
+    mun--;
     NPC *npc = resources.get_npc(npc_name);
     GSpawnNPC *snpc = new GSpawnNPC;
     memset(snpc, 0, sizeof(GSpawnNPC));
@@ -231,7 +231,7 @@ void Tournament::check_killing_animation(int x, int y, Animation *ani,
             int spread = ani->get_spread();
 
             CollisionBox colbox;
-            colbox.x = x- spread / 2;
+            colbox.x = x - spread / 2;
             colbox.y = y - spread / 2;
             colbox.width = spread;
             colbox.height = spread;

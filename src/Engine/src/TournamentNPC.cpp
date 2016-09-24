@@ -378,8 +378,11 @@ void Tournament::player_npc_collision(Player *p, SpawnableNPC *npc) {
             sgani->accel_y = 0.0f;
             sgani->to_net();
             add_state_response(GPCAddAnimation, GAnimationLen, sgani);
-            check_killing_animation(static_cast<int>(npc->state.x),
-                static_cast<int>(npc->state.y), ani, npc->state.owner, true, npc->npc);
+            check_killing_animation(
+                static_cast<int>(npc->state.x + npc->npc->get_tile(DirectionLeft, NPCAnimationStanding)->get_tilegraphic()->get_width() / 2),
+                static_cast<int>(npc->state.y + npc->npc->get_tile(DirectionLeft, NPCAnimationStanding)->get_tilegraphic()->get_height() / 2),
+                ani, npc->state.owner, true, npc->npc
+            );
         }
     }
 }

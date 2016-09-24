@@ -352,11 +352,11 @@ protected:
 
     void firing_animation(Player *p, int flag, const std::string& animation_name,
         const std::string& start_sound, int yoffset, unsigned char direction,
-        unsigned char *mun);
+        unsigned char& mun);
 
     void firing_npc(Player *p, int flag, const std::string& npc_name,
         const std::string& start_sound, int yoffset, unsigned char direction,
-        unsigned char *mun);
+        unsigned char& mun);
 
     void check_killing_animation(int x, int y, Animation *ani,
         identifier_t owner, bool preserve_npc, NPC *npc);
