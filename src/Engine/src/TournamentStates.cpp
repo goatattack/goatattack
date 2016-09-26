@@ -901,7 +901,10 @@ bool Tournament::tile_collision(TestType type, Player *p,
                     bool test = (last_falling_y_pos <= tiley * tile_height);
                     if (tiley > 0) {
                         int index = map_array[tiley - 1][tilex];
-                        if (index == -1 || tileset->get_tile(index)->get_tile_type() == Tile::TileTypeNonblocking) {
+                        if (index == -1 ||
+                            tileset->get_tile(index)->get_tile_type() == Tile::TileTypeNonblocking ||
+                            tileset->get_tile(index)->get_tile_type() == Tile::TileTypeHillZone)
+                        {
                             return test;
                         } else {
                             return false;

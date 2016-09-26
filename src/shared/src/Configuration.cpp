@@ -23,6 +23,7 @@
 
 Configuration::Configuration(const std::string& directory,
     const std::string& filename) throw (ConfigurationException)
+    : save_at_exit(true)
 {
     if (!filename.length()) {
         throw ConfigurationException("No valid configuration filename.");
@@ -97,7 +98,17 @@ Configuration::Configuration(const std::string& directory,
 }
 
 Configuration::~Configuration() {
-    settings.save(filename);
+    if (save_at_exit) {
+        settings.save(filename);
+    }
+}
+
+bool Configuration::do_save_at_exit() const {
+    return save_at_exit;
+}
+
+void Configuration::set_save_at_exit(bool state) {
+    save_at_exit = state;
 }
 
 std::string Configuration::get_string(const std::string& key) const {

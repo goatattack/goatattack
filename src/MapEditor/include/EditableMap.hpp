@@ -55,6 +55,7 @@ public:
     void erase_object(int x, int y);
     void set_light(int x, int y);
     void erase_light(int x, int y);
+    EditableLight *get_light(int x, int y);
     void save() throw (Exception);
 
 private:

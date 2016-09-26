@@ -58,9 +58,11 @@ void MapEditor::calculate_light(bool pixel_precise) {
         int vw = subsystem.get_view_width();
         int vh = subsystem.get_view_height();
         int ww = 127;
-        int wh = 60;
+        int wh = 80; //60;
         win_compile = push_window(vw / 2 - ww / 2, vh / 2 - wh / 2, ww, wh, "Compiling");
         lbl_compile = create_label(win_compile, Spc, Spc, "0%");
+        GuiButton *btn = add_close_button(win_compile, static_cancel_compilation_click);
+        btn->set_caption("Cancel");
 
         int mw = wmap->get_width();
         int mh = wmap->get_height();
@@ -137,49 +139,61 @@ void MapEditor::calculate_light(bool pixel_precise) {
 }
 
 void MapEditor::finalise_lightmap() {
+    bool is_cancelled = compile_thread->is_cancelled();
     delete compile_thread;
     compile_thread = 0;
 
-    /* write PNG */
-    create_directory("maps", home_workdir);
-    std::string filename = home_workdir + dir_separator +
-        "maps" + dir_separator + wmap->get_name() + ".lmp";
+    if (!is_cancelled) {
+        /* write PNG */
+        create_directory("maps", home_workdir);
+        std::string filename = home_workdir + dir_separator +
+            "maps" + dir_separator + wmap->get_name() + ".lmp";
 
-    FILE *f = fopen(filename.c_str(), "wb");
-    if (!f) {
-        show_messagebox(Gui::MessageBoxIconError, "Light Map",
-            "Saving failed: " + std::string(strerror(errno)));
-        return;
-    }
+        FILE *f = fopen(filename.c_str(), "wb");
+        if (!f) {
+            show_messagebox(Gui::MessageBoxIconError, "Light Map",
+                "Saving failed: " + std::string(strerror(errno)));
+            return;
+        }
 
-    png_structp png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, 0, 0, 0);
-    png_infop info_ptr = png_create_info_struct(png_ptr);
-    png_init_io(png_ptr, f);
-    png_set_IHDR(png_ptr, info_ptr, lightmap_w, lightmap_h, 8, PNG_COLOR_TYPE_RGB_ALPHA,
-        PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
-    png_write_info(png_ptr, info_ptr);
+        png_structp png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, 0, 0, 0);
+        png_infop info_ptr = png_create_info_struct(png_ptr);
+        png_init_io(png_ptr, f);
+        png_set_IHDR(png_ptr, info_ptr, lightmap_w, lightmap_h, 8, PNG_COLOR_TYPE_RGB_ALPHA,
+            PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
+        png_write_info(png_ptr, info_ptr);
 
-    /* delete image after writing each row */
-    for (int y = 0; y < lightmap_h; y++) {
-        png_write_row(png_ptr, lightmap[y]);
-        delete[] lightmap[y];
-    }
-    delete[] lightmap;
+        /* delete image after writing each row */
+        for (int y = 0; y < lightmap_h; y++) {
+            png_write_row(png_ptr, lightmap[y]);
+            delete[] lightmap[y];
+        }
+        delete[] lightmap;
 
-    /* close file */
-    png_write_end(png_ptr, 0);
-    if (info_ptr) {
-        png_free_data(png_ptr, info_ptr, PNG_FREE_ALL, -1);
-    }
-    if (png_ptr) {
-        png_destroy_write_struct(&png_ptr, &info_ptr);
-    }
-    fclose(f);
+        /* close file */
+        png_write_end(png_ptr, 0);
+        if (info_ptr) {
+            png_free_data(png_ptr, info_ptr, PNG_FREE_ALL, -1);
+        }
+        if (png_ptr) {
+            png_destroy_write_struct(&png_ptr, &info_ptr);
+        }
+        fclose(f);
 
-    if (wmap) {
-        wmap->create_lightmap();
+        if (wmap) {
+            wmap->create_lightmap();
+        }
+    } else {
+        delete[] lightmap;
     }
 
     pop_window();
 }
 
+void MapEditor::static_cancel_compilation_click(GuiVirtualButton *sender, void *data) {
+    (reinterpret_cast<MapEditor *>(data))->cancel_compilation_click();
+}
+
+void MapEditor::cancel_compilation_click() {
+    compile_thread->cancel();
+}

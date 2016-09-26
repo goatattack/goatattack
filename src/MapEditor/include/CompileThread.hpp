@@ -30,7 +30,9 @@ public:
     virtual ~CompileThread() = 0;
 
     bool is_finished();
+    bool is_cancelled();
     int get_percentage();
+    void cancel();
 
 protected:
     struct Point {
@@ -43,6 +45,7 @@ protected:
     EditableMap *wmap;
     unsigned char **lightmap;
     bool finished;
+    bool cancelled;
     int finished_percent;
     Mutex mtx;
 

@@ -67,7 +67,13 @@ EditableMap::EditableMap(Resources& resources, Subsystem& subsystem,
         int y = atoi(get_value(buffer).c_str());
         sprintf(buffer, "light_radius%d", i);
         int radius = atoi(get_value(buffer).c_str());
-        lights.push_back(new EditableLight(x, y, radius));
+        sprintf(buffer, "light_r%d", i);
+        int r = atoi(get_value(buffer).c_str());
+        sprintf(buffer, "light_g%d", i);
+        int g = atoi(get_value(buffer).c_str());
+        sprintf(buffer, "light_b%d", i);
+        int b = atoi(get_value(buffer).c_str());
+        lights.push_back(new EditableLight(x, y, radius, r, g, b));
     }
 
     create_lightmap();
@@ -288,6 +294,18 @@ void EditableMap::erase_light(int x, int y) {
     }
 }
 
+EditableLight *EditableMap::get_light(int x, int y) {
+    for (Lights::iterator it = lights.begin(); it != lights.end(); it++) {
+        EditableLight *elgt = *it;
+        if (elgt->x == x && elgt->y == y) {
+            return elgt;
+        }
+    }
+
+    return 0;
+}
+
+
 void EditableMap::save() throw (Exception) {
     char buffer[256];
 
@@ -319,6 +337,12 @@ void EditableMap::save() throw (Exception) {
         sprintf(buffer, "light_y%d", i);
         set_value(buffer, "");
         sprintf(buffer, "light_radius%d", i);
+        set_value(buffer, "");
+        sprintf(buffer, "light_r%d", i);
+        set_value(buffer, "");
+        sprintf(buffer, "light_g%d", i);
+        set_value(buffer, "");
+        sprintf(buffer, "light_b%d", i);
         set_value(buffer, "");
     }
 
@@ -354,6 +378,12 @@ void EditableMap::save() throw (Exception) {
         set_value(buffer, elgt->y);
         sprintf(buffer, "light_radius%d", i);
         set_value(buffer, elgt->radius);
+        sprintf(buffer, "light_r%d", i);
+        set_value(buffer, elgt->r);
+        sprintf(buffer, "light_g%d", i);
+        set_value(buffer, elgt->g);
+        sprintf(buffer, "light_b%d", i);
+        set_value(buffer, elgt->b);
     }
 
     std::string save_dir = get_home_directory() + dir_separator + UserDirectory;

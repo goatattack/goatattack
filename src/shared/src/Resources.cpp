@@ -97,8 +97,9 @@ template<class T> static bool check_duplicate(Subsystem& subsystem, Resources::R
 }
 
 /* class implementation begins here */
-Resources::Resources(Subsystem& subsystem, const std::string& resource_directory, bool skip_maps) throw (ResourcesException, ResourcesMissingException)
-    : subsystem(subsystem), resource_directory(resource_directory), skip_maps(skip_maps)
+Resources::Resources(Subsystem& subsystem, const std::string& resource_directory, bool skip_maps, bool paks_only) throw (ResourcesException, ResourcesMissingException)
+    : subsystem(subsystem), resource_directory(resource_directory),
+      skip_maps(skip_maps), paks_only(paks_only)
 {
     subsystem << "initializing resources" << std::endl;
     srand(static_cast<unsigned int>(time(0)));
@@ -569,7 +570,9 @@ void Resources::load_resources(bool home_paks_only) throw (ResourcesException, R
             }
 
             /* read open directory */
-            read_all(resource_directory + dir_separator, 0, true);
+            if (!paks_only) {
+                read_all(resource_directory + dir_separator, 0, true);
+            }
         }
 
         /* scan user directories */
@@ -591,7 +594,9 @@ void Resources::load_resources(bool home_paks_only) throw (ResourcesException, R
         }
 
         /* read open directory */
-        read_all(get_home_directory() + dir_separator + UserDirectory + dir_separator, 0, false);
+        if (!paks_only) {
+            read_all(get_home_directory() + dir_separator + UserDirectory + dir_separator, 0, false);
+        }
 
         /* check if main paks are there */
         pak = Resources::NonDownloadableMainPaks;

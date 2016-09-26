@@ -18,6 +18,9 @@
 #include "EditableLight.hpp"
 
 EditableLight::EditableLight(int x, int y, int radius)
-    : x(x), y(y), radius(radius) { }
+    : x(x), y(y), radius(radius), r(0), g(0), b(0) { }
+
+EditableLight::EditableLight(int x, int y, int radius, int r, int g, int b)
+    : x(x), y(y), radius(radius), r(r), g(g), b(b) { }
 
 EditableLight::~EditableLight() { }

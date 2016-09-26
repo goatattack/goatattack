@@ -189,6 +189,10 @@ void MapEditor::idle() throw (Exception) {
             txt = "LIGHT";
             break;
 
+        case DrawModeEditLight:
+            txt = "EDIT LIGHT";
+            break;
+
         default:
             break;
     }
@@ -378,6 +382,11 @@ void MapEditor::hand_draw(int x, int y) {
             place_light(x, y, mouse_down_mode == 2);
             break;
 
+        case DrawModeEditLight:
+            mouse_down_mode = 0;
+            edit_light(x, y);
+            break;
+
         default:
             break;
     }
@@ -479,7 +488,7 @@ void MapEditor::static_window_close_click(GuiVirtualButton *sender, void *data) 
     (reinterpret_cast<Gui *>(data))->pop_window();
 }
 
-void MapEditor::add_close_button(GuiWindow *window, GuiVirtualButton::OnClick on_click) {
+GuiButton *MapEditor::add_close_button(GuiWindow *window, GuiVirtualButton::OnClick on_click) {
     std::string caption("Close");
     int width = window->get_client_width();
     int height = window->get_client_height();
@@ -490,7 +499,7 @@ void MapEditor::add_close_button(GuiWindow *window, GuiVirtualButton::OnClick on
         on_click = static_window_close_click;
     }
 
-    create_button(window, width / 2 - bw / 2, height - bh - Spc, bw, bh, caption, on_click, this);
+    return create_button(window, width / 2 - bw / 2, height - bh - Spc, bw, bh, caption, on_click, this);
 }
 
 void MapEditor::add_ok_cancel_buttons(GuiWindow *window, GuiVirtualButton::OnClick on_click) {
@@ -928,6 +937,26 @@ void MapEditor::mouse_move_map(int x, int y) {
     top = move_origin_top + (y - move_origin_y) / subsystem.get_zoom_factor();
 }
 
+void MapEditor::edit_light(int x, int y) {
+    x /= subsystem.get_zoom_factor();
+    y /= subsystem.get_zoom_factor();
+    x -= left;
+    y -= top;
+
+    if (wmap) {
+        Tileset *ts = wmap->get_tileset_ptr();
+        if (ts) {
+            x /= ts->get_tile_width();
+            y /= ts->get_tile_height();
+            if (x >= 0 && x < wmap->get_width() &&
+                y >= 0 && y < wmap->get_height())
+            {
+                light_editor(wmap->get_light(x, y));
+            }
+        }
+    }
+}
+
 void MapEditor::static_center_map(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<MapEditor *>(data))->center_map();
 }
@@ -943,6 +972,94 @@ void MapEditor::center_map() {
     } else {
         show_messagebox(Gui::MessageBoxIconExclamation, "No Tileset", "Please select a tileset in the map properties.");
     }
+}
+
+/* ************************************************************************** */
+/* light editor                                                               */
+/* ************************************************************************** */
+void MapEditor::light_editor(EditableLight *light) {
+    if (light) {
+        lp_light = light;
+        int width = get_subsystem().get_view_width();
+        int height = get_subsystem().get_view_height();
+        int ww = 190;
+        int wh = 140;
+        int tab = 60;
+        char buffer[256];
+
+        GuiWindow *window = push_window(width / 2 - ww / 2, height / 2 - wh / 2, ww, wh, "Light Properties");
+
+        int y = Spc;
+        int nl = 20;
+
+        create_label(window, Spc, y, "radius:");
+        sprintf(buffer, "%d", light->radius);
+        lp_radius = create_textbox(window, tab, y, 50, buffer);
+        create_label(window, tab + 50 + 10, y, "(1 - 256)");
+        y += nl;
+
+        create_label(window, Spc, y, "red:");
+        sprintf(buffer, "%d", light->r);
+        lp_red = create_textbox(window, tab, y, 50, buffer);
+        create_label(window, tab + 50 + 10, y, "(0 - 255)");
+        y += nl;
+
+        create_label(window, Spc, y, "green:");
+        sprintf(buffer, "%d", light->g);
+        lp_green = create_textbox(window, tab, y, 50, buffer);
+        create_label(window, tab + 50 + 10, y, "(0 - 255)");
+        y += nl;
+
+        create_label(window, Spc, y, "blue:");
+        sprintf(buffer, "%d", light->b);
+        lp_blue = create_textbox(window, tab, y, 50, buffer);
+        create_label(window, tab + 50 + 10, y, "(0 - 255)");
+        y += nl;
+
+        lp_radius->set_focus();
+        add_ok_cancel_buttons(window, static_lp_ok_click);
+    }
+}
+
+void MapEditor::static_lp_ok_click(GuiVirtualButton *sender, void *data) {
+    (reinterpret_cast<MapEditor *>(data))->lp_ok_click();
+}
+
+void MapEditor::lp_ok_click() {
+    int radius = atoi(lp_radius->get_text().c_str());
+    if (radius < 1 || radius > 256) {
+        lp_radius->set_focus();
+        show_messagebox(Gui::MessageBoxIconExclamation, "Radius", FieldMsg + " (between 1 and 256)");
+        return;
+    }
+
+    int r = atoi(lp_red->get_text().c_str());
+    if (r < 0 || r > 255) {
+        lp_red->set_focus();
+        show_messagebox(Gui::MessageBoxIconExclamation, "Red", FieldMsg + " (between 0 and 255)");
+        return;
+    }
+
+    int g = atoi(lp_green->get_text().c_str());
+    if (g < 0 || g > 255) {
+        lp_green->set_focus();
+        show_messagebox(Gui::MessageBoxIconExclamation, "Green", FieldMsg + " (between 0 and 255)");
+        return;
+    }
+
+    int b = atoi(lp_blue->get_text().c_str());
+    if (b < 0 || b > 255) {
+        lp_blue->set_focus();
+        show_messagebox(Gui::MessageBoxIconExclamation, "Blue", FieldMsg + " (between 0 and 255)");
+        return;
+    }
+
+    lp_light->radius = radius;
+    lp_light->r = r;
+    lp_light->g = g;
+    lp_light->b = b;
+    wmap->touch();
+    pop_window();
 }
 
 /* ************************************************************************** */

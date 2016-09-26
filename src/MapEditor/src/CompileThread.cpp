@@ -66,7 +66,8 @@ bool CompileThread::intersection(const Point& p1, const Point& p2,
 }
 
 CompileThread::CompileThread(EditableMap *wmap, unsigned char **lightmap)
-    : wmap(wmap), lightmap(lightmap), finished(false), finished_percent(0) { }
+    : wmap(wmap), lightmap(lightmap), finished(false), cancelled(false),
+      finished_percent(0) { }
 
 CompileThread::~CompileThread() { }
 
@@ -75,7 +76,17 @@ bool CompileThread::is_finished() {
     return finished;
 }
 
+bool CompileThread::is_cancelled() {
+    Scope<Mutex> lock(mtx);
+    return cancelled;
+}
+
 int CompileThread::get_percentage() {
     Scope<Mutex> lock(mtx);
     return finished_percent;
+}
+
+void CompileThread::cancel() {
+    Scope<Mutex> lock(mtx);
+    cancelled = true;
 }

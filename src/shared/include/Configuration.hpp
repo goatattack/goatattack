@@ -34,6 +34,9 @@ public:
     Configuration(const std::string& directory, const std::string& filename) throw (ConfigurationException);
     virtual ~Configuration();
 
+    bool do_save_at_exit() const;
+    void set_save_at_exit(bool state);
+
     std::string get_string(const std::string& key) const;
     void set_string(const std::string& key, const std::string& value);
 
@@ -53,6 +56,7 @@ public:
     void extract();
 
 private:
+    bool save_at_exit;
     std::string filename;
     KeyValue settings;
     char buffer[128];

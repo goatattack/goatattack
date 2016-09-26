@@ -48,8 +48,14 @@ void CompileThreadBlock::thread() {
         {
             Scope<Mutex> lock(mtx);
             finished_percent = 100 * (i + 1) / nlgt;
+            if (cancelled) {
+                break;
+            }
         }
         int r = lights[i]->radius;
+        int colr = lights[i]->r;
+        int colg = lights[i]->g;
+        int colb = lights[i]->b;
         int lmaxsq = r * r;
         int lx = lights[i]->x;
         int ly = lights[i]->y;
@@ -114,6 +120,10 @@ void CompileThreadBlock::thread() {
                     if (!contact) {
                         int v = static_cast<int>(sqrt(65025.0f * dist / lmaxsq));
                         if (v < lightmap[y][x * 4 + 3]) {
+                            double l = 1.0 - (static_cast<double>(v) / 255.0);
+                            lightmap[y][x * 4 + 0] = static_cast<unsigned char>(colr * l);
+                            lightmap[y][x * 4 + 1] = static_cast<unsigned char>(colg * l);
+                            lightmap[y][x * 4 + 2] = static_cast<unsigned char>(colb * l);
                             lightmap[y][x * 4 + 3] = v;
                         }
                     }

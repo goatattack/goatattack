@@ -40,6 +40,7 @@ void Game::run(const std::string& parm) {
     subsystem.initialize(resources);
 
 #ifdef DEDICATED_SERVER
+    config.set_save_at_exit(false);
     Server server(resources, subsystem, parm);
     server.start();
 #else

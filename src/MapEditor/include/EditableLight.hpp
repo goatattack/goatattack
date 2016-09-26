@@ -21,11 +21,15 @@
 class EditableLight {
 public:
     EditableLight(int x, int y, int radius);
+    EditableLight(int x, int y, int radius, int r, int g, int b);
     virtual ~EditableLight();
 
     int x;
     int y;
     int radius;
+    int r;
+    int g;
+    int b;
 };
 
 #endif

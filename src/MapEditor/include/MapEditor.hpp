@@ -44,6 +44,7 @@ private:
         DrawModeTile = 0,
         DrawModeObject,
         DrawModeLightSources,
+        DrawModeEditLight,
         _DrawModeMAX
     };
 
@@ -95,7 +96,7 @@ private:
 
     /* helpers */
     void create_toolbox();
-    void add_close_button(GuiWindow *window, GuiVirtualButton::OnClick on_click = 0);
+    GuiButton *add_close_button(GuiWindow *window, GuiVirtualButton::OnClick on_click = 0);
     void add_ok_cancel_buttons(GuiWindow *window, GuiVirtualButton::OnClick on_click);
     void add_ok_cancel_buttons(GuiWindow *window, GuiVirtualButton::OnClick on_ok_click,
         GuiVirtualButton::OnClick on_cancel_click);
@@ -109,6 +110,8 @@ private:
     void place_object(int x, int y, bool erasing);
     void place_light(int x, int y, bool erasing);
     void mouse_move_map(int x, int y);
+    void edit_light(int x, int y);
+    void light_editor(EditableLight *light);
 
     static void static_center_map(GuiVirtualButton *sender, void *data);
     void center_map();
@@ -257,6 +260,19 @@ private:
     GuiCheckbox *opt_fullscreen;
     GuiCheckbox *opt_scanlines;
     GuiHScroll *opt_intensity;
+
+    /* light properties */
+    static void static_lp_ok_click(GuiVirtualButton *sender, void *data);
+    void lp_ok_click();
+    EditableLight *lp_light;
+    GuiTextbox *lp_radius;
+    GuiTextbox *lp_red;
+    GuiTextbox *lp_green;
+    GuiTextbox *lp_blue;
+
+    /* compile cancel */
+    static void static_cancel_compilation_click(GuiVirtualButton *sender, void *data);
+    void cancel_compilation_click();
 
     /* exit editor */
     static void static_exit_click(GuiVirtualButton *sender, void *data);
