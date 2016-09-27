@@ -24,9 +24,10 @@
 #include <ctime>
 #include <algorithm>
 
-const char *Resources::NonDownloadableMainPaks[] = {
-    "base.pak",
-    0
+const Resources::NonDownloadableMainPak Resources::NonDownloadableMainPaks[] = {
+    { "base.pak", true },
+    { "base-non-free.pak", false },
+    { 0, false }
 };
 
 /* static helpers */
@@ -52,12 +53,14 @@ template<class T> static void erase_resource_objects(Resources::ResourceObjects&
     }
 }
 
-static bool is_not_a_main_pak(const std::string& pakname) {
-    const char **pak = Resources::NonDownloadableMainPaks;
+static bool is_not_a_required_main_pak(const std::string& pakname) {
+    const Resources::NonDownloadableMainPak *pak = Resources::NonDownloadableMainPaks;
     std::string pakfile = pakname + ".pak";
-    while (*pak) {
-        if (!strcmp(*pak, pakfile.c_str())) {
-            return false;
+    while (pak->name) {
+        if (pak->check) {
+            if (!strcmp(pak->name, pakfile.c_str())) {
+                return false;
+            }
         }
         pak++;
     }
@@ -532,7 +535,8 @@ void Resources::read_shaders(const std::string& directory, ZipReader *zip, bool 
 
 void Resources::load_resources(bool home_paks_only) throw (ResourcesException, ResourcesMissingException) {
     try {
-        const char **pak = 0;
+        //const char **pak = 0;
+        const Resources::NonDownloadableMainPak *pak = 0;
 
         if (!home_paks_only) {
             /* scan main directories */
@@ -540,14 +544,16 @@ void Resources::load_resources(bool home_paks_only) throw (ResourcesException, R
 
             /* read main paks */
             pak = Resources::NonDownloadableMainPaks;
-            while (*pak) {
-                subsystem << "scanning " << *pak << std::endl;
-                try {
-                    ZipReader zip(resource_directory + dir_separator + *pak);
-                    read_all("", &zip, true);
-                    loaded_paks.push_back(LoadedPak(zip.get_zip_filename(), zip.get_zip_short_filename(), zip.get_hash(), false));
-                } catch (const ZipException& e) {
-                    subsystem << e.what() << std::endl;
+            while (pak->name) {
+                if (pak->check) {
+                    subsystem << "scanning " << pak->name << std::endl;
+                    try {
+                        ZipReader zip(resource_directory + dir_separator + pak->name);
+                        read_all("", &zip, true);
+                        loaded_paks.push_back(LoadedPak(zip.get_zip_filename(), zip.get_zip_short_filename(), zip.get_hash(), false));
+                    } catch (const ZipException& e) {
+                        subsystem << e.what() << std::endl;
+                    }
                 }
 
                 pak++;
@@ -557,7 +563,7 @@ void Resources::load_resources(bool home_paks_only) throw (ResourcesException, R
             Directory dir(resource_directory, ".pak");
             const char *entry = 0;
             while ((entry = dir.get_entry())) {
-                if (is_not_a_main_pak(entry)) {
+                if (is_not_a_required_main_pak(entry)) {
                     subsystem << "scanning " << entry << ".pak" << std::endl;
                     try {
                         ZipReader zip(resource_directory + dir_separator + entry + ".pak");
@@ -600,9 +606,11 @@ void Resources::load_resources(bool home_paks_only) throw (ResourcesException, R
 
         /* check if main paks are there */
         pak = Resources::NonDownloadableMainPaks;
-        while (*pak) {
-            if (std::find(loaded_paks.begin(), loaded_paks.end(), *pak) == loaded_paks.end()) {
-                throw ResourcesMissingException(std::string(*pak) + " is missing.");
+        while (pak->name) {
+            if (pak->check) {
+                if (std::find(loaded_paks.begin(), loaded_paks.end(), pak->name) == loaded_paks.end()) {
+                    throw ResourcesMissingException(std::string(pak->name) + " is missing.");
+                }
             }
             pak++;
         }

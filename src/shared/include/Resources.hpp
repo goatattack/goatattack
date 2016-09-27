@@ -60,7 +60,12 @@ private:
     Resources& operator=(const Resources&);
 
 public:
-    static const char *NonDownloadableMainPaks[];
+    struct NonDownloadableMainPak {
+        const char *name;
+        bool check;
+    };
+
+    static const NonDownloadableMainPak NonDownloadableMainPaks[];
 
     struct LoadedPak {
         LoadedPak(const std::string& pak_name, const std::string& pak_short_name,

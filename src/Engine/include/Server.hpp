@@ -118,6 +118,7 @@ private:
     MapConfigurations map_configs;
     HeldPlayerStats held_player_stats;
     PlayerClientPaks player_client_paks;
+    Resources::LoadedPaks my_paks;
 
     char pak_buffer[PacketMaxSize];
 
@@ -137,6 +138,8 @@ private:
     std::ostream& create_log_stream();
 
     void parse_command(const Connection *c, Player *p, data_len_t len, void *data) throw (ServerAdminException);
+
+    void setup_loaded_paks();
 
     /* implements Thread */
     virtual void thread();

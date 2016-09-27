@@ -69,6 +69,7 @@ Server::Server(Resources& resources, Subsystem& subsystem,
       log_file(0), logger(subsystem.get_stream(), true), server_admin(0),
       reload_map_rotation(false)
 {
+    setup_loaded_paks();
     map_configs.push_back(MapConfiguration(type, map_name, duration, warmup));
 }
 
@@ -89,6 +90,7 @@ Server::Server(Resources& resources, Subsystem& subsystem,
       log_file(0), logger(create_log_stream(), true), server_admin(0),
       reload_map_rotation(false)
 {
+    setup_loaded_paks();
     load_map_rotation();
     check_team_names();
 
@@ -597,7 +599,6 @@ void Server::event_login(const Connection *c, data_len_t len, void *data) throw 
     /* fill server pak list */
     PlayerClientPak *pcpak = new PlayerClientPak(p);
     player_client_paks.push_back(pcpak);
-    const Resources::LoadedPaks& my_paks = resources.get_loaded_paks();
     for (Resources::LoadedPaks::const_iterator it = my_paks.begin(); it != my_paks.end(); it++) {
         const Resources::LoadedPak& my_pak = *it;
         pcpak->client_paks.push_back(ClientPak(&my_pak));
@@ -787,7 +788,6 @@ void Server::event_data(const Connection *c, data_len_t len, void *data) throw (
                     hash->from_net();
                     std::string pak_name = hash->pak_name;
                     std::string pak_hash(hash->pak_hash, GPakHash::HashLength);
-                    const Resources::LoadedPaks& my_paks = resources.get_loaded_paks();
                     for (Resources::LoadedPaks::const_iterator it = my_paks.begin(); it != my_paks.end(); it++) {
                         const Resources::LoadedPak& my_pak = *it;
                         if (my_pak.pak_short_name == pak_name) {
@@ -803,10 +803,12 @@ void Server::event_data(const Connection *c, data_len_t len, void *data) throw (
                                 }
                             } else {
                                 /* non downloadable pak file? */
-                                const char **ptr = Resources::NonDownloadableMainPaks;
-                                while (*ptr) {
-                                    if (!strcmp(*ptr, pak_name.c_str())) {
-                                        quit_client(c, p, "Main pak '" + pak_name + "' has a different hash.");
+                                const Resources::NonDownloadableMainPak *ptr = Resources::NonDownloadableMainPaks;
+                                while (ptr->name) {
+                                    if (!strcmp(ptr->name, pak_name.c_str())) {
+                                        if (ptr->check) {
+                                            quit_client(c, p, "Main pak '" + pak_name + "' has a different hash.");
+                                        }
                                         break;
                                     }
                                     ptr++;
@@ -1359,6 +1361,25 @@ void Server::parse_command(const Connection *c, Player *p, data_len_t len, void 
     }
 
     server_admin->execute(c, p, command, param);
+}
+
+void Server::setup_loaded_paks() {
+    const Resources::LoadedPaks& loaded_paks = resources.get_loaded_paks();
+    for (Resources::LoadedPaks::const_iterator it = loaded_paks.begin(); it != loaded_paks.end(); it++) {
+        const Resources::LoadedPak& loaded_pak = *it;
+        const Resources::NonDownloadableMainPak *ptr = Resources::NonDownloadableMainPaks;
+        bool check = true;
+        while (ptr->name) {
+            if (!strcmp(ptr->name, loaded_pak.pak_short_name.c_str())) {
+                check = ptr->check;
+                break;
+            }
+            ptr++;
+        }
+        if (check) {
+            my_paks.push_back(loaded_pak);
+        }
+    }
 }
 
 ScopeServer::ScopeServer(Server& server) : server(server) {
