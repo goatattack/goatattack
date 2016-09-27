@@ -40,7 +40,7 @@ void OptionsMenu::show_options(bool force_game_over, int x, int y) {
         int vw = subsystem.get_view_width();
         int vh = subsystem.get_view_height();
         int ww = 213;
-        int wh = 165; //(in_game ? 235 : 165);
+        int wh = 165;
         int bw = 140;
         int dh = 0;
 
@@ -68,13 +68,15 @@ void OptionsMenu::show_options(bool force_game_over, int x, int y) {
                 }
             }
 
-            nav.add_button(gui.create_button(window, ww / 2 - bw / 2, top + dh, bw, 26, "Skip Song", static_skip_song_click, this));
-            dh += 35;
+            if (resources.get_musics().size()) {
+                nav.add_button(gui.create_button(window, ww / 2 - bw / 2, top + dh, bw, 26, "Skip Song", static_skip_song_click, this));
+                dh += 35;
+            }
+
             nav.add_button(gui.create_button(window, ww / 2 - bw / 2, top + dh, bw, 26, "Return To Main Menu", static_back_options_click, this));
             dh += 35;
         }
 
-        //nav.add_button(gui.create_button(window, ww / 2 - bw / 2, 185 - (in_game ? 0 : 70), bw, 26, "Close", static_close_options_click, this));
         nav.add_button(gui.create_button(window, ww / 2 - bw / 2, top + dh, bw, 26, "Close", static_close_options_click, this));
 
         if (client) {
@@ -242,6 +244,7 @@ void OptionsMenu::graphics_and_sound_click() {
     gui.create_label(window, 15, 45, "intensity:");
     gui.create_hscroll(window, 115, 46, 143, 25, 100, config.get_int("scanlines_intensity"), static_scanlines_intensity_changed, this);
     gui.create_box(window, 15, 66, ww - 30, 1);
+
     gui.create_label(window, 15, 75, "music volume:");
     gui.create_hscroll(window, 115, 76, 143, 0, 100, config.get_int("music_volume"), static_music_volume_changed, this);
 

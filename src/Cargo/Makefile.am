@@ -24,5 +24,9 @@ endif
 
 if BUILD_PAK
 all: goatattack-cargo
-	./goatattack-cargo --pack ../../data/files ../../data/base.pak
+	./goatattack-cargo --pack ../../data/free ../../data/base.pak
+if NON_FREE_PAK
+	./goatattack-cargo --pack ../../data/non-free ../../data/base-non-free.pak
+endif
+
 endif

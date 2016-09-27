@@ -22,6 +22,7 @@ AC_CHECK_LIB([png], [png_init_io], [], [missing_libraries="$missing_libraries li
 # --- compile args ---
 AC_ARG_ENABLE([build-pak],        [  --disable-build-pak     Building base.pak [[default=yes]]], [], [BUILD_PAK="yes"])
 AC_ARG_ENABLE([dedicated-server], [  --enable-dedicated-server  Build dedicated server [[default=no]]], [DEDICATED_SERVER="yes"], [])
+AC_ARG_ENABLE([non-free-pak],     [  --enable-non-free-pak   Build non free pak [[default=no]]], [NON_FREE_PAK="yes"], [])
 AC_ARG_ENABLE([master-server],    [  --enable-master-server  Build master server [[default=no]]], [MASTER_SERVER="yes"], [])
 AC_ARG_ENABLE([internal-zlib],    [  --enable-internal-zlib  Build with the project copy of zlib [[default=no]]], [INTERNAL_ZLIB="yes"], [])
 AC_ARG_ENABLE([map-editor],       [  --enable-map-editor     Build map editor [[default=no]]], [MAP_EDITOR="yes"], [])
@@ -36,6 +37,7 @@ AM_CONDITIONAL([MASTER_SERVER], [test "x$MASTER_SERVER" = xyes])
 AM_CONDITIONAL([INTERNAL_ZLIB], [test "x$INTERNAL_ZLIB" = xyes])
 AM_CONDITIONAL([MAP_EDITOR], [test "x$MAP_EDITOR" = xyes])
 AM_CONDITIONAL([BUILD_PAK], [test "x$BUILD_PAK" = xyes])
+AM_CONDITIONAL([NON_FREE_PAK], [test "x$NON_FREE_PAK" = xyes])
 AM_CONDITIONAL([SAFE_ALIGNMENT], [test "x$SAFE_ALIGNMENT" = xyes])
 
 # --- cargo ---
@@ -114,6 +116,12 @@ if test "x$SAFE_ALIGNMENT" = "xyes"; then
 fi
 if test "x$BUILD_PAK" != "xyes"; then
 	AC_MSG_NOTICE([ * base.pak will not be created])
+else
+	if test "x$NON_FREE_PAK" == "xyes"; then
+		AC_MSG_NOTICE([ * base-non-free.pak will be created])
+	else
+		AC_MSG_NOTICE([ * base-non-free.pak will NOT be created])
+	fi
 fi
 if test "x$INSTALL_CARGO" != "xyes"; then
 	AC_MSG_NOTICE([ * cargo will not be installed])

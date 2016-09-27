@@ -37,7 +37,8 @@ MainMenu::MainMenu(Resources& resources, Subsystem& subsystem, Configuration& co
       x(0), y(0), bgox(0), bgoy(0), goat(0), title(0), gw(0), gh(0),
       shown(MenuButtonStateNone), lan_broadcaster(0), master_query(0),
       main_window(0), mw_w(0), mw_h(0),
-      menu_construction(resources.get_sound("menu_construction"))
+      menu_construction(resources.get_sound("menu_construction")),
+      title_music(0)
 {
     goat = resources.get_icon("title_goat");
     title = resources.get_icon("title_text");
@@ -52,7 +53,13 @@ MainMenu::MainMenu(Resources& resources, Subsystem& subsystem, Configuration& co
     get_now(startup);
     last = startup;
 
-    subsystem.play_music(resources.get_music(TitleMusic));
+    /* looking for title music */
+    try {
+        title_music = resources.get_music(TitleMusic);
+    } catch (...) {
+        /* chomp */
+    }
+    subsystem.play_music(title_music);
 
     memset(rb, 0, sizeof rb);
 }
@@ -409,7 +416,7 @@ void MainMenu::play_connect_lan_click() {
             lan_broadcaster->stop();
             master_query->stop();
             try {
-                ScopeMusicStopper stop_music(subsystem, resources.get_music(TitleMusic));
+                ScopeMusicStopper stop_music(subsystem, title_music);
                 Client client(resources, subsystem, host, port, config, pwd);
                 client.link_mouse(*this);
                 client.run();
@@ -473,7 +480,7 @@ void MainMenu::play_connect_wan_click() {
             lan_broadcaster->stop();
             master_query->stop();
             try {
-                ScopeMusicStopper stop_music(subsystem, resources.get_music(TitleMusic));
+                ScopeMusicStopper stop_music(subsystem, title_music);
                 Client client(resources, subsystem, host, port, config, pwd);
                 client.link_mouse(*this);
                 client.run();
@@ -514,7 +521,7 @@ void MainMenu::play_manual() {
 
     /* go */
     try {
-        ScopeMusicStopper stop_music(subsystem, resources.get_music(TitleMusic));
+        ScopeMusicStopper stop_music(subsystem, title_music);
         Client client(resources, subsystem, host, port, config, custom_password->get_text());
         client.link_mouse(*this);
         client.run();
@@ -786,7 +793,7 @@ void MainMenu::server_validate(bool close) {
         pop_window();
     } else {
         try {
-            ScopeMusicStopper stop_music(subsystem, resources.get_music(TitleMusic));
+            ScopeMusicStopper stop_music(subsystem, title_music);
             GamePlayType type = static_cast<GamePlayType>(game_mode);
             Server server(resources, subsystem, port, max_players, config.get_string("server_name"),
                 type, config.get_string("map_name"), duration, warmup);
@@ -880,12 +887,12 @@ void MainMenu::credits_click() {
     int vw = subsystem.get_view_width();
     int vh = subsystem.get_view_height();
     int ww = 200;
-    int wh = 240;
+    int wh = 210;
     int left = 10;
     int lft = 30;
     int tab = 90;
 
-    GuiWindow *window = push_window(vw / 2 - ww / 2, vh / 2- wh / 2, ww, wh, "Credits");
+    GuiWindow *window = push_window(vw / 2 - ww / 2, vh / 2 - wh / 2, ww, wh, "Credits");
     window->set_cancelable(true);
 
     create_label(window, lft, 10, "code:");
@@ -898,15 +905,22 @@ void MainMenu::credits_click() {
     create_label(window, lft, 65, "maps:");
     create_label(window, tab, 65, "ruby, freanux,");
     create_label(window, tab, 80, "cataclisma");
+    int y = 100;
 
-    create_label(window, lft, 100, "music:");
-    create_label(window, tab, 100, "daniel wressle,");
-    create_label(window, tab, 115, "martins garden");
+    if (title_music) {
+        create_label(window, lft, y, "music:");
+        create_label(window, tab, y, "daniel wressle");
+        y += 15;
+        wh += 15;
+    }
 
-    create_label(window, left, 145, "special thanks to:");
-    create_label(window, left, 160, "ruby, cataclisma, julia, tanja, luxi");
-    create_label(window, left, 175, "and of course, frederic the goat");
+    y += 15;
+    create_label(window, left, y, "special thanks to:");
+    create_label(window, left, y + 15, "ruby, cataclisma, julia, tanja, luxi");
+    create_label(window, left, y + 30, "and of course, frederic the goat");
 
+    window->set_height(wh);
+    window->set_y(vh / 2 - wh / 2);
     int bw = 55;
     create_button(window, ww / 2 - bw / 2, wh - 43, bw, 18, "Close", static_close_window_click, this);
 }

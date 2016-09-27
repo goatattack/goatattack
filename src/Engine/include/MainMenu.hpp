@@ -89,6 +89,7 @@ private:
     int mw_w;
     int mw_h;
     Sound *menu_construction;
+    Music *title_music;
 
     gametime_t now;
     gametime_t startup;
