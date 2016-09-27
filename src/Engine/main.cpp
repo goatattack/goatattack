@@ -61,7 +61,6 @@ int main(int argc, char *argv[]) {
         }
         CFRelease(resourcesURL);
         std::string data_directory(path);
-        data_directory += "/data";
         Resources resources(subsystem, data_directory);
 #else
 # ifdef DEDICATED_SERVER
