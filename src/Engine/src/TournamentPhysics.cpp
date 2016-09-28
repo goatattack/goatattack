@@ -161,7 +161,7 @@ bool Tournament::render_physics(double period_f, bool projectile, int damage,
                     if (accel_y < -bump_sound_velocity && play_bump) {
                         play_ground_bump_sound();
                     }
-                    accel_y = 0.0f;
+                    accel_y = -accel_y * springiness_y;
                     is_collision = true;
                     new_falling = false;
                     bailout = true;
@@ -181,7 +181,7 @@ bool Tournament::render_physics(double period_f, bool projectile, int damage,
                 if (accel_y < -bump_sound_velocity && play_bump) {
                     play_ground_bump_sound();
                 }
-                accel_y = 0.0f;
+                accel_y = -accel_y * springiness_y;
                 is_collision = true;
                 new_falling = false;
                 break;
