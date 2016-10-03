@@ -113,7 +113,7 @@ int main(int argc, char *argv[]) {
                     return 0;
                 } else if (!strcmp(argv[1], "-x") || !strcmp(argv[1], "--extract")) {
                     extract(argv[2], argv[3]);
-                    return 1;
+                    return 0;
                 }
                 break;
 
@@ -138,7 +138,7 @@ int main(int argc, char *argv[]) {
                     return 0;
                 } else if (!strcmp(argv[1], "-x") || !strcmp(argv[1], "--extract")) {
                     extract(argv[2], ".");
-                    return 1;
+                    return 0;
                 }
                 break;
         }

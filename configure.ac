@@ -20,9 +20,9 @@ AC_CHECK_LIB([rt], [clock_gettime], [], [missing_libraries="$missing_libraries l
 AC_CHECK_LIB([png], [png_init_io], [], [missing_libraries="$missing_libraries libpng"])
 
 # --- compile args ---
-AC_ARG_ENABLE([build-pak],        [  --disable-build-pak     Building base.pak [[default=yes]]], [], [BUILD_PAK="yes"])
-AC_ARG_ENABLE([dedicated-server], [  --enable-dedicated-server  Build dedicated server [[default=no]]], [DEDICATED_SERVER="yes"], [])
+AC_ARG_ENABLE([build-pak],        [  --disable-build-pak     Disable building base.pak [[default=no]]], [], [BUILD_PAK="yes"])
 AC_ARG_ENABLE([non-free-pak],     [  --enable-non-free-pak   Build non free pak [[default=no]]], [NON_FREE_PAK="yes"], [])
+AC_ARG_ENABLE([dedicated-server], [  --enable-dedicated-server  Build dedicated server [[default=no]]], [DEDICATED_SERVER="yes"], [])
 AC_ARG_ENABLE([master-server],    [  --enable-master-server  Build master server [[default=no]]], [MASTER_SERVER="yes"], [])
 AC_ARG_ENABLE([internal-zlib],    [  --enable-internal-zlib  Build with the project copy of zlib [[default=no]]], [INTERNAL_ZLIB="yes"], [])
 AC_ARG_ENABLE([map-editor],       [  --enable-map-editor     Build map editor [[default=no]]], [MAP_EDITOR="yes"], [])

@@ -1,3 +1,4 @@
+if BUILD_PAK
 gamedatadir = $(pkgdatadir)
 gamedata_DATA = base.pak
 if NON_FREE_PAK
@@ -20,3 +21,4 @@ endif
 
 clean:
 	rm -f *.pak
+endif
