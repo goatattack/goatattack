@@ -54,3 +54,5 @@ src/MasterServer/Makefile.in
 src/shared/libshared.a
 base.pak
 base.pak_dist
+base-non-free.pak
+base-non-free.pak_dist
