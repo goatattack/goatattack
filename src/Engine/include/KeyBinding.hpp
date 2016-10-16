@@ -39,22 +39,25 @@ public:
     KeyBinding();
     virtual ~KeyBinding();
 
+    static const int MaxBindings = 2;
+
     void extract_from_config(const Configuration& config);
     void write_to_config(Configuration& config);
     static void write_binding(Configuration& config, MappedKey& binding, const std::string& key);
+    static const char *get_suffix(int index);
 
-    MappedKey left;
-    MappedKey right;
-    MappedKey up;
-    MappedKey down;
-    MappedKey jump;
-    MappedKey fire;
-    MappedKey drop1;
-    MappedKey drop2;
-    MappedKey drop3;
-    MappedKey chat;
-    MappedKey stats;
-    MappedKey escape;
+    MappedKey left[MaxBindings];
+    MappedKey right[MaxBindings];
+    MappedKey up[MaxBindings];
+    MappedKey down[MaxBindings];
+    MappedKey jump[MaxBindings];
+    MappedKey fire[MaxBindings];
+    MappedKey drop1[MaxBindings];
+    MappedKey drop2[MaxBindings];
+    MappedKey drop3[MaxBindings];
+    MappedKey chat[MaxBindings];
+    MappedKey stats[MaxBindings];
+    MappedKey escape[MaxBindings];
 
 private:
     void extract_binding(const Configuration& config, MappedKey& binding, const std::string& key);
