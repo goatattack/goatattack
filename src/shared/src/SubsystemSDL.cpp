@@ -176,9 +176,9 @@ static const void *VertexOffset = reinterpret_cast<void *>((0) * sizeof(float));
 static const void *TexUVOffset = reinterpret_cast<void *>((0 + VertexCount) * sizeof(float));
 
 #ifdef _WIN32
-static const bool ForceOffShadingPipeline = true;
+static const bool EnableShadingPipeline = false;
 #else
-static const bool ForceOffShadingPipeline = false;
+static const bool EnableShadingPipeline = true;
 #endif
 
 SubsystemSDL::SubsystemSDL(std::ostream& stream, const std::string& window_title, bool shading_pipeline) throw (SubsystemException)
@@ -186,7 +186,7 @@ SubsystemSDL::SubsystemSDL(std::ostream& stream, const std::string& window_title
       draw_scanlines(false), scanlines_intensity(0.5f),
       deadzone_horizontal(3200), deadzone_vertical(3200), selected_tex(0),
       music_volume(100), vao(0), vbo(0), base_shader(0), blank_tex(0),
-      shading_pipeline(shading_pipeline && ForceOffShadingPipeline),
+      shading_pipeline(shading_pipeline && EnableShadingPipeline),
       draw_quad(this->shading_pipeline ? &SubsystemSDL::draw_vbo : &SubsystemSDL::draw_immediate)
 {
     stream << "starting SubsystemSDL" << std::endl;
