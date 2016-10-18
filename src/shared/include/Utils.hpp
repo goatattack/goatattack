@@ -56,5 +56,8 @@ std::string lowercase(const std::string& str);
 void instant_trim(std::string& str);
 std::string generate_name();
 StringTokens tokenize(const std::string& str, char delimiter, int count = 0);
+void to_unicode(const char *src, wchar_t *dst, size_t out_len);
+void from_unicode(const wchar_t *src, char *dst, size_t out_len);
+void modify_directory_separator(std::string& s);
 
 #endif

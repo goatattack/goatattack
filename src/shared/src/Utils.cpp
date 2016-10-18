@@ -244,3 +244,25 @@ StringTokens tokenize(const std::string& str, char delimiter, int count) {
 
     return elements;
 }
+
+void to_unicode(const char *src, wchar_t *dst, size_t out_len) {
+#ifndef _WIN32
+    mbstowcs(dst, src, out_len);
+#else
+    MultiByteToWideChar(CP_ACP, 0, src, -1, dst, out_len);
+#endif
+}
+
+void from_unicode(const wchar_t *src, char *dst, size_t out_len) {
+#ifndef _WIN32
+    wcstombs(dst, src, out_len);
+#else
+    WideCharToMultiByte(CP_UTF8, 0, src, -1, dst, out_len, 0, 0);
+#endif
+}
+
+void modify_directory_separator(std::string& s) {
+#ifdef _WIN32
+    std::replace(s.begin(), s.end(), '/', '\\');
+#endif
+}

@@ -16,6 +16,7 @@
  */
 
 #ifndef DEDICATED_SERVER
+#ifndef _WIN32
 
 #include "ShaderGL.hpp"
 #include "MultiReader.hpp"
@@ -142,4 +143,5 @@ void ShaderGL::cleanup() {
     }
 }
 
+#endif
 #endif

@@ -175,13 +175,19 @@ static const size_t StrideSize = Stride * sizeof(float);
 static const void *VertexOffset = reinterpret_cast<void *>((0) * sizeof(float));
 static const void *TexUVOffset = reinterpret_cast<void *>((0 + VertexCount) * sizeof(float));
 
+#ifdef _WIN32
+static const bool ForceOffShadingPipeline = true;
+#else
+static const bool ForceOffShadingPipeline = false;
+#endif
+
 SubsystemSDL::SubsystemSDL(std::ostream& stream, const std::string& window_title, bool shading_pipeline) throw (SubsystemException)
     : Subsystem(stream, window_title), window(0), joyaxis(0), fullscreen(false),
       draw_scanlines(false), scanlines_intensity(0.5f),
       deadzone_horizontal(3200), deadzone_vertical(3200), selected_tex(0),
       music_volume(100), vao(0), vbo(0), base_shader(0), blank_tex(0),
-      shading_pipeline(shading_pipeline),
-      draw_quad(shading_pipeline ? &SubsystemSDL::draw_vbo : &SubsystemSDL::draw_immediate)
+      shading_pipeline(shading_pipeline && ForceOffShadingPipeline),
+      draw_quad(this->shading_pipeline ? &SubsystemSDL::draw_vbo : &SubsystemSDL::draw_immediate)
 {
     stream << "starting SubsystemSDL" << std::endl;
 
@@ -276,8 +282,10 @@ SubsystemSDL::~SubsystemSDL() {
     }
 #endif
 
+#ifndef _WIN32
     if (vbo) glDeleteBuffers(1, &vbo);
     if (vao) glDeleteVertexArrays(1, &vao);
+#endif
 
     close_joysticks();
     SDL_GL_DeleteContext(glcontext);
@@ -288,6 +296,7 @@ SubsystemSDL::~SubsystemSDL() {
 }
 
 void SubsystemSDL::initialize(Resources& resources) {
+#ifndef _WIN32
     if (shading_pipeline) {
         stream << "using shading pipeline" << std::endl;
         /* setup dynamic vao and vbo */
@@ -319,6 +328,8 @@ void SubsystemSDL::initialize(Resources& resources) {
         blank_tex = static_cast<TileGraphicGL *>(resources.get_icon("blank")->get_tile()->get_tilegraphic())->get_texture();
         setup_projection();
     }
+#endif
+
     reset_color();
 }
 
@@ -439,9 +450,12 @@ Audio *SubsystemSDL::create_audio() {
 }
 
 Shader *SubsystemSDL::create_shader(const std::string& filename, ZipReader *zip) {
+#ifndef _WIN32
     if (shading_pipeline) {
         return new ShaderGL(*this, filename, zip);
     }
+#endif
+
     return new ShaderNull(filename, zip);
 }
 
@@ -1035,9 +1049,9 @@ void SubsystemSDL::set_window_icon(SDL_Window *window) {
 void SubsystemSDL::setup_projection() {
     if (shading_pipeline) {
         Matrix4x4 ortho;
-        ortho.set_ortho(0.0f, box_width, 0.0f, box_height, 0.0f, 1.0f);
+        ortho.set_ortho(0.0f, static_cast<float>(box_width), 0.0f, static_cast<float>(box_height), 0.0f, 1.0f);
         base_shader->set_value(shader_loc_projection_matrix, ortho);
-        base_shader->set_value(shader_loc_offset, x_offset, -y_offset + box_height);
+        base_shader->set_value(shader_loc_offset, static_cast<float>(x_offset), static_cast<float>(-y_offset + box_height));
     }
 }
 
@@ -1061,6 +1075,7 @@ void SubsystemSDL::draw_immediate(int x, int y, int width, int height, bool no_t
 }
 
 void SubsystemSDL::draw_vbo(int x, int y, int width, int height, bool no_tex) {
+#ifndef _WIN32
     if (no_tex) {
         glBindTexture(GL_TEXTURE_2D, blank_tex);
         selected_tex = blank_tex;
@@ -1083,6 +1098,7 @@ void SubsystemSDL::draw_vbo(int x, int y, int width, int height, bool no_tex) {
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glDrawArrays(GL_TRIANGLES, 0, 6);
+#endif
 }
 
 #endif
