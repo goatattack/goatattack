@@ -187,15 +187,15 @@ void OptionsMenu::player_click() {
 
     Resources::ResourceObjects& sets = resources.get_charactersets();
     int sz = static_cast<int>(sets.size());
+    int selected_skin = 0;
     for (int i = 0; i < sz; i++) {
         Characterset *cset = static_cast<Characterset *>(sets[i].object);
         player_skin->add_entry(cset->get_description());
         if (cset->get_name() == config.get_string("player_skin")) {
-            player_skin->set_selected_index(i);
-            player_skin_pic->set_picture(cset->get_tile(DirectionRight, CharacterAnimationStanding)->get_tilegraphic());
+            selected_skin = i;
         }
     }
-
+    player_skin->set_selected_index(selected_skin);
     player_name->set_focus();
     bw = 55;
     gui.create_button(window, ww / 2 - bw / 2, wh - 43, bw, 18, "Close", static_close_player_click, this);
