@@ -55,8 +55,10 @@ private:
 #ifdef __unix__
     DIR *dir;
 #elif _WIN32
+    bool first;
     HANDLE dir;
-    WIN32_FIND_DATAA ffd;
+    WIN32_FIND_DATAW ffd;
+    char directory_ret[MaxPathLength];
 #endif
 };
 

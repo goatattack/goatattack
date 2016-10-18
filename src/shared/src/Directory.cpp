@@ -16,6 +16,7 @@
  */
 
 #include "Directory.hpp"
+#include "Utils.hpp"
 
 #include <cstring>
 #include <cerrno>
@@ -32,8 +33,15 @@ Directory::Directory(const std::string& directory, const std::string& suffix,
         dir = opendir(directory.c_str());
         if (!dir) {
 #elif _WIN32
-        std::string wildcard = directory + "\\*.*";
-        dir = FindFirstFileA(wildcard.c_str(), &ffd);
+        bool add_separator = true;
+        if (directory.length()) {
+            add_separator = (directory[directory.length() - 1] != '\\');
+        }
+        std::string wildcard = directory + (add_separator ? "\\" : "") + "*.*";
+        wchar_t buffer[MaxPathLength];
+        to_unicode(wildcard.c_str(), buffer, MaxPathLength);
+        dir = FindFirstFileW(buffer, &ffd);
+        first = true;
         if (dir == INVALID_HANDLE_VALUE) {
 #endif
             throw DirectoryException("Cannot look into directory " + directory + ": "
@@ -104,22 +112,30 @@ const char *Directory::get_entry() {
                 }
             }
 #elif _WIN32
-            do {
+            while (true) {
+                if (!first) {
+                    if (!FindNextFileW(dir, &ffd)) {
+                        break;
+                    }
+                } else {
+                    first = false;
+                }
+                from_unicode(ffd.cFileName, directory_ret, sizeof(directory_ret));
                 if (suffix.length()) {
-                    char *p = ffd.cFileName;
+                    char *p = directory_ret;
                     while (*p) p++;
-                    while (p != ffd.cFileName && *p != '.') {
+                    while (p != directory_ret && *p != '.') {
                         p--;
                     }
                     if (!strcmp(p, suffix.c_str())) {
                         *p = 0;
-                        return ffd.cFileName;
+                        return directory_ret;
                     }
 
                 } else {
-                    return static_cast<char *>(ffd.cFileName);
+                    return directory_ret;
                 }
-            } while (FindNextFileA(dir, &ffd));
+            }
 #endif
         }
     }

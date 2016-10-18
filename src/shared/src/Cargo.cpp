@@ -19,6 +19,7 @@
 #include "Directory.hpp"
 #include "FileReader.hpp"
 #include "Utils.hpp"
+#include "AutoPtr.hpp"
 
 #include <cerrno>
 #include <algorithm>
@@ -72,8 +73,12 @@ static FileType file_status(const char *entry, size_t& file_size) throw (CargoEx
         file_size = sinfo.st_size;
     }
 #else
+    wchar_t filename[MaxPathLength];
+    std::string new_entry(entry);
+    modify_directory_separator(new_entry);
+    to_unicode(new_entry.c_str(), filename, MaxPathLength);
     BY_HANDLE_FILE_INFORMATION fileinfo;
-    HANDLE filehandle = CreateFileA(entry, 0, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+    HANDLE filehandle = CreateFileW(filename, 0, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_BACKUP_SEMANTICS, 0);
     if (filehandle == INVALID_HANDLE_VALUE) {
         throw CargoException("Retrieving file information failed.");
     }
@@ -106,8 +111,9 @@ static void throw_deflate_failed(z_stream *z) throw (CargoException) {
 }
 
 Cargo::Cargo(const char *directory, const char *pak_file, const SelectedFiles *files) throw (CargoException)
-    : f(0), has_selected_files(false), valid(true), finished(false),
-      directory(directory), pak_file(pak_file)
+    : f(pak_file, std::ios::in | std::ios::out | std::ios::binary | std::ios::trunc),
+      has_selected_files(false), valid(true), finished(false), directory(directory),
+      pak_file(pak_file)
 {
     /* if there are specified files to pack, take only them */
     if (files) {
@@ -118,15 +124,14 @@ Cargo::Cargo(const char *directory, const char *pak_file, const SelectedFiles *f
         }
     }
 
-    /* open out file */
-    f = fopen(pak_file, "w+b");
-    if (!f) {
+    /* open file */
+    if (f.fail()) {
         throw CargoException("Cannot open file: " + std::string(strerror(errno)));
     }
 }
 
 Cargo::~Cargo() {
-    fclose(f);
+    f.close();
 }
 
 bool Cargo::file_exists(const std::string& filename) {
@@ -161,8 +166,10 @@ void Cargo::pack() throw (CargoException) {
     add_central_directory();
 
     /* flush file */
-    if (fflush(f)) {
-        throw_write_error();
+    try {
+        f.flush();
+    } catch (const std::exception& e) {
+        throw_write_error(e.what());
     }
 
     /* done */
@@ -192,7 +199,7 @@ void Cargo::pack_directory(const char *subdir, bool is_rootdir) throw (CargoExce
         } else {
             /* read entries in directory */
             DirectoryEntries entries;
-            std::string root = directory + "/" + subdir;
+            std::string root = directory + dir_separator + subdir;
             Directory dir(root, "", 0);
             const char *entry = 0;
             size_t file_size = 0;
@@ -242,7 +249,7 @@ void Cargo::pack_file(const DirectoryEntry& entry) throw (CargoException) {
     uint32_t sz_uncompressed = entry.file_size;
     uint16_t method = (entry.is_directory || entry.file_size == 0 ? 0 : 8);
 
-    long int rel_pos = ftell(f);
+    long int rel_pos = f.tellp();
     write_string("PK\03\04", 4);        // file entry
     write_uint16(ZipMinVersion);        // version needed
     write_uint16(0);                    // general purpose flags
@@ -250,10 +257,10 @@ void Cargo::pack_file(const DirectoryEntry& entry) throw (CargoException) {
     write_uint16(file_time);            // file time
     write_uint16(file_date);            // file date
 
-    long int crc32_pos = ftell(f);
+    long int crc32_pos = f.tellp();
     write_uint32(0);                    // crc32 placeholder
 
-    long int compr_sz_pos = ftell(f);
+    long int compr_sz_pos = f.tellp();
     write_uint32(0);                    // compressed size placeholder
 
     write_uint32(sz_uncompressed);      // uncompressed size
@@ -265,8 +272,9 @@ void Cargo::pack_file(const DirectoryEntry& entry) throw (CargoException) {
     uint32_t crc32sum = 0;
     try {
         std::string filename(directory);
-        filename += dir_separator;
+        filename += "/";
         filename += entry.entry;
+        modify_directory_separator(filename);
         FileReader fr(filename.c_str());
         z_stream z;
         memset(&z, 0, sizeof(z_stream));
@@ -304,11 +312,12 @@ void Cargo::pack_file(const DirectoryEntry& entry) throw (CargoException) {
     }
 
     /* fill placeholders */
-    long int current_pos = ftell(f);
-    fseek(f, crc32_pos, SEEK_SET);
+    long int current_pos = f.tellp();
+    f.seekp(crc32_pos);
     write_uint32(crc32sum);
-    fseek(f, compr_sz_pos, SEEK_SET);
+    f.seekp(compr_sz_pos);
     write_uint32(sz_compressed);
+    f.seekp(current_pos);
 
     /* calculate crc64 */
     calc_crc64(rel_pos, current_pos);
@@ -318,9 +327,10 @@ void Cargo::pack_file(const DirectoryEntry& entry) throw (CargoException) {
         rel_pos, crc32sum, file_time, file_date, method));
 }
 
-void Cargo::throw_write_error() throw (CargoException) {
+void Cargo::throw_write_error(const char *err) throw (CargoException) {
     valid = false;
-    throw CargoException("Writing to file failed: " + std::string(strerror(errno)));
+    std::string text(err ? err : strerror(errno));
+    throw CargoException("Writing to file failed: " + text);
 }
 
 std::string Cargo::append_dir(const char *directory, const char *subdir) {
@@ -334,7 +344,7 @@ std::string Cargo::append_dir(const char *directory, const char *subdir) {
 }
 
 void Cargo::add_central_directory() throw (CargoException) {
-    long int cd_offset = ftell(f);
+    long int cd_offset = f.tellp();
     size_t cd_sz = 0;
 
     /* central directory */
@@ -371,55 +381,65 @@ void Cargo::add_central_directory() throw (CargoException) {
     write_uint16(0);                    // comment length
 
     /* calculate crc64 */
-    calc_crc64(cd_offset, ftell(f));
+    calc_crc64(cd_offset, f.tellp());
 }
 
 size_t Cargo::write_string(const void *s, size_t len) throw (CargoException) {
-    size_t written = 0;
     if (len) {
-        written = fwrite(s, 1, len, f);
-        if (written != len) {
-            throw_write_error();
+        try {
+            f.write(static_cast<const char*>(s), len);
+        } catch (const std::exception& e) {
+            throw_write_error(e.what());
         }
     }
 
-    return written;
+    return len;
 }
 
 size_t Cargo::write_uint16(uint16_t n) throw (CargoException) {
-    unsigned char data[2];
+    static const int Len = 2;
+    unsigned char data[Len];
     data[0] = (n & 0x00ff);
     data[1] = (n >> 8);
-    size_t written = fwrite(data, 1, sizeof(data), f);
-    if (written != sizeof(data)) {
-        throw_write_error();
+    try {
+        f.write(reinterpret_cast<const char *>(data), sizeof(data));
+    } catch (const std::exception& e) {
+        throw_write_error(e.what());
     }
 
-    return written;
+    return Len;
 }
 
 size_t Cargo::write_uint32(uint32_t n) throw (CargoException) {
-    unsigned char data[4];
+    static const int Len = 4;
+    unsigned char data[Len];
     data[0] = ((n      ) & 0xff);
     data[1] = ((n >>  8) & 0xff);
     data[2] = ((n >> 16) & 0xff);
     data[3] = ((n >> 24) & 0xff);
-    size_t written = fwrite(data, 1, sizeof(data), f);
-    if (written != sizeof(data)) {
-        throw_write_error();
+    try {
+        f.write(reinterpret_cast<const char *>(data), sizeof(data));
+    } catch (const std::exception& e) {
+        throw_write_error(e.what());
     }
 
-    return written;
+    return Len;
 }
 
 void Cargo::calc_crc64(size_t start_pos, size_t end_pos) throw (CargoException) {
     unsigned char hash_buf[ChunkSize];
     size_t remain = end_pos - start_pos;
-    fseek(f, start_pos, SEEK_SET);
-    while (remain) {
-        size_t len = (remain >= ChunkSize ? ChunkSize : remain);
-        fread(hash_buf, 1, len, f);
-        crc64.process(hash_buf, len);
-        remain -= len;
+    size_t get_pos = f.tellg();
+    try {
+        f.seekg(start_pos);
+        while (remain) {
+            size_t len = (remain >= ChunkSize ? ChunkSize : remain);
+            f.read(reinterpret_cast<char *>(hash_buf), len);
+            crc64.process(hash_buf, len);
+            remain -= len;
+        }
+    } catch (const std::exception& e) {
+        throw CargoException("Calculation CRC failed: " + std::string(e.what()));
     }
+    f.seekg(get_pos);
 }

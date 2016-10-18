@@ -26,6 +26,7 @@
 #include <vector>
 #include <cstring>
 #include <stdint.h>
+#include <fstream>
 
 class CargoException : public Exception {
 public:
@@ -105,7 +106,7 @@ private:
 
     typedef std::vector<PakEntry> PakEntries;
 
-    FILE *f;
+    std::fstream f;
     bool has_selected_files;
     bool valid;
     bool finished;
@@ -118,7 +119,7 @@ private:
 
     void pack_directory(const char *subdir, bool is_rootdir = false) throw (CargoException);
     void pack_file(const DirectoryEntry& entry) throw (CargoException);
-    void throw_write_error() throw (CargoException);
+    void throw_write_error(const char *err = 0) throw (CargoException);
     std::string append_dir(const char *directory, const char *subdir);
     void add_central_directory() throw (CargoException);
     size_t write_string(const void *s, size_t len) throw (CargoException);

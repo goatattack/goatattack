@@ -20,6 +20,7 @@
 #include "FileReader.hpp"
 #include "CRC64.hpp"
 #include "ZipReader.hpp"
+#include "Utils.hpp"
 
 #include <iostream>
 #include <cstring>
@@ -27,12 +28,11 @@
 #include <cerrno>
 
 #include <sys/stat.h>
+#ifndef _WIN32
 #include <unistd.h>
-
-/*
- * TODO:
- * cargo is not os independent yet. Works under *NIX only.
- */
+#else
+#include "Win.hpp"
+#endif
 
 static const int ChunkSize = 1024;
 
@@ -46,7 +46,7 @@ static void create_directory(const char *root, const char *dir) throw (CargoExce
             if (*separator == 0) {
                 break;
             }
-            if (*separator == '/') {
+            if (*separator == '/' || *separator == '\\') {
                 found = true;
                 break;
             }
@@ -60,10 +60,17 @@ static void create_directory(const char *root, const char *dir) throw (CargoExce
         new_dir += "/";
         new_dir.append(dir, separator - dir);
 
+#ifndef _WIN32
         struct stat st;
         if (stat(new_dir.c_str(), &st) == -1) {
             mkdir(new_dir.c_str(), 0700);
         }
+#else
+        modify_directory_separator(new_dir);
+        wchar_t wdir[MaxPathLength];
+        to_unicode(new_dir.c_str(), wdir, MaxPathLength);
+        int rv = CreateDirectoryW(wdir, 0);
+#endif
     }
 }
 
@@ -77,6 +84,7 @@ static void extract(const char *pakfile, const char *root) {
         try {
             std::string new_file(root);
             new_file += "/" + it->filename;
+            modify_directory_separator(new_file);
             f = fopen(new_file.c_str(), "wb");
             if (!f) {
                 throw CargoException(std::string("Cannot open file for writing: ") + it->filename + " (" + strerror(errno) + ")");
