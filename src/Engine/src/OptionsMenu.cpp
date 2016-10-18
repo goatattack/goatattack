@@ -325,13 +325,13 @@ void OptionsMenu::controller_and_keyboard_click() {
     int vw = subsystem.get_view_width();
     int vh = subsystem.get_view_height();
     int ww = 540;
-    int wh = 218; //203;
+    int wh = 218;
     int bw = 140;
 
     static const int Col0 = 15;
-    static const int Col1 = 280; //175;
+    static const int Col1 = 280;
 
-    GuiWindow *window = gui.push_window(vw / 2 - ww / 2, vh / 2- wh / 2, ww, wh, "Controller And Keyboard");
+    GuiWindow *window = gui.push_window(vw / 2 - ww / 2, vh / 2 - wh / 2, ww, wh, "Controller And Keyboard");
     window->set_cancelable(true);
 
     create_field2(ck_up, window, Col0, 15, "up:", static_capture_up_0_click, static_capture_up_1_click, false);
@@ -345,12 +345,12 @@ void OptionsMenu::controller_and_keyboard_click() {
     create_field2(ck_drop3, window, Col0, 95, "frog:", static_capture_drop3_0_click, static_capture_drop3_1_click, false);
     create_field2(ck_chat, window, Col1, 95, "chat:", static_capture_chat_0_click, static_capture_chat_1_click, false);
     create_field2(ck_stats, window, Col0, 115, "stats:", static_capture_stats_0_click, static_capture_stats_1_click, false);
-    create_field2(ck_escape, window, Col1, 115, "esc:", static_capture_escape_0_click, static_capture_escape_1_click, false);
+    create_field2(ck_escape, window, Col1, 115, "escape:", static_capture_escape_0_click, static_capture_escape_1_click, false);
 
     ck_selected = 0;
     capture_draw();
 
-    gui.create_box(window, Gui::Spc, 139, ww - Gui::Spc * 2, 1);
+    gui.create_box(window, 15, 139, ww - 15 * 2 - 2, 1);
 
     ck_dz_h = create_field(window, Col0, 150, "horz. gamepad deadzone:", static_ck_erase_horz, true);
     ck_dz_h->set_text(config.get_string("deadzone_horizontal"));
