@@ -760,6 +760,8 @@ void Server::event_data(const Connection *c, data_len_t len, void *data) throw (
                         p->set_player_name(new_name);
                         p->set_characterset(new_skin);
                         check_characterset(c, p, new_skin.c_str());
+                        memset(pdesc->characterset_name, 0, sizeof(pdesc->characterset_name));
+                        strcpy(pdesc->characterset_name, p->get_characterset()->get_name().c_str());
                         pdesc->id = p->state.id;
                         pdesc->to_net();
                         broadcast_data(factory.get_tournament_id(), GPCPlayerChanged, NetFlagsReliable, t->len, data_ptr);
@@ -1337,7 +1339,6 @@ void Server::check_characterset(const Connection *c, Player *p, const char *new_
     if (strcmp(new_skin, cs_name.c_str())) {
         std::string msg("WARNING: this server does not support your character set.");
         send_data(c, factory.get_tournament_id(), GPCTextMessage, NetFlagsReliable, static_cast<data_len_t>(msg.length()), msg.c_str());
-        send_data(c, factory.get_tournament_id(), GPCResetCharacterset, NetFlagsReliable, 0, 0);
     }
 }
 

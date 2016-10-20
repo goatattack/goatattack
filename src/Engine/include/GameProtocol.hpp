@@ -102,8 +102,7 @@ enum GPC {
     GPCGenericData,
     GPCPakHash,
     GPCServerQuit,
-    GPCSpectate,
-    GPCResetCharacterset
+    GPCSpectate
 };
 
 /* game protocol client to server */
