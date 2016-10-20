@@ -156,7 +156,8 @@ int main(int argc, char *argv[]) {
     }
 
     std::cout << "Usage " << argv[0] << " OPTION PARAMETERS" << std::endl;
-    std::cout << "  -p, --pack      pack, path/to/files outfile.pak" << std::endl;
+    std::cout << "  -p, --pack      pack, path" << dir_separator << "to";
+    std::cout << dir_separator << "files outfile.pak" << std::endl;
     std::cout << "  -x, --extract   extract, pakfile.pak [destination]" << std::endl;
     std::cout << "  -l, --list      list, pakfile.pak" << std::endl;
     std::cout << "  -h, --hash      hash, pakfile.pak" << std::endl;
