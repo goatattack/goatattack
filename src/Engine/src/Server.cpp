@@ -530,11 +530,13 @@ void Server::event_login(const Connection *c, data_len_t len, void *data) throw 
     } while (found);
 
     /* add new player */
-    Player *p = new Player(resources, c, player_id, desc->player_name,
-        desc->characterset_name);
+    Player *p = new Player(resources, c, player_id, desc->player_name, desc->characterset_name);
     players.push_back(p);
     sz++;
     std::string msg(p->get_player_name() + " connected");
+
+    /* check if server supports user's characterset */
+    check_characterset(c, p, desc->characterset_name);
 
     /* reattach disconnect player? */
     found = false;
@@ -756,11 +758,8 @@ void Server::event_data(const Connection *c, data_len_t len, void *data) throw (
                     }
                     if (name_changed || p->get_characterset()->get_name() != new_skin) {
                         p->set_player_name(new_name);
-                        try {
-                            p->set_characterset(new_skin);
-                        } catch (const Exception& e) {
-                            subsystem << e.what() << std::endl;
-                        }
+                        p->set_characterset(new_skin);
+                        check_characterset(c, p, new_skin.c_str());
                         pdesc->id = p->state.id;
                         pdesc->to_net();
                         broadcast_data(factory.get_tournament_id(), GPCPlayerChanged, NetFlagsReliable, t->len, data_ptr);
@@ -1330,6 +1329,15 @@ void Server::load_map_rotation() {
     }
     if (atoi(get_value("shuffle_maps").c_str())) {
         std::random_shuffle(map_configs.begin(), map_configs.end());
+    }
+}
+
+void Server::check_characterset(const Connection *c, Player *p, const char *new_skin) throw (ServerException) {
+    const std::string& cs_name = p->get_characterset()->get_name();
+    if (strcmp(new_skin, cs_name.c_str())) {
+        std::string msg("WARNING: this server does not support your character set.");
+        send_data(c, factory.get_tournament_id(), GPCTextMessage, NetFlagsReliable, static_cast<data_len_t>(msg.length()), msg.c_str());
+        send_data(c, factory.get_tournament_id(), GPCResetCharacterset, NetFlagsReliable, 0, 0);
     }
 }
 

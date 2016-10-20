@@ -97,6 +97,10 @@ void Player::zero() {
     clean_states();
 }
 
+void Player::set_to_default_characterset() {
+    set_characterset(fallback_characterset->get_name());
+}
+
 void Player::clean_states() {
     state.server_state.health = 100;
     state.server_state.armor = 0;

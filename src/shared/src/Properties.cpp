@@ -23,6 +23,9 @@ Properties::Properties(const std::string& filename, ZipReader *zip) throw (KeyVa
     : KeyValue(filename, zip), filename(filename)
 {
     fetch();
+    if (name.length() > 31) {
+        throw KeyValueException("Property name too long. Must be less than 32. (" + filename + ")");
+    }
 }
 
 Properties::~Properties() { }

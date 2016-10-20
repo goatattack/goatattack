@@ -134,6 +134,7 @@ private:
     void destroy_paks(Player *p);
     void check_team_names();
     void load_map_rotation();
+    void check_characterset(const Connection *c, Player *p, const char *new_skin) throw (ServerException);
 
     std::ostream& create_log_stream();
 

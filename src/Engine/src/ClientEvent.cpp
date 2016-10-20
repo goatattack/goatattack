@@ -781,6 +781,14 @@ void Client::sevt_data(ServerEvent& evt) {
                 }
                 break;
             }
+
+            case GPCResetCharacterset:
+            {
+                if (me) {
+                    me->set_to_default_characterset();
+                }
+                break;
+            }
         }
 
         /* advance to next element */

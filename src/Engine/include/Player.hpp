@@ -49,6 +49,7 @@ public:
     void clear();
     void reset();
     void zero();
+    void set_to_default_characterset();
 
 private:
     Resources& resources;
