@@ -45,6 +45,18 @@ public:
     void get_options_window_position(int& x, int& y);
 
 private:
+    struct CharactersetEntry {
+        CharactersetEntry(Characterset *cs) : cs(cs) { }
+
+        Characterset *cs;
+
+        bool operator<(const CharactersetEntry& rhs) const {
+            return (cs->get_description() < rhs.cs->get_description());
+        }
+    };
+
+    typedef std::vector<CharactersetEntry> CharactersetEntries;
+
     Gui& gui;
     Resources& resources;
     Subsystem& subsystem;

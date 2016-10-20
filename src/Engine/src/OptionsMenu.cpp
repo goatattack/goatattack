@@ -18,6 +18,7 @@
 #include "OptionsMenu.hpp"
 #include "Client.hpp"
 
+#include <algorithm>
 #include <cstdlib>
 
 OptionsMenu::OptionsMenu(Gui& gui, Resources& resources, Subsystem& subsystem,
@@ -185,13 +186,23 @@ void OptionsMenu::player_click() {
     player_skin = gui.create_listbox(window, 120, 56, 150, 60, "Character", static_player_skin_click, this);
     player_skin_pic = gui.create_picture(window, 15, 70, 0);
 
+    /* read all charactersets and sort them */
     Resources::ResourceObjects& sets = resources.get_charactersets();
     int sz = static_cast<int>(sets.size());
+    CharactersetEntries entries;
+    for (int i = 0; i < sz; i++) {
+        Characterset *cs = static_cast<Characterset *>(sets[i].object);
+        entries.push_back(CharactersetEntry(cs));
+    }
+    std::sort(entries.begin(), entries.end());
+
+    /* fill list */
+    sz = static_cast<int>(entries.size());
     int selected_skin = 0;
     for (int i = 0; i < sz; i++) {
-        Characterset *cset = static_cast<Characterset *>(sets[i].object);
-        player_skin->add_entry(cset->get_description());
-        if (cset->get_name() == config.get_string("player_skin")) {
+        Characterset *cs = entries[i].cs;
+        player_skin->add_entry(cs->get_description())->set_ptr_tag(cs);
+        if (cs->get_name() == config.get_string("player_skin")) {
             selected_skin = i;
         }
     }
@@ -206,8 +217,8 @@ void OptionsMenu::static_player_skin_click(GuiListbox *sender, void *data, int i
 }
 
 void OptionsMenu::player_skin_click(int index) {
-    Characterset *cset = static_cast<Characterset *>(resources.get_charactersets()[index].object);
-    player_skin_pic->set_picture(cset->get_tile(DirectionRight, CharacterAnimationStanding)->get_tilegraphic());
+    const Characterset *cs = static_cast<const Characterset *>(player_skin->get_entry(index)->get_ptr_tag());
+    player_skin_pic->set_picture(const_cast<Characterset *>(cs)->get_tile(DirectionRight, CharacterAnimationStanding)->get_tilegraphic());
 }
 
 void OptionsMenu::static_close_player_click(GuiVirtualButton *sender, void *data) {
@@ -217,7 +228,8 @@ void OptionsMenu::static_close_player_click(GuiVirtualButton *sender, void *data
 void OptionsMenu::close_player_click() {
     config.set_string("player_name", player_name->get_text());
     config.set_bool("show_player_name", show_player_name->get_state());
-    config.set_string("player_skin", static_cast<Characterset *>(resources.get_charactersets()[player_skin->get_selected_index()].object)->get_name());
+    const Characterset *cs = static_cast<const Characterset *>(player_skin->get_entry(player_skin->get_selected_index())->get_ptr_tag());
+    config.set_string("player_skin", cs->get_name());
     gui.pop_window();
 }
 
