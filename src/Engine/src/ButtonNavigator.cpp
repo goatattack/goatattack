@@ -66,23 +66,25 @@ bool ButtonNavigator::static_window_keydown(GuiWindow *sender, void *data, int k
 
 bool ButtonNavigator::window_keydown(int keycode, bool repeat) {
     binding.extract_from_config(config);
-    if (binding.down.device == MappedKey::DeviceKeyboard && binding.down.param == keycode) {
-        set_button_focus_down();
-        return true;
-    }
-    if (binding.up.device == MappedKey::DeviceKeyboard && binding.up.param == keycode) {
-        set_button_focus_up();
-        return true;
-    }
-    if (binding.fire.device == MappedKey::DeviceKeyboard && binding.fire.param == keycode) {
-        do_current_button_click();
-        return true;
-    }
-    if (binding.escape.device == MappedKey::DeviceKeyboard && binding.escape.param == keycode) {
-        if (on_cancel) {
-            on_cancel(on_cancel_data);
+    for (int i = 0; i < KeyBinding::MaxBindings; i++) {
+        if (binding.down[i].device == MappedKey::DeviceKeyboard && binding.down[i].param == keycode) {
+            set_button_focus_down();
+            return true;
         }
-        return true;
+        if (binding.up[i].device == MappedKey::DeviceKeyboard && binding.up[i].param == keycode) {
+            set_button_focus_up();
+            return true;
+        }
+        if (binding.fire[i].device == MappedKey::DeviceKeyboard && binding.fire[i].param == keycode) {
+            do_current_button_click();
+            return true;
+        }
+        if (binding.escape[i].device == MappedKey::DeviceKeyboard && binding.escape[i].param == keycode) {
+            if (on_cancel) {
+                on_cancel(on_cancel_data);
+            }
+            return true;
+        }
     }
 
     return false;
@@ -115,23 +117,25 @@ bool ButtonNavigator::static_window_joybutton_down(GuiWindow *sender, void *data
 
 bool ButtonNavigator::window_joybutton_down(int button) {
     binding.extract_from_config(config);
-    if (binding.down.device == MappedKey::DeviceJoyButton && binding.down.param == button) {
-        set_button_focus_down();
-        return true;
-    }
-    if (binding.up.device == MappedKey::DeviceJoyButton && binding.up.param == button) {
-        set_button_focus_up();
-        return true;
-    }
-    if (binding.fire.device == MappedKey::DeviceJoyButton && binding.fire.param == button) {
-        do_current_button_click();
-        return true;
-    }
-    if (binding.escape.device == MappedKey::DeviceJoyButton && binding.escape.param == button) {
-        if (on_cancel) {
-            on_cancel(on_cancel_data);
+    for (int i = 0; i < KeyBinding::MaxBindings; i++) {
+        if (binding.down[i].device == MappedKey::DeviceJoyButton && binding.down[i].param == button) {
+            set_button_focus_down();
+            return true;
         }
-        return true;
+        if (binding.up[i].device == MappedKey::DeviceJoyButton && binding.up[i].param == button) {
+            set_button_focus_up();
+            return true;
+        }
+        if (binding.fire[i].device == MappedKey::DeviceJoyButton && binding.fire[i].param == button) {
+            do_current_button_click();
+            return true;
+        }
+        if (binding.escape[i].device == MappedKey::DeviceJoyButton && binding.escape[i].param == button) {
+            if (on_cancel) {
+                on_cancel(on_cancel_data);
+            }
+            return true;
+        }
     }
 
     return false;

@@ -17,38 +17,46 @@
 
 #include "KeyBinding.hpp"
 
+static const char *Suffixes[] = { "", "_alternative" };
+
 KeyBinding::KeyBinding() { }
 
 KeyBinding::~KeyBinding() { }
 
 void KeyBinding::extract_from_config(const Configuration& config) {
-    extract_binding(config, left, "left");
-    extract_binding(config, right, "right");
-    extract_binding(config, up, "up");
-    extract_binding(config, down, "down");
-    extract_binding(config, jump, "jump");
-    extract_binding(config, fire, "fire");
-    extract_binding(config, drop1, "drop1");
-    extract_binding(config, drop2, "drop2");
-    extract_binding(config, drop3, "drop3");
-    extract_binding(config, chat, "chat");
-    extract_binding(config, stats, "stats");
-    extract_binding(config, escape, "escape");
+    for (int i = 0; i < MaxBindings; i++) {
+        std::string suffix(Suffixes[i]);
+        extract_binding(config, left[i], "left" + suffix);
+        extract_binding(config, right[i], "right" + suffix);
+        extract_binding(config, up[i], "up" + suffix);
+        extract_binding(config, down[i], "down" + suffix);
+        extract_binding(config, jump[i], "jump" + suffix);
+        extract_binding(config, fire[i], "fire" + suffix);
+        extract_binding(config, drop1[i], "drop1" + suffix);
+        extract_binding(config, drop2[i], "drop2" + suffix);
+        extract_binding(config, drop3[i], "drop3" + suffix);
+        extract_binding(config, chat[i], "chat" + suffix);
+        extract_binding(config, stats[i], "stats" + suffix);
+        extract_binding(config, escape[i], "escape" + suffix);
+    }
 }
 
 void KeyBinding::write_to_config(Configuration& config) {
-    write_binding(config, left, "left");
-    write_binding(config, right, "right");
-    write_binding(config, up, "up");
-    write_binding(config, down, "down");
-    write_binding(config, jump, "jump");
-    write_binding(config, fire, "fire");
-    write_binding(config, drop1, "drop1");
-    write_binding(config, drop2, "drop2");
-    write_binding(config, drop3, "drop3");
-    write_binding(config, chat, "chat");
-    write_binding(config, stats, "stats");
-    write_binding(config, escape, "escape");
+    for (int i = 0; i < MaxBindings; i++) {
+        std::string suffix(Suffixes[i]);
+        write_binding(config, left[i], "left" + suffix);
+        write_binding(config, right[i], "right" + suffix);
+        write_binding(config, up[i], "up" + suffix);
+        write_binding(config, down[i], "down" + suffix);
+        write_binding(config, jump[i], "jump" + suffix);
+        write_binding(config, fire[i], "fire" + suffix);
+        write_binding(config, drop1[i], "drop1" + suffix);
+        write_binding(config, drop2[i], "drop2" + suffix);
+        write_binding(config, drop3[i], "drop3" + suffix);
+        write_binding(config, chat[i], "chat" + suffix);
+        write_binding(config, stats[i], "stats" + suffix);
+        write_binding(config, escape[i], "escape" + suffix);
+    }
 }
 
 void KeyBinding::extract_binding(const Configuration& config, MappedKey& binding, const std::string& key) {
@@ -59,4 +67,8 @@ void KeyBinding::extract_binding(const Configuration& config, MappedKey& binding
 void KeyBinding::write_binding(Configuration& config, MappedKey& binding, const std::string& key) {
     config.set_int("bind_" + key + "_device", static_cast<int>(binding.device));
     config.set_int("bind_" + key + "_param", binding.param);
+}
+
+const char *KeyBinding::get_suffix(int index) {
+    return Suffixes[index];
 }

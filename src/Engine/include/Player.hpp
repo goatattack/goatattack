@@ -55,10 +55,15 @@ private:
     const Connection *c;
     player_id_t player_id;
     std::string player_name;
-    Characterset *characterset;
+    Characterset *fallback_characterset;
+    mutable Characterset *characterset;
+    mutable Characterset *org_characterset;
+    mutable bool check_characterset;
+    std::string characterset_name;
 
     void clean_states();
     void reset_states();
+    Characterset *get_characterset(const std::string& name) const throw ();
 
 public:
     /* public accessors, without getters and setters */

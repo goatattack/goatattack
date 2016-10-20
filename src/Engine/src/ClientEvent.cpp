@@ -670,12 +670,8 @@ void Client::sevt_data(ServerEvent& evt) {
 
                         /* change skin */
                         if (old_skin != new_skin) {
-                            try {
-                                p->set_characterset(new_skin);
-                                add_text_msg(p->get_player_name() + " changed the skin to " + new_skin);
-                            } catch (const Exception& e) {
-                                subsystem << e.what() << std::endl;
-                            }
+                            p->set_characterset(new_skin);
+                            add_text_msg(p->get_player_name() + " changed the skin to " + p->get_characterset()->get_name());
                         }
                         break;
                     }

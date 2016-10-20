@@ -304,48 +304,50 @@ void Client::idle() throw (Exception) {
 }
 
 void Client::set_key(MappedKey::Device dev, int param) {
-    set_key(dev, param, binding.left, PlayerKeyStateLeft);
-    set_key(dev, param, binding.right, PlayerKeyStateRight);
-    set_key(dev, param, binding.up, PlayerKeyStateUp);
-    set_key(dev, param, binding.down, PlayerKeyStateDown);
-    set_key(dev, param, binding.jump, PlayerKeyStateJump);
-    set_key(dev, param, binding.fire, PlayerKeyStateFire);
-    set_key(dev, param, binding.drop1, PlayerKeyStateDrop1);
-    set_key(dev, param, binding.drop2, PlayerKeyStateDrop2);
-    set_key(dev, param, binding.drop3, PlayerKeyStateDrop3);
+    for (int i = 0; i < KeyBinding::MaxBindings; i++) {
+        set_key(dev, param, binding.left[i], PlayerKeyStateLeft);
+        set_key(dev, param, binding.right[i], PlayerKeyStateRight);
+        set_key(dev, param, binding.up[i], PlayerKeyStateUp);
+        set_key(dev, param, binding.down[i], PlayerKeyStateDown);
+        set_key(dev, param, binding.jump[i], PlayerKeyStateJump);
+        set_key(dev, param, binding.fire[i], PlayerKeyStateFire);
+        set_key(dev, param, binding.drop1[i], PlayerKeyStateDrop1);
+        set_key(dev, param, binding.drop2[i], PlayerKeyStateDrop2);
+        set_key(dev, param, binding.drop3[i], PlayerKeyStateDrop3);
 
-    if (binding.chat.device == dev && binding.chat.param == param) {
-        if (!get_stack_count()) {
-            subsystem.clear_input_buffer();
-            int vw = subsystem.get_view_width();
-            int vh = subsystem.get_view_height();
-            int ww = 350;
-            int wh = 30;
-            GuiWindow *window = push_window(1, 1, ww, wh, "Enter Message");
-            window->set_on_keydown(static_window_keydown, this);
-            window->set_on_joybuttondown(static_window_joybutton_down, this);
-            ww = window->get_client_width();
-            chat_textbox = create_textbox(window, Spc, Spc, ww - 2 * Spc, "");
-            window->set_height(window->get_height() - window->get_client_height() + 2 * Spc + chat_textbox->get_height());
-            window->set_x(vw / 2 - window->get_client_width() / 2);
-            window->set_y(vh / 2 - window->get_client_height() / 2);
-            chat_textbox->set_focus();
-            if (me) {
-                me->state.client_server_state.key_states = 0;
+        if (binding.chat[i].device == dev && binding.chat[i].param == param) {
+            if (!get_stack_count()) {
+                subsystem.clear_input_buffer();
+                int vw = subsystem.get_view_width();
+                int vh = subsystem.get_view_height();
+                int ww = 350;
+                int wh = 30;
+                GuiWindow *window = push_window(1, 1, ww, wh, "Enter Message");
+                window->set_on_keydown(static_window_keydown, this);
+                window->set_on_joybuttondown(static_window_joybutton_down, this);
+                ww = window->get_client_width();
+                chat_textbox = create_textbox(window, Spc, Spc, ww - 2 * Spc, "");
+                window->set_height(window->get_height() - window->get_client_height() + 2 * Spc + chat_textbox->get_height());
+                window->set_x(vw / 2 - window->get_client_width() / 2);
+                window->set_y(vh / 2 - window->get_client_height() / 2);
+                chat_textbox->set_focus();
+                if (me) {
+                    me->state.client_server_state.key_states = 0;
+                }
             }
         }
-    }
 
-    if (binding.stats.device == dev && binding.stats.param == param) {
-        if (!get_stack_count()) {
-            if (tournament) {
-                tournament->show_stats(true);
+        if (binding.stats[i].device == dev && binding.stats[i].param == param) {
+            if (!get_stack_count()) {
+                if (tournament) {
+                    tournament->show_stats(true);
+                }
             }
         }
-    }
 
-    if (binding.escape.device == dev && binding.escape.param == param) {
-        show_options_menu();
+        if (binding.escape[i].device == dev && binding.escape[i].param == param) {
+            show_options_menu();
+        }
     }
 }
 
@@ -359,20 +361,22 @@ void Client::set_key(MappedKey::Device dev, int param, MappedKey& key, int flag)
 }
 
 void Client::reset_key(MappedKey::Device dev, int param) {
-    reset_key(dev, param, binding.left, PlayerKeyStateLeft);
-    reset_key(dev, param, binding.right, PlayerKeyStateRight);
-    reset_key(dev, param, binding.up, PlayerKeyStateUp);
-    reset_key(dev, param, binding.down, PlayerKeyStateDown);
-    reset_key(dev, param, binding.jump, PlayerKeyStateJump);
-    reset_key(dev, param, binding.fire, PlayerKeyStateFire);
-    reset_key(dev, param, binding.drop1, PlayerKeyStateDrop1);
-    reset_key(dev, param, binding.drop2, PlayerKeyStateDrop2);
-    reset_key(dev, param, binding.drop3, PlayerKeyStateDrop3);
+    for (int i = 0; i < KeyBinding::MaxBindings; i++) {
+        reset_key(dev, param, binding.left[i], PlayerKeyStateLeft);
+        reset_key(dev, param, binding.right[i], PlayerKeyStateRight);
+        reset_key(dev, param, binding.up[i], PlayerKeyStateUp);
+        reset_key(dev, param, binding.down[i], PlayerKeyStateDown);
+        reset_key(dev, param, binding.jump[i], PlayerKeyStateJump);
+        reset_key(dev, param, binding.fire[i], PlayerKeyStateFire);
+        reset_key(dev, param, binding.drop1[i], PlayerKeyStateDrop1);
+        reset_key(dev, param, binding.drop2[i], PlayerKeyStateDrop2);
+        reset_key(dev, param, binding.drop3[i], PlayerKeyStateDrop3);
 
-    if (binding.stats.device == dev && binding.stats.param == param) {
-        if (!get_stack_count()) {
-            if (tournament) {
-                tournament->show_stats(false);
+        if (binding.stats[i].device == dev && binding.stats[i].param == param) {
+            if (!get_stack_count()) {
+                if (tournament) {
+                    tournament->show_stats(false);
+                }
             }
         }
     }
@@ -479,12 +483,14 @@ bool Client::window_keydown(int keycode) {
             chat_send_message();
             return true;
     }
-    if (binding.escape.device == MappedKey::DeviceKeyboard && binding.escape.param == keycode) {
-        if (me) {
-            me->state.client_server_state.flags &= ~PlayerClientServerFlagWriting;
+    for (int i = 0; i < KeyBinding::MaxBindings; i++) {
+        if (binding.escape[i].device == MappedKey::DeviceKeyboard && binding.escape[i].param == keycode) {
+            if (me) {
+                me->state.client_server_state.flags &= ~PlayerClientServerFlagWriting;
+            }
+            window_close_click();
+            return true;
         }
-        window_close_click();
-        return true;
     }
 
     return false;
@@ -495,12 +501,14 @@ bool Client::static_window_joybutton_down(GuiWindow *sender, void *data, int but
 }
 
 bool Client::window_joybutton_down(int button) {
-    if (binding.escape.device == MappedKey::DeviceJoyButton && binding.escape.param == button) {
-        if (me) {
-            me->state.client_server_state.flags &= ~PlayerClientServerFlagWriting;
+    for (int i = 0; i < KeyBinding::MaxBindings; i++) {
+        if (binding.escape[i].device == MappedKey::DeviceJoyButton && binding.escape[i].param == button) {
+            if (me) {
+                me->state.client_server_state.flags &= ~PlayerClientServerFlagWriting;
+            }
+            window_close_click();
+            return true;
         }
-        window_close_click();
-        return true;
     }
 
     return false;

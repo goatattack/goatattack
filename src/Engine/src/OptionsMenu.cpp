@@ -187,15 +187,15 @@ void OptionsMenu::player_click() {
 
     Resources::ResourceObjects& sets = resources.get_charactersets();
     int sz = static_cast<int>(sets.size());
+    int selected_skin = 0;
     for (int i = 0; i < sz; i++) {
         Characterset *cset = static_cast<Characterset *>(sets[i].object);
         player_skin->add_entry(cset->get_description());
         if (cset->get_name() == config.get_string("player_skin")) {
-            player_skin->set_selected_index(i);
-            player_skin_pic->set_picture(cset->get_tile(DirectionRight, CharacterAnimationStanding)->get_tilegraphic());
+            selected_skin = i;
         }
     }
-
+    player_skin->set_selected_index(selected_skin);
     player_name->set_focus();
     bw = 55;
     gui.create_button(window, ww / 2 - bw / 2, wh - 43, bw, 18, "Close", static_close_player_click, this);
@@ -324,32 +324,38 @@ void OptionsMenu::static_controller_and_keyboard_click(GuiVirtualButton *sender,
 void OptionsMenu::controller_and_keyboard_click() {
     int vw = subsystem.get_view_width();
     int vh = subsystem.get_view_height();
-    int ww = 335;
-    int wh = 203;
+    int ww = 540;
+    int wh = 218;
     int bw = 140;
 
-    GuiWindow *window = gui.push_window(vw / 2 - ww / 2, vh / 2- wh / 2, ww, wh, "Controller And Keyboard");
+    static const int Col0 = 15;
+    static const int Col1 = 280;
+
+    GuiWindow *window = gui.push_window(vw / 2 - ww / 2, vh / 2 - wh / 2, ww, wh, "Controller And Keyboard");
     window->set_cancelable(true);
 
-    ck_up = create_field(window, 15, 15, "up:", static_capture_up_click, false);
-    ck_down = create_field(window, 175, 15, "down:", static_capture_down_click, false);
-    ck_left = create_field(window, 15, 35, "left:", static_capture_left_click, false);
-    ck_right = create_field(window, 175, 35, "right:", static_capture_right_click, false);
-    ck_jump = create_field(window, 15, 55, "jump:", static_capture_jump_click, false);
-    ck_fire = create_field(window, 175, 55, "fire:", static_capture_fire_click, false);
-    ck_drop1 = create_field(window, 15, 75, "grenade:", static_capture_drop1_click, false);
-    ck_drop2 = create_field(window, 175, 75, "bomb:", static_capture_drop2_click, false);
-    ck_drop3 = create_field(window, 15, 95, "frog:", static_capture_drop3_click, false);
-    ck_chat = create_field(window, 175, 95, "chat:", static_capture_chat_click, false);
-    ck_stats = create_field(window, 15, 115, "stats:", static_capture_stats_click, false);
-    ck_escape = create_field(window, 175, 115, "esc:", static_capture_escape_click, false);
+    create_field2(ck_up, window, Col0, 15, "up:", static_capture_up_0_click, static_capture_up_1_click, false);
+    create_field2(ck_down, window, Col1, 15, "down:", static_capture_down_0_click, static_capture_down_1_click, false);
+    create_field2(ck_left, window, Col0, 35, "left:", static_capture_left_0_click, static_capture_left_1_click, false);
+    create_field2(ck_right, window, Col1, 35, "right:", static_capture_right_0_click, static_capture_right_1_click, false);
+    create_field2(ck_jump, window, Col0, 55, "jump:", static_capture_jump_0_click, static_capture_jump_1_click, false);
+    create_field2(ck_fire, window, Col1, 55, "fire:", static_capture_fire_0_click, static_capture_fire_1_click, false);
+    create_field2(ck_drop1, window, Col0, 75, "grenade:", static_capture_drop1_0_click, static_capture_drop1_1_click, false);
+    create_field2(ck_drop2, window, Col1, 75, "bomb:", static_capture_drop2_0_click, static_capture_drop2_1_click, false);
+    create_field2(ck_drop3, window, Col0, 95, "frog:", static_capture_drop3_0_click, static_capture_drop3_1_click, false);
+    create_field2(ck_chat, window, Col1, 95, "chat:", static_capture_chat_0_click, static_capture_chat_1_click, false);
+    create_field2(ck_stats, window, Col0, 115, "stats:", static_capture_stats_0_click, static_capture_stats_1_click, false);
+    create_field2(ck_escape, window, Col1, 115, "escape:", static_capture_escape_0_click, static_capture_escape_1_click, false);
+
     ck_selected = 0;
     capture_draw();
 
-    ck_dz_h = create_field(window, 15, 135, "dz horz.:", static_ck_erase_horz, true);
+    gui.create_box(window, 15, 139, ww - 15 * 2 - 2, 1);
+
+    ck_dz_h = create_field(window, Col0, 150, "horz. gamepad deadzone:", static_ck_erase_horz, true);
     ck_dz_h->set_text(config.get_string("deadzone_horizontal"));
 
-    ck_dz_v = create_field(window, 175, 135, "dz vert.:", static_ck_erase_vert, true);
+    ck_dz_v = create_field(window, Col1, 150, "vert. gamepad deadzone:", static_ck_erase_vert, true);
     ck_dz_v->set_text(config.get_string("deadzone_vertical"));
 
     bw = 55;
@@ -412,20 +418,54 @@ GuiTextbox *OptionsMenu::create_field(GuiWindow *parent, int x, int y,
     int ih = stg->get_height();
 
     gui.create_label(parent, x, y, text);
-    GuiTextbox *tb = gui.create_textbox(parent, x + 50, y, 80, "");
+    GuiTextbox *tb = gui.create_textbox(parent, x + 150, y, 80, "");
     int tbh = tb->get_height();
     if (!erase_pic) {
         tb->set_locked(true);
-        GuiButton *btn = gui.create_button(parent, x + 129, y, tbh, tbh, "", on_click, this);
+        GuiButton *btn = gui.create_button(parent, x + 229, y, tbh, tbh, "", on_click, this);
         btn->show_bolts(false);
         gui.create_picture(btn, tbh / 2 - iw / 2, tbh / 2 - ih / 2, stg);
     } else {
         tb->set_locked(false);
-        GuiButton *btn = gui.create_button(parent, x + 129, y, tbh, tbh, "...", on_click, this);
+        GuiButton *btn = gui.create_button(parent, x + 229, y, tbh, tbh, "...", on_click, this);
         btn->show_bolts(false);
     }
 
     return tb;
+}
+
+void OptionsMenu::create_field2(GuiTextbox *dest[], GuiWindow *parent, int x, int y,
+    const std::string& text, GuiVirtualButton::OnClick on_click_0,
+    GuiVirtualButton::OnClick on_click_1, bool erase_pic)
+{
+    static const int TextboxWidth = 80;
+    static const int TextboxSpacer = 20;
+
+    Icon *select = resources.get_icon("select");
+    TileGraphic *stg = select->get_tile()->get_tilegraphic();
+    int iw = stg->get_width();
+    int ih = stg->get_height();
+
+    gui.create_label(parent, x, y, text);
+    for (int i = 0; i < 2; i++) {
+        GuiVirtualButton::OnClick on_click = (i == 0 ? on_click_0 : on_click_1);
+        if (on_click) {
+            int xoffs = (i * (TextboxWidth + TextboxSpacer));
+            GuiTextbox *tb = gui.create_textbox(parent, x + 50 + xoffs, y, TextboxWidth, "");
+            int tbh = tb->get_height();
+            if (!erase_pic) {
+                tb->set_locked(true);
+                GuiButton *btn = gui.create_button(parent, x + TextboxWidth + 49 + xoffs, y, tbh, tbh, "", on_click, this);
+                btn->show_bolts(false);
+                gui.create_picture(btn, tbh / 2 - iw / 2, tbh / 2 - ih / 2, stg);
+            } else {
+                tb->set_locked(false);
+                GuiButton *btn = gui.create_button(parent, x + TextboxWidth + 49 + xoffs, y, tbh, tbh, "...", on_click, this);
+                btn->show_bolts(false);
+            }
+            dest[i] = tb;
+        }
+    }
 }
 
 void OptionsMenu::capture_key(GuiTextbox *ck_selected) {
@@ -437,7 +477,7 @@ void OptionsMenu::capture_key(GuiTextbox *ck_selected) {
 
     this->ck_selected = ck_selected;
 
-    GuiWindow *window = gui.push_window(vw / 2 - ww / 2, vh / 2- wh / 2, ww, wh, "Capturing");
+    GuiWindow *window = gui.push_window(vw / 2 - ww / 2, vh / 2 - wh / 2, ww, wh, "Capturing");
     window->set_on_keydown(static_capture_keydown, this);
     window->set_on_joybuttondown(static_capture_joybuttondown, this);
     std::string text("Press key or use joystick...");
@@ -446,8 +486,13 @@ void OptionsMenu::capture_key(GuiTextbox *ck_selected) {
     int fh = f->get_font_height();
     gui.create_label(window, ww / 2 - tw / 2, window->get_client_height() / 2 - fh / 2 - 10, text);
 
-    bw = 55;
-    gui.create_button(window, ww / 2 - bw / 2, wh - 43, bw, 18, "Cancel", static_abort_capture_click, this);
+    bw = 60;
+    gui.create_button(window, Gui::Spc, wh - 43, bw, 18, "Delete", static_delete_capture_click, this);
+    gui.create_button(window, ww - bw - Gui::Spc, wh - 43, bw, 18, "Cancel", static_abort_capture_click, this);
+}
+
+void OptionsMenu::static_delete_capture_click(GuiVirtualButton *sender, void *data) {
+    (reinterpret_cast<OptionsMenu *>(data))->capture_keydown(0);
 }
 
 void OptionsMenu::static_abort_capture_click(GuiVirtualButton *sender, void *data) {
@@ -469,100 +514,148 @@ void OptionsMenu::capture_rescan_click() {
     gui.show_messagebox(Gui::MessageBoxIconInformation, "Joysticks", buffer);
 }
 
-void OptionsMenu::static_capture_up_click(GuiVirtualButton *sender, void *data) {
-    (reinterpret_cast<OptionsMenu *>(data))->capture_up_click();
+void OptionsMenu::static_capture_up_0_click(GuiVirtualButton *sender, void *data) {
+    (reinterpret_cast<OptionsMenu *>(data))->capture_up_click(0);
 }
 
-void OptionsMenu::static_capture_down_click(GuiVirtualButton *sender, void *data) {
-    (reinterpret_cast<OptionsMenu *>(data))->capture_down_click();
+void OptionsMenu::static_capture_down_0_click(GuiVirtualButton *sender, void *data) {
+    (reinterpret_cast<OptionsMenu *>(data))->capture_down_click(0);
 }
 
-void OptionsMenu::static_capture_left_click(GuiVirtualButton *sender, void *data) {
-    (reinterpret_cast<OptionsMenu *>(data))->capture_left_click();
+void OptionsMenu::static_capture_left_0_click(GuiVirtualButton *sender, void *data) {
+    (reinterpret_cast<OptionsMenu *>(data))->capture_left_click(0);
 }
 
-void OptionsMenu::static_capture_right_click(GuiVirtualButton *sender, void *data) {
-    (reinterpret_cast<OptionsMenu *>(data))->capture_right_click();
+void OptionsMenu::static_capture_right_0_click(GuiVirtualButton *sender, void *data) {
+    (reinterpret_cast<OptionsMenu *>(data))->capture_right_click(0);
 }
 
-void OptionsMenu::static_capture_jump_click(GuiVirtualButton *sender, void *data) {
-    (reinterpret_cast<OptionsMenu *>(data))->capture_jump_click();
+void OptionsMenu::static_capture_jump_0_click(GuiVirtualButton *sender, void *data) {
+    (reinterpret_cast<OptionsMenu *>(data))->capture_jump_click(0);
 }
 
-void OptionsMenu::static_capture_fire_click(GuiVirtualButton *sender, void *data) {
-    (reinterpret_cast<OptionsMenu *>(data))->capture_fire_click();
+void OptionsMenu::static_capture_fire_0_click(GuiVirtualButton *sender, void *data) {
+    (reinterpret_cast<OptionsMenu *>(data))->capture_fire_click(0);
 }
 
-void OptionsMenu::static_capture_drop1_click(GuiVirtualButton *sender, void *data) {
-    (reinterpret_cast<OptionsMenu *>(data))->capture_drop1_click();
+void OptionsMenu::static_capture_drop1_0_click(GuiVirtualButton *sender, void *data) {
+    (reinterpret_cast<OptionsMenu *>(data))->capture_drop1_click(0);
 }
 
-void OptionsMenu::static_capture_drop2_click(GuiVirtualButton *sender, void *data) {
-    (reinterpret_cast<OptionsMenu *>(data))->capture_drop2_click();
+void OptionsMenu::static_capture_drop2_0_click(GuiVirtualButton *sender, void *data) {
+    (reinterpret_cast<OptionsMenu *>(data))->capture_drop2_click(0);
 }
 
-void OptionsMenu::static_capture_drop3_click(GuiVirtualButton *sender, void *data) {
-    (reinterpret_cast<OptionsMenu *>(data))->capture_drop3_click();
+void OptionsMenu::static_capture_drop3_0_click(GuiVirtualButton *sender, void *data) {
+    (reinterpret_cast<OptionsMenu *>(data))->capture_drop3_click(0);
 }
 
-void OptionsMenu::static_capture_chat_click(GuiVirtualButton *sender, void *data) {
-    (reinterpret_cast<OptionsMenu *>(data))->capture_chat_click();
+void OptionsMenu::static_capture_chat_0_click(GuiVirtualButton *sender, void *data) {
+    (reinterpret_cast<OptionsMenu *>(data))->capture_chat_click(0);
 }
 
-void OptionsMenu::static_capture_stats_click(GuiVirtualButton *sender, void *data) {
-    (reinterpret_cast<OptionsMenu *>(data))->capture_stats_click();
+void OptionsMenu::static_capture_stats_0_click(GuiVirtualButton *sender, void *data) {
+    (reinterpret_cast<OptionsMenu *>(data))->capture_stats_click(0);
 }
 
-void OptionsMenu::static_capture_escape_click(GuiVirtualButton *sender, void *data) {
-    (reinterpret_cast<OptionsMenu *>(data))->capture_escape_click();
+void OptionsMenu::static_capture_escape_0_click(GuiVirtualButton *sender, void *data) {
+    (reinterpret_cast<OptionsMenu *>(data))->capture_escape_click(0);
 }
 
-void OptionsMenu::capture_up_click() {
-    capture_key(ck_up);
+void OptionsMenu::static_capture_up_1_click(GuiVirtualButton *sender, void *data) {
+    (reinterpret_cast<OptionsMenu *>(data))->capture_up_click(1);
 }
 
-void OptionsMenu::capture_down_click() {
-    capture_key(ck_down);
+void OptionsMenu::static_capture_down_1_click(GuiVirtualButton *sender, void *data) {
+    (reinterpret_cast<OptionsMenu *>(data))->capture_down_click(1);
 }
 
-void OptionsMenu::capture_left_click() {
-    capture_key(ck_left);
+void OptionsMenu::static_capture_left_1_click(GuiVirtualButton *sender, void *data) {
+    (reinterpret_cast<OptionsMenu *>(data))->capture_left_click(1);
 }
 
-void OptionsMenu::capture_right_click() {
-    capture_key(ck_right);
+void OptionsMenu::static_capture_right_1_click(GuiVirtualButton *sender, void *data) {
+    (reinterpret_cast<OptionsMenu *>(data))->capture_right_click(1);
 }
 
-void OptionsMenu::capture_jump_click() {
-    capture_key(ck_jump);
+void OptionsMenu::static_capture_jump_1_click(GuiVirtualButton *sender, void *data) {
+    (reinterpret_cast<OptionsMenu *>(data))->capture_jump_click(1);
 }
 
-void OptionsMenu::capture_fire_click() {
-    capture_key(ck_fire);
+void OptionsMenu::static_capture_fire_1_click(GuiVirtualButton *sender, void *data) {
+    (reinterpret_cast<OptionsMenu *>(data))->capture_fire_click(1);
 }
 
-void OptionsMenu::capture_drop1_click() {
-    capture_key(ck_drop1);
+void OptionsMenu::static_capture_drop1_1_click(GuiVirtualButton *sender, void *data) {
+    (reinterpret_cast<OptionsMenu *>(data))->capture_drop1_click(1);
 }
 
-void OptionsMenu::capture_drop2_click() {
-    capture_key(ck_drop2);
+void OptionsMenu::static_capture_drop2_1_click(GuiVirtualButton *sender, void *data) {
+    (reinterpret_cast<OptionsMenu *>(data))->capture_drop2_click(1);
 }
 
-void OptionsMenu::capture_drop3_click() {
-    capture_key(ck_drop3);
+void OptionsMenu::static_capture_drop3_1_click(GuiVirtualButton *sender, void *data) {
+    (reinterpret_cast<OptionsMenu *>(data))->capture_drop3_click(1);
 }
 
-void OptionsMenu::capture_chat_click() {
-    capture_key(ck_chat);
+void OptionsMenu::static_capture_chat_1_click(GuiVirtualButton *sender, void *data) {
+    (reinterpret_cast<OptionsMenu *>(data))->capture_chat_click(1);
 }
 
-void OptionsMenu::capture_stats_click() {
-    capture_key(ck_stats);
+void OptionsMenu::static_capture_stats_1_click(GuiVirtualButton *sender, void *data) {
+    (reinterpret_cast<OptionsMenu *>(data))->capture_stats_click(1);
 }
 
-void OptionsMenu::capture_escape_click() {
-    capture_key(ck_escape);
+void OptionsMenu::static_capture_escape_1_click(GuiVirtualButton *sender, void *data) {
+    (reinterpret_cast<OptionsMenu *>(data))->capture_escape_click(1);
+}
+
+void OptionsMenu::capture_up_click(int index) {
+    capture_key(ck_up[index]);
+}
+
+void OptionsMenu::capture_down_click(int index) {
+    capture_key(ck_down[index]);
+}
+
+void OptionsMenu::capture_left_click(int index) {
+    capture_key(ck_left[index]);
+}
+
+void OptionsMenu::capture_right_click(int index) {
+    capture_key(ck_right[index]);
+}
+
+void OptionsMenu::capture_jump_click(int index) {
+    capture_key(ck_jump[index]);
+}
+
+void OptionsMenu::capture_fire_click(int index) {
+    capture_key(ck_fire[index]);
+}
+
+void OptionsMenu::capture_drop1_click(int index) {
+    capture_key(ck_drop1[index]);
+}
+
+void OptionsMenu::capture_drop2_click(int index) {
+    capture_key(ck_drop2[index]);
+}
+
+void OptionsMenu::capture_drop3_click(int index) {
+    capture_key(ck_drop3[index]);
+}
+
+void OptionsMenu::capture_chat_click(int index) {
+    capture_key(ck_chat[index]);
+}
+
+void OptionsMenu::capture_stats_click(int index) {
+    capture_key(ck_stats[index]);
+}
+
+void OptionsMenu::capture_escape_click(int index) {
+    capture_key(ck_escape[index]);
 }
 
 bool OptionsMenu::static_capture_keydown(GuiWindow *sender, void *data, int keycode, bool repeat) {
@@ -581,78 +674,88 @@ bool OptionsMenu::capture_keydown(int keycode) {
     return true;
 }
 
-const char *OptionsMenu::capture_get_config_id() {
+std::string OptionsMenu::capture_get_config_id() {
     const char *key = 0;
 
-    if (ck_selected == ck_up) {
-        key = "up";
-    } else if (ck_selected == ck_down) {
-        key = "down";
-    } else if (ck_selected == ck_left) {
-        key = "left";
-    } else if (ck_selected == ck_right) {
-        key = "right";
-    } else if (ck_selected == ck_jump) {
-        key = "jump";
-    } else if (ck_selected == ck_fire) {
-        key = "fire";
-    } else if (ck_selected == ck_drop1) {
-        key = "drop1";
-    } else if (ck_selected == ck_drop2) {
-        key = "drop2";
-    } else if (ck_selected == ck_drop3) {
-        key = "drop3";
-    } else if (ck_selected == ck_chat) {
-        key = "chat";
-    } else if (ck_selected == ck_stats) {
-        key = "stats";
-    } else if (ck_selected == ck_escape) {
-        key = "escape";
+    for (int i = 0; i < KeyBinding::MaxBindings; i++) {
+        if (ck_selected == ck_up[i]) {
+            key = "up";
+        } else if (ck_selected == ck_down[i]) {
+            key = "down";
+        } else if (ck_selected == ck_left[i]) {
+            key = "left";
+        } else if (ck_selected == ck_right[i]) {
+            key = "right";
+        } else if (ck_selected == ck_jump[i]) {
+            key = "jump";
+        } else if (ck_selected == ck_fire[i]) {
+            key = "fire";
+        } else if (ck_selected == ck_drop1[i]) {
+            key = "drop1";
+        } else if (ck_selected == ck_drop2[i]) {
+            key = "drop2";
+        } else if (ck_selected == ck_drop3[i]) {
+            key = "drop3";
+        } else if (ck_selected == ck_chat[i]) {
+            key = "chat";
+        } else if (ck_selected == ck_stats[i]) {
+            key = "stats";
+        } else if (ck_selected == ck_escape[i]) {
+            key = "escape";
+        }
+        if (key) {
+            std::string new_key(key);
+            new_key += KeyBinding::get_suffix(i);
+            return new_key;
+        }
     }
 
-    return key;
+    return "";
 }
 
 void OptionsMenu::capture_draw() {
     KeyBinding binding;
-
     binding.extract_from_config(config);
-    capture_draw(binding.left, ck_left);
-    capture_draw(binding.right, ck_right);
-    capture_draw(binding.up, ck_up);
-    capture_draw(binding.down, ck_down);
-    capture_draw(binding.jump, ck_jump);
-    capture_draw(binding.fire, ck_fire);
-    capture_draw(binding.drop1, ck_drop1);
-    capture_draw(binding.drop2, ck_drop2);
-    capture_draw(binding.drop3, ck_drop3);
-    capture_draw(binding.chat, ck_chat);
-    capture_draw(binding.stats, ck_stats);
-    capture_draw(binding.escape, ck_escape);
+    for (int i = 0; i < KeyBinding::MaxBindings; i++) {
+        capture_draw(binding.left[i], ck_left[i]);
+        capture_draw(binding.right[i], ck_right[i]);
+        capture_draw(binding.up[i], ck_up[i]);
+        capture_draw(binding.down[i], ck_down[i]);
+        capture_draw(binding.jump[i], ck_jump[i]);
+        capture_draw(binding.fire[i], ck_fire[i]);
+        capture_draw(binding.drop1[i], ck_drop1[i]);
+        capture_draw(binding.drop2[i], ck_drop2[i]);
+        capture_draw(binding.drop3[i], ck_drop3[i]);
+        capture_draw(binding.chat[i], ck_chat[i]);
+        capture_draw(binding.stats[i], ck_stats[i]);
+        capture_draw(binding.escape[i], ck_escape[i]);
+    }
 }
 
 void OptionsMenu::capture_draw(MappedKey& mk, GuiTextbox *mktb) {
-    switch (mk.device) {
-        case MappedKey::DeviceKeyboard:
-        {
-            const char *key = subsystem.get_keycode_name(mk.param);
-            Font *f = gui.get_font();
-            if (!f->get_text_width(key)) {
-                mktb->set_text("???");
-            } else {
-                mktb->set_text(key);
+    if (mktb) {
+        switch (mk.device) {
+            case MappedKey::DeviceKeyboard:
+            {
+                const char *key = subsystem.get_keycode_name(mk.param);
+                Font *f = gui.get_font();
+                if (!f->get_text_width(key)) {
+                    mktb->set_text("[none]");
+                } else {
+                    mktb->set_text(key);
+                }
+                break;
             }
-            break;
-        }
 
-        case MappedKey::DeviceJoyButton:
-        {
-            char buffer[16];
-            sprintf(buffer, "%d", mk.param + 1);
-            std::string joy;
-            joy.assign(buffer);
-            mktb->set_text("Button: "+ joy);
-            break;
+            case MappedKey::DeviceJoyButton:
+            {
+                char buffer[16];
+                sprintf(buffer, "%d", mk.param + 1);
+                std::string joy;
+                joy.assign(buffer);
+                mktb->set_text("Button: "+ joy);
+                break;
+            }
         }
     }
 }

@@ -17,10 +17,14 @@
 
 #include "Player.hpp"
 
+static const char *CharactersetFallback = "goat";
+
 Player::Player(Resources& resources, const Connection *c, player_id_t player_id,
     const std::string& player_name, const std::string& characterset_name)
     : resources(resources), c(c), player_id(player_id), player_name(player_name),
-      characterset(resources.get_characterset(characterset_name)),
+      fallback_characterset(get_characterset(CharactersetFallback)),
+      characterset(get_characterset(characterset_name)), org_characterset(characterset),
+      check_characterset(true), characterset_name(characterset->get_name()),
       animation_counter(0.0f), font(0), player_name_width(0), its_me(false),
       respawning(false), joining(false), force_broadcast(false),
       flag_pick_refused_counter(0), flag_pick_refused(false), client_synced(false),
@@ -41,11 +45,18 @@ void Player::set_player_name(const std::string& name) {
 }
 
 Characterset *Player::get_characterset() const {
+    if (check_characterset) {
+        characterset = get_characterset(characterset_name);
+        if (characterset != org_characterset) {
+            check_characterset = false;
+        }
+    }
     return characterset;
 }
 
 void Player::set_characterset(const std::string& name) throw (ResourcesException) {
-    characterset = resources.get_characterset(name);
+    characterset = get_characterset(name);
+    characterset_name = characterset->get_name();
 }
 
 const Connection *Player::get_connection() const {
@@ -107,6 +118,17 @@ void Player::reset_states() {
     state.server_state.score = 0;
     state.server_state.frags = 0;
     state.server_state.kills = 0;
+}
+
+Characterset *Player::get_characterset(const std::string& name) const throw () {
+    Characterset *cs = fallback_characterset;
+    try {
+        cs = resources.get_characterset(name);
+    } catch (...) {
+        /* chomp */
+    }
+
+    return cs;
 }
 
 bool ComparePlayerScore(Player *lhs, Player *rhs) {
