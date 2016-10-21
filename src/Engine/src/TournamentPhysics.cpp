@@ -278,7 +278,7 @@ bool Tournament::render_physics(double period_f, bool projectile, int damage,
             Player *p = *it;
             if (p->state.id != owner) {
                 if (p->is_alive_and_playing()) {
-                    CollisionBox p_colbox = p->get_characterset()->get_damage_colbox();
+                    CollisionBox p_colbox = Characterset::DamageColbox;
                     p_colbox.x += static_cast<int>(p->state.client_server_state.x);
                     p_colbox.y = static_cast<int>(p->state.client_server_state.y) - p_colbox.height - p_colbox.y;
                     if (obj_colbox.intersects(p_colbox)) {

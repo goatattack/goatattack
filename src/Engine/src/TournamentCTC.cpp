@@ -276,11 +276,9 @@ void TournamentCTC::draw_player_addons() {
         Player *p = *it;
         if (p->is_alive_and_playing()) {
             if (p->state.server_state.flags & PlayerServerFlagHasCoin) {
-                int fx = p->get_characterset()->get_coin_offset_x();
-                int fy = p->get_characterset()->get_coin_offset_y();
                 subsystem.draw_tile(coin->object->get_tile(),
-                    static_cast<int>(p->state.client_server_state.x) + left + fx,
-                    static_cast<int>(p->state.client_server_state.y) + top + fy);
+                    static_cast<int>(p->state.client_server_state.x) + left + Characterset::CoinOffsetX,
+                    static_cast<int>(p->state.client_server_state.y) + top + Characterset::CoinOffsetY);
             }
         }
     }
@@ -298,7 +296,7 @@ void TournamentCTC::draw_enemies_on_hud() {
         Player *p = *it;
         if (p != me) {
             if (p->is_alive_and_playing()) {
-                const CollisionBox& colbox = p->get_characterset()->get_damage_colbox();
+                const CollisionBox& colbox = Characterset::DamageColbox;
                 int cbw = colbox.width / 2;
                 int cbh = colbox.height / 2;
                 bool draw = false;
@@ -529,9 +527,6 @@ bool TournamentCTC::test_and_drop_coin(Player *p) {
             coin->spawn_counter = static_cast<double>(CoinDropInitialValue);
             send_coin_remaining();
 
-            int fx = p->get_characterset()->get_coin_drop_offset_x();
-            int fy = p->get_characterset()->get_coin_drop_offset_y();
-
             coin->state.accel_x = p->state.client_server_state.accel_x;
             coin->state.accel_y = p->state.client_server_state.accel_y + p->state.client_server_state.jump_accel_y;
 
@@ -539,8 +534,8 @@ bool TournamentCTC::test_and_drop_coin(Player *p) {
             memset(gpo, 0, sizeof(GPlaceObject));
             gpo->id = coin->state.id;
             gpo->flags = PlaceObjectWithDropSound;
-            gpo->x = static_cast<pos_t>(p->state.client_server_state.x) + fx;
-            gpo->y = static_cast<pos_t>(p->state.client_server_state.y) + fy;
+            gpo->x = static_cast<pos_t>(p->state.client_server_state.x) + Characterset::CoinDropOffsetX;
+            gpo->y = static_cast<pos_t>(p->state.client_server_state.y) + Characterset::CoinDropOffsetY;
             add_place_object(gpo);
             gpo->to_net();
             add_state_response(GPCPlaceObject, sizeof(GPlaceObject), gpo);

@@ -25,7 +25,7 @@ Tournament::Tournament(Resources& resources, Subsystem& subsystem, Gui *gui, Ser
     const std::string& game_file, bool server, const std::string& map_name,
     Players& players, int duration, bool warmup)
     throw (TournamentException, ResourcesException)
-      : resources(resources), subsystem(subsystem),
+    : resources(resources), subsystem(subsystem),
       properties(*resources.get_game_settings(game_file)),
       gui(gui), server(server),
       map(*resources.get_map(map_name)),
@@ -445,15 +445,12 @@ void Tournament::spawn_object(Object *obj, identifier_t id, int x, int y, flags_
 }
 
 void Tournament::add_player_spawn_animation(Player *p) {
-    const std::string& spawn_animation = p->get_characterset()->get_value("spawn_animation");
-    if (spawn_animation.length()) {
-        Animation *ani = resources.get_animation(spawn_animation);
-        TileGraphic *tg = ani->get_tile()->get_tilegraphic();
-        int x = static_cast<int>(p->state.client_server_state.x);
-        int y = static_cast<int>(p->state.client_server_state.y) - p->get_characterset()->get_height();
-        add_animation(spawn_animation, 0, 0, 0, x, y, 0.0f, 0.0f, tg->get_width(), tg->get_height());
-        subsystem.play_sound(resources.get_sound("respawn"), 0);
-    }
+    Animation *ani = resources.get_animation(Characterset::SpawnAnimation);
+    TileGraphic *tg = ani->get_tile()->get_tilegraphic();
+    int x = static_cast<int>(p->state.client_server_state.x);
+    int y = static_cast<int>(p->state.client_server_state.y) - Characterset::Height;
+    add_animation(Characterset::SpawnAnimation, 0, 0, 0, x, y, 0.0f, 0.0f, tg->get_width(), tg->get_height());
+    subsystem.play_sound(resources.get_sound("respawn"), 0);
 }
 
 void Tournament::add_state_response(int action, data_len_t len, const void *data) {
@@ -549,7 +546,6 @@ void Tournament::spawn_player(Player *p) {
 void Tournament::spawn_player_base(Player *p, SpawnPoints& spawn_points) {
     // TODO: better selection of spawn points, maybe order by last spawn point usage
     GameObject *obj = spawn_points[rand() % spawn_points.size()];
-    const CollisionBox& colbox = p->get_characterset()->get_colbox();
     TileGraphic *tg = obj->object->get_tile()->get_tilegraphic();
     int w = tg->get_width();
     int h = tg->get_height();
@@ -558,7 +554,7 @@ void Tournament::spawn_player_base(Player *p, SpawnPoints& spawn_points) {
     int y = static_cast<int>(obj->state.y);
     x += w / 2;
     y += h;
-    x = x - colbox.width / 2 - colbox.x;
+    x = x - Characterset::Colbox.width / 2 - Characterset::Colbox.x;
     p->spawn(x, y);
 }
 
@@ -777,11 +773,10 @@ void Tournament::player_dies(Player *p, const std::string& die_message) {
         strncpy(ani->animation_name, tempani->get_name().c_str(), NameLength - 1);
         strncpy(ani->sound_name, properties.get_value("die_sound").c_str(), NameLength - 1);
 
-        TileGraphic *tg = p->get_characterset()->get_tile(DirectionLeft, CharacterAnimationStanding)->get_tilegraphic();
         TileGraphic *tga = tempani->get_tile()->get_tilegraphic();
 
-        int x = static_cast<int>(p->state.client_server_state.x) + tg->get_width() / 2 - tga->get_width() / 2;
-        int y = static_cast<int>(p->state.client_server_state.y) - tg->get_height() / 2 - tga->get_height() / 2;
+        int x = static_cast<int>(p->state.client_server_state.x) + Characterset::Width / 2 - tga->get_width() / 2;
+        int y = static_cast<int>(p->state.client_server_state.y) - Characterset::Height / 2 - tga->get_height() / 2;
 
         ani->id = ++animation_id;
         ani->x = x;

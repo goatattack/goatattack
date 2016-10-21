@@ -307,7 +307,7 @@ void Server::thread() {
                                 strncpy(info.desc.player_name, p->get_player_name().c_str(),
                                     NameLength - 1);
 
-                                strncpy(info.desc.characterset_name, p->get_characterset()->get_name().c_str(),
+                                strncpy(info.desc.characterset_name, p->get_characterset_name().c_str(),
                                     NameLength - 1);
 
                                 info.id = p->state.id;
@@ -535,9 +535,6 @@ void Server::event_login(const Connection *c, data_len_t len, void *data) throw 
     sz++;
     std::string msg(p->get_player_name() + " connected");
 
-    /* check if server supports user's characterset */
-    check_characterset(c, p, desc->characterset_name);
-
     /* reattach disconnect player? */
     found = false;
     if (hold_disconnected_players) {
@@ -582,7 +579,7 @@ void Server::event_login(const Connection *c, data_len_t len, void *data) throw 
         Player *p = players[i];
         memset(&info, 0, sizeof(GPlayerInfo));
         strncpy(info.desc.player_name, p->get_player_name().c_str(), NameLength - 1);
-        strncpy(info.desc.characterset_name, p->get_characterset()->get_name().c_str(), NameLength - 1);
+        strncpy(info.desc.characterset_name, p->get_characterset_name().c_str(), NameLength - 1);
         info.id = p->state.id;
         info.server_state = p->state.server_state;
         info.client_server_state = p->state.client_server_state;
@@ -756,12 +753,11 @@ void Server::event_data(const Connection *c, data_len_t len, void *data) throw (
                         std::string msg(old_name + " is now known as " + new_name);
                         logger.log(ServerLogger::LogTypePlayerNameChange, msg, 0, 0, old_name.c_str(), new_name.c_str());
                     }
-                    if (name_changed || p->get_characterset()->get_name() != new_skin) {
+                    if (name_changed || p->get_characterset_name() != new_skin) {
                         p->set_player_name(new_name);
                         p->set_characterset(new_skin);
-                        check_characterset(c, p, new_skin.c_str());
                         memset(pdesc->characterset_name, 0, sizeof(pdesc->characterset_name));
-                        strcpy(pdesc->characterset_name, p->get_characterset()->get_name().c_str());
+                        strcpy(pdesc->characterset_name, p->get_characterset_name().c_str());
                         pdesc->id = p->state.id;
                         pdesc->to_net();
                         broadcast_data(factory.get_tournament_id(), GPCPlayerChanged, NetFlagsReliable, t->len, data_ptr);
@@ -840,10 +836,9 @@ void Server::event_data(const Connection *c, data_len_t len, void *data) throw (
                             GAnimation ani;
                             memset(&ani, 0, sizeof(GAnimation));
                             strncpy(ani.animation_name, "disappear", NameLength - 1);
-                            const CollisionBox& colbox = p->get_characterset()->get_colbox();
                             ani.id = tournament->create_animation_id();
-                            ani.x = p->state.client_server_state.x + colbox.x;
-                            ani.y = p->state.client_server_state.y - (p->get_characterset()->get_height() / 2.0f);
+                            ani.x = p->state.client_server_state.x + Characterset::Colbox.x;
+                            ani.y = p->state.client_server_state.y - (Characterset::Height / 2.0f);
                             ani.to_net();
                             stacked_broadcast_data_synced(factory.get_tournament_id(), GPCAddAnimation, NetFlagsReliable, GAnimationLen, &ani);
                         }
@@ -926,19 +921,14 @@ void Server::event_logout(const Connection *c, LogoutReason reason) throw (Excep
                     tournament->player_removed(p);
                 }
 
-                /* get tilegraphic to center animation and text */
-                TileGraphic *tg = p->get_characterset()->get_tile(DirectionLeft,
-                    static_cast<CharacterAnimation>(p->state.client_state.icon))->get_tilegraphic();
-
                 /* send disappear animation */
                 if (tournament) {
                     GAnimation ani;
                     memset(&ani, 0, sizeof(GAnimation));
                     strncpy(ani.animation_name, "disappear", NameLength - 1);
-                    const CollisionBox& colbox = p->get_characterset()->get_colbox();
                     ani.id = tournament->create_animation_id();
-                    ani.x = p->state.client_server_state.x + colbox.x;
-                    ani.y = p->state.client_server_state.y - (p->get_characterset()->get_height() / 2.0f);
+                    ani.x = p->state.client_server_state.x + Characterset::Colbox.x;
+                    ani.y = p->state.client_server_state.y - (Characterset::Height / 2.0f);
                     ani.to_net();
                     stacked_broadcast_data_synced(factory.get_tournament_id(), GPCAddAnimation, NetFlagsReliable, GAnimationLen, &ani);
                 }
@@ -951,8 +941,8 @@ void Server::event_logout(const Connection *c, LogoutReason reason) throw (Excep
                 memset(&tani, 0, sizeof(GTextAnimation));
                 strncpy(tani.font_name, font->get_name().c_str(), NameLength - 1);
                 strncpy(tani.display_text, text.c_str(), TextLength - 1);
-                tani.x = p->state.client_server_state.x + (tg->get_width() / 2) - (font->get_text_width(text) / 2);
-                tani.y = p->state.client_server_state.y - (tg->get_height() / 2) - (font->get_font_height() / 2) - 15;
+                tani.x = p->state.client_server_state.x + (Characterset::Width / 2) - (font->get_text_width(text) / 2);
+                tani.y = p->state.client_server_state.y - (Characterset::Height / 2) - (font->get_font_height() / 2) - 15;
                 tani.max_counter = 50;
                 tani.to_net();
                 stacked_broadcast_data_synced(factory.get_tournament_id(), GPCAddTextAnimation, NetFlagsReliable, GTextAnimationLen, &tani);
@@ -1331,14 +1321,6 @@ void Server::load_map_rotation() {
     }
     if (atoi(get_value("shuffle_maps").c_str())) {
         std::random_shuffle(map_configs.begin(), map_configs.end());
-    }
-}
-
-void Server::check_characterset(const Connection *c, Player *p, const char *new_skin) throw (ServerException) {
-    const std::string& cs_name = p->get_characterset()->get_name();
-    if (strcmp(new_skin, cs_name.c_str())) {
-        std::string msg("WARNING: this server does not support your character set.");
-        send_data(c, factory.get_tournament_id(), GPCTextMessage, NetFlagsReliable, static_cast<data_len_t>(msg.length()), msg.c_str());
     }
 }
 

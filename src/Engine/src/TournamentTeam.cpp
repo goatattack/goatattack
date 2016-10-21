@@ -85,14 +85,10 @@ void TournamentTeam::draw_team_colours() {
         Player *p = *it;
         if (p->is_alive_and_playing()) {
             /* draw team colours */
-            Tile *t = p->get_characterset()->get_tile(
-                static_cast<Direction>(p->state.client_server_state.direction),
-                static_cast<CharacterAnimation>(p->state.client_state.icon));
-            TileGraphic *tg = t->get_tilegraphic();
             const int bar_width = 32;
             const int bar_height = 4;
-            int x = static_cast<int>(p->state.client_server_state.x) + (tg->get_width() / 2) - (bar_width / 2);
-            int y = static_cast<int>(p->state.client_server_state.y) - (tg->get_height()) - bar_height + 2;
+            int x = static_cast<int>(p->state.client_server_state.x) + (Characterset::Width / 2) - (bar_width / 2);
+            int y = static_cast<int>(p->state.client_server_state.y) - (Characterset::Height) - bar_height + 2;
             if (p->state.server_state.flags & PlayerServerFlagTeamRed) {
                 subsystem.set_color(1.0f, 0.0f, 0.0f, 1.0f);
             } else {
@@ -428,7 +424,7 @@ void TournamentTeam::draw_enemies_on_hud() {
         Player *p = *it;
         if (p != me) {
             if (p->is_alive_and_playing()) {
-                const CollisionBox& colbox = p->get_characterset()->get_damage_colbox();
+                const CollisionBox& colbox = Characterset::Colbox;
                 int cbw = colbox.width / 2;
                 int cbh = colbox.height / 2;
                 bool draw = false;
@@ -510,7 +506,7 @@ void TournamentTeam::add_team_score_animation(Player *p, const std::string& text
     strncpy(tani->font_name, font->get_name().c_str(), NameLength - 1);
     strncpy(tani->display_text, text.c_str(), TextLength - 1);
     tani->max_counter = 65;
-    tani->x = p->state.client_server_state.x + p->get_characterset()->get_width() / 2 - tw / 2;
+    tani->x = p->state.client_server_state.x + Characterset::Width / 2 - tw / 2;
     tani->y = p->state.client_server_state.y;
     tani->to_net();
     add_state_response(GPCAddTextAnimation, sizeof(GTextAnimation), tani);

@@ -59,7 +59,6 @@ public:
     bool is_game_over() const;
     bool is_spectating() const;
     void spectate();
-    void change_team();
 
     // Gui
     virtual void idle() throw (Exception);

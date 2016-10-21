@@ -658,7 +658,7 @@ void Client::sevt_data(ServerEvent& evt) {
                     if (p->state.id == pdesc->id) {
                         std::string old_name = p->get_player_name();
                         std::string new_name(pdesc->player_name);
-                        std::string old_skin(p->get_characterset()->get_name());
+                        std::string old_skin(p->get_characterset_name());
                         std::string new_skin(pdesc->characterset_name);
 
                         /* change player name */
@@ -671,7 +671,7 @@ void Client::sevt_data(ServerEvent& evt) {
                         /* change skin */
                         if (old_skin != new_skin) {
                             p->set_characterset(new_skin);
-                            add_text_msg(p->get_player_name() + " changed the skin to " + p->get_characterset()->get_name());
+                            add_text_msg(p->get_player_name() + " changed the skin to " + p->get_characterset_name());
                         }
                         break;
                     }

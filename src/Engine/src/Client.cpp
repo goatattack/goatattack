@@ -127,12 +127,6 @@ void Client::spectate() {
     }
 }
 
-void Client::change_team() {
-    if (tournament) {
-        // tournament->change_team();
-    }
-}
-
 void Client::idle() throw (Exception) {
     /* process net io */
     bool queue_empty = true;

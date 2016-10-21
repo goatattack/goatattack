@@ -160,7 +160,7 @@ void Tournament::firing_animation(Player *p, int flag, const std::string& animat
     const std::string& start_sound, int yoffset, unsigned char direction, unsigned char& mun)
 {
     mun--;
-    const CollisionBox& colbox = p->get_characterset()->get_colbox();
+    const CollisionBox& colbox = Characterset::Colbox;
     Animation *animation = resources.get_animation(animation_name);
     const CollisionBox& a_colbox = animation->get_physics_colbox();
     int ah = animation->get_tile()->get_tilegraphic()->get_height();
@@ -176,7 +176,7 @@ void Tournament::firing_animation(Player *p, int flag, const std::string& animat
     ani->y = p->state.client_server_state.y - colbox.y - (colbox.height / 2) - ah + (a_colbox.height / 2) + yoffset;
     double impact = animation->get_impact();
     if (animation->is_projectile()) {
-        ani->y += static_cast<double>(p->get_characterset()->get_projectile_y_offset());
+        ani->y += static_cast<double>(Characterset::ProjectileOffsetY);
         if (direction == DirectionRight) {
             ani->accel_x = impact;
         } else {
@@ -238,7 +238,7 @@ void Tournament::check_killing_animation(int x, int y, Animation *ani,
 
             for (Players::iterator it = players.begin(); it != players.end(); it++) {
                 Player *p = *it;
-                CollisionBox p_colbox = p->get_characterset()->get_colbox();
+                CollisionBox p_colbox = Characterset::Colbox;
                 p_colbox.x += static_cast<int>(p->state.client_server_state.x);
                 p_colbox.y = static_cast<int>(p->state.client_server_state.y) - p_colbox.height - p_colbox.y;
 

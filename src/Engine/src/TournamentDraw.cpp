@@ -449,7 +449,7 @@ void Tournament::draw_players() {
 
             /* draw collision box */
             if (debug) {
-                const CollisionBox& colbox = p->get_characterset()->get_colbox();
+                const CollisionBox& colbox = Characterset::Colbox;
                 subsystem.set_color(1.0f, 0.0f, 0.0f, 0.5f);
                 subsystem.draw_box(static_cast<int>(p->state.client_server_state.x) + left + colbox.x,
                     static_cast<int>(p->state.client_server_state.y) + top - colbox.height - colbox.y,
@@ -532,7 +532,7 @@ void Tournament::draw_enemies_on_hud() {
         Player *p = *it;
         if (p != me) {
             if (p->is_alive_and_playing()) {
-                const CollisionBox& colbox = p->get_characterset()->get_damage_colbox();
+                const CollisionBox& colbox = Characterset::DamageColbox;
                 int cbw = colbox.width / 2;
                 int cbh = colbox.height / 2;
                 bool draw = false;

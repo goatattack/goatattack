@@ -173,11 +173,9 @@ void TournamentCTF::draw_player_addons() {
                 } else {
                     flag = red_flag;
                 }
-                int fx = p->get_characterset()->get_flag_offset_x();
-                int fy = p->get_characterset()->get_flag_offset_y();
                 subsystem.draw_tile(flag->object->get_tile(),
-                    static_cast<int>(p->state.client_server_state.x) + left + fx,
-                    static_cast<int>(p->state.client_server_state.y) + top + fy);
+                    static_cast<int>(p->state.client_server_state.x) + left + Characterset::FlagDropOffsetX,
+                    static_cast<int>(p->state.client_server_state.y) + top + Characterset::FlagDropOffsetY);
             }
         }
     }
@@ -339,9 +337,6 @@ bool TournamentCTF::test_and_drop_flag(Player *p) {
             flag->spawn_counter = static_cast<double>(FlagDropInitialValue);
             send_flag_remaining(flag);
 
-            int fx = p->get_characterset()->get_flag_drop_offset_x();
-            int fy = p->get_characterset()->get_flag_drop_offset_y();
-
             flag->state.accel_x = p->state.client_server_state.accel_x;
             flag->state.accel_y = p->state.client_server_state.accel_y + p->state.client_server_state.jump_accel_y;
 
@@ -349,8 +344,8 @@ bool TournamentCTF::test_and_drop_flag(Player *p) {
             memset(gpo, 0, sizeof(GPlaceObject));
             gpo->id = flag->state.id;
             gpo->flags = PlaceObjectWithDropSound;
-            gpo->x = static_cast<pos_t>(p->state.client_server_state.x) + fx;
-            gpo->y = static_cast<pos_t>(p->state.client_server_state.y) + fy;
+            gpo->x = static_cast<pos_t>(p->state.client_server_state.x) + Characterset::FlagDropOffsetX;
+            gpo->y = static_cast<pos_t>(p->state.client_server_state.y) + Characterset::FlagDropOffsetY;
             add_place_object(gpo);
             gpo->to_net();
             add_state_response(GPCPlaceObject, sizeof(GPlaceObject), gpo);

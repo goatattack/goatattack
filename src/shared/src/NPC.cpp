@@ -22,10 +22,11 @@
 
 NPC::NPC(Subsystem& subsystem, const std::string& filename, ZipReader *zip)
     throw (KeyValueException, MovableException)
-    : Properties(filename + ".npc", zip), Movable(subsystem)
+    : Properties(filename + ".npc", zip), Movable(subsystem), MovableColbox(subsystem)
 {
     try {
-        read_base_informations(*this);
+        Movable::read_base_informations(*this);
+        MovableColbox::read_base_informations(*this);
 
         move_init = atoi(get_value("move_init").c_str());
         if (move_init == 0) {

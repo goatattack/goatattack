@@ -148,9 +148,8 @@ void TournamentGOH::draw_player_addons() {
     if (addon_player) {
         int x = static_cast<int>(addon_player->state.client_server_state.x);
         int y = static_cast<int>(addon_player->state.client_server_state.y) - 22;
-        TileGraphic *tg = addon_player->get_characterset()->get_tile(DirectionLeft, CharacterAnimationStanding)->get_tilegraphic();
-        y -= tg->get_height();
-        int w = tg->get_width();
+        y -= Characterset::Height;
+        int w = Characterset::Width;
         subsystem.set_color(0.0f, 0.0f, 0.0f, 1.0f);
         subsystem.draw_box(x + left, y + top, w, 5);
         subsystem.set_color(1.0f, 1.0f, 1.0f, 1.0f);
@@ -185,7 +184,7 @@ bool TournamentGOH::player_is_in_hill_zone(Player *p) {
     static int tilex;
     static int tiley;
 
-    CollisionBox colbox = p->get_characterset()->get_colbox();
+    CollisionBox colbox = Characterset::Colbox;
     colbox.x += static_cast<int>(p->state.client_server_state.x);
     colbox.y = static_cast<int>(p->state.client_server_state.y) - colbox.height - colbox.y;
     int width = colbox.width - 1;

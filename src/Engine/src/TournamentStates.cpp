@@ -282,7 +282,7 @@ void Tournament::integrate(ns_t ns) {
         Player *p = *it;
 
         if (p->is_alive_and_playing()) {
-            const CollisionBox& colbox = p->get_characterset()->get_colbox();
+            const CollisionBox& colbox = Characterset::Colbox;
 
             /* check player name width */
             if (!p->font) {
@@ -364,10 +364,7 @@ void Tournament::integrate(ns_t ns) {
                         p->state.client_server_state.jump_accel_y = -YInitialJumpImpulse;
                         if (!server) {
                             p->force_broadcast = true;
-                            const std::string& jump_sound = p->get_characterset()->get_value("jump_sound");
-                            if (jump_sound.length()) {
-                                subsystem.play_sound(resources.get_sound(jump_sound), 0);
-                            }
+                            subsystem.play_sound(resources.get_sound(Characterset::JumpSound), 0);
                         }
                     }
                 }
@@ -798,7 +795,7 @@ void Tournament::integrate(ns_t ns) {
 
     /* set top/left */
     if (following_player) {
-        const CollisionBox& colbox = following_player->get_characterset()->get_colbox();
+        const CollisionBox& colbox = Characterset::Colbox;
         spectator_x = following_player->state.client_server_state.x + colbox.x + colbox.width / 2;
         spectator_y = following_player->state.client_server_state.y;
     }
