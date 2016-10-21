@@ -20,8 +20,8 @@
 #include "AudioNull.hpp"
 #include "ShaderNull.hpp"
 
-SubsystemNull::SubsystemNull(std::ostream& stream, const std::string& window_title) throw (SubsystemException)
-    : Subsystem(stream, window_title)
+SubsystemNull::SubsystemNull(std::ostream& stream, I18N& i18n, const std::string& window_title) throw (SubsystemException)
+    : Subsystem(stream, i18n, window_title)
 {
     stream << "starting SubsystemNull" << std::endl;
 }

@@ -59,6 +59,7 @@
     <File Name="../../src/shared/src/ShaderNull.cpp"/>
     <File Name="../../src/shared/src/ShaderGL.cpp"/>
     <File Name="../../src/shared/src/Shader.cpp"/>
+    <File Name="../../src/shared/src/I18N.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="../../src/shared/include/AABB.hpp"/>
@@ -117,6 +118,8 @@
     <File Name="../../src/shared/include/Matrix4x4.hpp"/>
     <File Name="../../src/shared/include/ShaderNull.hpp"/>
     <File Name="../../src/shared/include/ShaderGL.hpp"/>
+    <File Name="../../src/shared/include/I18N.hpp"/>
+    <File Name="../../src/shared/include/I18NTexts.hpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="zlib">
     <File Name="../../src/shared/zlib/adler32.c"/>
@@ -235,4 +238,9 @@
       </Completion>
     </Configuration>
   </Settings>
+  <VirtualDirectory Name="i18n">
+    <File Name="../../src/shared/i18n/I18NEnglish.cpp"/>
+    <File Name="../../src/shared/i18n/I18NFrench.cpp"/>
+    <File Name="../../src/shared/i18n/I18NGerman.cpp"/>
+  </VirtualDirectory>
 </CodeLite_Project>

@@ -25,6 +25,7 @@
 #include "Game.hpp"
 #include "Globals.hpp"
 #include "Timing.hpp"
+#include "I18N.hpp"
 
 #ifdef __APPLE__
 #include "CoreFoundation/CoreFoundation.h"
@@ -44,11 +45,12 @@ int main(int argc, char *argv[]) {
     start_net();
     try {
         Configuration config(UserDirectory, ConfigFilename);
+        I18N i18n(static_cast<I18N::Language>(config.get_int("language")));
 
 #ifdef DEDICATED_SERVER
-        SubsystemNull subsystem(stream, "Goat Attack");
+        SubsystemNull subsystem(stream, i18n, "Goat Attack");
 #else
-        SubsystemSDL subsystem(stream, "Goat Attack", config.get_bool("shading_pipeline"));
+        SubsystemSDL subsystem(stream, i18n, "Goat Attack", config.get_bool("shading_pipeline"));
 #endif
 
 #ifdef __APPLE__

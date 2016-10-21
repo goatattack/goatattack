@@ -150,7 +150,6 @@
   </VirtualDirectory>
   <Description/>
   <Dependencies/>
-  <Dependencies Name="Release"/>
   <Dependencies Name="Debug">
     <Project Name="shared"/>
   </Dependencies>
@@ -260,4 +259,7 @@
       </Completion>
     </Configuration>
   </Settings>
+  <Dependencies Name="Release">
+    <Project Name="shared"/>
+  </Dependencies>
 </CodeLite_Project>

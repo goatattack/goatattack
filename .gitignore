@@ -18,6 +18,7 @@ codelite/shared/Release
 codelite/Cargo/Debug
 codelite/Cargo/Release
 .build-debug
+.build-release
 compile
 config.guess
 config.log

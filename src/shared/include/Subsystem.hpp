@@ -22,6 +22,7 @@
 #include "Tile.hpp"
 #include "TextMessageSystem.hpp"
 #include "ZipReader.hpp"
+#include "I18N.hpp"
 
 #include <iostream>
 
@@ -121,7 +122,7 @@ private:
     Subsystem& operator=(const Subsystem&);
 
 public:
-    Subsystem(std::ostream& stream, const std::string& window_title) throw (SubsystemException);
+    Subsystem(std::ostream& stream, I18N& i18n, const std::string& window_title) throw (SubsystemException);
     virtual ~Subsystem();
 
     template<class T> std::ostream& operator<<(const T& what) {
@@ -133,6 +134,7 @@ public:
     void set_keep_pictures(bool state);
     bool get_keep_pictures() const;
     std::ostream& get_stream() const;
+    I18N& get_i18n() const;
 
     virtual void initialize(Resources& resources) = 0;
     virtual const char *get_subsystem_name() const = 0;
@@ -195,6 +197,7 @@ public:
 
 protected:
     std::ostream& stream;
+    I18N& i18n;
     Icon *scanlines;
     bool keep_pictures;
 };

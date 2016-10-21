@@ -15,29 +15,8 @@
  *  along with Goat Attack.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Subsystem.hpp"
+#include "I18N.hpp"
 
-Subsystem::Subsystem(std::ostream& stream, I18N& i18n, const std::string& window_title) throw (SubsystemException)
-    : stream(stream), i18n(i18n), scanlines(0), keep_pictures(false) { }
-
-Subsystem::~Subsystem() { }
-
-void Subsystem::set_scanlines_icon(Icon *icon) {
-    scanlines = icon;
-}
-
-void Subsystem::set_keep_pictures(bool state) {
-    keep_pictures = state;
-}
-
-bool Subsystem::get_keep_pictures() const {
-    return keep_pictures;
-}
-
-std::ostream& Subsystem::get_stream() const {
-    return stream;
-}
-
-I18N& Subsystem::get_i18n() const {
-    return i18n;
-}
+const I18N::Text I18N::all_texts_french[] = {
+    { 0, 0 }
+};

@@ -23,8 +23,8 @@
 
 OptionsMenu::OptionsMenu(Gui& gui, Resources& resources, Subsystem& subsystem,
     Configuration& config, Client *client)
-    : gui(gui), resources(resources), subsystem(subsystem), config(config),
-      client(client), options_visible(false), nav(gui, config), window(0) { }
+    : gui(gui), resources(resources), subsystem(subsystem), i18n(subsystem.get_i18n()),
+      config(config), client(client), options_visible(false), nav(gui, config), window(0) { }
 
 OptionsMenu::~OptionsMenu() { }
 
@@ -50,35 +50,35 @@ void OptionsMenu::show_options(bool force_game_over, int x, int y) {
             window->remove_all_objects();
         }
         if (!force_game_over) {
-            window = gui.push_window(vw / 2 - ww / 2, vh / 2- wh / 2, ww, wh, "Options And Settings");
+            window = gui.push_window(vw / 2 - ww / 2, vh / 2- wh / 2, ww, wh, i18n(I18N_MAINMENU_OPTIONS));
         }
         if (!client) {
             window->set_cancelable(true);
             window->set_cancel_callback(static_cancel_click, this);
         }
 
-        nav.add_button(gui.create_button(window, ww / 2 - bw / 2, 10, bw, 26, "Player", static_player_click, this));
-        nav.add_button(gui.create_button(window, ww / 2 - bw / 2, 45, bw, 26, "Graphics And Sound", static_graphics_and_sound_click, this));
-        nav.add_button(gui.create_button(window, ww / 2 - bw / 2, 80, bw, 26, "Controller And Keyboard", static_controller_and_keyboard_click, this));
+        nav.add_button(gui.create_button(window, ww / 2 - bw / 2, 10, bw, 26, i18n(I18N_OPTIONS_PLAYER), static_player_click, this));
+        nav.add_button(gui.create_button(window, ww / 2 - bw / 2, 45, bw, 26, i18n(I18N_OPTIONS_GRAPHICS_AND_SOUND), static_graphics_and_sound_click, this));
+        nav.add_button(gui.create_button(window, ww / 2 - bw / 2, 80, bw, 26, i18n(I18N_OPTIONS_CONTROLLER), static_controller_and_keyboard_click, this));
         int top = 115;
         if (client) {
             if (!force_game_over && !client->is_game_over()) {
                 if (!client->is_spectating()) {
-                    nav.add_button(gui.create_button(window, ww / 2 - bw / 2, top + dh, bw, 26, "Spectate", static_spectate_click, this));
+                    nav.add_button(gui.create_button(window, ww / 2 - bw / 2, top + dh, bw, 26, i18n(I18N_OPTIONS_SPECTATE), static_spectate_click, this));
                     dh += 35;
                 }
             }
 
             if (resources.get_musics().size()) {
-                nav.add_button(gui.create_button(window, ww / 2 - bw / 2, top + dh, bw, 26, "Skip Song", static_skip_song_click, this));
+                nav.add_button(gui.create_button(window, ww / 2 - bw / 2, top + dh, bw, 26, i18n(I18N_OPTIONS_SKIP_SONG), static_skip_song_click, this));
                 dh += 35;
             }
 
-            nav.add_button(gui.create_button(window, ww / 2 - bw / 2, top + dh, bw, 26, "Return To Main Menu", static_back_options_click, this));
+            nav.add_button(gui.create_button(window, ww / 2 - bw / 2, top + dh, bw, 26, i18n(I18N_OPTIONS_RETURN), static_back_options_click, this));
             dh += 35;
         }
 
-        nav.add_button(gui.create_button(window, ww / 2 - bw / 2, top + dh, bw, 26, "Close", static_close_options_click, this));
+        nav.add_button(gui.create_button(window, ww / 2 - bw / 2, top + dh, bw, 26, i18n(I18N_BUTTON_CLOSE), static_close_options_click, this));
 
         if (client) {
             nav.install_handlers(window, static_nav_close, this);
@@ -176,7 +176,7 @@ void OptionsMenu::player_click() {
     int bw = 140;
 
     subsystem.clear_input_buffer();
-    GuiWindow *window = gui.push_window(vw / 2 - ww / 2, vh / 2- wh / 2, ww, wh, "Player");
+    GuiWindow *window = gui.push_window(vw / 2 - ww / 2, vh / 2- wh / 2, ww, wh, i18n(I18N_OPTIONS_PLAYER));
     window->set_cancelable(true);
 
     gui.create_label(window, 15, 15, "player's name:");
@@ -247,7 +247,7 @@ void OptionsMenu::graphics_and_sound_click() {
     int wh = 184;
     int bw = 140;
 
-    GuiWindow *window = gui.push_window(vw / 2 - ww / 2, vh / 2- wh / 2, ww, wh, "Graphics And Sound");
+    GuiWindow *window = gui.push_window(vw / 2 - ww / 2, vh / 2- wh / 2, ww, wh, i18n(I18N_OPTIONS_GRAPHICS_AND_SOUND));
     window->set_cancelable(true);
 
     gui.create_checkbox(window, 15, 15, "fullscreen graphics mode", subsystem.is_fullscreen(), static_toggle_fullscreen_click, this);
@@ -343,7 +343,7 @@ void OptionsMenu::controller_and_keyboard_click() {
     static const int Col0 = 15;
     static const int Col1 = 280;
 
-    GuiWindow *window = gui.push_window(vw / 2 - ww / 2, vh / 2 - wh / 2, ww, wh, "Controller And Keyboard");
+    GuiWindow *window = gui.push_window(vw / 2 - ww / 2, vh / 2 - wh / 2, ww, wh, i18n(I18N_OPTIONS_CONTROLLER));
     window->set_cancelable(true);
 
     create_field2(ck_up, window, Col0, 15, "up:", static_capture_up_0_click, static_capture_up_1_click, false);

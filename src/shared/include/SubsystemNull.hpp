@@ -24,7 +24,7 @@ class Resources;
 
 class SubsystemNull : public Subsystem {
 public:
-    SubsystemNull(std::ostream& stream, const std::string& window_title) throw (SubsystemException);
+    SubsystemNull(std::ostream& stream, I18N& i18n, const std::string& window_title) throw (SubsystemException);
     virtual ~SubsystemNull();
 
     virtual void initialize(Resources& resources);

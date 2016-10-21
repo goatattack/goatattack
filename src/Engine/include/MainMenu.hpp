@@ -70,6 +70,7 @@ private:
 
     Resources& resources;
     Subsystem& subsystem;
+    I18N& i18n;
     Configuration& config;
     int x;
     int y;
