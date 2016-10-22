@@ -23,6 +23,7 @@
 #include "Thread.hpp"
 #include "Mutex.hpp"
 #include "GameserverInformation.hpp"
+#include "I18N.hpp"
 
 class LANBroadcasterException : public Exception {
 public:
@@ -36,7 +37,7 @@ private:
     LANBroadcaster& operator=(const LANBroadcaster&);
 
 public:
-    LANBroadcaster(hostport_t port) throw (LANBroadcasterException, UDPSocketException);
+    LANBroadcaster(I18N& i18n, hostport_t port) throw (LANBroadcasterException, UDPSocketException);
     virtual ~LANBroadcaster();
 
     void start() throw (LANBroadcasterException);
@@ -46,7 +47,7 @@ public:
     Mutex& get_mutex();
 
 private:
-
+    I18N& i18n;
     hostport_t port;
     bool running;
 

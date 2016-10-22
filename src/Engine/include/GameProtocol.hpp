@@ -102,7 +102,8 @@ enum GPC {
     GPCGenericData,
     GPCPakHash,
     GPCServerQuit,
-    GPCSpectate
+    GPCSpectate,
+    GPCI18NText
 };
 
 /* game protocol client to server */
@@ -427,22 +428,24 @@ const int GTextAnimationFlagCenterScreen = 1;
 #pragma pack(1)
 struct GTextAnimation {
     char font_name[NameLength];
-    char display_text[TextLength];
     double x;                           // 8
     double y;                           // 8
     scounter_t max_counter;             // 2
+    identifier_t i18n_id;               // 2
     flags_t flags;                      // 1
 
     inline void from_net() {
         byte_swap<double>(x);
         byte_swap<double>(y);
         max_counter = ntohs(max_counter);
+        i18n_id = ntohs(i18n_id);
     }
 
     inline void to_net() {
         byte_swap<double>(x);
         byte_swap<double>(y);
         max_counter = htons(max_counter);
+        i18n_id = htons(i18n_id);
     }
 };
 #pragma pack()
@@ -839,6 +842,44 @@ struct GPakHash {
 };
 #pragma pack()
 
+// OK
+#pragma pack(1)
+struct GI18NText {
+    identifier_t id;                // 2
+    data_len_t len;                 // 2
+    data_t data[1];                 // 1
+
+    inline void from_net() {
+        id = ntohs(id);
+        len = ntohs(len);
+    }
+
+    inline void to_net() {
+        id = htons(id);
+        len = htons(len);
+    }
+};
+#pragma pack()
+
+// OK
+#pragma pack(1)
+struct GChatMessage {
+    player_id_t id;                 // 2
+    data_len_t len;                 // 2
+    data_t data[1];
+
+    inline void from_net() {
+        id = ntohs(id);
+        len = ntohs(len);
+    }
+
+    inline void to_net() {
+        id = htons(id);
+        len = htons(len);
+    }
+};
+#pragma pack()
+
 const int GTransportLen = sizeof(GTransport) - 1;
 const int GPlayerInfoLen = sizeof(GPlayerInfo);
 const int GTournamentLen = sizeof(GTournament);
@@ -869,5 +910,7 @@ const int GXferHeaderLen = sizeof(GXferHeader);
 const int GXferDataChunkLen = sizeof(GXferDataChunk) - 1;
 const int GHillCounterLen = sizeof(GHillCounter);
 const int GPakHashLen = sizeof(GPakHash);
+const int GI18NTextLen = sizeof(GI18NText) - 1;
+const int GChatMessageLen = sizeof(GChatMessage) - 1;
 
 #endif

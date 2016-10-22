@@ -50,6 +50,7 @@ private:
 
     Resources& resources;
     Subsystem& subsystem;
+    I18N& i18n;
     Configuration& config;
     bool running;
     int top;
@@ -96,7 +97,7 @@ private:
 
     /* helpers */
     void create_toolbox();
-    GuiButton *add_close_button(GuiWindow *window, GuiVirtualButton::OnClick on_click = 0);
+    GuiButton *add_close_button(GuiWindow *window, GuiVirtualButton::OnClick on_click = 0, const char *button_text = 0);
     void add_ok_cancel_buttons(GuiWindow *window, GuiVirtualButton::OnClick on_click);
     void add_ok_cancel_buttons(GuiWindow *window, GuiVirtualButton::OnClick on_ok_click,
         GuiVirtualButton::OnClick on_cancel_click);

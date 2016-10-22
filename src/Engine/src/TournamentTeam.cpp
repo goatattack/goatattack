@@ -64,11 +64,11 @@ void TournamentTeam::create_spawn_points() throw (TournamentException) {
     }
 
     if (!spawn_points_red.size()) {
-        throw TournamentException("Missing spawn points for " + team_red_name + " in this map.");
+        throw TournamentException(i18n(I18N_RED_SPAWNPOINTS_MISSING));
     }
 
     if (!spawn_points_blue.size()) {
-        throw TournamentException("Missing spawn points for " + team_blue_name + " in this map.");
+        throw TournamentException(i18n(I18N_BLUE_SPAWNPOINTS_MISSING));
     }
 }
 
@@ -139,8 +139,8 @@ void TournamentTeam::draw_statistics() {
     subsystem.draw_icon(screw4, vw - 15 - 8, vh - 15 - 8);
 
     /* draw team headers */
-    std::string uc_team_red = uppercase(team_red_name);
-    std::string uc_team_blue = uppercase(team_blue_name);
+    std::string uc_team_red(i18n(I18N_TNMT_TEAM_RED_CAP));
+    std::string uc_team_blue(i18n(I18N_TNMT_TEAM_BLUE_CAP));
     subsystem.draw_text(font_big, 30, 38, uc_team_red.c_str());
     int rh_width = font_big->get_text_width(uc_team_blue);
     subsystem.draw_text(font_big, vw - 35 - rh_width, 38, uc_team_blue.c_str());
@@ -157,11 +157,11 @@ void TournamentTeam::draw_statistics() {
     for (int i = 0; i < 2; i++) {
         x = (i ? 25 : vw / 2 + 10);
         subsystem.draw_text(font_normal, x, y, "#");
-        subsystem.draw_text(font_normal, x + 20, y, "PLAYER");
-        subsystem.draw_text(font_normal, x + 140, y, "SCORE");
-        subsystem.draw_text(font_normal, x + 180, y, "FRAGS");
-        subsystem.draw_text(font_normal, x + 220, y, "KILLS");
-        subsystem.draw_text(font_normal, x + 260, y, "PING");
+        subsystem.draw_text(font_normal, x + 20, y, i18n(I18N_TNMT_SB_PLAYER));
+        subsystem.draw_text(font_normal, x + 140, y, i18n(I18N_TNMT_SB_SCORE));
+        subsystem.draw_text(font_normal, x + 180, y, i18n(I18N_TNMT_SB_FRAGS));
+        subsystem.draw_text(font_normal, x + 220, y, i18n(I18N_TNMT_SB_KILLS));
+        subsystem.draw_text(font_normal, x + 260, y, i18n(I18N_TNMT_SB_PING));
     }
     subsystem.reset_color();
 
@@ -174,7 +174,7 @@ void TournamentTeam::draw_statistics() {
 
     /* done */
     subsystem.set_color(1.0f, 1.0f, 0.0f, 1.0f);
-    subsystem.draw_text(font_normal, 25, y, "SPECTACTORS:");
+    subsystem.draw_text(font_normal, 25, y, i18n(I18N_TNMT_SB_SPECTATORS));
     subsystem.reset_color();
     y += font_normal->get_font_height();
     for (Players::iterator it = players.begin(); it != players.end(); it++) {
@@ -298,7 +298,7 @@ void TournamentTeam::frag_point(Player *pfrag, Player *pkill) {
 void TournamentTeam::player_join_request(Player *p) {
     if (!p->joining) {
         p->joining = true;
-        std::string info("Choose with up and down, select with fire.");
+        std::string info(i18n(I18N_TNMT_SELECT_TEAM1));
         TileGraphic *tgr = team_badge_red->get_tile()->get_tilegraphic();
         TileGraphic *tgb = team_badge_blue->get_tile()->get_tilegraphic();
         int vw = subsystem.get_view_width();
@@ -315,15 +315,15 @@ void TournamentTeam::player_join_request(Player *p) {
         }
 
         nav->clear();
-        GuiWindow *window = gui->push_window(vw / 2 - ww / 2, vh / 2 - wh / 2, ww, wh, "Select Team");
+        GuiWindow *window = gui->push_window(vw / 2 - ww / 2, vh / 2 - wh / 2, ww, wh, i18n(I18N_TNMT_SELECT_TEAM2));
         gui->create_label(window, Gui::Spc, Gui::Spc, info);
 
-        btn = gui->create_button(window, Gui::Spc, Gui::Spc + 15 + Gui::Spc, ww - (2 * Gui::Spc), bh, uppercase(team_red_name), static_red_team_click, this);
+        btn = gui->create_button(window, Gui::Spc, Gui::Spc + 15 + Gui::Spc, ww - (2 * Gui::Spc), bh, i18n(I18N_TNMT_TEAM_RED_CAP), static_red_team_click, this);
         btn->show_bolts(false);
         gui->create_picture(btn, 2, 2, tgr);
         nav->add_button(btn);
 
-        btn = gui->create_button(window, Gui::Spc, Gui::Spc + 15 + Gui::Spc + 10 + bh, ww - (2 * Gui::Spc), bh, uppercase(team_blue_name), static_blue_team_click, this);
+        btn = gui->create_button(window, Gui::Spc, Gui::Spc + 15 + Gui::Spc + 10 + bh, ww - (2 * Gui::Spc), bh, i18n(I18N_TNMT_TEAM_BLUE_CAP), static_blue_team_click, this);
         btn->show_bolts(false);
         gui->create_picture(btn, 1, 1, tgb);
         nav->add_button(btn);
@@ -364,20 +364,18 @@ void TournamentTeam::close_select_team_window() {
 }
 
 bool TournamentTeam::player_joins(Player *p, playerflags_t flags) {
-    std::string msg(p->get_player_name() + " joins the ");
     if (flags & PlayerServerFlagTeamRed) {
-        msg += team_red_name;
         p->state.server_state.flags |= PlayerServerFlagTeamRed;
+        add_i18n_response(I18N_TNMT_JOIN_RED_TEAM, p->get_player_name().c_str());
         if (logger) {
-            logger->log(ServerLogger::LogTypeRedTeamJoin, msg, p);
+            logger->log(ServerLogger::LogTypeRedTeamJoin, i18n(I18N_TNMT_JOIN_RED_TEAM, p->get_player_name().c_str()), p);
         }
     } else {
-        msg += team_blue_name;
+        add_i18n_response(I18N_TNMT_JOIN_BLUE_TEAM, p->get_player_name().c_str());
         if (logger) {
-            logger->log(ServerLogger::LogTypeBlueTeamJoin, msg, p);
+            logger->log(ServerLogger::LogTypeBlueTeamJoin, i18n(I18N_TNMT_JOIN_BLUE_TEAM, p->get_player_name().c_str()), p);
         }
     }
-    add_msg_response(msg.c_str());
 
     return true;
 }
@@ -497,16 +495,15 @@ void TournamentTeam::subintegrate(ns_t ns) {
     }
 }
 
-void TournamentTeam::add_team_score_animation(Player *p, const std::string& text) {
+void TournamentTeam::add_team_score_animation(Player *p, I18NText id) {
     Font *font = resources.get_font("big");
-    int tw = font->get_text_width(text);
 
     GTextAnimation *tani = new GTextAnimation;
     memset(tani, 0, sizeof(GTextAnimation));
     strncpy(tani->font_name, font->get_name().c_str(), NameLength - 1);
-    strncpy(tani->display_text, text.c_str(), TextLength - 1);
     tani->max_counter = 65;
-    tani->x = p->state.client_server_state.x + Characterset::Width / 2 - tw / 2;
+    tani->i18n_id = id;
+    tani->x = p->state.client_server_state.x + Characterset::Width / 2;
     tani->y = p->state.client_server_state.y;
     tani->to_net();
     add_state_response(GPCAddTextAnimation, sizeof(GTextAnimation), tani);
@@ -538,7 +535,7 @@ void TournamentTeam::write_stats_in_server_log() {
     }
 
     /* team score */
-    logger->log(header_type, "team stat", 0, 0,
+    logger->log(header_type, i18n(I18N_TNMT_STATS_TEAM), 0, 0,
         team_red_name.c_str(), &score.score_red,
         team_blue_name.c_str(), &score.score_blue);
 
@@ -576,7 +573,7 @@ void TournamentTeam::write_stats_in_server_log() {
 
             last_score = current_score;
 
-            logger->log(detail_type, "player stat", p, 0, &rank, &current_score,
+            logger->log(detail_type, i18n(I18N_TNMT_STATS_PLAYER), p, 0, &rank, &current_score,
                 &p->state.server_state.frags, &p->state.server_state.kills);
         }
     }

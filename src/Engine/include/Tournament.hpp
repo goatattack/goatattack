@@ -32,6 +32,7 @@
 #include "Gui.hpp"
 #include "Globals.hpp"
 #include "ServerLogger.hpp"
+#include "I18N.hpp"
 
 #include <vector>
 #include <deque>
@@ -204,6 +205,8 @@ public:
     void delete_responses();
     identifier_t create_animation_id();
 
+    static char *create_i18n_response(I18NText id, size_t& sz, const char *addon = 0);
+
     virtual const char *tournament_type() = 0;
 
     virtual void create_spawn_points() throw (TournamentException);
@@ -239,6 +242,7 @@ protected:
 
     Resources& resources;
     Subsystem& subsystem;
+    I18N& i18n;
     Properties& properties;
     Gui *gui;
     bool server;
@@ -379,7 +383,7 @@ protected:
     void draw_player_names();
     void draw_hud();
 
-    void player_dies(Player *p, const std::string& die_message);
+    void player_dies(Player *p, I18NText id, const char *addon = 0);
     void join_handling();
     void reset_all_players_and_broadcast();
     identifier_t get_free_object_id();
@@ -390,6 +394,10 @@ protected:
     void player_npc_collision(Player *p, SpawnableNPC *npc);
 
     void draw_lives_armor(int amount, Icon *full, Icon *half, Icon *empty, int y);
+
+    void add_i18n_response(I18NText id, const char *addon = 0);
+    void add_i18n_response(I18NText id, const std::string& p);
+    void add_i18n_response(I18NText id, const std::string& p1, const std::string& p2);
 
     virtual void write_stats_in_server_log() = 0;
     virtual void subintegrate(ns_t ns);

@@ -173,17 +173,16 @@ void OptionsMenu::player_click() {
     int vh = subsystem.get_view_height();
     int ww = 287;
     int wh = 167;
-    int bw = 140;
 
     subsystem.clear_input_buffer();
     GuiWindow *window = gui.push_window(vw / 2 - ww / 2, vh / 2- wh / 2, ww, wh, i18n(I18N_OPTIONS_PLAYER));
     window->set_cancelable(true);
 
-    gui.create_label(window, 15, 15, "player's name:");
+    gui.create_label(window, 15, 15, i18n(I18N_OPTIONS_SETTINGS11));
     player_name = gui.create_textbox(window, 120, 15, 150, config.get_string("player_name"));
-    show_player_name  = gui.create_checkbox(window, 15, 33, "show player's name", config.get_bool("show_player_name"), 0, 0);
-    gui.create_label(window, 15, 53, "character:");
-    player_skin = gui.create_listbox(window, 120, 56, 150, 60, "Character", static_player_skin_click, this);
+    show_player_name  = gui.create_checkbox(window, 15, 33, i18n(I18N_OPTIONS_SETTINGS12), config.get_bool("show_player_name"), 0, 0);
+    gui.create_label(window, 15, 53, i18n(I18N_OPTIONS_SETTINGS13));
+    player_skin = gui.create_listbox(window, 120, 56, 150, 60, "", static_player_skin_click, this);
     player_skin_pic = gui.create_picture(window, 15, 70, 0);
 
     /* read all charactersets and sort them */
@@ -208,8 +207,10 @@ void OptionsMenu::player_click() {
     }
     player_skin->set_selected_index(selected_skin);
     player_name->set_focus();
-    bw = 55;
-    gui.create_button(window, ww / 2 - bw / 2, wh - 43, bw, 18, "Close", static_close_player_click, this);
+
+    std::string btn_close(i18n(I18N_BUTTON_CLOSE));
+    int bw_close = gui.get_font()->get_text_width(btn_close) + 28;
+    gui.create_button(window, ww / 2 - bw_close / 2, wh - 43, bw_close, 18, btn_close, static_close_player_click, this);
 }
 
 void OptionsMenu::static_player_skin_click(GuiListbox *sender, void *data, int index) {
@@ -243,33 +244,33 @@ void OptionsMenu::static_graphics_and_sound_click(GuiVirtualButton *sender, void
 void OptionsMenu::graphics_and_sound_click() {
     int vw = subsystem.get_view_width();
     int vh = subsystem.get_view_height();
-    int ww = 273;
+    int ww = 285;
     int wh = 184;
-    int bw = 140;
 
     GuiWindow *window = gui.push_window(vw / 2 - ww / 2, vh / 2- wh / 2, ww, wh, i18n(I18N_OPTIONS_GRAPHICS_AND_SOUND));
     window->set_cancelable(true);
 
-    gui.create_checkbox(window, 15, 15, "fullscreen graphics mode", subsystem.is_fullscreen(), static_toggle_fullscreen_click, this);
-    gui.create_checkbox(window, 15, 30, "draw scanlines", subsystem.has_scanlines(), static_toggle_scanlines_click, this);
+    gui.create_checkbox(window, 15, 15, i18n(I18N_OPTIONS_SETTINGS21), subsystem.is_fullscreen(), static_toggle_fullscreen_click, this);
+    gui.create_checkbox(window, 15, 30, i18n(I18N_OPTIONS_SETTINGS22), subsystem.has_scanlines(), static_toggle_scanlines_click, this);
 
-    gui.create_label(window, 15, 45, "intensity:");
-    gui.create_hscroll(window, 115, 46, 143, 25, 100, config.get_int("scanlines_intensity"), static_scanlines_intensity_changed, this);
+    gui.create_label(window, 15, 45, i18n(I18N_OPTIONS_SETTINGS23));
+    gui.create_hscroll(window, 130, 46, 143, 25, 100, config.get_int("scanlines_intensity"), static_scanlines_intensity_changed, this);
     gui.create_box(window, 15, 66, ww - 30, 1);
 
-    gui.create_label(window, 15, 75, "music volume:");
-    gui.create_hscroll(window, 115, 76, 143, 0, 100, config.get_int("music_volume"), static_music_volume_changed, this);
+    gui.create_label(window, 15, 75, i18n(I18N_OPTIONS_SETTINGS24));
+    gui.create_hscroll(window, 130, 76, 143, 0, 100, config.get_int("music_volume"), static_music_volume_changed, this);
 
-    gui.create_label(window, 15, 90, "sfx volume:");
-    gui.create_hscroll(window, 115, 91, 143, 0, 128, config.get_int("sfx_volume"), static_sfx_volume_changed, this);
+    gui.create_label(window, 15, 90, i18n(I18N_OPTIONS_SETTINGS25));
+    gui.create_hscroll(window, 130, 91, 143, 0, 128, config.get_int("sfx_volume"), static_sfx_volume_changed, this);
 
     gui.create_box(window, 15, 111, ww - 30, 1);
 
-    gui.create_label(window, 15, 120, "text fade speed:");
-    gui.create_hscroll(window, 115, 121, 143, 5, 15, config.get_int("text_fade_speed"), static_text_fade_speed_changed, this);
+    gui.create_label(window, 15, 120, i18n(I18N_OPTIONS_SETTINGS26));
+    gui.create_hscroll(window, 130, 121, 143, 5, 15, config.get_int("text_fade_speed"), static_text_fade_speed_changed, this);
 
-    bw = 55;
-    gui.create_button(window, ww / 2 - bw / 2, wh - 43, bw, 18, "Close", static_close_window_click, this);
+    std::string btn_close(i18n(I18N_BUTTON_CLOSE));
+    int bw_close = gui.get_font()->get_text_width(btn_close) + 28;
+    gui.create_button(window, ww / 2 - bw_close / 2, wh - 43, bw_close, 18, btn_close, static_close_window_click, this);
 }
 
 void OptionsMenu::static_toggle_fullscreen_click(GuiCheckbox *sender, void *data, bool state) {
@@ -336,43 +337,44 @@ void OptionsMenu::static_controller_and_keyboard_click(GuiVirtualButton *sender,
 void OptionsMenu::controller_and_keyboard_click() {
     int vw = subsystem.get_view_width();
     int vh = subsystem.get_view_height();
-    int ww = 540;
+    int ww = 560;
     int wh = 218;
-    int bw = 140;
 
     static const int Col0 = 15;
-    static const int Col1 = 280;
+    static const int Col1 = 290;
 
     GuiWindow *window = gui.push_window(vw / 2 - ww / 2, vh / 2 - wh / 2, ww, wh, i18n(I18N_OPTIONS_CONTROLLER));
     window->set_cancelable(true);
 
-    create_field2(ck_up, window, Col0, 15, "up:", static_capture_up_0_click, static_capture_up_1_click, false);
-    create_field2(ck_down, window, Col1, 15, "down:", static_capture_down_0_click, static_capture_down_1_click, false);
-    create_field2(ck_left, window, Col0, 35, "left:", static_capture_left_0_click, static_capture_left_1_click, false);
-    create_field2(ck_right, window, Col1, 35, "right:", static_capture_right_0_click, static_capture_right_1_click, false);
-    create_field2(ck_jump, window, Col0, 55, "jump:", static_capture_jump_0_click, static_capture_jump_1_click, false);
-    create_field2(ck_fire, window, Col1, 55, "fire:", static_capture_fire_0_click, static_capture_fire_1_click, false);
-    create_field2(ck_drop1, window, Col0, 75, "grenade:", static_capture_drop1_0_click, static_capture_drop1_1_click, false);
-    create_field2(ck_drop2, window, Col1, 75, "bomb:", static_capture_drop2_0_click, static_capture_drop2_1_click, false);
-    create_field2(ck_drop3, window, Col0, 95, "frog:", static_capture_drop3_0_click, static_capture_drop3_1_click, false);
-    create_field2(ck_chat, window, Col1, 95, "chat:", static_capture_chat_0_click, static_capture_chat_1_click, false);
-    create_field2(ck_stats, window, Col0, 115, "stats:", static_capture_stats_0_click, static_capture_stats_1_click, false);
-    create_field2(ck_escape, window, Col1, 115, "escape:", static_capture_escape_0_click, static_capture_escape_1_click, false);
+    create_field2(ck_up, window, Col0, 15, i18n(I18N_OPTIONS_SETTINGS31), static_capture_up_0_click, static_capture_up_1_click, false);
+    create_field2(ck_down, window, Col1, 15, i18n(I18N_OPTIONS_SETTINGS32), static_capture_down_0_click, static_capture_down_1_click, false);
+    create_field2(ck_left, window, Col0, 35, i18n(I18N_OPTIONS_SETTINGS33), static_capture_left_0_click, static_capture_left_1_click, false);
+    create_field2(ck_right, window, Col1, 35, i18n(I18N_OPTIONS_SETTINGS34), static_capture_right_0_click, static_capture_right_1_click, false);
+    create_field2(ck_jump, window, Col0, 55, i18n(I18N_OPTIONS_SETTINGS35), static_capture_jump_0_click, static_capture_jump_1_click, false);
+    create_field2(ck_fire, window, Col1, 55, i18n(I18N_OPTIONS_SETTINGS36), static_capture_fire_0_click, static_capture_fire_1_click, false);
+    create_field2(ck_drop1, window, Col0, 75, i18n(I18N_OPTIONS_SETTINGS37), static_capture_drop1_0_click, static_capture_drop1_1_click, false);
+    create_field2(ck_drop2, window, Col1, 75, i18n(I18N_OPTIONS_SETTINGS38), static_capture_drop2_0_click, static_capture_drop2_1_click, false);
+    create_field2(ck_drop3, window, Col0, 95, i18n(I18N_OPTIONS_SETTINGS39), static_capture_drop3_0_click, static_capture_drop3_1_click, false);
+    create_field2(ck_chat, window, Col1, 95, i18n(I18N_OPTIONS_SETTINGS40), static_capture_chat_0_click, static_capture_chat_1_click, false);
+    create_field2(ck_stats, window, Col0, 115, i18n(I18N_OPTIONS_SETTINGS41), static_capture_stats_0_click, static_capture_stats_1_click, false);
+    create_field2(ck_escape, window, Col1, 115, i18n(I18N_OPTIONS_SETTINGS42), static_capture_escape_0_click, static_capture_escape_1_click, false);
 
     ck_selected = 0;
     capture_draw();
 
     gui.create_box(window, 15, 139, ww - 15 * 2 - 2, 1);
 
-    ck_dz_h = create_field(window, Col0, 150, "horz. gamepad deadzone:", static_ck_erase_horz, true);
+    ck_dz_h = create_field(window, Col0, 150, i18n(I18N_OPTIONS_SETTINGS43), static_ck_erase_horz, true);
     ck_dz_h->set_text(config.get_string("deadzone_horizontal"));
 
-    ck_dz_v = create_field(window, Col1, 150, "vert. gamepad deadzone:", static_ck_erase_vert, true);
+    ck_dz_v = create_field(window, Col1, 150, i18n(I18N_OPTIONS_SETTINGS44), static_ck_erase_vert, true);
     ck_dz_v->set_text(config.get_string("deadzone_vertical"));
 
-    bw = 55;
-    gui.create_button(window, ww / 2 - bw / 2, wh - 43, bw, 18, "Close", static_close_capture_window_click, this);
-    gui.create_button(window, Gui::Spc, wh - 43, 110, 18, "Rescan Joysticks", static_capture_rescan_click, this);
+    std::string btn_close(i18n(I18N_BUTTON_CLOSE));
+    int bw_close = gui.get_font()->get_text_width(btn_close) + 28;
+    gui.create_button(window, ww / 2 - bw_close / 2, wh - 43, bw_close, 18, btn_close, static_close_capture_window_click, this);
+
+    gui.create_button(window, Gui::Spc, wh - 43, 110, 18, i18n(I18N_OPTIONS_SETTINGS45), static_capture_rescan_click, this);
 }
 
 void OptionsMenu::static_ck_erase_horz(GuiVirtualButton *sender, void *data) {
@@ -409,7 +411,7 @@ void OptionsMenu::close_capture_window_click() {
     }
 
     if (focus_tb) {
-        gui.show_messagebox(Gui::MessageBoxIconExclamation, "Error", "Choose a value between 0 and 16000.");
+        gui.show_messagebox(Gui::MessageBoxIconExclamation, i18n(I18N_ERROR_TITLE), i18n(I18N_MAINMENU_INVALID_GENERIC_NUMBER, "0 - 16000"));
         focus_tb->set_focus();
         return;
     }
@@ -430,16 +432,16 @@ GuiTextbox *OptionsMenu::create_field(GuiWindow *parent, int x, int y,
     int ih = stg->get_height();
 
     gui.create_label(parent, x, y, text);
-    GuiTextbox *tb = gui.create_textbox(parent, x + 150, y, 80, "");
+    GuiTextbox *tb = gui.create_textbox(parent, x + 160, y, 80, "");
     int tbh = tb->get_height();
     if (!erase_pic) {
         tb->set_locked(true);
-        GuiButton *btn = gui.create_button(parent, x + 229, y, tbh, tbh, "", on_click, this);
+        GuiButton *btn = gui.create_button(parent, x + 239, y, tbh, tbh, "", on_click, this);
         btn->show_bolts(false);
         gui.create_picture(btn, tbh / 2 - iw / 2, tbh / 2 - ih / 2, stg);
     } else {
         tb->set_locked(false);
-        GuiButton *btn = gui.create_button(parent, x + 229, y, tbh, tbh, "...", on_click, this);
+        GuiButton *btn = gui.create_button(parent, x + 239, y, tbh, tbh, "...", on_click, this);
         btn->show_bolts(false);
     }
 
@@ -463,16 +465,16 @@ void OptionsMenu::create_field2(GuiTextbox *dest[], GuiWindow *parent, int x, in
         GuiVirtualButton::OnClick on_click = (i == 0 ? on_click_0 : on_click_1);
         if (on_click) {
             int xoffs = (i * (TextboxWidth + TextboxSpacer));
-            GuiTextbox *tb = gui.create_textbox(parent, x + 50 + xoffs, y, TextboxWidth, "");
+            GuiTextbox *tb = gui.create_textbox(parent, x + 60 + xoffs, y, TextboxWidth, "");
             int tbh = tb->get_height();
             if (!erase_pic) {
                 tb->set_locked(true);
-                GuiButton *btn = gui.create_button(parent, x + TextboxWidth + 49 + xoffs, y, tbh, tbh, "", on_click, this);
+                GuiButton *btn = gui.create_button(parent, x + TextboxWidth + 59 + xoffs, y, tbh, tbh, "", on_click, this);
                 btn->show_bolts(false);
                 gui.create_picture(btn, tbh / 2 - iw / 2, tbh / 2 - ih / 2, stg);
             } else {
                 tb->set_locked(false);
-                GuiButton *btn = gui.create_button(parent, x + TextboxWidth + 49 + xoffs, y, tbh, tbh, "...", on_click, this);
+                GuiButton *btn = gui.create_button(parent, x + TextboxWidth + 59 + xoffs, y, tbh, tbh, "...", on_click, this);
                 btn->show_bolts(false);
             }
             dest[i] = tb;
@@ -483,24 +485,30 @@ void OptionsMenu::create_field2(GuiTextbox *dest[], GuiWindow *parent, int x, in
 void OptionsMenu::capture_key(GuiTextbox *ck_selected) {
     int vw = subsystem.get_view_width();
     int vh = subsystem.get_view_height();
-    int ww = 200;
+    int ww = 320;
     int wh = 83;
-    int bw = 140;
 
     this->ck_selected = ck_selected;
 
-    GuiWindow *window = gui.push_window(vw / 2 - ww / 2, vh / 2 - wh / 2, ww, wh, "Capturing");
+    GuiWindow *window = gui.push_window(vw / 2 - ww / 2, vh / 2 - wh / 2, ww, wh, i18n(I18N_OPTIONS_SETTINGS46));
     window->set_on_keydown(static_capture_keydown, this);
     window->set_on_joybuttondown(static_capture_joybuttondown, this);
-    std::string text("Press key or use joystick...");
+    std::string text(i18n(I18N_OPTIONS_SETTINGS47));
+
     Font *f = gui.get_font();
+
     int tw = f->get_text_width(text);
     int fh = f->get_font_height();
     gui.create_label(window, ww / 2 - tw / 2, window->get_client_height() / 2 - fh / 2 - 10, text);
 
-    bw = 60;
-    gui.create_button(window, Gui::Spc, wh - 43, bw, 18, "Delete", static_delete_capture_click, this);
-    gui.create_button(window, ww - bw - Gui::Spc, wh - 43, bw, 18, "Cancel", static_abort_capture_click, this);
+    std::string btn_delete(i18n(I18N_BUTTON_DELETE));
+    int bw_delete = f->get_text_width(btn_delete) + 28;
+
+    std::string btn_cancel(i18n(I18N_BUTTON_CANCEL));
+    int bw_cancel = f->get_text_width(btn_cancel) + 28;
+
+    gui.create_button(window, Gui::Spc, wh - 43, bw_delete, 18, btn_delete, static_delete_capture_click, this);
+    gui.create_button(window, ww - bw_cancel - Gui::Spc, wh - 43, bw_cancel, 18, btn_cancel, static_abort_capture_click, this);
 }
 
 void OptionsMenu::static_delete_capture_click(GuiVirtualButton *sender, void *data) {
@@ -521,9 +529,7 @@ void OptionsMenu::static_capture_rescan_click(GuiVirtualButton *sender, void *da
 }
 
 void OptionsMenu::capture_rescan_click() {
-    char buffer[128];
-    sprintf(buffer, "%d joystick(s) found.", subsystem.rescan_joysticks());
-    gui.show_messagebox(Gui::MessageBoxIconInformation, "Joysticks", buffer);
+    gui.show_messagebox(Gui::MessageBoxIconInformation, i18n(I18N_OPTIONS_SETTINGS49), i18n(I18N_OPTIONS_SETTINGS48, subsystem.rescan_joysticks()));
 }
 
 void OptionsMenu::static_capture_up_0_click(GuiVirtualButton *sender, void *data) {
@@ -752,7 +758,7 @@ void OptionsMenu::capture_draw(MappedKey& mk, GuiTextbox *mktb) {
                 const char *key = subsystem.get_keycode_name(mk.param);
                 Font *f = gui.get_font();
                 if (!f->get_text_width(key)) {
-                    mktb->set_text("[none]");
+                    mktb->set_text(i18n(I18N_OPTIONS_SETTINGS50));
                 } else {
                     mktb->set_text(key);
                 }
@@ -761,11 +767,7 @@ void OptionsMenu::capture_draw(MappedKey& mk, GuiTextbox *mktb) {
 
             case MappedKey::DeviceJoyButton:
             {
-                char buffer[16];
-                sprintf(buffer, "%d", mk.param + 1);
-                std::string joy;
-                joy.assign(buffer);
-                mktb->set_text("Button: "+ joy);
+                mktb->set_text(i18n(I18N_OPTIONS_SETTINGS51, mk.param + 1));
                 break;
             }
         }

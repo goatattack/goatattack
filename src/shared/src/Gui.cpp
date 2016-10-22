@@ -22,13 +22,14 @@ static float WindowAlphaInactive = 0.55f;
 
 Gui::Gui(Resources& resources, Subsystem& subsystem, Font *font)
     throw (GuiException, ResourcesException)
-    : resources(resources), subsystem(subsystem), font(font), current_window(0),
-      active_object(0), blink_on(true), running(false), mouse_is_down(false),
-      mouse_is_visible(true), local_mousex(0), local_mousey(0), pmousex(&local_mousex),
-      pmousey(&local_mousey), tooltip(0), tooltip_object(0), tooltip_x(0), tooltip_y(0)
+    : resources(resources), subsystem(subsystem), i18n(subsystem.get_i18n()),
+      font(font), current_window(0), active_object(0), blink_on(true), running(false),
+      mouse_is_down(false), mouse_is_visible(true), local_mousex(0), local_mousey(0),
+      pmousex(&local_mousex), pmousey(&local_mousey), tooltip(0), tooltip_object(0),
+      tooltip_x(0), tooltip_y(0)
 {
     if (!font) {
-        throw GuiException("no valid font declared");
+        throw GuiException(i18n(I18N_NO_FONT));
     }
 
     *pmousex = subsystem.get_view_width() / 2;
@@ -381,12 +382,12 @@ Gui::MessageBoxResponse Gui::show_questionbox(const std::string& title, const st
 
     /* place buttons */
     bh = 18;
-    std::string caption_no("No");
+    std::string caption_no(i18n(I18N_BUTTON_NO));
     width = window->get_client_width();
     height = window->get_client_height();
     bw = get_font()->get_text_width(caption_no) + 24;
 
-    std::string caption_yes = "Yes";
+    std::string caption_yes(i18n(I18N_BUTTON_YES));
     int bw2 = get_font()->get_text_width(caption_yes) + 24;
     if (bw2 > bw) {
         bw = bw2;
@@ -416,12 +417,12 @@ Gui::MessageBoxResponse Gui::show_inputbox(const std::string& title, std::string
 
     /* place buttons */
     int bh = 18;
-    std::string caption_no("Cancel");
+    std::string caption_no(i18n(I18N_BUTTON_CANCEL));
     width = window->get_client_width();
     height = window->get_client_height();
     int bw = get_font()->get_text_width(caption_no) + 24;
 
-    std::string caption_yes("Ok");
+    std::string caption_yes(i18n(I18N_BUTTON_OK));
     int bw2 = get_font()->get_text_width(caption_yes) + 24;
     if (bw2 > bw) {
         bw = bw2;
@@ -612,7 +613,7 @@ void Gui::set_current_window() {
 
 void Gui::check_parent(GuiObject *parent) throw (GuiException) {
     if (!parent) {
-        throw GuiException("no parent specified");
+        throw GuiException(i18n(I18N_NO_PARENT));
     }
 }
 

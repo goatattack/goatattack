@@ -27,8 +27,10 @@ TextMessageSystem::~TextMessageSystem() {
     }
 }
 
+void TextMessageSystem::add_text_msg(const std::string& player, const std::string& msg) {
+    text_messages.push_back(new TextMessage(player, msg));
+}
+
 void TextMessageSystem::add_text_msg(const std::string& msg) {
-    TextMessage *cmsg = new TextMessage;
-    cmsg->text = msg;
-    text_messages.push_back(cmsg);
+    text_messages.push_back(new TextMessage(msg));
 }

@@ -60,7 +60,11 @@ private:
     Gui& gui;
     Resources& resources;
     Subsystem& subsystem;
+
+protected:
     I18N& i18n;
+
+private:
     Configuration& config;
     Client *client;
     bool options_visible;

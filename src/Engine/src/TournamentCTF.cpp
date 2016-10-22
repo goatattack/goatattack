@@ -38,23 +38,23 @@ TournamentCTF::TournamentCTF(Resources& resources, Subsystem& subsystem, Gui *gu
         Object::ObjectType type = obj->object->get_type();
         if (type == Object::ObjectTypeRedFlag) {
             if (red_flag) {
-                throw TournamentException("Multiple red flags not allowed");
+                throw TournamentException(i18n(I18N_MULTIPLE_RED_FLAGS));
             }
             red_flag = obj;
         } else if (type == Object::ObjectTypeBlueFlag) {
             if (blue_flag) {
-                throw TournamentException("Multiple blue flags not allowed");
+                throw TournamentException(i18n(I18N_MULTIPLE_BLUE_FLAGS));
             }
             blue_flag = obj;
         }
     }
 
     if (!red_flag) {
-        throw TournamentException("Red flag is missing in this map");
+        throw TournamentException(i18n(I18N_RED_FLAG_MISSING));
     }
 
     if (!blue_flag) {
-        throw TournamentException("Blue flag is missing in this map");
+        throw TournamentException(i18n(I18N_BLUE_FLAG_MISSING));
     }
 
     /* setup tournament icon */
@@ -68,14 +68,14 @@ const char *TournamentCTF::tournament_type() {
 }
 
 void TournamentCTF::write_stats_in_server_log() {
-
+    // TODO: check if this empty function is needed
 }
 
 void TournamentCTF::subintegrate(ns_t ns) {
     double period_f = ns / static_cast<double>(ns_fc);
     if (server) {
-        check_flag_validity(period_f, "red flag", red_flag);
-        check_flag_validity(period_f, "blue flag", blue_flag);
+        check_flag_validity(period_f, I18N_TNMT_RED_FLAG_RETURNED, red_flag);
+        check_flag_validity(period_f, I18N_TNMT_BLUE_FLAG_RETURNED, blue_flag);
 
         for (Players::iterator it = players.begin(); it != players.end(); it++) {
             Player *p = *it;
@@ -103,19 +103,16 @@ void TournamentCTF::subintegrate(ns_t ns) {
     TournamentTeam::subintegrate(ns);
 }
 
-void TournamentCTF::check_flag_validity(double period_f, const std::string& name,
-    GameObject *flag)
-{
+void TournamentCTF::check_flag_validity(double period_f, I18NText id, GameObject *flag) {
     if (flag->state.y - 100 > map_height * tile_height) {
         /* check if flags are in valid map range */
         if (!flag->picked) {
             return_flag(flag, PlaceObjectWithSpawnSound);
-            std::string msg("the " + name + " returned to its base");
-            add_msg_response(msg.c_str());
+            add_i18n_response(id);
             if (logger) {
                 logger->log(flag->object->get_type() == Object::ObjectTypeRedFlag
                     ? ServerLogger::LogTypeRedFlagReturned
-                    : ServerLogger::LogTypeBlueFlagReturned, msg);
+                    : ServerLogger::LogTypeBlueFlagReturned, i18n(id));
             }
         }
     } else if (flag_not_at_origin(flag)) {
@@ -127,12 +124,11 @@ void TournamentCTF::check_flag_validity(double period_f, const std::string& name
             }
             if (flag->spawn_counter <= 0.0f) {
                 return_flag(flag, PlaceObjectWithSpawnSound);
-                std::string msg("the " + name + " returned to its base");
-                add_msg_response(msg.c_str());
+                add_i18n_response(id);
                 if (logger) {
                     logger->log(flag->object->get_type() == Object::ObjectTypeRedFlag
                         ? ServerLogger::LogTypeRedFlagReturned
-                        : ServerLogger::LogTypeBlueFlagReturned, msg);
+                        : ServerLogger::LogTypeBlueFlagReturned, i18n(id));
                 }
             }
         }
@@ -174,8 +170,8 @@ void TournamentCTF::draw_player_addons() {
                     flag = red_flag;
                 }
                 subsystem.draw_tile(flag->object->get_tile(),
-                    static_cast<int>(p->state.client_server_state.x) + left + Characterset::FlagDropOffsetX,
-                    static_cast<int>(p->state.client_server_state.y) + top + Characterset::FlagDropOffsetY);
+                    static_cast<int>(p->state.client_server_state.x) + left + Characterset::FlagOffsetX,
+                    static_cast<int>(p->state.client_server_state.y) + top + Characterset::FlagOffsetY);
             }
         }
     }
@@ -204,10 +200,9 @@ bool TournamentCTF::pick_item(Player *p, GameObject *obj) {
                 if (!(p->state.server_state.flags & PlayerServerFlagTeamRed)) {
                     /* team blue catches red flag */
                     p->state.server_state.flags |= PlayerServerFlagHasOppositeFlag;
-                    std::string msg(p->get_player_name() + " catched the red flag");
-                    add_msg_response(msg.c_str());
+                    add_i18n_response(I18N_TNMT_RED_FLAG_CATCHED, p->get_player_name().c_str());
                     if (logger) {
-                        logger->log(ServerLogger::LogTypeRedFlagPicked, msg, p);
+                        logger->log(ServerLogger::LogTypeRedFlagPicked, i18n(I18N_TNMT_RED_FLAG_CATCHED, p->get_player_name()), p);
                     }
                     return true;
                 } else {
@@ -215,10 +210,9 @@ bool TournamentCTF::pick_item(Player *p, GameObject *obj) {
                     if (obj->state.x != obj->origin_x || obj->state.y != obj->origin_y) {
                         return_flag(obj, PlaceObjectWithSpawnSound);
                         p->state.server_state.score += 2;
-                        std::string msg("the red flag returned by " + p->get_player_name());
-                        add_msg_response(msg.c_str());
+                        add_i18n_response(I18N_TNMT_RED_FLAG_SAVED, p->get_player_name().c_str());
                         if (logger) {
-                            logger->log(ServerLogger::LogTypeRedFlagSaved, msg, p);
+                            logger->log(ServerLogger::LogTypeRedFlagSaved, i18n(I18N_TNMT_RED_FLAG_SAVED, p->get_player_name()), p);
                         }
                     }
                 }
@@ -228,12 +222,11 @@ bool TournamentCTF::pick_item(Player *p, GameObject *obj) {
         case Object::ObjectTypeBlueFlag:
             if (!p->flag_pick_refused) {
                 if (p->state.server_state.flags & PlayerServerFlagTeamRed) {
-                    /* team blue catches red flag */
+                    /* team blue catches blue flag */
                     p->state.server_state.flags |= PlayerServerFlagHasOppositeFlag;
-                    std::string msg(p->get_player_name() + " catched the blue flag");
-                    add_msg_response(msg.c_str());
+                    add_i18n_response(I18N_TNMT_BLUE_FLAG_CATCHED, p->get_player_name().c_str());
                     if (logger) {
-                        logger->log(ServerLogger::LogTypeBlueFlagPicked, msg, p);
+                        logger->log(ServerLogger::LogTypeBlueFlagPicked, i18n(I18N_TNMT_BLUE_FLAG_CATCHED, p->get_player_name().c_str()), p);
                     }
                     return true;
                 } else {
@@ -241,10 +234,9 @@ bool TournamentCTF::pick_item(Player *p, GameObject *obj) {
                     if (obj->state.x != obj->origin_x || obj->state.y != obj->origin_y) {
                         return_flag(obj, PlaceObjectWithSpawnSound);
                         p->state.server_state.score += 2;
-                        std::string msg("the blue flag returned by " + p->get_player_name());
-                        add_msg_response(msg.c_str());
+                        add_i18n_response(I18N_TNMT_BLUE_FLAG_RETURNED, p->get_player_name().c_str());
                         if (logger) {
-                            logger->log(ServerLogger::LogTypeBlueFlagSaved, msg, p);
+                            logger->log(ServerLogger::LogTypeBlueFlagSaved, i18n(I18N_TNMT_BLUE_FLAG_RETURNED, p->get_player_name().c_str()), p);
                         }
                     }
                 }
@@ -274,13 +266,11 @@ bool TournamentCTF::tile_collision(TestType type, Player *p, int last_falling_y_
                         p->state.server_state.flags &= ~PlayerServerFlagHasOppositeFlag;
                         p->state.server_state.score += 3;
                         return_flag(blue_flag, PlaceObjectWithScoredSound);
-                        std::string msg(team_red_name + " team scores");
-                        add_msg_response(msg.c_str());
+                        add_i18n_response(I18N_TNMT_TEAM_RED_SCORED1);
                         if (logger) {
-                            logger->log(ServerLogger::LogTypeTeamRedScored, msg, p);
+                            logger->log(ServerLogger::LogTypeTeamRedScored, i18n(I18N_TNMT_TEAM_RED_SCORED1), p);
                         }
-                        std::string team_name = uppercase(team_red_name);
-                        add_team_score_animation(p, team_name + " SCORES");
+                        add_team_score_animation(p, I18N_TNMT_TEAM_RED_SCORED2);
                         score.score_red++;
                         send_team_score();
                     }
@@ -297,13 +287,11 @@ bool TournamentCTF::tile_collision(TestType type, Player *p, int last_falling_y_
                         p->state.server_state.flags &= ~PlayerServerFlagHasOppositeFlag;
                         p->state.server_state.score += 3;
                         return_flag(red_flag, PlaceObjectWithScoredSound);
-                        std::string msg(team_blue_name + " team scores");
-                        add_msg_response(msg.c_str());
+                        add_i18n_response(I18N_TNMT_TEAM_BLUE_SCORED1);
                         if (logger) {
-                            logger->log(ServerLogger::LogTypeTeamBlueScored, msg, p);
+                            logger->log(ServerLogger::LogTypeTeamBlueScored, i18n(I18N_TNMT_TEAM_BLUE_SCORED1), p);
                         }
-                        std::string team_name = uppercase(team_blue_name);
-                        add_team_score_animation(p, team_name + " SCORES");
+                        add_team_score_animation(p, I18N_TNMT_TEAM_BLUE_SCORED2);
                         score.score_blue++;
                         send_team_score();
                     }
@@ -352,16 +340,14 @@ bool TournamentCTF::test_and_drop_flag(Player *p) {
 
             /* add message */
             if (flag == red_flag) {
-                std::string msg("the red flag dropped");
-                add_msg_response(msg.c_str());
+                add_i18n_response(I18N_TNMT_RED_FLAG_DROPPED);
                 if (logger) {
-                    logger->log(ServerLogger::LogTypeRedFlagDropped, msg, p);
+                    logger->log(ServerLogger::LogTypeRedFlagDropped, i18n(I18N_TNMT_RED_FLAG_DROPPED), p);
                 }
             } else {
-                std::string msg("the blue flag dropped");
-                add_msg_response(msg.c_str());
+                add_i18n_response(I18N_TNMT_BLUE_FLAG_DROPPED);
                 if (logger) {
-                    logger->log(ServerLogger::LogTypeBlueFlagDropped, msg, p);
+                    logger->log(ServerLogger::LogTypeBlueFlagDropped, i18n(I18N_TNMT_BLUE_FLAG_DROPPED), p);
                 }
             }
             dropped = true;

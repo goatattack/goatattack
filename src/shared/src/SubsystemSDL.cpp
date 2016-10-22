@@ -76,6 +76,7 @@ typedef std::vector<Music *> MusicPlayerMusics;
 Music *music_player_current_music = 0;
 int music_player_current_index = -1;
 TextMessageSystem *music_player_tms = 0;
+I18N *glbi18n = 0;
 MusicPlayerMusics music_player_musics;
 
 struct ExternalMusic {
@@ -102,8 +103,7 @@ static void play_next_song() {
                 music_player_external_music_handle = 0;
             }
             if (time(0) - music_player_external_last_played < 2) {
-                std::string msg("ERROR: " + music_player_external_last_song + " played too fast, stopping.");
-                music_player_tms->add_text_msg(msg);
+                music_player_tms->add_text_msg((*glbi18n)(I18N_MUSIC_TOO_FAST, music_player_external_last_song));
             } else {
                 bool ok = false;
                 int count = 0;
@@ -122,7 +122,7 @@ static void play_next_song() {
                         } else {
                             music_player_external_last_played = time(0);
                             music_player_external_last_song = em.shortname;
-                            music_player_tms->add_text_msg("music: " + em.shortname);
+                            music_player_tms->add_text_msg((*glbi18n)(I18N_MUSIC_INFO1, em.shortname));
                             ok = true;
                             break;
                         }
@@ -131,8 +131,7 @@ static void play_next_song() {
                     count++;
                 }
                 if (!ok) {
-                    std::string msg("ERROR: no valid music found.");
-                    music_player_tms->add_text_msg(msg);
+                    music_player_tms->add_text_msg((*glbi18n)(I18N_NO_MUSIC_FOUND));
                 }
             }
         } else {
@@ -146,8 +145,7 @@ static void play_next_song() {
                 music = music_player_musics[music_player_current_index];
                 if (music != music_player_current_music) {
                     music_player_current_music = music;
-                    std::string msg("music: " + music->get_description() + " by " + music->get_author());
-                    music_player_tms->add_text_msg(msg);
+                    music_player_tms->add_text_msg((*glbi18n)(I18N_MUSIC_INFO2, music->get_description(), music->get_author()));
                 }
             }
             if (music_player_current_music) {
@@ -527,7 +525,7 @@ void SubsystemSDL::draw_box(int x, int y, int width, int height) {
     (this->*draw_quad)(x, y, width, height, true);
 }
 
-void SubsystemSDL::draw_text(Font *font, int x, int y, const std::string& text) {
+int SubsystemSDL::draw_text(Font *font, int x, int y, const std::string& text) {
     size_t sz = text.length();
 
     for (size_t i = 0; i < sz; i++) {
@@ -539,6 +537,8 @@ void SubsystemSDL::draw_text(Font *font, int x, int y, const std::string& text) 
             x += font->get_fw(c) + font->get_spacing();
         }
     }
+
+    return x;
 }
 
 int SubsystemSDL::draw_char(Font *font, int x, int y, unsigned char c) {
@@ -625,6 +625,7 @@ void SubsystemSDL::stop_music() {
 
 void SubsystemSDL::start_music_player(Resources& resources, TextMessageSystem& tms, const char *directory) {
     music_player_tms = &tms;
+    glbi18n = &i18n;
     bool take_internal_music = true;
 
     /* check if external music files exist */

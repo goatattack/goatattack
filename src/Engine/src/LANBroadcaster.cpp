@@ -18,8 +18,8 @@
 #include "LANBroadcaster.hpp"
 #include "Scope.hpp"
 
-LANBroadcaster::LANBroadcaster(hostport_t port) throw (LANBroadcasterException, UDPSocketException)
-    : MessageSequencer(port, 0, "", ""), port(port), running(false)
+LANBroadcaster::LANBroadcaster(I18N& i18n, hostport_t port) throw (LANBroadcasterException, UDPSocketException)
+    : MessageSequencer(i18n, port, 0, "", ""), i18n(i18n), port(port), running(false)
 {
     refresh();
     start();
@@ -34,7 +34,7 @@ void LANBroadcaster::start() throw (LANBroadcasterException) {
     if (!running) {
         running = true;
         if (!thread_start()) {
-            throw LANBroadcasterException("Starting thread failed.");
+            throw LANBroadcasterException(i18n(I18N_THREAD_FAILED));
         }
     }
 }

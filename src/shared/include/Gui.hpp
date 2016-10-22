@@ -156,6 +156,7 @@ private:
 
     Resources& resources;
     Subsystem& subsystem;
+    I18N& i18n;
     Font *font;
     GuiWindow *current_window;
     GuiObject *active_object;

@@ -17,6 +17,7 @@
 
 #include "ServerAdmin.hpp"
 #include "Utils.hpp"
+#include "AutoPtr.hpp"
 
 #include <cstdlib>
 
@@ -52,22 +53,26 @@ ServerAdmin::~ServerAdmin() { }
 void ServerAdmin::execute(const Connection *c, Player *p, std::string cmd, std::string params)
     throw (ServerAdminException)
 {
-    instant_trim(cmd);
-    instant_trim(params);
-    cmd = lowercase(cmd);
-    bool found = false;
-    ServerCommand *sc = server_commands;
-    while (sc->command) {
-        if (!strcmp(sc->command, cmd.c_str())) {
-            found = true;
-            (this->*sc->function)(c, p, params);
-            break;
+    try {
+        instant_trim(cmd);
+        instant_trim(params);
+        cmd = lowercase(cmd);
+        bool found = false;
+        ServerCommand *sc = server_commands;
+        while (sc->command) {
+            if (!strcmp(sc->command, cmd.c_str())) {
+                found = true;
+                (this->*sc->function)(c, p, params);
+                break;
+            }
+            sc++;
         }
-        sc++;
-    }
 
-    if (!found) {
-        throw ServerAdminException("Unknown server command: " + cmd);
+        if (!found) {
+            send_i18n_msg(c, I18N_SERVE_UNKNOWN_COMMAND, cmd.c_str());
+        }
+    } catch (const std::exception& e) {
+        throw ServerAdminException(e.what());
     }
 }
 
@@ -80,189 +85,202 @@ void ServerAdmin::update_configuration(const Connection *c) throw (Exception) {
     server.reload_config(port, num_players, server_name, server_password);
 }
 
+void ServerAdmin::send_i18n_msg(const Connection *c, I18NText id, const char *addon) {
+    size_t msglen;
+    AutoPtr<char[]> txtptr(Tournament::create_i18n_response(id, msglen, addon));
+    GI18NText *txtmsg = reinterpret_cast<GI18NText *>(&txtptr[0]);
+    if (c) {
+        server.send_data(c, 0, GPCI18NText, NetFlagsReliable, static_cast<data_len_t>(msglen), &*txtmsg);
+    } else {
+        server.broadcast_data(0, GPCI18NText, NetFlagsReliable, static_cast<data_len_t>(msglen), &*txtmsg);
+    }
+}
+
+void ServerAdmin::send_i18n_msg(const Connection *c, I18NText id, const std::string& p1, const std::string& p2) {
+    send_i18n_msg(c, id, (p1 + "\t" + p2).c_str());
+}
+
 /* server functions */
 void ServerAdmin::sc_op(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
     if (params != admin_password) {
-        throw ServerAdminException("Wrong admin password");
+        send_i18n_msg(c, I18N_SERVE_WRONG_PASSWORD);
+    } else if (p->server_admin) {
+        send_i18n_msg(c, I18N_SERVE_ALREADY_ADMIN);
+    } else {
+        p->server_admin = true;
+        send_i18n_msg(0, I18N_SERVE_NEW_ADMIN, p->get_player_name().c_str());
     }
-    if (p->server_admin) {
-        throw ServerAdminException("You're already admin");
-    }
-    p->server_admin = true;
-    std::string msg(p->get_player_name() + " is now server admin");
-    server.broadcast_data(0, GPCTextMessage, NetFlagsReliable, msg.length(), msg.c_str());
 }
 
 void ServerAdmin::sc_deop(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
-    check_if_authorized(p);
-    p->server_admin = false;
-    std::string msg(p->get_player_name() + " left the server admin mode");
-    server.broadcast_data(0, GPCTextMessage, NetFlagsReliable, msg.length(), msg.c_str());
+    if (check_if_authorized(c, p)) {
+        p->server_admin = false;
+        send_i18n_msg(0, I18N_SERVE_ADMIN_LEFT, p->get_player_name().c_str());
+    }
 }
 
 void ServerAdmin::sc_kick(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
-    check_if_authorized(p);
-    check_if_params(params);
-    Players& players = server.get_players();
-    bool found = false;
-    for (Players::iterator it = players.begin(); it != players.end(); it++) {
-        Player *v = *it;
-        std::string pn(v->get_player_name());
-        instant_trim(pn);
-        if (pn == params) {
-            if (v->get_connection() == c) {
-                throw ServerAdminException("You cannot kick yourself");
+    if (check_if_authorized(c, p) && check_if_params(c, params)) {
+        Players& players = server.get_players();
+        bool found = false;
+        for (Players::iterator it = players.begin(); it != players.end(); it++) {
+            Player *v = *it;
+            std::string pn(v->get_player_name());
+            instant_trim(pn);
+            if (pn == params) {
+                found = true;
+                if (v->get_connection() == c) {
+                    send_i18n_msg(c, I18N_SERVE_KICK_YOURSELF);
+                } else {
+                    server.kill(v->get_connection());
+                    send_i18n_msg(0, I18N_SERVE_KICK, p->get_player_name(), pn);
+                }
+                break;
             }
-            found = true;
-            server.kill(v->get_connection());
-            std::string msg(p->get_player_name() + " kicked " + pn);
-            server.broadcast_data(0, GPCTextMessage, NetFlagsReliable, msg.length(), msg.c_str());
-            break;
         }
-    }
-    if (!found) {
-        std::string msg("Player not found: " + params);
-        server.send_data(c, 0, GPCTextMessage, NetFlagsReliable, msg.length(), msg.c_str());
+        if (!found) {
+            send_i18n_msg(c, I18N_SERVE_PLAYER_NOT_FOUND, params.c_str());
+        }
     }
 }
 
 void ServerAdmin::sc_ban(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
-    throw_not_implemented();
+    send_i18n_msg(c, I18N_SERVE_NOT_IMPLEMENTED);
 }
 
 void ServerAdmin::sc_unban(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
-    throw_not_implemented();
+    send_i18n_msg(c, I18N_SERVE_NOT_IMPLEMENTED);
 }
 
 void ServerAdmin::sc_next(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
-    check_if_authorized(p);
-    check_if_no_params(params);
-    server.delete_tournament();
-    std::string msg(p->get_player_name() + " started next map");
-    server.broadcast_data(0, GPCTextMessage, NetFlagsReliable, msg.length(), msg.c_str());
+    if (check_if_authorized(c, p) && check_if_no_params(c, params)) {
+        server.delete_tournament();
+        send_i18n_msg(0, I18N_SERVE_NEXT_MAP, p->get_player_name().c_str());
+    }
 }
 
 void ServerAdmin::sc_map(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
-    check_if_authorized(p);
-    StringTokens tokens = tokenize(params, ' ');
-    if (tokens.size() != 3) {
-        throw ServerAdminException("Usage: /map <map_name> <warmup> <duration>");
+    if (check_if_authorized(c, p)) {
+        StringTokens tokens = tokenize(params, ' ');
+        if (tokens.size() != 3) {
+            send_i18n_msg(c, I18N_SERVE_MAP_USAGE);
+        } else {
+            Map *map = 0;
+            try {
+                map = resources.get_map(tokens[0]);
+            } catch (const ResourcesException& e) {
+                throw ServerAdminException(e.what());
+            }
+
+            int warmup = atoi(tokens[1].c_str());
+            int duration = atoi(tokens[2].c_str());
+
+            if (warmup < 0 || warmup > 120 || duration < 1 || duration > 120) {
+                send_i18n_msg(c, I18N_SERVE_ILLEGAL_PARM);
+            } else {
+                MapConfiguration& config = server.get_temporary_map_config();
+                config.map_name = map->get_name();
+                config.type = map->get_game_play_type();
+                config.warmup_in_seconds = warmup;
+                config.duration = duration;
+                server.set_temporary_map_config(true);
+
+                server.delete_tournament();
+                send_i18n_msg(0, I18N_SERVE_MAP_LOADED, p->get_characterset_name(), config.map_name);
+            }
+        }
     }
-
-    Map *map = 0;
-    try {
-        map = resources.get_map(tokens[0]);
-    } catch (const ResourcesException& e) {
-        throw ServerAdminException(e.what());
-    }
-
-    int warmup = atoi(tokens[1].c_str());
-    int duration = atoi(tokens[2].c_str());
-
-    if (warmup < 0 || warmup > 120 || duration < 1 || duration > 120) {
-        throw_illegal_parameters();
-    }
-
-    MapConfiguration& config = server.get_temporary_map_config();
-    config.map_name = map->get_name();
-    config.type = map->get_game_play_type();
-    config.warmup_in_seconds = warmup;
-    config.duration = duration;
-    server.set_temporary_map_config(true);
-
-    server.delete_tournament();
-    std::string msg(p->get_player_name() + " started map " + config.map_name);
-    server.broadcast_data(0, GPCTextMessage, NetFlagsReliable, msg.length(), msg.c_str());
 }
 
 void ServerAdmin::sc_reload(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
-    check_if_authorized(p);
-    check_if_no_params(params);
-
-    try {
-        properties.reload_configuration();
-        update_configuration(c);
-        std::string msg("configuration reloaded");
-        server.send_data(c, 0, GPCTextMessage, NetFlagsReliable, msg.length(), msg.c_str());
-    } catch (const Exception& e) {
-        throw ServerAdminException(e.what());
+    if (check_if_authorized(c, p) && check_if_no_params(c, params)) {
+        try {
+            properties.reload_configuration();
+            update_configuration(c);
+            send_i18n_msg(c, I18N_SERVE_CONFIG_RELOADED);
+        } catch (const Exception& e) {
+            throw ServerAdminException(e.what());
+        }
     }
 }
 
 void ServerAdmin::sc_save(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
-    check_if_authorized(p);
-    check_if_no_params(params);
-
-    try {
-        properties.save_configuration();
-        std::string msg("configuration saved");
-        server.send_data(c, 0, GPCTextMessage, NetFlagsReliable, msg.length(), msg.c_str());
-    } catch (const Exception& e) {
-        throw ServerAdminException(e.what());
+    if (check_if_authorized(c, p) && check_if_no_params(c, params)) {
+        try {
+            properties.save_configuration();
+            send_i18n_msg(c, I18N_SERVE_CONFIG_SAVED);
+        } catch (const Exception& e) {
+            throw ServerAdminException(e.what());
+        }
     }
 }
 
 void ServerAdmin::sc_get(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
-    check_if_authorized(p);
-    StringTokens tokens = tokenize(params, ' ');
-    if (tokens.size() != 1) {
-        throw ServerAdminException("Usage: /get <variable>");
+    if (check_if_authorized(c, p)) {
+        StringTokens tokens = tokenize(params, ' ');
+        if (tokens.size() != 1) {
+            send_i18n_msg(c, I18N_SERVE_GET_USAGE);
+        } else {
+            const std::string& value = properties.get_value(tokens[0]);
+            std::string msg(tokens[0] + "=" + value);
+            server.send_data(c, 0, GPCTextMessage, NetFlagsReliable, msg.length(), msg.c_str());
+        }
     }
-    const std::string& value = properties.get_value(tokens[0]);
-    std::string msg(tokens[0] + "=" + value);
-    server.send_data(c, 0, GPCTextMessage, NetFlagsReliable, msg.length(), msg.c_str());
 }
 
 void ServerAdmin::sc_set(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
-    check_if_authorized(p);
-    StringTokens tokens = tokenize(params, ' ', 2);
-    if (tokens.size() != 2) {
-        throw ServerAdminException("Usage: /set <variable> <value>");
+    if (check_if_authorized(c, p)) {
+        StringTokens tokens = tokenize(params, ' ', 2);
+        if (tokens.size() != 2) {
+            send_i18n_msg(c, I18N_SERVE_SET_USAGE);
+        } else {
+            properties.set_value(tokens[0], tokens[1]);
+            update_configuration(c);
+            send_i18n_msg(c, I18N_SERVE_SET_VAR_TO, tokens[0], tokens[1]);
+        }
     }
-    properties.set_value(tokens[0], tokens[1]);
-    update_configuration(c);
-    std::string msg("set " + tokens[0] + " to " + tokens[1]);
-    server.send_data(c, 0, GPCTextMessage, NetFlagsReliable, msg.length(), msg.c_str());
 }
 
 void ServerAdmin::sc_reset(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
-    check_if_authorized(p);
-    StringTokens tokens = tokenize(params, ' ');
-    if (tokens.size() != 1) {
-        throw ServerAdminException("Usage: /reset <variable>");
+    if (check_if_authorized(c,  p)) {
+        StringTokens tokens = tokenize(params, ' ');
+        if (tokens.size() != 1) {
+            send_i18n_msg(c, I18N_SERVE_RESET_USAGE);
+        } else {
+            properties.set_value(tokens[0], "");
+            send_i18n_msg(c, I18N_SERVE_VAR_CLEARED, tokens[0].c_str());
+        }
     }
-    properties.set_value(tokens[0], "");
-    std::string msg(tokens[0] + " cleared");
-    server.send_data(c, 0, GPCTextMessage, NetFlagsReliable, msg.length(), msg.c_str());
 }
 
 void ServerAdmin::sc_vote(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
-    throw_not_implemented();
+    send_i18n_msg(c, I18N_SERVE_NOT_IMPLEMENTED);
 }
 
 /* helper functions */
-void ServerAdmin::check_if_authorized(Player *p) throw (ServerAdminException) {
+bool ServerAdmin::check_if_authorized(const Connection *c, Player *p) throw (ServerAdminException) {
     if (!p->server_admin) {
-        throw ServerAdminException("You're not authorized to do that");
+        send_i18n_msg(c, I18N_SERVE_NOT_AUTHORIZED);
+        return false;
     }
+
+    return true;
 }
 
-void ServerAdmin::check_if_params(const std::string& params) throw (ServerAdminException) {
+bool ServerAdmin::check_if_params(const Connection *c, const std::string& params) throw (ServerAdminException) {
     if (!params.length()) {
-        throw ServerAdminException("Parameter missing");
+        send_i18n_msg(c, I18N_SERVE_PARM_MISSING);
+        return false;
     }
+
+    return true;
 }
 
-void ServerAdmin::check_if_no_params(const std::string& params) throw (ServerAdminException) {
+bool ServerAdmin::check_if_no_params(const Connection *c, const std::string& params) throw (ServerAdminException) {
     if (params.length()) {
-        throw ServerAdminException("No parameters needed");
+        send_i18n_msg(c, I18N_SERVE_NO_PARM_NEEDED);
+        return false;
     }
-}
 
-void ServerAdmin::throw_illegal_parameters() throw (ServerAdminException) {
-    throw ServerAdminException("Illegal parameters");
-}
-
-void ServerAdmin::throw_not_implemented() throw (ServerAdminException) {
-    throw ServerAdminException("Not implemented yet");
+    return true;
 }

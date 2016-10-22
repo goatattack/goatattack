@@ -19,6 +19,7 @@
 #include "Timing.hpp"
 #include "Utils.hpp"
 #include "ScopeAllocator.hpp"
+#include "AutoPtr.hpp"
 
 #include <string>
 #include <cstdlib>
@@ -37,20 +38,7 @@ const int BroadcastCount = CalcCyclesPerS / BroadcastsPerS;
 
 const uint16_t MasterHeartbeatPort = 25112;
 
-const char *logout_messages[] = {
-    "gone, gone... gone",
-    "ended in smoke",
-    "bye bye world",
-    "bitten the dust",
-    "went the way of all flesh",
-    "bitten the ground",
-    "cheerio...",
-    "au revoir!",
-    "goodbye, hoo roo.",
-    "time to say goodbye",
-    "i took the blue pill",
-    0
-};
+const size_t MaxServerMsgLength = PacketMaxSize - 100;
 
 const char *DefaultTeamRed = "team red";
 const char *DefaultTeamBlue = "team blue";
@@ -59,7 +47,7 @@ const char *DefaultTeamBlue = "team blue";
 Server::Server(Resources& resources, Subsystem& subsystem,
     hostport_t port, pico_size_t num_players, const std::string& server_name,
     GamePlayType type, const std::string& map_name, int duration, int warmup) throw (Exception)
-    : Properties(""), ClientServer(port, num_players, server_name, ""),
+    : Properties(""), ClientServer(subsystem.get_i18n(), port, num_players, server_name, ""),
       resources(resources), subsystem(subsystem),
       factory(resources, subsystem, 0),
       nbr_logout_msg(0), running(false), current_config(0), score_board_counter(0),
@@ -77,7 +65,7 @@ Server::Server(Resources& resources, Subsystem& subsystem,
 Server::Server(Resources& resources, Subsystem& subsystem,
     const std::string& server_config_file) throw (Exception)
     : Properties(server_config_file),
-      ClientServer(atoi(get_value("port").c_str()), atoi(get_value("num_players").c_str()), get_value("server_name"), get_value("server_password")),
+      ClientServer(subsystem.get_i18n(), atoi(get_value("port").c_str()), atoi(get_value("num_players").c_str()), get_value("server_name"), get_value("server_password")),
       resources(resources), subsystem(subsystem),
       factory(resources, subsystem, 0),
       nbr_logout_msg(0), running(false), current_config(0), score_board_counter(0),
@@ -134,7 +122,7 @@ void Server::start() throw (ServerException) {
         running = true;
         if (!thread_start()) {
             running = false;
-            throw ServerException("Starting server thread failed.");
+            throw ServerException(ClientServer::i18n(I18N_THREAD_FAILED));
         }
     }
 #endif
@@ -166,10 +154,10 @@ void Server::thread() {
 
     try {
         /* count logout messages */
-        const char **p = logout_messages;
-        while (*p) {
+        int curtxt = static_cast<int>(I18N_TNMT_LOGOUT_MSG01);
+        while (i18n(static_cast<I18NText>(curtxt)).length()) {
             nbr_logout_msg++;
-            p++;
+            curtxt++;
         }
 
         /* start */
@@ -337,9 +325,9 @@ void Server::thread() {
 
                             /* server log */
                             if (warmup) {
-                                logger.log(ServerLogger::LogTypeWarmUp, "warm up");
+                                logger.log(ServerLogger::LogTypeWarmUp, ClientServer::i18n(I18N_SERVE_WARM_UP));
                             } else {
-                                logger.log(ServerLogger::LogTypeGameBegins, "game begins");
+                                logger.log(ServerLogger::LogTypeGameBegins, ClientServer::i18n(I18N_SERVE_GAME_BEGINS));
                             }
 
                             /* flush */
@@ -533,7 +521,6 @@ void Server::event_login(const Connection *c, data_len_t len, void *data) throw 
     Player *p = new Player(resources, c, player_id, desc->player_name, desc->characterset_name);
     players.push_back(p);
     sz++;
-    std::string msg(p->get_player_name() + " connected");
 
     /* reattach disconnect player? */
     found = false;
@@ -560,14 +547,11 @@ void Server::event_login(const Connection *c, data_len_t len, void *data) throw 
             }
         }
     }
-    if (found) {
-        msg = p->get_player_name() + " reconnected";
-    } else {
-        msg = p->get_player_name() + " connected";
-    }
+
+    I18NText conmsg = (found ? I18N_SERVE_RECONNECT : I18N_SERVE_CONNECT);
 
     /* console log */
-    logger.log(ServerLogger::LogTypePlayerConnect, msg, p);
+    logger.log(ServerLogger::LogTypePlayerConnect, ClientServer::i18n(conmsg, p->get_player_name().c_str()) , p);
 
     /* send identifer to new client */
     player_id_t net_player_id = htons(player_id);
@@ -593,7 +577,10 @@ void Server::event_login(const Connection *c, data_len_t len, void *data) throw 
     }
 
     /* send text message */
-    broadcast_data(factory.get_tournament_id(), GPCTextMessage, NetFlagsReliable, static_cast<data_len_t>(msg.length()), msg.c_str());
+    size_t msglen;
+    AutoPtr<char[]> txtptr(Tournament::create_i18n_response(conmsg, msglen, p->get_player_name().c_str()));
+    GI18NText *txtmsg = reinterpret_cast<GI18NText *>(&txtptr[0]);
+    broadcast_data(factory.get_tournament_id(), GPCI18NText, NetFlagsReliable, static_cast<data_len_t>(msglen), txtmsg);
 
     /* fill server pak list */
     PlayerClientPak *pcpak = new PlayerClientPak(p);
@@ -682,10 +669,13 @@ void Server::event_data(const Connection *c, data_len_t len, void *data) throw (
                             send_data(c, factory.get_tournament_id(), GPCTextMessage, NetFlagsReliable, strlen(e.what()), e.what());
                         }
                     } else {
-                        std::string msg(reinterpret_cast<char *>(data_ptr), t->len);
-                        logger.log(ServerLogger::LogTypeChatMessage, msg, p);
-                        msg = p->get_player_name() + ": " + msg;
-                        broadcast_data(0, GPCChatMessage, NetFlagsReliable, msg.length(), msg.c_str());
+                        AutoPtr<char[]> storage(new char[GChatMessageLen + t->len]);
+                        GChatMessage *chat_msg = reinterpret_cast<GChatMessage *>(&storage[0]);
+                        chat_msg->id = p->state.id;
+                        chat_msg->len = t->len;
+                        memcpy(chat_msg->data, data_ptr, t->len);
+                        chat_msg->to_net();
+                        broadcast_data(0, GPCChatMessage, NetFlagsReliable, GChatMessageLen + t->len, chat_msg);
                     }
                     break;
                 }
@@ -750,8 +740,7 @@ void Server::event_data(const Connection *c, data_len_t len, void *data) throw (
                     std::string new_skin(pdesc->characterset_name);
                     bool name_changed = (old_name != new_name);
                     if (name_changed) {
-                        std::string msg(old_name + " is now known as " + new_name);
-                        logger.log(ServerLogger::LogTypePlayerNameChange, msg, 0, 0, old_name.c_str(), new_name.c_str());
+                        logger.log(ServerLogger::LogTypePlayerNameChange, ClientServer::i18n(I18N_CLIENT_RENAME, old_name, new_name), 0, 0, old_name.c_str(), new_name.c_str());
                     }
                     if (name_changed || p->get_characterset_name() != new_skin) {
                         p->set_player_name(new_name);
@@ -804,7 +793,7 @@ void Server::event_data(const Connection *c, data_len_t len, void *data) throw (
                                 while (ptr->name) {
                                     if (!strcmp(ptr->name, pak_name.c_str())) {
                                         if (ptr->check) {
-                                            quit_client(c, p, "Main pak '" + pak_name + "' has a different hash.");
+                                            quit_client(c, p, ClientServer::i18n(I18N_DIFFERENT_HASH, pak_name));
                                         }
                                         break;
                                     }
@@ -844,11 +833,13 @@ void Server::event_data(const Connection *c, data_len_t len, void *data) throw (
                         }
 
                         /* send information text */
-                        std::string msg(p->get_player_name() + " is spectating now");
-                        stacked_broadcast_data_synced(0, GPCTextMessage, NetFlagsReliable, msg.length(), msg.c_str());
+                        size_t msglen;
+                        AutoPtr<char[]> txtptr(Tournament::create_i18n_response(I18N_SERVE_SPECTATING, msglen, p->get_player_name().c_str()));
+                        GI18NText *txtmsg = reinterpret_cast<GI18NText *>(&txtptr[0]);
+                        stacked_broadcast_data_synced(0, GPCI18NText, NetFlagsReliable, static_cast<data_len_t>(msglen), txtmsg);
 
                         /* remove player from tournament and reset */
-                        logger.log(ServerLogger::LogTypeLeft, msg, p);
+                        logger.log(ServerLogger::LogTypeLeft, ClientServer::i18n(I18N_SERVE_SPECTATING, p->get_player_name()), p);
                         tournament->player_removed(p);
                         tournament->player_added(p);
                         p->reset();
@@ -893,23 +884,7 @@ void Server::event_logout(const Connection *c, LogoutReason reason) throw (Excep
             }
 
             player_id_t id = htons(p->state.id);
-            std::string msg(p->get_player_name() + " disconnected");
-            switch (reason) {
-                case LogoutReasonRegular:
-                    break;
-
-                case LogoutReasonPingTimeout:
-                    msg += " (ping timeout)";
-                    break;
-
-                case LogoutReasonTooManyResends:
-                    msg += " (too many resends)";
-                    break;
-
-                case LogoutReasonApplicationQuit:
-                    msg += " (application layer quit)";
-                    break;
-            }
+            I18NText logout_id = get_logout_text_id(reason);
 
             /* inform clients */
             broadcast_data(factory.get_tournament_id(), GPCRemovePlayer, NetFlagsReliable, sizeof(id), &id);
@@ -934,15 +909,14 @@ void Server::event_logout(const Connection *c, LogoutReason reason) throw (Excep
                 }
 
                 /* send bye bye message */
-                int msgidx = rand() % nbr_logout_msg;
-                std::string text(logout_messages[msgidx]);
+                int msgidx = (rand() % nbr_logout_msg) + I18N_TNMT_LOGOUT_MSG01;
                 Font *font = resources.get_font("normal");
                 GTextAnimation tani;
                 memset(&tani, 0, sizeof(GTextAnimation));
                 strncpy(tani.font_name, font->get_name().c_str(), NameLength - 1);
-                strncpy(tani.display_text, text.c_str(), TextLength - 1);
-                tani.x = p->state.client_server_state.x + (Characterset::Width / 2) - (font->get_text_width(text) / 2);
-                tani.y = p->state.client_server_state.y - (Characterset::Height / 2) - (font->get_font_height() / 2) - 15;
+                tani.i18n_id = msgidx;
+                tani.x = p->state.client_server_state.x + (Characterset::Width / 2);
+                tani.y = p->state.client_server_state.y - (Characterset::Height / 2) - 30;
                 tani.max_counter = 50;
                 tani.to_net();
                 stacked_broadcast_data_synced(factory.get_tournament_id(), GPCAddTextAnimation, NetFlagsReliable, GTextAnimationLen, &tani);
@@ -952,8 +926,11 @@ void Server::event_logout(const Connection *c, LogoutReason reason) throw (Excep
             flush_stacked_broadcast_data_synced(NetFlagsReliable);
 
             /* send text message */
-            logger.log(ServerLogger::LogTypePlayerDisconnect, msg, p);
-            broadcast_data(factory.get_tournament_id(), GPCTextMessage, NetFlagsReliable, static_cast<data_len_t>(msg.length()), msg.c_str());
+            size_t msglen;
+            AutoPtr<char[]> txtptr(Tournament::create_i18n_response(logout_id, msglen));
+            GI18NText *txtmsg = reinterpret_cast<GI18NText *>(&txtptr[0]);
+            broadcast_data(factory.get_tournament_id(), GPCI18NText, NetFlagsReliable, static_cast<data_len_t>(msglen), txtmsg);
+            logger.log(ServerLogger::LogTypePlayerDisconnect, ClientServer::i18n(logout_id), p);
 
             /* delete client pak list */
             destroy_paks(p);
@@ -1163,7 +1140,7 @@ void Server::sync_client(const Connection *c, Player *p) {
 
     /* server motd */
     const std::string& srv_msg = get_value("server_message");
-    if (srv_msg.length()) {
+    if (srv_msg.length() && srv_msg.length() <= MaxServerMsgLength) {
         send_data(c, factory.get_tournament_id(), GPCServerMessage, NetFlagsReliable, static_cast<data_len_t>(srv_msg.length()), srv_msg.c_str());
     }
 
@@ -1297,7 +1274,7 @@ void Server::load_map_rotation() {
     char kvb[128];
     int map_count = atoi(get_value("map_count").c_str());
     if (map_count < 1) {
-        throw ServerException("No maps defined in server configuration file");
+        throw ServerException(ClientServer::i18n(I18N_NO_MAPS_DEFINED));
     }
 
     for (int i = 0; i < map_count; i++) {
@@ -1340,7 +1317,7 @@ std::ostream& Server::create_log_stream() {
 
 void Server::parse_command(const Connection *c, Player *p, data_len_t len, void *data) throw (ServerAdminException) {
     if (!server_admin) {
-        throw ServerAdminException("This is not a dedicated server");
+        throw ServerAdminException(ClientServer::i18n(I18N_NO_DEDICATED_SERVER));
     }
     char *pcmd = static_cast<char *>(data);
     std::string command(&pcmd[1], len - 1);

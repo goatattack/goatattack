@@ -25,7 +25,7 @@ Tournament::Tournament(Resources& resources, Subsystem& subsystem, Gui *gui, Ser
     const std::string& game_file, bool server, const std::string& map_name,
     Players& players, int duration, bool warmup)
     throw (TournamentException, ResourcesException)
-    : resources(resources), subsystem(subsystem),
+    : resources(resources), subsystem(subsystem), i18n(subsystem.get_i18n()),
       properties(*resources.get_game_settings(game_file)),
       gui(gui), server(server),
       map(*resources.get_map(map_name)),
@@ -148,11 +148,9 @@ Tournament::~Tournament() {
     }
 
     if (logger) {
-        logger->log(ServerLogger::LogTypeMapClosed, "current map closed");
+        logger->log(ServerLogger::LogTypeMapClosed, i18n(I18N_TNMT_STATS_MAP_CLOSED));
         logger->set_map(0);
     }
-
-    //subsystem.stop_music();
 }
 
 void Tournament::set_gui_is_destroyed(bool state) {
@@ -272,7 +270,7 @@ void Tournament::add_animation(GAnimation *animation) {
         }
     } catch (const ResourcesException& e) {
         if (gani) delete gani;
-        subsystem << "creating animation failed: " << e.what() << std::endl;
+        subsystem << i18n(I18N_ANIMATION_FAILED, e.what()) << std::endl;
     }
 }
 
@@ -299,7 +297,7 @@ void Tournament::add_animation(const std::string& name, identifier_t id,
         }
     } catch (const ResourcesException& e) {
         if (gani) delete gani;
-        subsystem << "creating animation failed: " << e.what() << std::endl;
+        subsystem << i18n(I18N_ANIMATION_FAILED, e.what()) << std::endl;
     }
 }
 
@@ -308,14 +306,14 @@ void Tournament::add_text_animation(GTextAnimation *animation) {
     try {
         gani = new GameTextAnimation;
         gani->font = resources.get_font(animation->font_name);
-        gani->text = animation->display_text;
-        gani->x = static_cast<int>(animation->x);
+        gani->text = i18n(static_cast<I18NText>(animation->i18n_id));
+        gani->x = static_cast<int>(animation->x) - gani->font->get_text_width(gani->text) / 2;
         gani->y = static_cast<int>(animation->y);
         gani->max_rise_counter = animation->max_counter;
         game_text_animations.push_back(gani);
     } catch (const ResourcesException& e) {
         if (gani) delete gani;
-        subsystem << "creating point animation failed: " << e.what() << std::endl;
+        subsystem << i18n(I18N_ANIMATION_FAILED, e.what()) << std::endl;
     }
 }
 
@@ -502,7 +500,7 @@ void Tournament::delete_responses() {
     for (size_t i = 0; i < sz; i++) {
         StateResponse *resp = state_responses[i];
         if (resp->data) {
-            if (resp->action == GPCTextMessage) {
+            if (resp->action == GPCI18NText || resp->action == GPCTextMessage) {
                 delete[] resp->data;
             } else {
                 delete resp->data;
@@ -522,7 +520,7 @@ void Tournament::create_spawn_points() throw (TournamentException) {
         }
     }
     if (!spawn_points.size()) {
-        throw TournamentException("Missing spawn points in this map.");
+        throw TournamentException(i18n(I18N_MISSING_SPAWN_POINTS));
     }
 }
 
@@ -715,34 +713,27 @@ void Tournament::player_damage(identifier_t owner, Player *p, NPC *npc, int dama
         /* reduce health */
         if (damage2 >= p->state.server_state.health) {
             /* player dies */
-            player_dies(p, "");
+            player_dies(p, I18N_NONE);
 
             /* increment owner's frag counter */
-            std::string verb("killed");
-            if (npc) {
-                const std::string& die_verb = npc->get_value("die_verb");
-                if (die_verb.length()) {
-                    verb = die_verb;
-                }
-            }
+            I18NText frag_both = (npc ? I18N_TNMT_FROGGED1 : I18N_TNMT_KILLED1);
+            I18NText frag_himself = (npc ? I18N_TNMT_FROGGED2 : I18N_TNMT_KILLED2);
             for (Players::iterator it = players.begin(); it != players.end(); it++) {
                 Player *fp = *it;
                 if (fp->state.id == owner) {
                     if (fp != p) {
                         fp->state.server_state.frags++;
                         frag_point(fp, p);
-                        std::string msg(fp->get_player_name() + " " + verb + " " + p->get_player_name());
-                        add_msg_response(msg.c_str());
+                        add_i18n_response(frag_both, fp->get_player_name(), p->get_player_name());
                         if (logger) {
-                            logger->log(ServerLogger::LogTypeFrag, msg, fp, p,
+                            logger->log(ServerLogger::LogTypeFrag, i18n(frag_both, fp->get_player_name(), p->get_player_name()), fp, p,
                                 (npc ? npc->get_name().c_str() : weapon.c_str()));
                         }
                     } else {
                         fp->state.server_state.score -= 1;
-                        std::string msg(fp->get_player_name() + " " + verb + " himself");
-                        add_msg_response(msg.c_str());
+                        add_i18n_response(frag_himself, fp->get_player_name());
                         if (logger) {
-                            logger->log(ServerLogger::LogTypeKill, msg, fp, p,
+                            logger->log(ServerLogger::LogTypeKill, i18n(frag_himself, fp->get_player_name()), fp, p,
                                 (npc ? npc->get_name().c_str() : weapon.c_str()));
                         }
                     }
@@ -756,15 +747,14 @@ void Tournament::player_damage(identifier_t owner, Player *p, NPC *npc, int dama
     }
 }
 
-void Tournament::player_dies(Player *p, const std::string& die_message) {
+void Tournament::player_dies(Player *p, I18NText id, const char *addon) {
     player_died(p);
     p->state.server_state.health = 0;
     p->state.server_state.flags |= PlayerServerFlagDead;
     p->state.server_state.kills++;
-    if (die_message.length()) {
-        add_msg_response(die_message.c_str());
+    if (id != I18N_NONE) {
+        add_i18n_response(id, addon);
     }
-
     try {
         Animation *tempani = resources.get_animation(properties.get_value("die_animation"));
 
@@ -802,10 +792,9 @@ void Tournament::player_join_request(Player *p) {
 }
 
 bool Tournament::player_joins(Player *p, playerflags_t flags) {
-    std::string msg(p->get_player_name() + " joins the game");
-    add_msg_response(msg.c_str());
+    add_i18n_response(I18N_TNMT_PLAYER_JOINS, p->get_player_name());
     if (logger) {
-        logger->log(ServerLogger::LogTypeJoin, msg, p);
+        logger->log(ServerLogger::LogTypeJoin, i18n(I18N_TNMT_PLAYER_JOINS, p->get_player_name()), p);
     }
 
     return true;
@@ -861,4 +850,34 @@ void Tournament::generic_data_delivery(void *data) { }
 
 void Tournament::set_friendly_fire_alarm(bool state) {
     do_friendly_fire_alarm = state;
+}
+
+char *Tournament::create_i18n_response(I18NText id, size_t& sz, const char *addon) {
+    sz = (addon ? strlen(addon) + 1 : 0);
+    char *p = new char[GI18NTextLen + sz];
+    GI18NText *t = reinterpret_cast<GI18NText *>(p);
+    t->id = static_cast<identifier_t>(id);
+    t->len = sz;
+    if (sz) {
+        memcpy(t->data, addon, sz);
+    }
+    t->to_net();
+
+    sz += GI18NTextLen;
+
+    return p;
+}
+
+void Tournament::add_i18n_response(I18NText id, const char *addon) {
+    size_t sz;
+    char *t = create_i18n_response(id, sz, addon);
+    add_state_response(GPCI18NText, static_cast<data_len_t>(sz), t);
+}
+
+void Tournament::add_i18n_response(I18NText id, const std::string& p) {
+    add_i18n_response(id, p.c_str());
+}
+
+void Tournament::add_i18n_response(I18NText id, const std::string& p1, const std::string& p2) {
+    add_i18n_response(id, (p1 + "\t" + p2).c_str());
 }

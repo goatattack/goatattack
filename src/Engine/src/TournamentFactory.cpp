@@ -72,7 +72,7 @@ Tournament *TournamentFactory::create_tournament(const MapConfiguration& config,
     if (tournament && server) {
         tournament_id++;
         if (logger) {
-            logger->log(ServerLogger::LogTypeNewMap, "new map loaded");
+            logger->log(ServerLogger::LogTypeNewMap, subsystem.get_i18n()(I18N_TNMT_NEW_MAP_LOADED));
         }
     }
 

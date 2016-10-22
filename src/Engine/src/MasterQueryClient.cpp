@@ -20,8 +20,8 @@
 #include "MasterQuery.hpp"
 
 const int MaxTries = 10;
-MasterQueryClient::MasterQueryClient(MasterQuery& master_query, hostaddr_t host, hostport_t port) throw (Exception)
-    : GameserverInformation(host, port), MessageSequencer(host, port), master_query(master_query),
+MasterQueryClient::MasterQueryClient(I18N& i18n, MasterQuery& master_query, hostaddr_t host, hostport_t port) throw (Exception)
+    : GameserverInformation(host, port), MessageSequencer(i18n, host, port), master_query(master_query),
       received(false), tries(0)
 {
     get_now(last_update);

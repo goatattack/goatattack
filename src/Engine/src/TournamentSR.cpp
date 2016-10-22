@@ -34,7 +34,7 @@ TournamentSR::TournamentSR(Resources& resources, Subsystem& subsystem, Gui *gui,
     /* create spawn points */
     create_spawn_points();
     if (spawn_points.size() != 1) {
-        throw TournamentException("Why more than one spawn point in this game mode?");
+        throw TournamentException(i18n(I18N_WHY_MORE_SPAWN_POINTS));
     }
 
     /* setup tournament icon */
@@ -77,11 +77,11 @@ void TournamentSR::write_stats_in_server_log() {
 
             int laps = static_cast<int>(top.times.size());
             if (has_entries) {
-                logger->log(ServerLogger::LogTypeStatsSR, "player stat", top.player, 0,
+                logger->log(ServerLogger::LogTypeStatsSR, i18n(I18N_TNMT_STATS_PLAYER), top.player, 0,
                     &rank, &laps, &top.best, &top.last);
                 last_best_time = top.best;
             } else {
-                logger->log(ServerLogger::LogTypeStatsSR, "player stat", top.player, 0,
+                logger->log(ServerLogger::LogTypeStatsSR, i18n(I18N_TNMT_STATS_PLAYER), top.player, 0,
                     &rank, &laps, 0, 0);
                 last_best_time = 0.0f;
             }
@@ -211,16 +211,17 @@ void TournamentSR::round_finished_set_time(Player *p, GTransportTime *race) {
         update_stats(top, diff);
 
         if ((has_entries && diff < best_time) || !has_entries) {
-            sprintf(buffer, "new record of %s: %.2f", p->get_player_name().c_str(), diff);
+            sprintf(buffer, "%.2f", diff);
+            add_i18n_response(I18N_TNMT_SR_RECORD, p->get_player_name().c_str(), buffer);
             add_msg_response(buffer);
             add_sound_response("round_complete_best");
             if (logger) {
-                logger->log(ServerLogger::LogTypeRoundFinished, buffer, p, 0, &diff);
+                logger->log(ServerLogger::LogTypeRoundFinished, i18n(I18N_TNMT_SR_RECORD, p->get_player_name().c_str(), buffer), p, 0, &diff);
             }
         } else {
             add_sound_response("round_complete");
             if (logger) {
-                logger->log(ServerLogger::LogTypeRoundFinished, "round completed", p, 0, &diff);
+                logger->log(ServerLogger::LogTypeRoundFinished, i18n(I18N_TNMT_SR_COMPLETE), p, 0, &diff);
             }
         }
     }
@@ -230,7 +231,7 @@ void TournamentSR::draw_statistics() {
     Font *font_normal = resources.get_font("normal");
     int vw = subsystem.get_view_width();
     int vh = subsystem.get_view_height();
-    int ww = ((vw - 20) / 2) + 40;
+    int ww = 380;
     int wh = vh - 20;
     int x = vw / 2 - ww / 2;
     int y = 10;
@@ -265,7 +266,7 @@ void TournamentSR::draw_statistics() {
 
     /* draw title */
     Font *font_big = resources.get_font("big");
-    std::string txt("SPEED RACE");
+    std::string txt(i18n(I18N_TNMT_SB_SR_TITLE));
     int tw = font_big->get_text_width(txt);
     subsystem.draw_text(font_big, vw / 2 - tw / 2, y + 18, txt);
 
@@ -274,11 +275,11 @@ void TournamentSR::draw_statistics() {
     y = 55;
     x = wx + 15;
     subsystem.draw_text(font_normal, x, y, "#");
-    subsystem.draw_text(font_normal, x + 20, y, "PLAYER");
-    subsystem.draw_text(font_normal, x + 140, y, "LAPS");
-    subsystem.draw_text(font_normal, x + 180, y, "BEST");
-    subsystem.draw_text(font_normal, x + 240, y, "LAST");
-    subsystem.draw_text(font_normal, x + 300, y, "PING");
+    subsystem.draw_text(font_normal, x + 20, y, i18n(I18N_TNMT_SB_PLAYER));
+    subsystem.draw_text(font_normal, x + 140, y, i18n(I18N_TNMT_SB_LAPS));
+    subsystem.draw_text(font_normal, x + 210, y, i18n(I18N_TNMT_SB_BEST));
+    subsystem.draw_text(font_normal, x + 270, y, i18n(I18N_TNMT_SB_LAST));
+    subsystem.draw_text(font_normal, x + 330, y, i18n(I18N_TNMT_SB_PING));
     subsystem.reset_color();
 
     y = draw_stats(font_normal, wx + 15, y + 15);
@@ -289,7 +290,7 @@ void TournamentSR::draw_statistics() {
 
     /* done */
     subsystem.set_color(1.0f, 1.0f, 0.0f, 1.0f);
-    subsystem.draw_text(font_normal, wx + 15, y, "SPECTACTORS:");
+    subsystem.draw_text(font_normal, wx + 15, y, i18n(I18N_TNMT_SB_SPECTATORS));
     subsystem.reset_color();
     y += font_normal->get_font_height();
     for (Players::iterator it = players.begin(); it != players.end(); it++) {
@@ -372,24 +373,24 @@ void TournamentSR::draw_score() {
             const TimesOfPlayer& lead = times_of_players[0];
             if (lead.times.size()) {
                 subsystem.set_color(0.25f, 1.0f, 0.25f, 1.0f);
-                subsystem.draw_text(f, 5, 5, "lead:");
+                subsystem.draw_text(f, 5, 5, i18n(I18N_TNMT_SR_LEAD));
                 sprintf(buffer, "%.2f (%s)", lead.best, lead.player->get_player_name().c_str());
-                subsystem.draw_text(f, 45, 5, buffer);
+                subsystem.draw_text(f, 60, 5, buffer);
                 subsystem.reset_color();
             }
 
-            subsystem.draw_text(f, 5, 20, "lap:");
+            subsystem.draw_text(f, 5, 20, i18n(I18N_TNMT_SR_LAP));
             sprintf(buffer, "%d", static_cast<int>(sz + 1));
-            subsystem.draw_text(f, 45, 20, buffer);
+            subsystem.draw_text(f, 60, 20, buffer);
 
             if (sz) {
-                subsystem.draw_text(f, 5, 35, "best:");
+                subsystem.draw_text(f, 5, 35, i18n(I18N_TNMT_SR_BEST));
                 sprintf(buffer, "%.2f", top->best);
-                subsystem.draw_text(f, 45, 35, buffer);
+                subsystem.draw_text(f, 60, 35, buffer);
 
-                subsystem.draw_text(f, 5, 50, "last:");
+                subsystem.draw_text(f, 5, 50, i18n(I18N_TNMT_SR_LAST));
                 sprintf(buffer, "%.2f", top->last);
-                subsystem.draw_text(f, 45, 50, buffer);
+                subsystem.draw_text(f, 60, 50, buffer);
             }
         }
     }
@@ -474,19 +475,19 @@ int TournamentSR::draw_stats(Font *f, int x, int y) {
 
             if (has_entries) {
                 sprintf(buffer, "%.2f", top.best);
-                subsystem.draw_text(f, x + 180, y, buffer);
+                subsystem.draw_text(f, x + 210, y, buffer);
 
                 sprintf(buffer, "%.2f", top.last);
-                subsystem.draw_text(f, x + 240, y, buffer);
+                subsystem.draw_text(f, x + 270, y, buffer);
                 last_best_time = top.best;
             } else {
-                subsystem.draw_text(f, x + 180, y, "N/A");
-                subsystem.draw_text(f, x + 240, y, "N/A");
+                subsystem.draw_text(f, x + 210, y, i18n(I18N_TNMT_SR_NA));
+                subsystem.draw_text(f, x + 270, y, i18n(I18N_TNMT_SR_NA));
                 last_best_time = 0.0f;
             }
 
             sprintf(buffer, "%d", top.player->state.server_state.ping_time);
-            subsystem.draw_text(f, x + 300, y, buffer);
+            subsystem.draw_text(f, x + 330, y, buffer);
 
             y += f->get_font_height();
         }

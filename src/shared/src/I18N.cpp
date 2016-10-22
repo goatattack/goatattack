@@ -17,11 +17,11 @@
 
 #include "I18N.hpp"
 
-I18N::I18N() throw () : language(language) {
+I18N::I18N() : language(language) {
     init();
 }
 
-I18N::I18N(Language language) throw () : language(language) {
+I18N::I18N(Language language) : language(language) {
     init();
 }
 
@@ -43,14 +43,14 @@ void I18N::init() {
     }
 
     if (current_language) {
-        while (current_language->id) {
+        while (current_language->id != I18N_NONE) {
             texts[current_language->id] = current_language->text;
             current_language++;
         }
     }
 }
 
-const char *I18N::get_text(id_t id) const {
+const char *I18N::get_text(I18NText id) const {
     TextMap::const_iterator it = texts.find(id);
     if (it != texts.end()) {
         return it->second;
@@ -59,24 +59,30 @@ const char *I18N::get_text(id_t id) const {
     return "";
 }
 
-void I18N::replace(std::string& s, const char *w, size_t wl, const char *p) {
+void I18N::replace(std::string& s, const char *w, size_t wl, const char *p) const {
     std::string::size_type pos = 0;
     while ((pos = s.find(w)) != std::string::npos) {
         s.replace(pos, wl, p);
     }
 }
 
-void I18N::replace(std::string& s, const char *w, size_t wl, const std::string& p) {
+void I18N::replace(std::string& s, const char *w, size_t wl, const std::string& p) const {
     replace(s, w, wl, p.c_str());
 }
 
-void I18N::replace(std::string& s, const char *w, size_t wl, int p) {
+void I18N::replace(std::string& s, const char *w, size_t wl, int p) const {
     char buffer[64];
     sprintf(buffer, "%d", p);
     replace(s, w, wl, buffer);
 }
 
-void I18N::replace(std::string& s, const char *w, size_t wl, double p) {
+void I18N::replace(std::string& s, const char *w, size_t wl, long p) const {
+    char buffer[64];
+    sprintf(buffer, "%ld", p);
+    replace(s, w, wl, buffer);
+}
+
+void I18N::replace(std::string& s, const char *w, size_t wl, double p) const {
     char buffer[64];
     sprintf(buffer, "%f", p);
     replace(s, w, wl, buffer);

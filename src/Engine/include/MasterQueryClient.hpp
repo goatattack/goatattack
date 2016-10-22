@@ -20,6 +20,7 @@
 
 #include "MessageSequencer.hpp"
 #include "GameserverInformation.hpp"
+#include "I18N.hpp"
 
 class MasterQuery;
 
@@ -29,9 +30,10 @@ private:
     MasterQueryClient& operator=(const MasterQueryClient&);
 
 public:
-    MasterQueryClient(MasterQuery& master_query, hostaddr_t host, hostport_t port) throw (Exception);
+    MasterQueryClient(I18N& i18n, MasterQuery& master_query, hostaddr_t host, hostport_t port) throw (Exception);
     virtual ~MasterQueryClient();
 
+public:
     MasterQuery& master_query;
     bool received;
     int tries;

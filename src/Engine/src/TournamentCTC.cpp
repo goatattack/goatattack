@@ -35,7 +35,7 @@ TournamentCTC::TournamentCTC(Resources& resources, Subsystem& subsystem, Gui *gu
     /* create spawn points */
     create_spawn_points();
     if (!spawn_points.size()) {
-        throw TournamentException("No spawn points found in this map");
+        throw TournamentException(i18n(I18N_MISSING_SPAWN_POINTS));
     }
 
     /* find coin in this map */
@@ -46,14 +46,14 @@ TournamentCTC::TournamentCTC(Resources& resources, Subsystem& subsystem, Gui *gu
         Object::ObjectType type = obj->object->get_type();
         if (type == Object::ObjectTypeCoin) {
             if (coin) {
-                throw TournamentException("Multiple coins not allowed");
+                throw TournamentException(i18n(I18N_MULTIPLE_COINS));
             }
             coin = obj;
         }
     }
 
     if (!coin) {
-        throw TournamentException("Coin is missing in this map");
+        throw TournamentException(i18n(I18N_COIN_MISSING));
     }
 
     /* add all players into list */
@@ -90,7 +90,7 @@ void TournamentCTC::write_stats_in_server_log() {
             last_total = total;
             total_minutes = total / 60;
             total -= total_minutes * 60;
-            logger->log(ServerLogger::LogTypeStatsCTC, "player stat", top.player, 0,
+            logger->log(ServerLogger::LogTypeStatsCTC, i18n(I18N_TNMT_STATS_PLAYER), top.player, 0,
                 &rank, &total_minutes, &total);
         }
     }
@@ -138,8 +138,7 @@ void TournamentCTC::check_coin_validity(double period_f) {
         /* check if coin is in valid map range */
         if (!coin->picked) {
             return_coin(PlaceObjectWithSpawnSound);
-            std::string msg("the coin returned to its base");
-            add_msg_response(msg.c_str());
+            add_i18n_response(I18N_TNMT_COIN_RETURNED);
         }
     } else if (coin_not_at_origin()) {
         /* check if coin is counting down (if dropped) */
@@ -150,8 +149,7 @@ void TournamentCTC::check_coin_validity(double period_f) {
             }
             if (coin->spawn_counter <= 0.0f) {
                 return_coin(PlaceObjectWithSpawnSound);
-                std::string msg("the coin returned to its base");
-                add_msg_response(msg.c_str());
+                add_i18n_response(I18N_TNMT_COIN_RETURNED);
             }
         }
     }
@@ -235,10 +233,9 @@ void TournamentCTC::player_died(Player *p) {
 bool TournamentCTC::pick_item(Player *p, GameObject *obj) {
     if (obj->object->get_type() == Object::ObjectTypeCoin) {
         p->state.server_state.flags |= PlayerServerFlagHasCoin;
-        std::string msg(p->get_player_name() + " catched the coin");
-        add_msg_response(msg.c_str());
+        add_i18n_response(I18N_TNMT_COIN_CATCHED, p->get_player_name().c_str());
         if (logger) {
-            logger->log(ServerLogger::LogTypeCoinPicked, msg, p);
+            logger->log(ServerLogger::LogTypeCoinPicked, i18n(I18N_TNMT_COIN_CATCHED, p->get_player_name().c_str()), p);
         }
         TimesOfPlayer *top = get_times_of_player(p);
         if (top) {
@@ -380,7 +377,7 @@ void TournamentCTC::draw_statistics() {
 
     /* draw title */
     Font *font_big = resources.get_font("big");
-    std::string txt("CATCH THE COIN");
+    std::string txt(i18n(I18N_TNMT_SB_CTC_TITLE));
     int tw = font_big->get_text_width(txt);
     subsystem.draw_text(font_big, vw / 2 - tw / 2, y + 18, txt);
 
@@ -389,9 +386,9 @@ void TournamentCTC::draw_statistics() {
     y = 55;
     x = wx + 15;
     subsystem.draw_text(font_normal, x, y, "#");
-    subsystem.draw_text(font_normal, x + 20, y, "PLAYER");
-    subsystem.draw_text(font_normal, x + 140, y, "TOTAL");
-    subsystem.draw_text(font_normal, x + 220, y, "PING");
+    subsystem.draw_text(font_normal, x + 20, y, i18n(I18N_TNMT_SB_PLAYER));
+    subsystem.draw_text(font_normal, x + 140, y, i18n(I18N_TNMT_SB_TOTAL));
+    subsystem.draw_text(font_normal, x + 220, y, i18n(I18N_TNMT_SB_PING));
     subsystem.reset_color();
 
     y = draw_stats(font_normal, wx + 15, y + 15);
@@ -402,7 +399,7 @@ void TournamentCTC::draw_statistics() {
 
     /* done */
     subsystem.set_color(1.0f, 1.0f, 0.0f, 1.0f);
-    subsystem.draw_text(font_normal, wx + 15, y, "SPECTACTORS:");
+    subsystem.draw_text(font_normal, wx + 15, y, i18n(I18N_TNMT_SB_SPECTATORS));
     subsystem.reset_color();
     y += font_normal->get_font_height();
     for (Players::iterator it = players.begin(); it != players.end(); it++) {
@@ -541,13 +538,12 @@ bool TournamentCTC::test_and_drop_coin(Player *p) {
             add_state_response(GPCPlaceObject, sizeof(GPlaceObject), gpo);
 
             /* add message */
-            std::string msg("the coin dropped");
-            add_msg_response(msg.c_str());
+            add_i18n_response(I18N_TNMT_COIN_DROPPED);
             dropped = true;
 
             /* log */
             if (logger) {
-                logger->log(ServerLogger::LogTypeCoinDropped, msg, p);
+                logger->log(ServerLogger::LogTypeCoinDropped, i18n(I18N_TNMT_COIN_DROPPED), p);
             }
         }
     }

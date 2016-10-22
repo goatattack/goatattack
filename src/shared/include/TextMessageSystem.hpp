@@ -26,11 +26,18 @@ public:
     TextMessageSystem();
     virtual ~TextMessageSystem();
 
+    void add_text_msg(const std::string& player, const std::string& msg);
     void add_text_msg(const std::string& msg);
 
 protected:
     struct TextMessage {
-        TextMessage() : duration(0.0f), delete_me(false) { }
+        TextMessage(const std::string& player, const std::string& text)
+            : player(player), text(text), duration(0.0f), delete_me(false) { }
+
+        TextMessage(const std::string& text)
+            : text(text), duration(0.0f), delete_me(false) { }
+
+        std::string player;
         std::string text;
         double duration;
         bool delete_me;

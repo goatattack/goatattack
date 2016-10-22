@@ -26,46 +26,43 @@ void Client::event_status(hostaddr_t host, hostport_t port, const std::string& n
     int protocol_version) throw (Exception)
 {
     if (protocol_version != ProtocolVersion) {
-        const char *msg ="Both protocols differ, you cannot connect to this server.";
-        size_t sz = strlen(msg);
-        char *p = new char[sz];
-        memcpy(p, msg, sz);
+        size_t sz;
+        char *p = create_text(ClientServer::i18n(I18N_VERSION_MISMATCH_MESSAGE), sz);
         server_events.push(ServerEvent(EventTypeAccessDenied, 0, p, sz));
     } else {
-        sprintf(buffer, "%ld", ping_time);
-        std::string msg = "connecting to " + name + ", ping = ";
-        msg += buffer;
+        std::string msg(ClientServer::i18n(I18N_CLIENT_CONNECTING_TO1, name, ping_time));
         if (secured) {
-            msg += ", needs password";
+            msg += ClientServer::i18n(I18N_CLIENT_CONNECTING_TO2);
         }
-        sprintf(buffer, " (clients: %d/%d)", cur_clients, max_clients);
-        msg += buffer;
-        size_t sz = msg.length();
-        char *p = new char[sz];
-        memcpy(p, msg.c_str(), sz);
+        msg += " " + ClientServer::i18n(I18N_CLIENT_CONNECTING_TO3, cur_clients, max_clients);;
+        size_t sz;
+        char *p = create_text(msg, sz);
         server_events.push(ServerEvent(EventTypeStatus, 0, p, sz));
     }
 }
 
 void Client::event_access_denied(MessageSequencer::RefusalReason reason) throw (Exception) {
     const char *msg = 0;
+    std::string str;
     switch (reason) {
         case MessageSequencer::RefusalReasonServerFull:
-            msg = "Login failed: server is full.";
+            str = ClientServer::i18n(I18N_SERVER_FULL);
+            msg = str.c_str();
             break;
 
         case MessageSequencer::RefusalReasonWrongPassword:
-            msg = "Login failed: wrong password.";
+            str = ClientServer::i18n(I18N_WRONG_PASSWORD);
+            msg = str.c_str();
             break;
 
         case MessageSequencer::RefusalReasonWrongProtocol:
-            msg = "Both protocols differ, you cannot connect to this server.";
+            str = ClientServer::i18n(I18N_VERSION_MISMATCH_MESSAGE);
+            msg = str.c_str();
             break;
     }
     if (msg) {
-        size_t sz = strlen(msg);
-        char *p = new char[sz];
-        memcpy(p, msg, sz);
+        size_t sz;
+        char *p = create_text(msg, sz);
         server_events.push(ServerEvent(EventTypeAccessDenied, 0, p, sz));
     }
 }
@@ -73,10 +70,8 @@ void Client::event_access_denied(MessageSequencer::RefusalReason reason) throw (
 void Client::event_login(const Connection *c, data_len_t len, void *data) throw (Exception) {
     logged_in = true;
     conn = c;
-    const char *msg = "you logged in";
-    size_t sz = strlen(msg);
-    char *p = new char[sz];
-    memcpy(p, msg, sz);
+    size_t sz;
+    char *p = create_text(ClientServer::i18n(I18N_CLIENT_LOGGED_IN), sz);
     server_events.push(ServerEvent(EventTypeLogin, c, p, sz));
 }
 
@@ -89,27 +84,8 @@ void Client::event_data(const Connection *c, data_len_t len, void *data) throw (
 }
 
 void Client::event_logout(const Connection *c, LogoutReason reason) throw (Exception) {
-    std::string msg("You logged out.");
-    switch (reason) {
-        case LogoutReasonRegular:
-            break;
-
-        case LogoutReasonPingTimeout:
-            msg += " (ping timeout)";
-            break;
-
-        case LogoutReasonTooManyResends:
-            msg += " (too many resends)";
-            break;
-
-        case LogoutReasonApplicationQuit:
-            msg += " (application layer quit)";
-            break;
-    }
-
-    size_t sz = msg.length();
-    char *p = new char[sz];
-    memcpy(p, msg.c_str(), sz);
+    size_t sz;
+    char *p = create_text(ClientServer::i18n(get_logout_text_id(reason)), sz);
     server_events.push(ServerEvent(EventTypeLogout, c, p, sz));
 }
 
@@ -164,7 +140,7 @@ void Client::sevt_data(ServerEvent& evt) {
                 int wh = 130;
                 int x = 10;
                 int y = 10;
-                GuiWindow *window = push_window(x, y, ww, wh, "Server Message");
+                GuiWindow *window = push_window(x, y, ww, wh, ClientServer::i18n(I18N_CLIENT_SERVER_MESSAGE));
 
                 Font *f = get_font();
                 int text_height = 0;
@@ -178,9 +154,10 @@ void Client::sevt_data(ServerEvent& evt) {
                     maxw = (tw > maxw ? tw : maxw);
                 }
                 int maxh = text_height + 2 * Spc;
-                int bw = 46;
                 int bh = 18;
-                create_button(window, maxw / 2 - bw / 2, maxh, bw, bh, "Okay", static_window_close_click, this);
+                std::string btn_ok(ClientServer::i18n(I18N_BUTTON_OK));
+                int bw_ok = get_font()->get_text_width(btn_ok) + 28;
+                create_button(window, maxw / 2 - bw_ok / 2, maxh, bw_ok, bh, btn_ok, static_window_close_click, this);
                 maxh += bh + Spc;
                 window->set_width(window->get_width() - window->get_client_width() + maxw);
                 window->set_height(window->get_height() - window->get_client_height() + maxh);
@@ -213,7 +190,7 @@ void Client::sevt_data(ServerEvent& evt) {
                 tournament->set_following_id(my_id);
                 tournament->set_player_configuration(&player_config);
                 tournament->set_team_names(team_red_name, team_blue_name);
-                add_text_msg("map: " + tournament->get_map().get_description());
+                add_text_msg(ClientServer::i18n(I18N_CLIENT_MAP_INFO, tournament->get_map().get_description()));
 
                 /* reopen, if join request window is already open */
                 if (me && me->joining) {
@@ -481,9 +458,17 @@ void Client::sevt_data(ServerEvent& evt) {
 
             case GPCChatMessage:
             {
-                std::string msg(reinterpret_cast<char *>(data_ptr), t->len);
-                add_text_msg(msg);
-                subsystem.play_sound(resources.get_sound("chat"), 0);
+                GChatMessage *chat_msg = reinterpret_cast<GChatMessage *>(data_ptr);
+                chat_msg->from_net();
+                for (Players::iterator it = players.begin(); it != players.end(); it++) {
+                    Player *p = *it;
+                    if (p->state.id == chat_msg->id) {
+                        std::string msg(reinterpret_cast<char *>(chat_msg->data), chat_msg->len);
+                        add_text_msg(p->get_player_name() + ": ", msg);
+                        subsystem.play_sound(resources.get_sound("chat"), 0);
+                        break;
+                    }
+                }
                 break;
             }
 
@@ -573,7 +558,7 @@ void Client::sevt_data(ServerEvent& evt) {
             {
                 if (tournament) {
                     tournament->join_refused();
-                    add_text_msg("YOUR JOIN REQUEST WAS REFUSED");
+                    add_text_msg(ClientServer::i18n(I18N_CLIENT_JOIN_REFUSED));
                     subsystem.play_sound(resources.get_sound("error"), 0);
                 }
                 break;
@@ -606,7 +591,7 @@ void Client::sevt_data(ServerEvent& evt) {
                 if (tournament) {
                     if (tournament->friendly_fire_alarm(alarm)) {
                         subsystem.play_controlled_sound(resources.get_sound("friendly_fire"), 0);
-                        add_text_msg("FRIENDLY FIRE: WATCH OUT!!!");
+                        add_text_msg(ClientServer::i18n(I18N_CLIENT_FRIENDLY_FIRE));
                     }
                 }
                 break;
@@ -616,7 +601,7 @@ void Client::sevt_data(ServerEvent& evt) {
             {
                 if (tournament) {
                     subsystem.play_controlled_sound(resources.get_sound("unbalanced"), 0);
-                    add_text_msg("GAMEPLAY IS UNBALANCED");
+                    add_text_msg(ClientServer::i18n(I18N_CLIENT_UNBALANCED));
                 }
                 break;
             }
@@ -625,7 +610,7 @@ void Client::sevt_data(ServerEvent& evt) {
             {
                 if (tournament) {
                     subsystem.play_system_sound(resources.get_sound("warm_up"));
-                    add_text_msg("please warm up");
+                    add_text_msg(ClientServer::i18n(I18N_CLIENT_WARMUP));
                 }
                 break;
             }
@@ -634,7 +619,7 @@ void Client::sevt_data(ServerEvent& evt) {
             {
                 if (tournament) {
                     subsystem.play_system_sound(resources.get_sound("ready"));
-                    add_text_msg("game begins");
+                    add_text_msg(ClientServer::i18n(I18N_CLIENT_GAME_BEGINS));
                 }
                 break;
             }
@@ -643,7 +628,7 @@ void Client::sevt_data(ServerEvent& evt) {
             {
                 if (tournament) {
                     subsystem.play_system_sound(resources.get_sound("game_over"));
-                    add_text_msg("GAME IS OVER");
+                    add_text_msg(ClientServer::i18n(I18N_CLIENT_GAME_OVER));
                 }
                 update_options_window();
                 break;
@@ -665,13 +650,13 @@ void Client::sevt_data(ServerEvent& evt) {
                         if (old_name != new_name) {
                             p->set_player_name(new_name);
                             p->font = 0;
-                            add_text_msg(old_name + " is now known as " + new_name);
+                            add_text_msg(ClientServer::i18n(I18N_CLIENT_RENAME, old_name, new_name));
                         }
 
                         /* change skin */
                         if (old_skin != new_skin) {
                             p->set_characterset(new_skin);
-                            add_text_msg(p->get_player_name() + " changed the skin to " + p->get_characterset_name());
+                            add_text_msg(ClientServer::i18n(I18N_CLIENT_SKIN_CHANGE, p->get_player_name(), p->get_characterset_name()));
                         }
                         break;
                     }
@@ -711,10 +696,10 @@ void Client::sevt_data(ServerEvent& evt) {
                     if (fhnd) {
                         total_xfer_sz = remaining_xfer_sz = header->filesize;
                     } else {
-                        subsystem << "WARNING: cannot open file " << strerror(errno) << std::endl;
+                        subsystem << ClientServer::i18n(I18N_XFER_OPEN_FAILED, strerror(errno)) << std::endl;
                     }
                 } else {
-                    subsystem << "WARNING: cannot receive " << xfer_filename << ". a file is already opened." << std::endl;
+                    subsystem << ClientServer::i18n(I18N_XFER_ALREADY_OPEN, xfer_filename) << std::endl;
                 }
                 break;
             }
@@ -779,6 +764,30 @@ void Client::sevt_data(ServerEvent& evt) {
                         }
                     }
                 }
+                break;
+            }
+
+            case GPCI18NText:
+            {
+                GI18NText *i18ntext = reinterpret_cast<GI18NText *>(data_ptr);
+                i18ntext->from_net();
+                std::string txt(ClientServer::i18n(static_cast<I18NText>(i18ntext->id)));
+                if (i18ntext->len) {
+                    std::string parms(reinterpret_cast<char *>(i18ntext->data));
+                    std::string::size_type start_pos = 0;
+                    bool again = true;
+                    int idx = 1;
+                    do {
+                        std::string::size_type find_pos = parms.find('\t', start_pos);
+                        if (find_pos == std::string::npos) {
+                            find_pos = parms.length();
+                            again = false;
+                        }
+                        ClientServer::i18n.replace(txt, idx++, parms.substr(start_pos, find_pos - start_pos));
+                        start_pos += find_pos + 1;
+                    } while (again);
+                }
+                add_text_msg(txt);
                 break;
             }
         }

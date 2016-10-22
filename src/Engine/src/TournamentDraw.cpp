@@ -344,7 +344,7 @@ void Tournament::draw_hud() {
 
     /* spectacting */
     if (p->state.server_state.flags & PlayerServerFlagSpectating) {
-        std::string sptxt("SPECTATING");
+        std::string sptxt(i18n(I18N_TNMT_SPECTATING));
         int tw = fnt->get_text_width(sptxt);
         int x = view_width - time_width - tw - 10;
         int y = view_height - fnt->get_font_height();
@@ -354,7 +354,7 @@ void Tournament::draw_hud() {
     /* warmup */
     if (warmup) {
         if (gui && gui->get_blink_on()) {
-            std::string txt("WARM UP");
+            std::string txt(i18n(I18N_TNMT_WARMUP));
             int tw = fnt->get_text_width(txt);
             int x = view_width / 2 - tw / 2;
             int y = 50;

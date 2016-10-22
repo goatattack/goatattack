@@ -38,7 +38,7 @@ template <class T> static bool erase_element(T *elem) {
 Client::Client(Resources& resources, Subsystem& subsystem, hostaddr_t host,
     hostport_t port, Configuration& config, const std::string& password)
     throw (Exception)
-    : ClientServer(host, port),
+    : ClientServer(subsystem.get_i18n(), host, port),
       Gui(resources, subsystem, resources.get_font("normal")),
       OptionsMenu(*this, resources, subsystem, config, this),
       resources(resources), subsystem(subsystem), player_config(config),
@@ -53,7 +53,7 @@ Client::Client(Resources& resources, Subsystem& subsystem, hostaddr_t host,
 
     /* start data receiver thread */
     if (!thread_start()) {
-        throw ClientException("Starting client thread failed.");
+        throw ClientException(ClientServer::i18n(I18N_THREAD_FAILED));
     }
 
     /* login */
@@ -280,8 +280,15 @@ void Client::idle() throw (Exception) {
             alpha = static_cast<float>((text_message_duration - cmsg->duration) / (text_message_duration - text_message_fade_out_at));
         }
 
-        subsystem.set_color(0.75f, 0.75f, 1.0f, alpha);
-        subsystem.draw_text(font, 5, y, cmsg->text);
+        int x = 5;
+        if (cmsg->player.length()) {
+            subsystem.set_color(0.5f, 1.0f, 0.5f, alpha);
+            x = subsystem.draw_text(font, x, y, cmsg->player);
+            subsystem.set_color(1.0f, 1.0f, 1.0f, alpha);
+        } else {
+            subsystem.set_color(0.75f, 0.75f, 1.0f, alpha);
+        }
+        subsystem.draw_text(font, x, y, cmsg->text);
         alpha *= 0.9f;
         y -= font_height;
     }
@@ -291,9 +298,9 @@ void Client::idle() throw (Exception) {
     if (fhnd) {
         Font *big = resources.get_font("big");
         int percent = 100 - static_cast<int>(100.0f / static_cast<float>(total_xfer_sz) * remaining_xfer_sz);
-        sprintf(buffer, "transferring %s (%d%%)", xfer_filename.c_str(), percent);
-        int tw = big->get_text_width(buffer);
-        subsystem.draw_text(big, subsystem.get_view_width() / 2 - tw / 2, view_height - 30, buffer);
+        std::string txt(ClientServer::i18n(I18N_CLIENT_TRANSFER, xfer_filename.c_str(), percent));
+        int tw = big->get_text_width(txt);
+        subsystem.draw_text(big, subsystem.get_view_width() / 2 - tw / 2, view_height - 30, txt);
     }
 }
 
@@ -316,7 +323,7 @@ void Client::set_key(MappedKey::Device dev, int param) {
                 int vh = subsystem.get_view_height();
                 int ww = 350;
                 int wh = 30;
-                GuiWindow *window = push_window(1, 1, ww, wh, "Enter Message");
+                GuiWindow *window = push_window(1, 1, ww, wh, ClientServer::i18n(I18N_CLIENT_ENTER_MSG));
                 window->set_on_keydown(static_window_keydown, this);
                 window->set_on_joybuttondown(static_window_joybutton_down, this);
                 ww = window->get_client_width();

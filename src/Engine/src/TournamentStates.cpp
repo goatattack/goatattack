@@ -63,9 +63,9 @@ void Tournament::integrate(ns_t ns) {
                     if (!warmup) {
                         add_state_response(GPCGameOver, 0, 0);
                         if (logger) {
-                            logger->log(ServerLogger::LogTypeGameOver, "game over");
+                            logger->log(ServerLogger::LogTypeGameOver, i18n(I18N_TNMT_STATS_OVER));
                             write_stats_in_server_log();
-                            logger->log(ServerLogger::LogTypeEndOfStats, "end of stats");
+                            logger->log(ServerLogger::LogTypeEndOfStats, i18n(I18N_TNMT_STATS_END));
                         }
                     }
                 }
@@ -647,10 +647,9 @@ void Tournament::integrate(ns_t ns) {
             /* fell off the screen */
             if (server) {
                 if (newy - 100 > map_height * tile_height) {
-                    std::string msg(p->get_player_name() + " fell off the stage");
-                    player_dies(p, msg);
+                    player_dies(p, I18N_TNMT_PLAYER_FELL_OFF, p->get_player_name().c_str());
                     if (logger) {
-                        logger->log(ServerLogger::LogTypeKill, msg, p, p, "void");
+                        logger->log(ServerLogger::LogTypeKill, i18n(I18N_TNMT_PLAYER_FELL_OFF, p->get_player_name().c_str()), p, p, "void");
                     }
                 }
             }
@@ -875,10 +874,9 @@ bool Tournament::tile_collision(TestType type, Player *p,
             if (killing) *killing = true;
             if (server && p && p->is_alive_and_playing()) {
                 p->state.server_state.score--;
-                std::string msg(p->get_player_name() + " committed suicide");
-                player_dies(p, msg);
+                player_dies(p, I18N_TNMT_PLAYER_SUICIDE, p->get_player_name().c_str());
                 if (logger) {
-                    logger->log(ServerLogger::LogTypeKill, msg, p, p, "tile");
+                    logger->log(ServerLogger::LogTypeKill, i18n(I18N_TNMT_PLAYER_SUICIDE, p->get_player_name().c_str()), p, p, "tile");
                 }
             }
             break;

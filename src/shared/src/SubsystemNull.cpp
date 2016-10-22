@@ -100,7 +100,9 @@ void SubsystemNull::draw_tilegraphic(TileGraphic *tilegraphic, int index, int x,
 
 void SubsystemNull::draw_box(int x, int y, int width, int height) { }
 
-void SubsystemNull::draw_text(Font *font, int x, int y, const std::string& text) { }
+int SubsystemNull::draw_text(Font *font, int x, int y, const std::string& text) {
+    return 0;
+}
 
 int SubsystemNull::draw_char(Font *font, int x, int y, unsigned char c) {
     return x;

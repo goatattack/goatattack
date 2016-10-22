@@ -955,7 +955,7 @@ void MainMenu::close_window_click() {
 bool MainMenu::create_server_locators() throw (Exception) {
     destroy_server_locators();
     try {
-        lan_broadcaster = new LANBroadcaster(config.get_int("server_port"));
+        lan_broadcaster = new LANBroadcaster(i18n, config.get_int("server_port"));
     } catch (const Exception& e) {
         destroy_server_locators();
         show_messagebox(MessageBoxIconError, i18n(I18N_ERROR_TITLE), e.what());
@@ -963,7 +963,7 @@ bool MainMenu::create_server_locators() throw (Exception) {
     }
 
     try {
-        master_query = new MasterQuery(config.get_string("master_server"), config.get_int("master_port"));
+        master_query = new MasterQuery(i18n, config.get_string("master_server"), config.get_int("master_port"));
     } catch (const Exception& e) {
         destroy_server_locators();
         show_messagebox(MessageBoxIconError, i18n(I18N_ERROR_TITLE), e.what());

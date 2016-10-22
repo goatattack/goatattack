@@ -18,5 +18,5 @@
 #include "I18N.hpp"
 
 const I18N::Text I18N::all_texts_french[] = {
-    { 0, 0 }
+    { I18N_NONE, 0 }
 };

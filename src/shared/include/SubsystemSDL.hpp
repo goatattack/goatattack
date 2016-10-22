@@ -67,7 +67,7 @@ public:
     virtual void draw_tilegraphic(TileGraphic *tilegraphic, int x, int y);
     virtual void draw_tilegraphic(TileGraphic *tilegraphic, int index, int x, int y);
     virtual void draw_box(int x, int y, int width, int height);
-    virtual void draw_text(Font *font, int x, int y, const std::string& text);
+    virtual int draw_text(Font *font, int x, int y, const std::string& text);
     virtual int draw_char(Font *font, int x, int y, unsigned char c);
     virtual void draw_icon(Icon *icon, int x, int y);
 

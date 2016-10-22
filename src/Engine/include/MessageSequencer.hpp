@@ -21,6 +21,7 @@
 #include "Protocol.hpp"
 #include "UDPSocket.hpp"
 #include "Exception.hpp"
+#include "I18N.hpp"
 
 #include <deque>
 #include <vector>
@@ -125,8 +126,8 @@ public:
         RefusalReasonWrongProtocol
     };
 
-    MessageSequencer(hostport_t port, pico_size_t num_heaps, const std::string& name, const std::string& password) throw (Exception);
-    MessageSequencer(hostaddr_t server_host, hostport_t server_port) throw (Exception);
+    MessageSequencer(I18N& i18n, hostport_t port, pico_size_t num_heaps, const std::string& name, const std::string& password) throw (Exception);
+    MessageSequencer(I18N& i18n, hostaddr_t server_host, hostport_t server_port) throw (Exception);
     virtual ~MessageSequencer();
 
     void login(const std::string& password, data_len_t len, const void *data) throw (Exception);
@@ -151,6 +152,9 @@ public:
     virtual void event_login(const Connection *c, data_len_t len, void *data) throw (Exception) { }
     virtual void event_data(const Connection *c, data_len_t len, void *data) throw (Exception) { }
     virtual void event_logout(const Connection *c, LogoutReason reason) throw (Exception) { }
+
+protected:
+    I18N& i18n;
 
 private:
     typedef std::vector<SequencerHeap *> SequencerHeaps;

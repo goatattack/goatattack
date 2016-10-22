@@ -47,18 +47,18 @@ ScopeHeapMarker::~ScopeHeapMarker() {
     heap.processing = false;
 }
 
-MessageSequencer::MessageSequencer(hostport_t port, pico_size_t max_heaps,
+MessageSequencer::MessageSequencer(I18N& i18n, hostport_t port, pico_size_t max_heaps,
     const std::string& name, const std::string& password) throw (Exception)
-    : max_heaps(max_heaps), is_client(false), name(name), password(password), socket(port),
+    : i18n(i18n), max_heaps(max_heaps), is_client(false), name(name), password(password), socket(port),
       pmsg(reinterpret_cast<NetMessage *>(buffer)),
       pdata(reinterpret_cast<NetMessageData *>(pmsg->data))
 {
     memset(buffer, 0, sizeof buffer);
 }
 
-MessageSequencer::MessageSequencer(hostaddr_t server_host, hostport_t server_port)
+MessageSequencer::MessageSequencer(I18N& i18n, hostaddr_t server_host, hostport_t server_port)
     throw (Exception)
-    : max_heaps(1), is_client(true), name(), password(), socket(),
+    : i18n(i18n), max_heaps(1), is_client(true), name(), password(), socket(),
       pmsg(reinterpret_cast<NetMessage *>(buffer)),
       pdata(reinterpret_cast<NetMessageData *>(pmsg->data))
 {
@@ -190,7 +190,8 @@ bool MessageSequencer::cycle() throw (Exception) {
                 stat->from_net();
                 ms_t ping_time = diff_ms(stat->ping, touch);
                 bool secured = ((stat->flags & ServerStatusFlagNeedPassword) != 0);
-                const char *payload = "---[ server too old ]---";
+                std::string too_old(i18n(I18N_SERVER_TOO_OLD));
+                const char *payload = too_old.c_str();
                 if (stat->protocol_version >= NewStatusProtocolVersion) {
                     stat->name[stat->len] = 0;
                     payload = reinterpret_cast<const char *>(stat->name);
@@ -349,9 +350,7 @@ void MessageSequencer::new_settings(hostport_t port, pico_size_t num_heaps,
 {
     int current = static_cast<int>(heaps.size());
     if (current >= num_heaps) {
-        char temp_buffer[256];
-        sprintf(temp_buffer, "Cannot set num_heaps to %d, %d are logged in", num_heaps, current);
-        throw MessageSequencerException(temp_buffer);
+        throw MessageSequencerException(i18n(I18N_HEAP_CHANGE_ERROR, num_heaps, current));
     }
     this->name = name;
     this->password = password;

@@ -32,30 +32,27 @@ public:
         LanguageFrench
     };
 
-    typedef unsigned int id_t;
+    I18N();
+    I18N(Language language);
 
-    I18N() throw ();
-    I18N(Language language) throw ();
-
-    std::string operator()(id_t id) {
+    std::string operator()(I18NText id) {
         return get_text(id);
     }
 
-    template<typename T1> std::string operator()(id_t id, const T1& p1) {
+    template<typename T1> std::string operator()(I18NText id, const T1& p1) const {
         std::string s(get_text(id));
         replace(s, "${1}", 4, p1);
         return s;
     }
 
-
-    template<typename T1, typename T2> std::string operator()(id_t id, const T1& p1, const T2& p2) {
+    template<typename T1, typename T2> std::string operator()(I18NText id, const T1& p1, const T2& p2) const {
         std::string s(get_text(id));
         replace(s, "${1}", 4, p1);
         replace(s, "${2}", 4, p2);
         return s;
     }
 
-    template<typename T1, typename T2, typename T3> std::string operator()(id_t id, const T1& p1, const T2& p2, const T3& p3) {
+    template<typename T1, typename T2, typename T3> std::string operator()(I18NText id, const T1& p1, const T2& p2, const T3& p3) const {
         std::string s(get_text(id));
         replace(s, "${1}", 4, p1);
         replace(s, "${2}", 4, p2);
@@ -63,13 +60,19 @@ public:
         return s;
     }
 
+    template<typename T> void replace(std::string& s, int idx, const T& p) {
+        char buffer[16];
+        sprintf(buffer, "${%d}", idx);
+        replace(s, buffer, 4, p);
+    }
+
 private:
     Language language;
 
-    typedef std::map<id_t, const char*> TextMap;
+    typedef std::map<I18NText, const char*> TextMap;
 
     struct Text {
-        id_t id;
+        I18NText id;
         const char *text;
     };
 
@@ -80,12 +83,12 @@ private:
     TextMap texts;
 
     void init();
-    const char *get_text(id_t id) const;
-
-    void replace(std::string& s, const char *w, size_t wl, const char *p);
-    void replace(std::string& s, const char *w, size_t wl, const std::string& p);
-    void replace(std::string& s, const char *w, size_t wl, int p);
-    void replace(std::string& s, const char *w, size_t wl, double p);
+    const char *get_text(I18NText id) const;
+    void replace(std::string& s, const char *w, size_t wl, const char *p) const;
+    void replace(std::string& s, const char *w, size_t wl, const std::string& p) const;
+    void replace(std::string& s, const char *w, size_t wl, int p) const;
+    void replace(std::string& s, const char *w, size_t wl, long p) const;
+    void replace(std::string& s, const char *w, size_t wl, double p) const;
 };
 
 #endif

@@ -35,23 +35,20 @@ void MapEditor::calculate_light(bool pixel_precise) {
     if (wmap) {
         EditableMap::Lights& lights = wmap->get_light_sources();
         if (!lights.size()) {
-            show_messagebox(Gui::MessageBoxIconExclamation, "Light Sources",
-                "No light sources found in this map.");
+            show_messagebox(Gui::MessageBoxIconExclamation, i18n(I18N_ME_LIGHT_SRC), i18n(I18N_ME_NO_LIGHT_SRC));
             return;
         }
 
         /* name set? */
         if (!wmap->get_name().length()) {
-            show_messagebox(Gui::MessageBoxIconExclamation, "No Map Name",
-                "Please choose a map name in the map properties.");
+            show_messagebox(Gui::MessageBoxIconExclamation, i18n(I18N_ME_MAP_NAME), i18n(I18N_ME_NO_MAP_NAME));
             return;
         }
 
         /* trace all points */
         Tileset *ts = wmap->get_tileset_ptr();
         if (!ts) {
-            show_messagebox(Gui::MessageBoxIconExclamation, "No Tileset",
-                "Please select a tileset in the map properties.");
+            show_messagebox(Gui::MessageBoxIconExclamation, i18n(I18N_ME_NO_TILESET1), i18n(I18N_ME_NO_TILESET2));
             return;
         }
 
@@ -59,10 +56,9 @@ void MapEditor::calculate_light(bool pixel_precise) {
         int vh = subsystem.get_view_height();
         int ww = 127;
         int wh = 80; //60;
-        win_compile = push_window(vw / 2 - ww / 2, vh / 2 - wh / 2, ww, wh, "Compiling");
+        win_compile = push_window(vw / 2 - ww / 2, vh / 2 - wh / 2, ww, wh, i18n(I18N_ME_COMPILING2));
         lbl_compile = create_label(win_compile, Spc, Spc, "0%");
-        GuiButton *btn = add_close_button(win_compile, static_cancel_compilation_click);
-        btn->set_caption("Cancel");
+        add_close_button(win_compile, static_cancel_compilation_click, i18n(I18N_BUTTON_CANCEL).c_str());
 
         int mw = wmap->get_width();
         int mh = wmap->get_height();
@@ -151,8 +147,8 @@ void MapEditor::finalise_lightmap() {
 
         FILE *f = fopen(filename.c_str(), "wb");
         if (!f) {
-            show_messagebox(Gui::MessageBoxIconError, "Light Map",
-                "Saving failed: " + std::string(strerror(errno)));
+            show_messagebox(Gui::MessageBoxIconError, i18n(I18N_ME_LIGHT_MAP),
+                i18n(I18N_ME_SAVING_FAILED, std::string(strerror(errno))));
             return;
         }
 

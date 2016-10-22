@@ -39,22 +39,18 @@ const char *TournamentTDM::tournament_type() {
 void TournamentTDM::team_fire_point(Player *penem, Team team, int points) {
     if (team == TeamRed) {
         score.score_red += points;
-        std::string msg(team_red_name + " scores");
-        add_msg_response(msg.c_str());
+        add_i18n_response(I18N_TNMT_TEAM_RED_SCORED1);
         if (logger) {
-            logger->log(ServerLogger::LogTypeTeamRedScored, msg, penem);
+            logger->log(ServerLogger::LogTypeTeamRedScored, i18n(I18N_TNMT_TEAM_RED_SCORED1), penem);
         }
-        std::string team_name = uppercase(team_red_name);
-        add_team_score_animation(penem, team_name + " SCORES");
+        add_team_score_animation(penem, I18N_TNMT_TEAM_RED_SCORED2);
     } else {
         score.score_blue += points;
-        std::string msg(team_blue_name + " scores");
-        add_msg_response(msg.c_str());
+        add_i18n_response(I18N_TNMT_TEAM_BLUE_SCORED1);
         if (logger) {
-            logger->log(ServerLogger::LogTypeTeamBlueScored, msg, penem);
+            logger->log(ServerLogger::LogTypeTeamBlueScored, i18n(I18N_TNMT_TEAM_BLUE_SCORED1), penem);
         }
-        std::string team_name = uppercase(team_blue_name);
-        add_team_score_animation(penem, team_name + " SCORES");
+        add_team_score_animation(penem, I18N_TNMT_TEAM_BLUE_SCORED2);
     }
     send_team_score();
 }
