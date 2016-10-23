@@ -29,7 +29,8 @@ public:
     enum Language {
         LanguageEnglish,
         LanguageGerman,
-        LanguageFrench
+        LanguageFrench,
+        LanguagePortuguese
     };
 
     I18N();
@@ -79,6 +80,7 @@ private:
     static const Text all_texts_english[];
     static const Text all_texts_german[];
     static const Text all_texts_french[];
+    static const Text all_texts_portuguese[];
 
     TextMap texts;
 

@@ -31,8 +31,8 @@ const I18N::Text I18N::all_texts_german[] = {
     { I18N_TILETYPE03, "nur fallend blockierend" },
     { I18N_TILETYPE04, "Rote Basis" },
     { I18N_TILETYPE05, "Blaue Basis" },
-    { I18N_TILETYPE06, "Tödlich" },
-    { I18N_TILETYPE07, "Springen, nicht durchfallbar" },
+    { I18N_TILETYPE06, "tödlich" },
+    { I18N_TILETYPE07, "springen, nicht durchfallbar" },
     { I18N_TILETYPE08, "Speed Race Ende" },
     { I18N_TILETYPE09, "Hill Zone" },
 
@@ -256,7 +256,7 @@ const I18N::Text I18N::all_texts_german[] = {
     { I18N_TNMT_LOGOUT_MSG12, "" },
 
     { I18N_VERSION_MISMATCH_TITLE, "Versionsfehler" },
-    { I18N_VERSION_MISMATCH_MESSAGE, "Die beiden Protokoll passen nicht. Du kannst nicht zu diesem Server verbinden." },
+    { I18N_VERSION_MISMATCH_MESSAGE, "Die beiden Protokolle passen nicht. Du kannst nicht zu diesem Server verbinden." },
     { I18N_SERVER_TITLE, "Server" },
     { I18N_SELECT_SERVER, "Bitte einen Server auswählen." },
     { I18N_ERROR_TITLE, "Fehler" },

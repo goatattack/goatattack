@@ -40,6 +40,10 @@ void I18N::init() {
         case LanguageFrench:
             current_language = all_texts_french;
             break;
+
+        case LanguagePortuguese:
+            current_language = all_texts_portuguese;
+            break;
     }
 
     if (current_language) {

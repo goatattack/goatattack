@@ -242,5 +242,6 @@
     <File Name="../../src/shared/i18n/I18NEnglish.cpp"/>
     <File Name="../../src/shared/i18n/I18NFrench.cpp"/>
     <File Name="../../src/shared/i18n/I18NGerman.cpp"/>
+    <File Name="../../src/shared/i18n/I18NPortuguese.cpp"/>
   </VirtualDirectory>
 </CodeLite_Project>
