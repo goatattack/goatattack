@@ -29,9 +29,8 @@
 Game::Game(Resources& resources, Subsystem& subsystem, Configuration& config)
     : resources(resources), subsystem(subsystem), config(config)
 {
-    subsystem << "working with " << subsystem.get_subsystem_name() << std::endl;
-    subsystem << "mode is " << (subsystem.is_dedicated_server() ?
-        "dedicated server" : "normal game") << std::endl;
+    subsystem << subsystem.get_i18n()(I18N_SUBSYSTEM, subsystem.get_subsystem_name()) << std::endl;
+    subsystem << subsystem.get_i18n()(subsystem.is_dedicated_server() ? I18N_MODE_IS_DEDICATED : I18N_MODE_IS_NORMAL) << std::endl;
 }
 
 Game::~Game() { }

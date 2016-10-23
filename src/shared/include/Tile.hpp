@@ -19,6 +19,7 @@
 #define _TILE_HPP_
 
 #include "TileGraphic.hpp"
+#include "I18N.hpp"
 
 #include <stdint.h>
 
@@ -30,7 +31,7 @@ private:
     Tile& operator=(const Tile&);
 
 public:
-    static const char *TypeDescription[];
+    static const I18NText TypeDescription[];
 
     enum TileType {
         TileTypeNonblocking = 0,

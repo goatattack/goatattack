@@ -31,6 +31,7 @@
 
 #include <cstring>
 #include <algorithm>
+#include <clocale>
 #ifdef __unix__
 #include <SDL2/SDL_opengl.h>
 #ifdef __APPLE__
@@ -44,7 +45,7 @@
 #endif
 
 static const int ViewWidth = 640;
-static const int ViewHeight = 340; // 340
+static const int ViewHeight = 340;
 static const int WindowedZoomFactor = 2;
 static const int DefaultOpenGLMajor = 3;
 static const int DefaultOpenGLMinor = 1;
@@ -187,10 +188,15 @@ SubsystemSDL::SubsystemSDL(std::ostream& stream, I18N& i18n, const std::string& 
       shading_pipeline(shading_pipeline && EnableShadingPipeline),
       draw_quad(this->shading_pipeline ? &SubsystemSDL::draw_vbo : &SubsystemSDL::draw_immediate)
 {
-    stream << "starting SubsystemSDL" << std::endl;
+    stream << i18n(I18N_SSSDL_START) << std::endl;
+
+    /* set locale to system default for proper mbstowcs() */
+#ifndef _WIN32
+    setlocale(LC_ALL, "");
+#endif
 
     /* init SDL */
-    stream << "initializing SDL" << std::endl;
+    stream << i18n(I18N_SSSDL_INIT) << std::endl;
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER)) {
         throw SubsystemException(SDL_GetError());
     }
@@ -203,8 +209,7 @@ SubsystemSDL::SubsystemSDL(std::ostream& stream, I18N& i18n, const std::string& 
     /* get native desktop size */
     SDL_DisplayMode display;
     if (SDL_GetCurrentDisplayMode(0, &display) < 0) {
-        throw SubsystemException("Could not query main desktop size: " +
-            std::string(SDL_GetError()));
+        throw SubsystemException(i18n(I18N_SSSDL_SIZE_QUERY, std::string(SDL_GetError())));
     }
     native_width = display.w;
     native_height = display.h;
@@ -228,7 +233,7 @@ SubsystemSDL::SubsystemSDL(std::ostream& stream, I18N& i18n, const std::string& 
     box_height_factor = 2.0f / static_cast<float>(box_height);
 
     /* create window */
-    stream << "creating SDL window" << std::endl;
+    stream << i18n(I18N_SSSDL_WINDOW) << std::endl;
     window = SDL_CreateWindow(
         window_title.c_str(),
         SDL_WINDOWPOS_UNDEFINED,
@@ -237,8 +242,7 @@ SubsystemSDL::SubsystemSDL(std::ostream& stream, I18N& i18n, const std::string& 
         current_height,
         SDL_WINDOW_OPENGL);
     if (!window) {
-        throw SubsystemException("Could not create window: " +
-            std::string(SDL_GetError()));
+        throw SubsystemException(i18n(I18N_SSSDL_WINDOW_FAILED, std::string(SDL_GetError())));
     }
     SDL_ShowCursor(SDL_DISABLE);
 
@@ -249,7 +253,7 @@ SubsystemSDL::SubsystemSDL(std::ostream& stream, I18N& i18n, const std::string& 
     grab_joysticks();
 
     /* initialize OpenGL */
-    stream << "creating OpenGL context" << std::endl;
+    stream << i18n(I18N_SSSDL_OPENGL) << std::endl;
     glcontext = SDL_GL_CreateContext(window);
     if (SDL_GL_SetSwapInterval(-1) < 0) {
         SDL_GL_SetSwapInterval(1);
@@ -258,12 +262,10 @@ SubsystemSDL::SubsystemSDL(std::ostream& stream, I18N& i18n, const std::string& 
 
     /* init audio */
     if (!(Mix_Init(MIX_INIT_OGG | MIX_INIT_MP3) & MIX_INIT_OGG)) {
-        throw SubsystemException("Could not initialize mixer: " +
-            std::string(Mix_GetError()));
+        throw SubsystemException(i18n(I18N_SSSDL_MIXER_FAILED, std::string(Mix_GetError())));
     }
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) == -1) {
-        throw SubsystemException("Could not open audio: " +
-            std::string(Mix_GetError()));
+        throw SubsystemException(i18n(I18N_SSSDL_AUDIO_FAILED, std::string(Mix_GetError())));
     }
     Mix_ChannelFinished(channel_done);
     Mix_ReserveChannels(1);
@@ -272,7 +274,7 @@ SubsystemSDL::SubsystemSDL(std::ostream& stream, I18N& i18n, const std::string& 
 }
 
 SubsystemSDL::~SubsystemSDL() {
-    stream << "cleaning SubsystemSDL" << std::endl;
+    stream << i18n(I18N_SSSDL_UNINIT) << std::endl;
 
 #ifdef __APPLE__
     if (is_fullscreen()) {
@@ -296,7 +298,7 @@ SubsystemSDL::~SubsystemSDL() {
 void SubsystemSDL::initialize(Resources& resources) {
 #ifndef _WIN32
     if (shading_pipeline) {
-        stream << "using shading pipeline" << std::endl;
+        stream << i18n(I18N_SSSDL_SHADING_PIPELINE) << std::endl;
         /* setup dynamic vao and vbo */
         glGenVertexArrays(1, &vao);
         glGenBuffers(1, &vbo);
@@ -346,7 +348,7 @@ int SubsystemSDL::get_zoom_factor() const {
 void SubsystemSDL::toggle_fullscreen() {
     int flag = 0;
 
-    stream << "toggling fullscreen" << std::endl;
+    stream << i18n(I18N_SSSDL_FULLSCREEN) << std::endl;
     fullscreen = !fullscreen;
 
     if (!fullscreen) {
@@ -931,7 +933,7 @@ int SubsystemSDL::get_view_height() {
 }
 
 void SubsystemSDL::init_gl(int width, int height) {
-    stream << "initializing OpenGL" << std::endl;
+    stream << i18n(I18N_SSSDL_OPENGL_INIT) << std::endl;
     /* init gl scene */
     glViewport(0, 0, width, height);
 

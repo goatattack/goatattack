@@ -85,6 +85,9 @@ public:
     virtual int get_arena_height();
     virtual int get_view_width();
     virtual int get_view_height();
+
+private:
+    I18N& i18n;
 };
 
 #endif

@@ -21,13 +21,13 @@
 #include "ShaderNull.hpp"
 
 SubsystemNull::SubsystemNull(std::ostream& stream, I18N& i18n, const std::string& window_title) throw (SubsystemException)
-    : Subsystem(stream, i18n, window_title)
+    : Subsystem(stream, i18n, window_title), i18n(i18n)
 {
-    stream << "starting SubsystemNull" << std::endl;
+    stream << i18n(I18N_SSNULL_START) << std::endl;
 }
 
 SubsystemNull::~SubsystemNull() {
-    stream << "cleaning SubsystemNull" << std::endl;
+    stream << i18n(I18N_SSNULL_UNINIT) << std::endl;
 }
 
 void SubsystemNull::initialize(Resources& resources) { }

@@ -37,9 +37,7 @@ int main(int argc, char *argv[]) {
     std::ostream& stream = std::cout;
     const char *parm = (argc > 1 ? argv[1] : 0);
 
-    stream << "welcome to goat attack ";
-    stream << GameVersion;
-    stream << "...\n" << std::endl;
+    stream << "Goat Attack " << GameVersion << std::endl;
 
     init_hpet();
     start_net();
@@ -48,9 +46,9 @@ int main(int argc, char *argv[]) {
         I18N i18n(static_cast<I18N::Language>(config.get_int("language")));
 
 #ifdef DEDICATED_SERVER
-        SubsystemNull subsystem(stream, i18n, "Goat Attack");
+        SubsystemNull subsystem(stream, i18n, i18n(I18N_WINTITLE_GAME));
 #else
-        SubsystemSDL subsystem(stream, i18n, "Goat Attack", config.get_bool("shading_pipeline"));
+        SubsystemSDL subsystem(stream, i18n, i18n(I18N_WINTITLE_GAME), config.get_bool("shading_pipeline"));
 #endif
 
 #ifdef __APPLE__

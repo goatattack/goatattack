@@ -132,6 +132,7 @@ public:
 
 private:
     Subsystem& subsystem;
+    I18N& i18n;
     std::string resource_directory;
     bool skip_maps;
     bool paks_only;
