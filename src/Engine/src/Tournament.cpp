@@ -853,7 +853,7 @@ void Tournament::set_friendly_fire_alarm(bool state) {
 }
 
 char *Tournament::create_i18n_response(I18NText id, size_t& sz, const char *addon) {
-    sz = (addon ? strlen(addon) + 1 : 0);
+    sz = (addon ? strlen(addon) : 0);
     char *p = new char[GI18NTextLen + sz];
     GI18NText *t = reinterpret_cast<GI18NText *>(p);
     t->id = static_cast<identifier_t>(id);

@@ -57,7 +57,7 @@ const I18N::Text I18N::all_texts_german[] = {
     { I18N_MAINMENU_GM_CTC, "Catch The Coin" },
     { I18N_MAINMENU_GM_GOH, "Goat Of The Hill" },
     { I18N_MAINMENU_MAX_PLAYERS, "Max. Spieler:" },
-    { I18N_MAINMENU_WARMUP, "Einlaufzeit:" },
+    { I18N_MAINMENU_WARMUP, "Aufwärmzeit:" },
     { I18N_MAINMENU_DURATION, "Spieldauer:" },
     { I18N_MAINMENU_IN_SECONDS, "(in Sekunden)" },
     { I18N_MAINMENU_IN_MINUTES, "(in Minuten)" },

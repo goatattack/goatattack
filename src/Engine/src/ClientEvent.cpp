@@ -773,7 +773,7 @@ void Client::sevt_data(ServerEvent& evt) {
                 i18ntext->from_net();
                 std::string txt(ClientServer::i18n(static_cast<I18NText>(i18ntext->id)));
                 if (i18ntext->len) {
-                    std::string parms(reinterpret_cast<char *>(i18ntext->data));
+                    std::string parms(reinterpret_cast<char *>(i18ntext->data), i18ntext->len);
                     std::string::size_type start_pos = 0;
                     bool again = true;
                     int idx = 1;

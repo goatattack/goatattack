@@ -40,9 +40,9 @@ void OptionsMenu::show_options(bool force_game_over, int x, int y) {
         options_visible = true;
         int vw = subsystem.get_view_width();
         int vh = subsystem.get_view_height();
-        int ww = 213;
+        int ww = 233;
         int wh = 165;
-        int bw = 140;
+        int bw = 160;
         int dh = 0;
 
         nav.clear();
