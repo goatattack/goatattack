@@ -136,6 +136,7 @@ private:
     std::string resource_directory;
     bool skip_maps;
     bool paks_only;
+    FT_Library ft;
 
     LoadedPaks loaded_paks;
     ResourceObjects tilesets;

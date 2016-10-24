@@ -451,6 +451,8 @@ enum I18NText {
     I18N_ME_PAK_DONE2,
     I18N_ME_OPTIONS1,
 
+    I18N_FREETYPE_FAILED,
+
     //
     _I18N_FINISHED_
 };

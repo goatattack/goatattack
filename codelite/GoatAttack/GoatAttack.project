@@ -153,6 +153,9 @@
   <Dependencies Name="Debug">
     <Project Name="shared"/>
   </Dependencies>
+  <Dependencies Name="Release">
+    <Project Name="shared"/>
+  </Dependencies>
   <Settings Type="Executable">
     <GlobalSettings>
       <Compiler Options="-pedantic;-Wextra;-Wno-unused-result;-Wno-unused-parameter" C_Options="-pedantic;-Wextra;-Wno-unused-result;-Wno-unused-parameter" Assembler="">
@@ -160,7 +163,9 @@
         <IncludePath Value="../../src/Engine/include"/>
         <IncludePath Value="../../src/shared/include"/>
         <IncludePath Value="../../src/shared/zlib"/>
+        <IncludePath Value="/usr/include/freetype2"/>
         <Preprocessor Value="__unix__"/>
+        <Preprocessor Value="PNG_SKIP_SETJMP_CHECK"/>
       </Compiler>
       <Linker Options="">
         <LibraryPath Value="."/>
@@ -171,6 +176,7 @@
         <Library Value="SDL2"/>
         <Library Value="SDL2_mixer"/>
         <Library Value="GL"/>
+        <Library Value="freetype"/>
       </Linker>
       <ResourceCompiler Options=""/>
     </GlobalSettings>
@@ -259,7 +265,4 @@
       </Completion>
     </Configuration>
   </Settings>
-  <Dependencies Name="Release">
-    <Project Name="shared"/>
-  </Dependencies>
 </CodeLite_Project>

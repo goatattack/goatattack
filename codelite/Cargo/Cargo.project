@@ -107,4 +107,7 @@
       </Completion>
     </Configuration>
   </Settings>
+  <Dependencies Name="Debug">
+    <Project Name="shared"/>
+  </Dependencies>
 </CodeLite_Project>

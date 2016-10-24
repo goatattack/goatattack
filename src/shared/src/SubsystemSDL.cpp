@@ -530,6 +530,20 @@ void SubsystemSDL::draw_box(int x, int y, int width, int height) {
 int SubsystemSDL::draw_text(Font *font, int x, int y, const std::string& text) {
     size_t sz = text.length();
 
+    if (sz) {
+        int y_offset = font->get_y_offset();
+        const char *p = text.c_str();
+        for (size_t i = 0; i < sz; i++) {
+            Font::Character *chr = font->get_character(p);
+            draw_tilegraphic(chr->tile->get_tilegraphic(), x, y + y_offset + chr->y_offset); //y + (chr->rows - chr->top));
+            x += chr->advance;
+            p += chr->distance;
+        }
+    }
+
+    return x;
+
+    /* old code */
     for (size_t i = 0; i < sz; i++) {
         int c = text[i];
         if (c >= FontMin && c <= FontMax) {
@@ -936,6 +950,7 @@ void SubsystemSDL::init_gl(int width, int height) {
     stream << i18n(I18N_SSSDL_OPENGL_INIT) << std::endl;
     /* init gl scene */
     glViewport(0, 0, width, height);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
     /* immediate mode settings */
     if (!shading_pipeline) {

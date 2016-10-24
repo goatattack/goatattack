@@ -3,7 +3,7 @@ libshared_a_SOURCES = ../shared/src/AABB.cpp ../shared/src/Animation.cpp ../shar
 
 libshared_a_SOURCES += ../shared/i18n/I18NEnglish.cpp ../shared/i18n/I18NGerman.cpp ../shared/i18n/I18NFrench.cpp ../shared/i18n/I18NPortuguese.cpp
 
-libshared_a_CXXFLAGS = -I./include -I../shared/include -Wno-unused-result -pedantic -Wextra
+libshared_a_CXXFLAGS = -I./include -I../shared/include -Wno-unused-result -pedantic -Wextra -DPNG_SKIP_SETJMP_CHECK
 
 if DEDICATED_SERVER
 libshared_a_CXXFLAGS += -DDEDICATED_SERVER

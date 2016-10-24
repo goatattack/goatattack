@@ -15,9 +15,14 @@ CXX_FLAGS="${CXX_FLAGS} -pedantic"
 
 AC_HEADER_STDC
 
+# --- check headers ---
+AC_CHECK_HEADERS([ft2build.h], [], [missing_headers="$missing_headers ft2build.h"])
+
+# --- check libraries ---
 AC_CHECK_LIB([pthread], [pthread_create], [], [missing_libraries="$missing_libraries libpthread"])
 AC_CHECK_LIB([rt], [clock_gettime], [], [missing_libraries="$missing_libraries librt"])
 AC_CHECK_LIB([png], [png_init_io], [], [missing_libraries="$missing_libraries libpng"])
+AC_CHECK_LIB(freetype, FT_Init_FreeType, [], [missing_libraries="$missing_libraries libfreetype"])
 
 # --- compile args ---
 AC_ARG_ENABLE([build-pak],        [  --disable-build-pak     Disable building base.pak [[default=no]]], [], [BUILD_PAK="yes"])

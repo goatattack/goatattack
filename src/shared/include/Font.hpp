@@ -23,6 +23,7 @@
 #include "Subsystem.hpp"
 #include "Tile.hpp"
 #include "ZipReader.hpp"
+#include "FT.hpp"
 
 class FontException : public Exception {
 public:
@@ -47,26 +48,67 @@ private:
     Font& operator=(const Font&);
 
 public:
-    Font(Subsystem& subsystem, const std::string& filename, ZipReader *zip = 0)
+    struct Character {
+        Tile *tile;
+        int width;
+        int rows;
+        int left;
+        int top;
+        int y_offset;
+        int advance;
+        int distance;
+    };
+
+    Font(Subsystem& subsystem, FT_Library& ft, const std::string& filename, ZipReader *zip = 0)
         throw (KeyValueException, FontException);
     virtual ~Font();
 
+    Character *get_character(const char *s);
     Tile *get_tile(int index);
     int get_fw(int index);
     int get_spacing();
     int get_font_height();
     int get_text_width(const std::string& text);
     int get_char_width(unsigned char c);
+    int get_y_offset() const;
 
 private:
-    Subsystem& subsystem;
+    struct Data {
+        Data *next;
+        Character *chr;
+    };
 
+    Subsystem& subsystem;
+    I18N& i18n;
+    FT_Library& ft;
+    int max_height;
+    Data *start_page;
+
+    unsigned int width;
+    unsigned int height;
+    unsigned int outline;
+    unsigned char red1;
+    unsigned char green1;
+    unsigned char blue1;
+    unsigned char red2;
+    unsigned char green2;
+    unsigned char blue2;
+    int y_offset;
+    FT_Face face;
+    FT_Stroker stroker;
+    FT_Byte *font_buffer;
+
+    /* old */
     int offset;
     Tile *tiles[NumOfChars];
     int fw[NumOfChars];
     int fh[NumOfChars];
     int32_t font_height;
     int spacing;
+
+    Data *create_new_page();
+    void delete_pages(Data *page);
+    void create_character(const char *s);
 };
 
 #endif

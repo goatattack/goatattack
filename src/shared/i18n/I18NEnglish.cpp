@@ -434,5 +434,7 @@ const I18N::Text I18N::all_texts_english[] = {
     { I18N_ME_PAK_DONE2, "Your package '${1}.pak' has been created." },
     { I18N_ME_OPTIONS1, "Options" },
 
+    { I18N_FREETYPE_FAILED, "freetype initialization failed." },
+
     { I18N_NONE, 0 }
 };

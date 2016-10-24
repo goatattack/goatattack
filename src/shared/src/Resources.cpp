@@ -103,10 +103,14 @@ template<class T> static bool check_duplicate(Subsystem& subsystem, Resources::R
 Resources::Resources(Subsystem& subsystem, const std::string& resource_directory, bool skip_maps, bool paks_only) throw (ResourcesException, ResourcesMissingException)
     : subsystem(subsystem), i18n(subsystem.get_i18n()),
       resource_directory(resource_directory),
-      skip_maps(skip_maps), paks_only(paks_only)
+      skip_maps(skip_maps), paks_only(paks_only), ft(0)
 {
     subsystem << i18n(I18N_RES_INIT_RESOURCES) << std::endl;
     srand(static_cast<unsigned int>(time(0)));
+
+    if (FT_Init_FreeType(&ft)) {
+        throw ResourcesException(i18n(I18N_FREETYPE_FAILED));
+    }
 
     create_directory(UserDirectory, get_home_directory());
 
@@ -116,6 +120,7 @@ Resources::Resources(Subsystem& subsystem, const std::string& resource_directory
 Resources::~Resources() {
     subsystem << i18n(I18N_RES_UNINIT_RESOURCES) << std::endl;
     destroy_resources(false);
+    FT_Done_FreeType(ft);
 }
 
 void Resources::reload_resources() throw (ResourcesException) {
@@ -425,7 +430,7 @@ void Resources::read_fonts(const std::string& directory, ZipReader *zip, bool ba
         Directory dir(directory, ".font", zip);
         while ((entry = dir.get_entry())) {
             try {
-                AutoPtr<Font> new_object(new Font(subsystem, (zip ? "" : directory + dir_separator) + entry, zip));
+                AutoPtr<Font> new_object(new Font(subsystem, ft, (zip ? "" : directory + dir_separator) + entry, zip));
                 if (!check_duplicate<Font>(subsystem, fonts, "fonts", new_object->get_name())) {
                     fonts.push_back(ResourceObject(new_object.release(), base_resource));
                 }

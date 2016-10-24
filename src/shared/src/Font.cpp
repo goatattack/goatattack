@@ -18,6 +18,8 @@
 #include "Font.hpp"
 #include "PNG.hpp"
 #include "MultiReader.hpp"
+#include "AutoPtr.hpp"
+#include "UTF8.hpp"
 
 #include <cstdlib>
 #include <cstdio>
@@ -30,11 +32,53 @@
 #include "Win.hpp"
 #endif
 
-Font::Font(Subsystem& subsystem, const std::string& filename, ZipReader *zip)
+static const int PageSize = 256;
+
+Font::Font(Subsystem& subsystem, FT_Library& ft, const std::string& filename, ZipReader *zip)
     throw (KeyValueException, FontException)
-    : Properties(filename + ".font", zip), subsystem(subsystem)
+    : Properties(filename + ".font", zip), subsystem(subsystem),
+      i18n(subsystem.get_i18n()), ft(ft), max_height(0), start_page(create_new_page())
 {
     try {
+        const std::string& fontfile(get_value("font"));
+        if (!fontfile.length()) {
+            throw FontException("no file file declared in " + filename);
+        }
+
+        /* get base informations */
+        width = atoi(get_value("width").c_str());
+        height = atoi(get_value("height").c_str());
+        outline = atoi(get_value("outline").c_str());
+        y_offset = atoi(get_value("y_offset").c_str());
+
+        /* color gradient */
+        red1 = static_cast<char>(atoi(get_value("red1").c_str()));
+        green1 = static_cast<char>(atoi(get_value("green1").c_str()));
+        blue1 = static_cast<char>(atoi(get_value("blue1").c_str()));
+        red2 = static_cast<char>(atoi(get_value("red2").c_str()));
+        green2 = static_cast<char>(atoi(get_value("green2").c_str()));
+        blue2 = static_cast<char>(atoi(get_value("blue2").c_str()));
+
+        /* read font file from file or zip */
+        MultiReader ff("fonts/" + fontfile, zip);
+        AutoPtr<FT_Byte[]> tmpbuf(new FT_Byte[ff.get_size()]);
+        ff.read(&tmpbuf[0], ff.get_size());
+
+        /* load font into freetype */
+        if (FT_New_Memory_Face(ft, &tmpbuf[0], static_cast<FT_Long>(ff.get_size()), 0, &face)) {
+            throw FontException(std::string("loading font '") + ff.get_filename() + "' failed.");
+        }
+
+        /* setup encoding and pixel size */
+        FT_Select_Charmap(face, ft_encoding_unicode);
+        FT_Set_Pixel_Sizes(face, width, height);
+
+        FT_Stroker_New(ft, &stroker);
+        FT_Stroker_Set(stroker, outline * width, FT_STROKER_LINECAP_ROUND, FT_STROKER_LINEJOIN_ROUND, 0);
+
+        font_buffer = tmpbuf.release();
+
+        /* old code */
         PNG png(filename + ".png", zip);
         MultiReader mr(filename + ".fds", zip);
 
@@ -67,12 +111,19 @@ Font::Font(Subsystem& subsystem, const std::string& filename, ZipReader *zip)
 }
 
 Font::~Font() {
+    FT_Stroker_Done(stroker);
+    FT_Done_Face(face);
+    delete_pages(start_page);
+    delete[] font_buffer;
+
+    /* old code */
     for (int i = 0; i < NumOfChars; i++) {
         delete tiles[i];
     }
 }
 
 Tile *Font::get_tile(int index) {
+    /* old code */
     return tiles[index];
 }
 
@@ -85,12 +136,28 @@ int Font::get_spacing() {
 }
 
 int Font::get_font_height() {
+    return height; //max_height;
+
+    /* old code */
     return static_cast<int>(font_height);
 }
 
 int Font::get_text_width(const std::string& text) {
     size_t sz = text.length();
 
+    int w = 0;
+    if (sz) {
+        const char *p = text.c_str();
+        for (size_t i = 0; i < sz; i++) {
+            Font::Character *chr = get_character(p);
+            w += chr->advance;
+            p += chr->distance;
+        }
+    }
+    return w;
+
+    /* old code */
+    /*
     int w = 0;
     for (size_t i = 0; i < sz; i++) {
         int c = text[i];
@@ -101,6 +168,7 @@ int Font::get_text_width(const std::string& text) {
     }
 
     return w;
+    */
 }
 
 int Font::get_char_width(unsigned char c) {
@@ -113,3 +181,192 @@ int Font::get_char_width(unsigned char c) {
 
     return w;
 }
+
+int Font::get_y_offset() const {
+    return y_offset;
+}
+
+Font::Data *Font::create_new_page() {
+    Data *page = new Data[PageSize];
+    memset(page, 0, sizeof(Data) * PageSize);
+
+    return page;
+}
+
+void Font::delete_pages(Data *page) {
+    if (page) {
+        for (int i = 0; i < PageSize; i++) {
+            Data& data = page[i];
+            delete_pages(data.next);
+            if (data.chr && data.chr->tile) {
+                delete data.chr->tile;
+            }
+            delete data.chr;
+        }
+        delete[] page;
+    }
+}
+
+Font::Character *Font::get_character(const char *s) {
+    while (true) {
+        const char *p = s;
+        Data *page = start_page;
+        while (true) {
+            const unsigned char c = *reinterpret_cast<const unsigned char *>(p++);
+            Data& data = page[c];
+            if (data.chr) {
+                return data.chr;
+            }
+            page = data.next;
+            if (!page) {
+                create_character(s);
+                break;
+            }
+        }
+    }
+}
+
+void Font::create_character(const char *s) {
+    Data *page = start_page;
+    uint32_t state = UTF8_ACCEPT;
+    uint32_t codepoint;
+    int distance = 1;
+    while (true) {
+        const unsigned char c = *reinterpret_cast<const unsigned char *>(s);
+        Data& data = page[c];
+        if (!_utf8_decode(c, state, codepoint)) {
+            /* create glyph bitmap from char index */
+            FT_UInt glyph_index = FT_Get_Char_Index(face, codepoint);
+            FT_Load_Glyph(face, glyph_index, FT_LOAD_DEFAULT);
+            unsigned int fw = 0;
+            unsigned int fh = 0;
+            unsigned char *tmppic = 0;
+            for (int pass = 0; pass < 2; pass++) {
+                FT_Glyph glyph;
+                FT_Get_Glyph(face->glyph, &glyph);
+
+                if (pass == 0) {
+                    FT_Glyph_StrokeBorder(&glyph, stroker, false, true);
+                }
+
+                FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_NORMAL, 0, true);
+                FT_BitmapGlyph bitmap_glyph = reinterpret_cast<FT_BitmapGlyph>(glyph);
+
+                /* increase maximal font height if needed */
+                if (bitmap_glyph->top > max_height) {
+                    max_height = bitmap_glyph->top;
+                }
+
+                /* create temporary white alpha picture from 8bit glyph bmp */
+                unsigned int sz = bitmap_glyph->bitmap.width * bitmap_glyph->bitmap.rows;
+                if (pass == 0) {
+                    /* create outline */
+                    fw = bitmap_glyph->bitmap.width;
+                    fh = bitmap_glyph->bitmap.rows;
+                    tmppic = new unsigned char[sz * 4];
+                    unsigned char *dst = tmppic;
+                    unsigned char *src = bitmap_glyph->bitmap.buffer;
+                    for (unsigned int i = 0; i < sz; i++) {
+                        *dst++ = 0; *dst++ = 0; *dst++ = 0;
+                        *dst++ = *src++;
+                    }
+                    /* create character */
+                    data.chr = new Character;
+                    data.chr->width = static_cast<int>(bitmap_glyph->bitmap.width);
+                    data.chr->rows = static_cast<int>(bitmap_glyph->bitmap.rows);
+                    data.chr->left = static_cast<int>(bitmap_glyph->left);
+                    data.chr->top = static_cast<int>(bitmap_glyph->top);
+                    data.chr->y_offset = -data.chr->top + height;
+                    data.chr->advance = static_cast<int>(face->glyph->advance.x) >> 6;
+                    data.chr->distance = distance;
+                } else {
+                    /* alpha blend font over outline */
+                    unsigned char *dst = tmppic;
+                    unsigned char *src = bitmap_glyph->bitmap.buffer;
+                    int y_diff = (fh - bitmap_glyph->bitmap.rows);
+                    int yt_diff = y_diff - (fh - bitmap_glyph->bitmap.rows) / 2;
+                    int x_diff = (fw - bitmap_glyph->bitmap.width);
+                    int xr_diff =  x_diff / 2;
+                    int xl_diff = x_diff - xr_diff;
+                    unsigned int h = bitmap_glyph->bitmap.rows;
+                    double gradient_h = static_cast<double>(h > 1 ? h - 1 : 1);
+                    double red = static_cast<double>(red1);
+                    double green = static_cast<double>(green1);
+                    double blue = static_cast<double>(blue1);
+                    double red_gradient = static_cast<double>(red2 - red1) / gradient_h;
+                    double green_gradient = static_cast<double>(green2 - green1) / gradient_h;
+                    double blue_gradient = static_cast<double>(blue2 - blue1) / gradient_h;
+
+                    dst += yt_diff * fw * 4;
+                    for (unsigned int y = 0; y < h; y++) {
+                        dst += xl_diff * 4;
+                        for (unsigned int x = 0; x < bitmap_glyph->bitmap.width; x++) {
+                            unsigned char alpha = *src++;
+                            dst[0] = ((alpha * (static_cast<unsigned char>(red) - dst[0])) >> 8) + dst[0];
+                            dst[1] = ((alpha * (static_cast<unsigned char>(green) - dst[1])) >> 8) + dst[1];
+                            dst[2] = ((alpha * (static_cast<unsigned char>(blue) - dst[2])) >> 8) + dst[2];
+                            dst += 4;
+                        }
+                        dst += xr_diff * 4;
+                        red += red_gradient;
+                        green += green_gradient;
+                        blue += blue_gradient;
+                    }
+
+                    /* add tile to character */
+                    TileGraphic *tg = subsystem.create_tilegraphic(fw, fh);
+                    tg->add_tile(4, &tmppic[0], 0, false);
+                    data.chr->tile = new Tile(tg, false, Tile::TileTypeNonblocking, 0, false, 0.0f);
+                    delete[] tmppic;
+                }
+                FT_Done_Glyph(glyph);
+            }
+            break;
+        } else {
+            if (!data.next) {
+                data.next = create_new_page();
+            }
+            page = data.next;
+            distance++;
+        }
+        s++;
+    }
+}
+/*
+void Font::generate_font_range(wchar_t from, wchar_t to) {
+    try {
+        for (int pass = 0; pass < 2; pass++) {
+            for (wchar_t c = from; c <= to; c++) {
+                FT_UInt glyph_index = FT_Get_Char_Index(face, c);
+                FT_Load_Glyph(face, glyph_index, FT_LOAD_DEFAULT);
+                FT_Glyph glyph;
+                FT_Get_Glyph(face->glyph, &glyph);
+                if (pass) {
+                    FT_Glyph_StrokeBorder(&glyph, stroker, false, true);
+                }
+                FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_NORMAL, 0, true);
+                FT_BitmapGlyph bitmap_glyph = reinterpret_cast<FT_BitmapGlyph>(glyph);
+
+                if (bitmap_glyph->top > max_height) {
+                    max_height = bitmap_glyph->top;
+                }
+
+                // Now store character for later use
+                Character chr;
+                chr.tex = Texture::create(bitmap_glyph->bitmap.width, bitmap_glyph->bitmap.rows, Texture::FormatRed, bitmap_glyph->bitmap.buffer, true);
+                chr.width = static_cast<int>(bitmap_glyph->bitmap.width);
+                chr.rows = static_cast<int>(bitmap_glyph->bitmap.rows);
+                chr.left = static_cast<int>(bitmap_glyph->left);
+                chr.top = static_cast<int>(bitmap_glyph->top);
+                chr.advance = static_cast<int>(face->glyph->advance.x);
+                characters[pass][c] = chr;
+
+                // glyph done
+                FT_Done_Glyph(glyph);
+            }
+        }
+    } catch (const Exception& e) {
+        throw FontException(e.what());
+    }
+}
+*/

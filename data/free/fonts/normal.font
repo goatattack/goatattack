@@ -1,3 +1,14 @@
 name=normal
-author=Philippe Widmer
+author=Canonical Ltd.
 description=Normal font
+font=ubuntu.ttf
+width=11
+height=10
+outline=5
+y_offset=-1
+red1=255
+green1=255
+blue1=255
+red2=255
+green2=255
+blue2=255
