@@ -369,6 +369,7 @@ const I18N::Text I18N::all_texts_german[] = {
     { I18N_ME_LIGHT_SRC, "Lichtquellen" },
     { I18N_ME_NO_LIGHT_SRC, "Keine Lichtquellen in dieser Karte gefunden." },
     { I18N_ME_MAP_NAME, "Kein Kartenname" },
+    { I18N_ME_NO_MAP_NAME, "Bitte Kartenname in den Eigenschaften festlegen." },
     { I18N_ME_NO_TILESET1, "Kein Tileset" },
     { I18N_ME_NO_TILESET2, "Bitte Tileset in den Eingeschaften auswählen." },
     { I18N_ME_LIGHT_MAP, "Lichtkarte" },

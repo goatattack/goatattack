@@ -21,7 +21,6 @@
 #include "I18NTexts.hpp"
 
 #include <string>
-#include <map>
 #include <cstdio>
 
 class I18N {
@@ -68,21 +67,18 @@ public:
     }
 
 private:
-    Language language;
-
-    typedef std::map<I18NText, const char*> TextMap;
-
     struct Text {
         I18NText id;
         const char *text;
     };
 
+    Language language;
+    const Text *current_language;
+
     static const Text all_texts_english[];
     static const Text all_texts_german[];
     static const Text all_texts_french[];
     static const Text all_texts_portuguese[];
-
-    TextMap texts;
 
     void init();
     const char *get_text(I18NText id) const;

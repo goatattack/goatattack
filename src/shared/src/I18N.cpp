@@ -17,17 +17,15 @@
 
 #include "I18N.hpp"
 
-I18N::I18N() : language(language) {
+I18N::I18N() : language(LanguageEnglish), current_language(all_texts_english) {
     init();
 }
 
-I18N::I18N(Language language) : language(language) {
+I18N::I18N(Language language) : language(language), current_language(all_texts_english) {
     init();
 }
 
 void I18N::init() {
-    const Text *current_language = 0;
-
     switch (language) {
         case LanguageEnglish:
             current_language = all_texts_english;
@@ -45,22 +43,17 @@ void I18N::init() {
             current_language = all_texts_portuguese;
             break;
     }
-
-    if (current_language) {
-        while (current_language->id != I18N_NONE) {
-            texts[current_language->id] = current_language->text;
-            current_language++;
-        }
-    }
 }
 
 const char *I18N::get_text(I18NText id) const {
-    TextMap::const_iterator it = texts.find(id);
-    if (it != texts.end()) {
-        return it->second;
+    if (id > I18N_NONE && id < _I18N_FINISHED_) {
+        const Text& text = current_language[id - 1];
+        if (text.id == id) {
+            return text.text;
+        }
     }
 
-    return "";
+    return "???";
 }
 
 void I18N::replace(std::string& s, const char *w, size_t wl, const char *p) const {
