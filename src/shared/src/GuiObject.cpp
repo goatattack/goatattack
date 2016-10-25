@@ -17,6 +17,7 @@
 
 #include "GuiObject.hpp"
 #include "Gui.hpp"
+#include "UTF8.hpp"
 
 #include <cstdlib>
 
