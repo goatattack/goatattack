@@ -93,7 +93,7 @@ const I18N::Text I18N::all_texts_german[] = {
     { I18N_MAINMENU_CREDITS_MAPS, "Karten:" },
     { I18N_MAINMENU_CREDITS_MUSIC, "Musik:" },
     { I18N_MAINMENU_CREDITS_THANKS, "Danke auch an:" },
-    { I18N_MAINMENU_FREDERIC, "und natürlich Frederic die Ziege" },
+    { I18N_MAINMENU_FREDERIC, "und natürlich Frederic The Goat" },
 
     { I18N_OPTIONS_PLAYER, "Spieler" },
     { I18N_OPTIONS_GRAPHICS_AND_SOUND, "Grafik und Ton" },

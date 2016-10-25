@@ -294,21 +294,21 @@ void Tournament::draw_hud() {
         draw_lives_armor(p->state.server_state.armor, shield_full, shield_half, shield_empty, 26);
 
         sprintf(buffer, "%d", p->state.server_state.ammo);
-        subsystem.draw_icon(hud_ammo, 590, 10);
-        subsystem.draw_text(fnt, 610, 10, buffer);
+        subsystem.draw_icon(hud_ammo, 585, 10);
+        subsystem.draw_text(fnt, 605, 10, buffer);
 
         sprintf(buffer, "%d", p->state.server_state.grenades);
-        subsystem.draw_icon(hud_grenades, 590, 26);
-        subsystem.draw_text(fnt, 610, 26, buffer);
+        subsystem.draw_icon(hud_grenades, 585, 26);
+        subsystem.draw_text(fnt, 605, 26, buffer);
 
         sprintf(buffer, "%d", p->state.server_state.bombs);
-        subsystem.draw_icon(hud_bombs, 590, 42);
-        subsystem.draw_text(fnt, 610, 42, buffer);
+        subsystem.draw_icon(hud_bombs, 585, 42);
+        subsystem.draw_text(fnt, 605, 42, buffer);
 
         if (has_frogs) {
             sprintf(buffer, "%d", p->state.server_state.frogs);
-            subsystem.draw_icon(hud_frogs, 590, 58);
-            subsystem.draw_text(fnt, 610, 58, buffer);
+            subsystem.draw_icon(hud_frogs, 585, 58);
+            subsystem.draw_text(fnt, 605, 58, buffer);
         }
 
         subsystem.reset_color();

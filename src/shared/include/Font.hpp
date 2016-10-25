@@ -86,6 +86,8 @@ private:
     int max_height;
     Data *start_page;
     bool kerning;
+    bool outline_monochrome;
+    bool monochrome;
     double outline_alpha_factor;
     double alpha_factor;
 

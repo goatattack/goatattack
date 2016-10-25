@@ -13,5 +13,6 @@
 
 #include FT_FREETYPE_H
 #include FT_STROKER_H
+#include FT_BITMAP_H
 
 #endif

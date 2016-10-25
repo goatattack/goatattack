@@ -38,7 +38,8 @@ Font::Font(Subsystem& subsystem, FT_Library& ft, const std::string& filename, Zi
     throw (KeyValueException, FontException)
     : Properties(filename + ".font", zip), subsystem(subsystem),
       i18n(subsystem.get_i18n()), ft(ft), max_height(0), start_page(create_new_page()),
-      kerning(false), outline_alpha_factor(1.0), alpha_factor(1.0)
+      kerning(false), outline_monochrome(false), monochrome(false),
+      outline_alpha_factor(1.0), alpha_factor(1.0)
 {
     try {
         const std::string& fontfile(get_value("font"));
@@ -51,6 +52,8 @@ Font::Font(Subsystem& subsystem, FT_Library& ft, const std::string& filename, Zi
         height = atoi(get_value("height").c_str());
         outline = atoi(get_value("outline").c_str());
         y_offset = atoi(get_value("y_offset").c_str());
+        outline_monochrome = (atoi(get_value("outline_monochrome").c_str()) ? true : false);
+        monochrome = (atoi(get_value("monochrome").c_str()) ? true : false);
 
         /* color gradient */
         red1 = static_cast<char>(atoi(get_value("red1").c_str()));
@@ -256,15 +259,24 @@ void Font::create_character(const char *s) {
             unsigned int fh = 0;
             unsigned char *tmppic = 0;
             for (int pass = 0; pass < 2; pass++) {
+                FT_Bitmap mono_bitmap;
+                FT_Bitmap_New(&mono_bitmap);
                 FT_Glyph glyph;
                 FT_Get_Glyph(face->glyph, &glyph);
-
+                FT_BitmapGlyph bitmap_glyph;
+                bool do_monochrome = false;
                 if (pass == 0) {
                     FT_Glyph_StrokeBorder(&glyph, stroker, false, true);
                 }
-
-                FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_NORMAL, 0, true);
-                FT_BitmapGlyph bitmap_glyph = reinterpret_cast<FT_BitmapGlyph>(glyph);
+                if ((pass == 0 && outline_monochrome) || (pass == 1 && monochrome)) {
+                    FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_MONO, 0, true);
+                    bitmap_glyph = reinterpret_cast<FT_BitmapGlyph>(glyph);
+                    FT_Bitmap_Convert(ft, &bitmap_glyph->bitmap, &mono_bitmap, 1);
+                    do_monochrome = true;
+                } else {
+                    FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_NORMAL, 0, true);
+                    bitmap_glyph = reinterpret_cast<FT_BitmapGlyph>(glyph);
+                }
 
                 /* increase maximal font height if needed */
                 if (bitmap_glyph->top > max_height) {
@@ -279,11 +291,16 @@ void Font::create_character(const char *s) {
                     fh = bitmap_glyph->bitmap.rows;
                     tmppic = new unsigned char[sz * 4];
                     unsigned char *dst = tmppic;
-                    unsigned char *src = bitmap_glyph->bitmap.buffer;
+                    unsigned char *src = (do_monochrome ? mono_bitmap.buffer : bitmap_glyph->bitmap.buffer); //bitmap_glyph->bitmap.buffer;
+                    int alpha = 0;
                     for (unsigned int i = 0; i < sz; i++) {
                         *dst++ = 0; *dst++ = 0; *dst++ = 0;
-                        int sharp_alpha = (static_cast<int>(*src++) * outline_alpha_factor);
-                        *dst++ = static_cast<unsigned char>(sharp_alpha > 255 ? 255 : sharp_alpha);
+                        if (do_monochrome) {
+                            alpha = (*src++ ? 255 : 0);
+                        } else {
+                            alpha = (static_cast<int>(*src++) * outline_alpha_factor);
+                        }
+                        *dst++ = static_cast<unsigned char>(alpha > 255 ? 255 : alpha);
                     }
                     /* create character */
                     data.chr = new Character;
@@ -301,7 +318,7 @@ void Font::create_character(const char *s) {
                 } else {
                     /* alpha blend font over outline */
                     unsigned char *dst = tmppic;
-                    unsigned char *src = bitmap_glyph->bitmap.buffer;
+                    unsigned char *src = (do_monochrome ? mono_bitmap.buffer : bitmap_glyph->bitmap.buffer);
                     int y_diff = (fh - bitmap_glyph->bitmap.rows);
                     int yt_diff = y_diff - (fh - bitmap_glyph->bitmap.rows) / 2;
                     int x_diff = (fw - bitmap_glyph->bitmap.width);
@@ -324,11 +341,16 @@ void Font::create_character(const char *s) {
 
                     /* blend */
                     dst += yt_diff * fw * 4;
+                    unsigned char alpha = 0;
                     for (unsigned int y = 0; y < h; y++) {
                         dst += xl_diff * 4;
                         for (unsigned int x = 0; x < bitmap_glyph->bitmap.width; x++) {
-                            int sharp_alpha = (static_cast<int>(*src++) * alpha_factor);
-                            unsigned char alpha = (sharp_alpha > 255 ? 255 : sharp_alpha);
+                            if (do_monochrome) {
+                                alpha = (*src++ ? 255 : 0);
+                            } else {
+                                int sharp_alpha = (static_cast<int>(*src++) * alpha_factor);
+                                alpha = (sharp_alpha > 255 ? 255 : sharp_alpha);
+                            }
                             dst[0] = ((alpha * (static_cast<unsigned char>(red) - dst[0])) >> 8) + dst[0];
                             dst[1] = ((alpha * (static_cast<unsigned char>(green) - dst[1])) >> 8) + dst[1];
                             dst[2] = ((alpha * (static_cast<unsigned char>(blue) - dst[2])) >> 8) + dst[2];
@@ -346,6 +368,7 @@ void Font::create_character(const char *s) {
                     data.chr->tile = new Tile(tg, false, Tile::TileTypeNonblocking, 0, false, 0.0f);
                     delete[] tmppic;
                 }
+                FT_Bitmap_Done(ft, &mono_bitmap);
                 FT_Done_Glyph(glyph);
             }
             break;
