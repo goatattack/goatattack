@@ -49,7 +49,7 @@ private:
 
 public:
     struct Character {
-        Tile *tile;
+        FT_UInt glyph_index;
         int width;
         int rows;
         int left;
@@ -57,13 +57,14 @@ public:
         int y_offset;
         int advance;
         int distance;
+        Tile *tile;
     };
 
     Font(Subsystem& subsystem, FT_Library& ft, const std::string& filename, ZipReader *zip = 0)
         throw (KeyValueException, FontException);
     virtual ~Font();
 
-    Character *get_character(const char *s);
+    const Character *get_character(const char *s);
     Tile *get_tile(int index);
     int get_fw(int index);
     int get_spacing();
@@ -71,6 +72,7 @@ public:
     int get_text_width(const std::string& text);
     int get_char_width(unsigned char c);
     int get_y_offset() const;
+    int get_x_kerning(const Character *prev, const Character *cur);
 
 private:
     struct Data {
@@ -83,6 +85,9 @@ private:
     FT_Library& ft;
     int max_height;
     Data *start_page;
+    bool kerning;
+    double outline_alpha_factor;
+    double alpha_factor;
 
     unsigned int width;
     unsigned int height;

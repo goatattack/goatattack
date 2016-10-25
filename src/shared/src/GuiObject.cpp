@@ -1844,21 +1844,8 @@ void GuiListboxEntry::draw(int x, int y, int width, DrawType draw_type) {
 void GuiListboxEntry::paint() { }
 
 void GuiListboxEntry::draw_column(const Column& column, int x, int y, int max_width) {
-    Font *f = gui.get_font();
     Subsystem& s = gui.get_subsystem();
-    const char *c = column.text.c_str();
-
-    int totw = 0;
-    while (*c) {
-        int tw = f->get_char_width(*c);
-        totw += tw;
-        if (totw > max_width) {
-            break;
-        }
-        s.draw_char(f, x, y, *c);
-        x += tw;
-        c++;
-    }
+    s.draw_clipped_text(gui.get_font(), x, y, max_width, column.text);
 }
 
 /* ****************************************************** */

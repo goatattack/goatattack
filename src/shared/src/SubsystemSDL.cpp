@@ -529,28 +529,42 @@ void SubsystemSDL::draw_box(int x, int y, int width, int height) {
 
 int SubsystemSDL::draw_text(Font *font, int x, int y, const std::string& text) {
     size_t sz = text.length();
+    const Font::Character *prev = 0;
 
     if (sz) {
         int y_offset = font->get_y_offset();
         const char *p = text.c_str();
-        for (size_t i = 0; i < sz; i++) {
-            Font::Character *chr = font->get_character(p);
-            draw_tilegraphic(chr->tile->get_tilegraphic(), x, y + y_offset + chr->y_offset); //y + (chr->rows - chr->top));
-            x += chr->advance;
+        while (*p) {
+            const Font::Character *chr = font->get_character(p);
+            draw_tilegraphic(chr->tile->get_tilegraphic(), x, y + y_offset + chr->y_offset);
+            x += chr->advance + font->get_x_kerning(prev, chr);
             p += chr->distance;
+            prev = chr;
         }
     }
 
     return x;
+}
 
-    /* old code */
-    for (size_t i = 0; i < sz; i++) {
-        int c = text[i];
-        if (c >= FontMin && c <= FontMax) {
-            c -= FontMin;
-            TileGraphic *tg = font->get_tile(c)->get_tilegraphic();
-            draw_tilegraphic(tg, x, y);
-            x += font->get_fw(c) + font->get_spacing();
+int SubsystemSDL::draw_clipped_text(Font *font, int x, int y, int width, const std::string& text) {
+    size_t sz = text.length();
+    const Font::Character *prev = 0;
+
+    if (sz) {
+        int totw = 0;
+        int y_offset = font->get_y_offset();
+        const char *p = text.c_str();
+        while (*p) {
+            const Font::Character *chr = font->get_character(p);
+            int advance = chr->advance + font->get_x_kerning(prev, chr);
+            totw += advance;
+            if (totw > width) {
+                break;
+            }
+            draw_tilegraphic(chr->tile->get_tilegraphic(), x, y + y_offset + chr->y_offset);
+            x += advance;
+            p += chr->distance;
+            prev = chr;
         }
     }
 
@@ -950,7 +964,6 @@ void SubsystemSDL::init_gl(int width, int height) {
     stream << i18n(I18N_SSSDL_OPENGL_INIT) << std::endl;
     /* init gl scene */
     glViewport(0, 0, width, height);
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
     /* immediate mode settings */
     if (!shading_pipeline) {

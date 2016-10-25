@@ -104,6 +104,10 @@ int SubsystemNull::draw_text(Font *font, int x, int y, const std::string& text) 
     return 0;
 }
 
+int SubsystemNull::draw_clipped_text(Font *font, int x, int y, int width, const std::string& text) {
+    return 0;
+}
+
 int SubsystemNull::draw_char(Font *font, int x, int y, unsigned char c) {
     return x;
 }

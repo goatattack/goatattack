@@ -166,6 +166,7 @@ public:
     virtual void draw_tilegraphic(TileGraphic *tilegraphic, int index, int x, int y) = 0;
     virtual void draw_box(int x, int y, int width, int height) = 0;
     virtual int draw_text(Font *font, int x, int y, const std::string& text) = 0;
+    virtual int draw_clipped_text(Font *font, int x, int y, int width, const std::string& text) = 0;
     virtual int draw_char(Font *font, int x, int y, unsigned char c) = 0;
     virtual void draw_icon(Icon *icon, int x, int y) = 0;
 

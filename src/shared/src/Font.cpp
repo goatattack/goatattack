@@ -37,7 +37,8 @@ static const int PageSize = 256;
 Font::Font(Subsystem& subsystem, FT_Library& ft, const std::string& filename, ZipReader *zip)
     throw (KeyValueException, FontException)
     : Properties(filename + ".font", zip), subsystem(subsystem),
-      i18n(subsystem.get_i18n()), ft(ft), max_height(0), start_page(create_new_page())
+      i18n(subsystem.get_i18n()), ft(ft), max_height(0), start_page(create_new_page()),
+      kerning(false), outline_alpha_factor(1.0), alpha_factor(1.0)
 {
     try {
         const std::string& fontfile(get_value("font"));
@@ -59,6 +60,16 @@ Font::Font(Subsystem& subsystem, FT_Library& ft, const std::string& filename, Zi
         green2 = static_cast<char>(atoi(get_value("green2").c_str()));
         blue2 = static_cast<char>(atoi(get_value("blue2").c_str()));
 
+        /* alpha factors */
+        const std::string& soaf(get_value("outline_alpha_factor"));
+        const std::string& af(get_value("alpha_factor"));
+        if (soaf.length()) {
+            outline_alpha_factor = atof(soaf.c_str());
+        }
+        if (af.length()) {
+            alpha_factor = atof(af.c_str());
+        }
+
         /* read font file from file or zip */
         MultiReader ff("fonts/" + fontfile, zip);
         AutoPtr<FT_Byte[]> tmpbuf(new FT_Byte[ff.get_size()]);
@@ -72,10 +83,14 @@ Font::Font(Subsystem& subsystem, FT_Library& ft, const std::string& filename, Zi
         /* setup encoding and pixel size */
         FT_Select_Charmap(face, ft_encoding_unicode);
         FT_Set_Pixel_Sizes(face, width, height);
-
+        kerning = FT_HAS_KERNING(face);
         FT_Stroker_New(ft, &stroker);
         FT_Stroker_Set(stroker, outline * width, FT_STROKER_LINECAP_ROUND, FT_STROKER_LINEJOIN_ROUND, 0);
 
+        /* add two pixels (top/bottom) */
+        height += 2;
+
+        /* done */
         font_buffer = tmpbuf.release();
 
         /* old code */
@@ -144,31 +159,19 @@ int Font::get_font_height() {
 
 int Font::get_text_width(const std::string& text) {
     size_t sz = text.length();
+    const Font::Character *prev = 0;
 
     int w = 0;
     if (sz) {
         const char *p = text.c_str();
-        for (size_t i = 0; i < sz; i++) {
-            Font::Character *chr = get_character(p);
-            w += chr->advance;
+        while (*p) {
+            const Font::Character *chr = get_character(p);
+            w += chr->advance + get_x_kerning(prev, chr);
             p += chr->distance;
+            prev = chr;
         }
     }
     return w;
-
-    /* old code */
-    /*
-    int w = 0;
-    for (size_t i = 0; i < sz; i++) {
-        int c = text[i];
-        if (c >= FontMin && c <= FontMax) {
-            c -= FontMin;
-            w += fw[c] + spacing;
-        }
-    }
-
-    return w;
-    */
 }
 
 int Font::get_char_width(unsigned char c) {
@@ -184,6 +187,16 @@ int Font::get_char_width(unsigned char c) {
 
 int Font::get_y_offset() const {
     return y_offset;
+}
+
+int Font::get_x_kerning(const Character *prev, const Character *cur) {
+    if (kerning && prev && cur) {
+        FT_Vector d;
+        FT_Get_Kerning(face, prev->glyph_index, cur->glyph_index, FT_KERNING_DEFAULT, &d);
+        return static_cast<int>(d.x >> 6);
+    }
+
+    return 0;
 }
 
 Font::Data *Font::create_new_page() {
@@ -207,7 +220,7 @@ void Font::delete_pages(Data *page) {
     }
 }
 
-Font::Character *Font::get_character(const char *s) {
+const Font::Character *Font::get_character(const char *s) {
     while (true) {
         const char *p = s;
         Data *page = start_page;
@@ -231,6 +244,7 @@ void Font::create_character(const char *s) {
     uint32_t state = UTF8_ACCEPT;
     uint32_t codepoint;
     int distance = 1;
+    char buffer[64];
     while (true) {
         const unsigned char c = *reinterpret_cast<const unsigned char *>(s);
         Data& data = page[c];
@@ -268,10 +282,12 @@ void Font::create_character(const char *s) {
                     unsigned char *src = bitmap_glyph->bitmap.buffer;
                     for (unsigned int i = 0; i < sz; i++) {
                         *dst++ = 0; *dst++ = 0; *dst++ = 0;
-                        *dst++ = *src++;
+                        int sharp_alpha = (static_cast<int>(*src++) * outline_alpha_factor);
+                        *dst++ = static_cast<unsigned char>(sharp_alpha > 255 ? 255 : sharp_alpha);
                     }
                     /* create character */
                     data.chr = new Character;
+                    data.chr->glyph_index = glyph_index;
                     data.chr->width = static_cast<int>(bitmap_glyph->bitmap.width);
                     data.chr->rows = static_cast<int>(bitmap_glyph->bitmap.rows);
                     data.chr->left = static_cast<int>(bitmap_glyph->left);
@@ -279,6 +295,9 @@ void Font::create_character(const char *s) {
                     data.chr->y_offset = -data.chr->top + height;
                     data.chr->advance = static_cast<int>(face->glyph->advance.x) >> 6;
                     data.chr->distance = distance;
+                    /* add manually tweaked x advance in font file */
+                    sprintf(buffer, "cp_%d_x_shift", codepoint);
+                    data.chr->advance += atoi(get_value(buffer).c_str());
                 } else {
                     /* alpha blend font over outline */
                     unsigned char *dst = tmppic;
@@ -297,11 +316,19 @@ void Font::create_character(const char *s) {
                     double green_gradient = static_cast<double>(green2 - green1) / gradient_h;
                     double blue_gradient = static_cast<double>(blue2 - blue1) / gradient_h;
 
+                    /* add manually tweaked blending x offset in font file */
+                    sprintf(buffer, "cp_%d_blend_x_shift", codepoint);
+                    int blend_offset = atoi(get_value(buffer).c_str());
+                    xl_diff += blend_offset;
+                    xr_diff -= blend_offset;
+
+                    /* blend */
                     dst += yt_diff * fw * 4;
                     for (unsigned int y = 0; y < h; y++) {
                         dst += xl_diff * 4;
                         for (unsigned int x = 0; x < bitmap_glyph->bitmap.width; x++) {
-                            unsigned char alpha = *src++;
+                            int sharp_alpha = (static_cast<int>(*src++) * alpha_factor);
+                            unsigned char alpha = (sharp_alpha > 255 ? 255 : sharp_alpha);
                             dst[0] = ((alpha * (static_cast<unsigned char>(red) - dst[0])) >> 8) + dst[0];
                             dst[1] = ((alpha * (static_cast<unsigned char>(green) - dst[1])) >> 8) + dst[1];
                             dst[2] = ((alpha * (static_cast<unsigned char>(blue) - dst[2])) >> 8) + dst[2];
@@ -332,41 +359,3 @@ void Font::create_character(const char *s) {
         s++;
     }
 }
-/*
-void Font::generate_font_range(wchar_t from, wchar_t to) {
-    try {
-        for (int pass = 0; pass < 2; pass++) {
-            for (wchar_t c = from; c <= to; c++) {
-                FT_UInt glyph_index = FT_Get_Char_Index(face, c);
-                FT_Load_Glyph(face, glyph_index, FT_LOAD_DEFAULT);
-                FT_Glyph glyph;
-                FT_Get_Glyph(face->glyph, &glyph);
-                if (pass) {
-                    FT_Glyph_StrokeBorder(&glyph, stroker, false, true);
-                }
-                FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_NORMAL, 0, true);
-                FT_BitmapGlyph bitmap_glyph = reinterpret_cast<FT_BitmapGlyph>(glyph);
-
-                if (bitmap_glyph->top > max_height) {
-                    max_height = bitmap_glyph->top;
-                }
-
-                // Now store character for later use
-                Character chr;
-                chr.tex = Texture::create(bitmap_glyph->bitmap.width, bitmap_glyph->bitmap.rows, Texture::FormatRed, bitmap_glyph->bitmap.buffer, true);
-                chr.width = static_cast<int>(bitmap_glyph->bitmap.width);
-                chr.rows = static_cast<int>(bitmap_glyph->bitmap.rows);
-                chr.left = static_cast<int>(bitmap_glyph->left);
-                chr.top = static_cast<int>(bitmap_glyph->top);
-                chr.advance = static_cast<int>(face->glyph->advance.x);
-                characters[pass][c] = chr;
-
-                // glyph done
-                FT_Done_Glyph(glyph);
-            }
-        }
-    } catch (const Exception& e) {
-        throw FontException(e.what());
-    }
-}
-*/

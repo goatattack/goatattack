@@ -28,7 +28,10 @@
 #include <cstdlib>
 #include <algorithm>
 
-const char *TitleMusic = "norway";
+static const char *TitleMusic = "norway";
+//const char *SecuredSymbol = "X"; //\xce\x98";
+static const char *SecuredSymbol = "Ө";
+static const int SecuredWidth = 16;
 
 MainMenu::MainMenu(Resources& resources, Subsystem& subsystem, Configuration& config)
     : Gui(resources, subsystem, resources.get_font("normal")),
@@ -185,7 +188,7 @@ void MainMenu::idle() throw (Exception) {
         {
             const GameserverInformation *info = *it;
             GuiListboxEntry *entry = play_lan_list->add_entry(info->server_name);
-            entry->add_column((info->secured ? "\x7f" : ""), 8);
+            entry->add_column((info->secured ? SecuredSymbol : ""), SecuredWidth);
             sprintf(buffer, "%d/%d", info->cur_clients, info->max_clients);
             entry->add_column(buffer, 50);
             sprintf(buffer, "%d", static_cast<int>(info->ping_time));
@@ -208,7 +211,7 @@ void MainMenu::idle() throw (Exception) {
             const MasterQueryClient *info = static_cast<MasterQueryClient *>(*it);
             if (info->received) {
                 GuiListboxEntry *entry = play_wan_list->add_entry(info->server_name);
-                entry->add_column((info->secured ? "\x7f" : ""), 8);
+                entry->add_column((info->secured ? SecuredSymbol : ""), SecuredWidth);
                 sprintf(buffer, "%d/%d", info->cur_clients, info->max_clients);
                 entry->add_column(buffer, 50);
                 sprintf(buffer, "%d", static_cast<int>(info->ping_time));
@@ -309,7 +312,7 @@ void MainMenu::play_click() {
     create_button(frwan, 0, frwan->get_height() - bh, bw_refresh, bh, btn_refresh, static_play_refresh_wan_click, this);
 
     title_bar = play_wan_list->get_title_bar();
-    title_bar->add_column("\x7f", 8);
+    title_bar->add_column(SecuredSymbol, SecuredWidth);
     title_bar->add_column(i18n(I18N_MAINMENU_PLAYERS), 50);
     title_bar->add_column(i18n(I18N_MAINMENU_PING), 40);
 
@@ -323,7 +326,7 @@ void MainMenu::play_click() {
     create_button(frlan, 0, frlan->get_height() - bh, bw_refresh, bh, btn_refresh, static_play_refresh_lan_click, this);
 
     title_bar = play_lan_list->get_title_bar();
-    title_bar->add_column("\x7f", 8);
+    title_bar->add_column(SecuredSymbol, SecuredWidth);
     title_bar->add_column(i18n(I18N_MAINMENU_PLAYERS), 50);
     title_bar->add_column(i18n(I18N_MAINMENU_PING), 40);
 
@@ -548,7 +551,7 @@ void MainMenu::create_server_click() {
     int vw = subsystem.get_view_width();
     int vh = subsystem.get_view_height();
     int ww = 337;
-    int wh = 326;
+    int wh = 320;
     int bw = 140;
     GuiWindow *window = push_window(vw / 2 - ww / 2, vh / 2 - wh / 2, ww, wh, i18n(I18N_MAINMENU_LAN));
     window->set_cancelable(true);
@@ -632,10 +635,11 @@ void MainMenu::create_server_click() {
         /* chomp */
     }
 
-    cs_map_name = create_label(window, ww - 64 - 15, 193 + 64 + 3, "");
+    cs_map_name = create_label(window, ww - 64 - 15, 193 + 64 + 1, "");
 
     create_label(window, 15, 177, i18n(I18N_MAINMENU_SELECT_MAP));
-    cs_maps = create_listbox(window, 15, 193, 235, 80, "", static_map_selected, this);
+    int lbh = get_font()->get_font_height() * 6 + 2;
+    cs_maps = create_listbox(window, 15, 193, 235, lbh, "", static_map_selected, this);
 
     fill_map_listbox(static_cast<GamePlayType>(game_mode));
 

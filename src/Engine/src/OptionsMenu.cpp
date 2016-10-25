@@ -426,10 +426,6 @@ void OptionsMenu::close_capture_window_click() {
 GuiTextbox *OptionsMenu::create_field(GuiWindow *parent, int x, int y,
     const std::string& text, GuiVirtualButton::OnClick on_click, bool erase_pic)
 {
-    Icon *select = resources.get_icon("select");
-    TileGraphic *stg = select->get_tile()->get_tilegraphic();
-    int iw = stg->get_width();
-    int ih = stg->get_height();
 
     gui.create_label(parent, x, y, text);
     GuiTextbox *tb = gui.create_textbox(parent, x + 160, y, 80, "");
@@ -438,11 +434,20 @@ GuiTextbox *OptionsMenu::create_field(GuiWindow *parent, int x, int y,
         tb->set_locked(true);
         GuiButton *btn = gui.create_button(parent, x + 239, y, tbh, tbh, "", on_click, this);
         btn->show_bolts(false);
+        Icon *select = resources.get_icon("select");
+        TileGraphic *stg = select->get_tile()->get_tilegraphic();
+        int iw = stg->get_width();
+        int ih = stg->get_height();
         gui.create_picture(btn, tbh / 2 - iw / 2, tbh / 2 - ih / 2, stg);
     } else {
         tb->set_locked(false);
-        GuiButton *btn = gui.create_button(parent, x + 239, y, tbh, tbh, "...", on_click, this);
+        GuiButton *btn = gui.create_button(parent, x + 239, y, tbh, tbh, "", on_click, this);
         btn->show_bolts(false);
+        Icon *select = resources.get_icon("default");
+        TileGraphic *stg = select->get_tile()->get_tilegraphic();
+        int iw = stg->get_width();
+        int ih = stg->get_height();
+        gui.create_picture(btn, tbh / 2 - iw / 2, tbh / 2 - ih / 2, stg);
     }
 
     return tb;

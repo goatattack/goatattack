@@ -396,7 +396,7 @@ void MapEditor::create_toolbox() {
     GuiButton *btn;
 
     int wh = 262;
-    GuiWindow *window = push_window(5, get_subsystem().get_view_height() / 2 - wh / 2, 26, wh, i18n(I18N_ME_TOOL));
+    GuiWindow *window = push_window(5, get_subsystem().get_view_height() / 2 - wh / 2, 26, wh, ""); //i18n(I18N_ME_TOOL));
     window->show_screws(false);
 
     btn = create_button(window, 3, ofsy + (bh * l++), w, h, "", static_mode_selector_click, this);

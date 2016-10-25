@@ -340,7 +340,8 @@ Gui::MessageBoxResponse Gui::show_messagebox(MessageBoxIcon icon, const std::str
     int tiw = font->get_text_width(title) + 30;
     int tew = icw + ics + font->get_text_width(text) + 30;
     int max_tw = (tew > tiw ? tew : tiw);
-    int bw = 55;
+    std::string caption_ok(i18n(I18N_BUTTON_OK));
+    int bw = get_font()->get_text_width(caption_ok) + 24;
     int bh = 18;
     int width = (max_tw > bw ? max_tw : bw );
     int height = 80;
@@ -352,7 +353,7 @@ Gui::MessageBoxResponse Gui::show_messagebox(MessageBoxIcon icon, const std::str
         create_picture(window, 15, 13, msg_icon->get_tile()->get_tilegraphic());
     }
     create_label(window, 15 + icw + ics, 15, text);
-    create_button(window, width / 2- bw / 2, height - bh - 26, bw, bh, "Ok", static_ok_click, this);
+    create_button(window, width / 2- bw / 2, height - bh - 26, bw, bh, caption_ok, static_ok_click, this);
 
     idleloop(static_cast<int>(windows.size()) - 1);
 
@@ -889,7 +890,7 @@ void Gui::idle_tooltip() {
                 int mrg = 2;
                 int tw = f->get_text_width(tooltip_text);
                 int th = f->get_font_height();
-                int ww = tw + 2 * mrg;
+                int ww = tw + 3 * mrg;
                 int wh = th + 2 * mrg;
                 tooltip = new GuiBox(*this, 0, tooltip_x, tooltip_y, ww, wh);
                 tooltip->set_filled(true);

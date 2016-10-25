@@ -347,7 +347,7 @@ void Tournament::draw_hud() {
         std::string sptxt(i18n(I18N_TNMT_SPECTATING));
         int tw = fnt->get_text_width(sptxt);
         int x = view_width - time_width - tw - 10;
-        int y = view_height - fnt->get_font_height() - 5;
+        int y = view_height - fnt->get_font_height() - 4;
         subsystem.draw_text(fnt, x, y, sptxt);
     }
 
