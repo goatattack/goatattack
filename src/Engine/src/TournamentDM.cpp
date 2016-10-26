@@ -120,6 +120,12 @@ void TournamentDM::draw_statistics() {
     int tw = font_big->get_text_width(txt);
     subsystem.draw_text(font_big, vw / 2 - tw / 2, y + 18, txt);
 
+    /* draw map name */
+    std::string mapinfo(i18n(I18N_CLIENT_MAP_INFO, map.get_name().c_str()));
+    int miw = font_normal->get_text_width(mapinfo);
+    int mih = font_normal->get_font_height();
+    subsystem.draw_text(font_normal, x + ww - miw - 15, y + wh - mih - 15, mapinfo);
+
     /* draw list */
     subsystem.set_color(1.0f, 1.0f, 0.0f, 1.0f);
     y = 55;

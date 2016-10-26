@@ -990,28 +990,28 @@ void MapEditor::light_editor(EditableLight *light) {
         int y = Spc;
         int nl = 20;
 
-        create_label(window, Spc, y, i18n(I18N_ME_LP_RADIUS));
+        create_label(window, Spc, y + 2, i18n(I18N_ME_LP_RADIUS));
         sprintf(buffer, "%d", light->radius);
         lp_radius = create_textbox(window, tab, y, 50, buffer);
-        create_label(window, tab + 50 + 10, y, "(1 - 256)");
+        create_label(window, tab + 50 + 10, y + 2, "(1 - 256)");
         y += nl;
 
-        create_label(window, Spc, y, i18n(I18N_ME_LP_RED));
+        create_label(window, Spc, y + 2, i18n(I18N_ME_LP_RED));
         sprintf(buffer, "%d", light->r);
         lp_red = create_textbox(window, tab, y, 50, buffer);
-        create_label(window, tab + 50 + 10, y, "(0 - 255)");
+        create_label(window, tab + 50 + 10, y + 2, "(0 - 255)");
         y += nl;
 
-        create_label(window, Spc, y, i18n(I18N_ME_LP_GREEN));
+        create_label(window, Spc, y + 2, i18n(I18N_ME_LP_GREEN));
         sprintf(buffer, "%d", light->g);
         lp_green = create_textbox(window, tab, y, 50, buffer);
-        create_label(window, tab + 50 + 10, y, "(0 - 255)");
+        create_label(window, tab + 50 + 10, y + 2, "(0 - 255)");
         y += nl;
 
-        create_label(window, Spc, y, i18n(I18N_ME_LP_BLUE));
+        create_label(window, Spc, y + 2, i18n(I18N_ME_LP_BLUE));
         sprintf(buffer, "%d", light->b);
         lp_blue = create_textbox(window, tab, y, 50, buffer);
-        create_label(window, tab + 50 + 10, y, "(0 - 255)");
+        create_label(window, tab + 50 + 10, y + 2, "(0 - 255)");
         y += nl;
 
         lp_radius->set_focus();
@@ -1099,47 +1099,47 @@ void MapEditor::map_properties_click() {
     int lw = ww / 2 - 2 * Spc;
     int hx = ww / 2 + Spc;
 
-    create_label(window, Spc, Spc, i18n(I18N_ME_MP_NAME));
+    create_label(window, Spc, Spc + 1, i18n(I18N_ME_MP_NAME));
     mp_name = create_textbox(window, tab, Spc, lw - tab + Spc, wmap->get_name());
 
-    create_label(window, hx, Spc, i18n(I18N_ME_MP_FROG_SPAWN));
+    create_label(window, hx, Spc + 1, i18n(I18N_ME_MP_FROG_SPAWN));
     sprintf(buffer, "%d", wmap->get_frog_spawn_init());
     mp_frog_spawn_init = create_textbox(window, hx + tab - Spc, Spc, 127, buffer);
 
-    create_label(window, Spc, Spc + 20, i18n(I18N_ME_MP_AUTHOR));
+    create_label(window, Spc, Spc + 21, i18n(I18N_ME_MP_AUTHOR));
     mp_author = create_textbox(window, tab, Spc + 20, ww - tab - Spc, wmap->get_author());
 
-    create_label(window, Spc, Spc + 40, i18n(I18N_ME_MP_DESCRIPTION));
+    create_label(window, Spc, Spc + 41, i18n(I18N_ME_MP_DESCRIPTION));
     mp_description = create_textbox(window, tab, Spc + 40, ww - tab - Spc, wmap->get_description());
 
     sprintf(buffer, "%d", wmap->get_width());
-    create_label(window, Spc, Spc + 60, i18n(I18N_ME_MP_WIDTH));
+    create_label(window, Spc, Spc + 61, i18n(I18N_ME_MP_WIDTH));
     mp_width = create_textbox(window, tab, Spc + 60, 40, buffer);
 
     sprintf(buffer, "%d", wmap->get_height());
-    create_label(window, Spc, Spc + 80, i18n(I18N_ME_MP_HEIGHT));
+    create_label(window, Spc, Spc + 81, i18n(I18N_ME_MP_HEIGHT));
     mp_height = create_textbox(window, tab, Spc + 80, 40, buffer);
 
     sprintf(buffer, "%f", wmap->get_decoration_brightness());
-    create_label(window, hx, Spc + 60, i18n(I18N_ME_MP_DECO_BRIGHTNESS));
+    create_label(window, hx, Spc + 61, i18n(I18N_ME_MP_DECO_BRIGHTNESS));
     mp_deco_brightness = create_textbox(window, hx + tab - Spc, Spc + 60, 127, buffer);
 
     sprintf(buffer, "%f", wmap->get_lightmap_alpha());
-    create_label(window, hx, Spc + 80, i18n(I18N_ME_MP_LIGHTMAP_ALPHA));
+    create_label(window, hx, Spc + 81, i18n(I18N_ME_MP_LIGHTMAP_ALPHA));
     mp_lightmap_alpha = create_textbox(window, hx + tab - Spc, Spc + 80, 127, buffer);
 
     sprintf(buffer, "%d", wmap->get_parallax_shift());
-    create_label(window, hx, Spc + 100, i18n(I18N_ME_MP_PARALLAX));
+    create_label(window, hx, Spc + 101, i18n(I18N_ME_MP_PARALLAX));
     mp_parallax = create_textbox(window, hx + tab - Spc, Spc + 100, 40, buffer);
 
-    create_label(window, Spc, Spc + 100, i18n(I18N_ME_MP_TYPE));
-    mp_cb_dm = create_checkbox(window, tab, Spc + 101, "dm", false, static_mp_dm_click, this);
-    mp_cb_tdm = create_checkbox(window, tab + 38, Spc + 101, "tdm", false, static_mp_tdm_click, this);
-    mp_cb_ctf = create_checkbox(window, tab + 76, Spc + 101, "ctf", false, static_mp_ctf_click, this);
+    create_label(window, Spc, Spc + 102, i18n(I18N_ME_MP_TYPE));
+    mp_cb_dm = create_checkbox(window, tab, Spc + 103, "dm", false, static_mp_dm_click, this);
+    mp_cb_tdm = create_checkbox(window, tab + 38, Spc + 103, "tdm", false, static_mp_tdm_click, this);
+    mp_cb_ctf = create_checkbox(window, tab + 76, Spc + 103, "ctf", false, static_mp_ctf_click, this);
 
-    mp_cb_sr = create_checkbox(window, tab, Spc + 114, "sr", false, static_mp_sr_click, this);
-    mp_cb_ctc = create_checkbox(window, tab + 38, Spc + 114, "ctc", false, static_mp_ctc_click, this);
-    mp_cb_goh = create_checkbox(window, tab + 76, Spc + 114, "goh", false, static_mp_goh_click, this);
+    mp_cb_sr = create_checkbox(window, tab, Spc + 116, "sr", false, static_mp_sr_click, this);
+    mp_cb_ctc = create_checkbox(window, tab + 38, Spc + 116, "ctc", false, static_mp_ctc_click, this);
+    mp_cb_goh = create_checkbox(window, tab + 76, Spc + 116, "goh", false, static_mp_goh_click, this);
 
     switch (wmap->get_game_play_type()) {
         case GamePlayTypeDM:
@@ -1168,8 +1168,8 @@ void MapEditor::map_properties_click() {
     }
 
     /* create listboxes */
-    create_label(window, Spc, Spc + 120, i18n(I18N_ME_MP_TILESET));
-    mp_tileset = create_listbox(window, Spc, Spc + 135, lw, 100, "", 0, 0);
+    create_label(window, Spc, Spc + 125, i18n(I18N_ME_MP_TILESET));
+    mp_tileset = create_listbox(window, Spc, Spc + 140, lw, 93, "", 0, 0);
     Resources::ResourceObjects& tilesets = resources.get_tilesets();
     sz = tilesets.size();
     Tileset *mts = wmap->get_tileset_ptr();
@@ -1185,8 +1185,8 @@ void MapEditor::map_properties_click() {
         }
     }
 
-    create_label(window, hx, Spc + 120, i18n(I18N_ME_MP_BACKGROUND));
-    mp_background = create_listbox(window, hx, Spc + 135, lw, 100, "", 0, 0);
+    create_label(window, hx, Spc + 125, i18n(I18N_ME_MP_BACKGROUND));
+    mp_background = create_listbox(window, hx, Spc + 140, lw, 93, "", 0, 0);
     Resources::ResourceObjects& backgrounds = resources.get_backgrounds();
     sz = backgrounds.size();
     Background *mbg = wmap->get_background_ptr();
@@ -1646,7 +1646,7 @@ void MapEditor::ts_properties_click() {
     int width = get_subsystem().get_view_width();
     int height = get_subsystem().get_view_height();
     int ww = 300;
-    int wh = 178 + Spc;
+    int wh = 185 + Spc;
     char buffer[64];
 
     GuiWindow *window = push_window(width / 2 - ww / 2, height / 2 - wh / 2, ww, wh, i18n(I18N_ME_TP_TITLE, selected_tile_index));
@@ -1661,20 +1661,23 @@ void MapEditor::ts_properties_click() {
     int fh = get_font()->get_font_height();
     tsp_type = create_listbox(window, 110, 45, ww - 110 - Spc, fh * 4 + 2, "", 0, 0);
     int tiletype = static_cast<int>(tile->get_tile_type());
+    int selected_tile = 0;
     for (int i = 0; i < Tile::_TileTypeMAX; i++) {
         tsp_type->add_entry(i18n(Tile::TypeDescription[i]));
         if (tiletype == i) {
-            tsp_type->set_selected_index(i);
+            selected_tile = i;
         }
     }
+    tsp_type->set_selected_index(selected_tile);
+    tsp_type->set_top_index(selected_tile);
 
-    create_label(window, Spc, 100, i18n(I18N_ME_TP_ANIMATION_SPEED));
+    create_label(window, Spc, 107, i18n(I18N_ME_TP_ANIMATION_SPEED));
     sprintf(buffer, "%d", tile->get_animation_speed());
-    tsp_speed = create_textbox(window, 110, 100, 80, buffer);
+    tsp_speed = create_textbox(window, 110, 106, 80, buffer);
 
-    create_label(window, Spc, 120, i18n(I18N_ME_TP_FRICTION));
+    create_label(window, Spc, 127, i18n(I18N_ME_TP_FRICTION));
     sprintf(buffer, "%f", tile->get_friction());
-    tsp_friction = create_textbox(window, 110, 120, 80, buffer);
+    tsp_friction = create_textbox(window, 110, 126, 80, buffer);
 
     add_ok_cancel_buttons(window, static_ts_properties_ok_click);
 }

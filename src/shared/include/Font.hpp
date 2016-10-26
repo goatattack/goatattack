@@ -65,7 +65,7 @@ public:
     virtual ~Font();
 
     const Character *get_character(const char *s);
-    int get_font_height();
+    int get_font_height() const;
     int get_text_width(const char *s);
     int get_text_width(const std::string& text);
     int get_char_width(const char *s);
@@ -81,13 +81,14 @@ private:
     Subsystem& subsystem;
     I18N& i18n;
     FT_Library& ft;
-    int max_height;
     Data *start_page;
     bool kerning;
     bool outline_monochrome;
     bool monochrome;
     double outline_alpha_factor;
     double alpha_factor;
+    int height_correction;
+    int total_height;
 
     unsigned int width;
     unsigned int height;

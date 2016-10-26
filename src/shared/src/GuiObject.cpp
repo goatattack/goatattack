@@ -756,7 +756,8 @@ void GuiButton::paint() {
 
     /* draw caption */
     width -= 2;
-    int tw = f->get_text_width(caption) + 2;
+    height -= 2;
+    int tw = f->get_text_width(caption);
     int th = f->get_font_height() + 2;
     s.set_color(text_r, text_b, text_b, alpha);
     switch (align) {
@@ -1323,11 +1324,11 @@ void GuiTextbox::paint() {
         pos++;
     }
     if (!caret_drawn) {
-        caretx = cp;
+        caretx = cp + 1;
     }
     if (gui.has_focus(this) && !locked) {
         if (gui.get_blink_on()) {
-            s.draw_box(caretx, y, 1, fh);
+            s.draw_box(caretx, y + 1, 1, fh - 2);
         }
     }
 

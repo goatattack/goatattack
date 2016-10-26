@@ -138,6 +138,12 @@ void TournamentTeam::draw_statistics() {
     subsystem.draw_icon(screw3, 15, vh - 15 - 8);
     subsystem.draw_icon(screw4, vw - 15 - 8, vh - 15 - 8);
 
+    /* draw map name */
+    std::string mapinfo(i18n(I18N_CLIENT_MAP_INFO, map.get_name().c_str()));
+    int miw = font_normal->get_text_width(mapinfo);
+    int mih = font_normal->get_font_height();
+    subsystem.draw_text(font_normal, x + ww - miw - 15, y + wh - mih - 15, mapinfo);
+
     /* draw team headers */
     std::string uc_team_red(i18n(I18N_TNMT_TEAM_RED_CAP));
     std::string uc_team_blue(i18n(I18N_TNMT_TEAM_BLUE_CAP));

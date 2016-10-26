@@ -30,8 +30,7 @@
 #include <algorithm>
 
 static const char *TitleMusic = "norway";
-//const char *SecuredSymbol = "X"; //\xce\x98";
-static const char *SecuredSymbol = "Ө";
+static const char *SecuredSymbol = "*";
 static const int SecuredWidth = 16;
 
 MainMenu::MainMenu(Resources& resources, Subsystem& subsystem, Configuration& config)
@@ -544,19 +543,19 @@ void MainMenu::create_server_click() {
     Font *f = get_font();
     int vw = subsystem.get_view_width();
     int vh = subsystem.get_view_height();
-    int ww = 357;
-    int wh = 320;
+    int ww = 347;
+    int wh = 325;
     int bw = 140;
     GuiWindow *window = push_window(vw / 2 - ww / 2, vh / 2 - wh / 2, ww, wh, i18n(I18N_MAINMENU_LAN));
     window->set_cancelable(true);
 
     /* server settings */
-    create_label(window, 15, 15, i18n(I18N_MAINMENU_SERVER_NAME2));
-    cs_server_name = create_textbox(window, 120, 15, 221, config.get_string("server_name"));
+    create_label(window, 15, 16, i18n(I18N_MAINMENU_SERVER_NAME2));
+    cs_server_name = create_textbox(window, 110, 15, 221, config.get_string("server_name"));
     cs_server_name->set_focus();
 
-    create_label(window, 15, 35, i18n(I18N_MAINMENU_PORT));
-    cs_server_port = create_textbox(window, 120, 35, 55, config.get_string("server_port"));
+    create_label(window, 15, 36, i18n(I18N_MAINMENU_PORT));
+    cs_server_port = create_textbox(window, 110, 35, 55, config.get_string("server_port"));
     cs_server_port->set_type(GuiTextbox::TypeInteger);
 
     create_box(window, 15, 55, ww - 30, 1);
@@ -564,13 +563,13 @@ void MainMenu::create_server_click() {
     /* game modes */
     int game_mode = config.get_int("game_mode");
     create_label(window, 15, 60, i18n(I18N_MAINMENU_GAME_MODE));
-    cs_dm = create_checkbox(window, 120, 61, i18n(I18N_MAINMENU_GM_DM), game_mode == GamePlayTypeDM, static_game_mode_click, this);
-    cs_tdm = create_checkbox(window, 120, 74, i18n(I18N_MAINMENU_GM_TDM), game_mode == GamePlayTypeTDM, static_game_mode_click, this);
-    cs_ctf = create_checkbox(window, 120, 87, i18n(I18N_MAINMENU_GM_CTF), game_mode == GamePlayTypeCTF, static_game_mode_click, this);
+    cs_dm = create_checkbox(window, 110, 61, i18n(I18N_MAINMENU_GM_DM), game_mode == GamePlayTypeDM, static_game_mode_click, this);
+    cs_tdm = create_checkbox(window, 110, 74, i18n(I18N_MAINMENU_GM_TDM), game_mode == GamePlayTypeTDM, static_game_mode_click, this);
+    cs_ctf = create_checkbox(window, 110, 87, i18n(I18N_MAINMENU_GM_CTF), game_mode == GamePlayTypeCTF, static_game_mode_click, this);
 
-    cs_sr = create_checkbox(window, 240, 61, i18n(I18N_MAINMENU_GM_SR), game_mode == GamePlayTypeSR, static_game_mode_click, this);
-    cs_ctc = create_checkbox(window, 240, 74, i18n(I18N_MAINMENU_GM_CTC), game_mode == GamePlayTypeCTC, static_game_mode_click, this);
-    cs_goh = create_checkbox(window, 240, 87, i18n(I18N_MAINMENU_GM_GOH), game_mode == GamePlayTypeGOH, static_game_mode_click, this);
+    cs_sr = create_checkbox(window, 230, 61, i18n(I18N_MAINMENU_GM_SR), game_mode == GamePlayTypeSR, static_game_mode_click, this);
+    cs_ctc = create_checkbox(window, 230, 74, i18n(I18N_MAINMENU_GM_CTC), game_mode == GamePlayTypeCTC, static_game_mode_click, this);
+    cs_goh = create_checkbox(window, 230, 87, i18n(I18N_MAINMENU_GM_GOH), game_mode == GamePlayTypeGOH, static_game_mode_click, this);
 
     cs_current_mode = cs_dm;
     if (game_mode == GamePlayTypeTDM) {
@@ -606,38 +605,38 @@ void MainMenu::create_server_click() {
     create_box(window, 15, 104, ww - 30, 1);
 
     /* max players and duration */
-    create_label(window, 15, 111, i18n(I18N_MAINMENU_MAX_PLAYERS));
-    cs_max_players = create_textbox(window, 120, 111, 55, config.get_string("max_players"));
+    create_label(window, 15, 112, i18n(I18N_MAINMENU_MAX_PLAYERS));
+    cs_max_players = create_textbox(window, 110, 111, 55, config.get_string("max_players"));
     cs_max_players->set_type(GuiTextbox::TypeInteger);
 
-    create_label(window, 15, 131, i18n(I18N_MAINMENU_WARMUP));
-    cs_warmup = create_textbox(window, 120, 131, 55, config.get_string("warmup"));
+    create_label(window, 15, 132, i18n(I18N_MAINMENU_WARMUP));
+    cs_warmup = create_textbox(window, 110, 131, 55, config.get_string("warmup"));
     cs_warmup->set_type(GuiTextbox::TypeInteger);
-    create_label(window, 180, 131, i18n(I18N_MAINMENU_IN_SECONDS));
+    create_label(window, 170, 132, i18n(I18N_MAINMENU_IN_SECONDS));
 
-    create_label(window, 15, 151, i18n(I18N_MAINMENU_DURATION));
-    cs_duration = create_textbox(window, 120, 151, 55, config.get_string("duration"));
+    create_label(window, 15, 152, i18n(I18N_MAINMENU_DURATION));
+    cs_duration = create_textbox(window, 110, 151, 55, config.get_string("duration"));
     cs_duration->set_type(GuiTextbox::TypeInteger);
-    create_label(window, 180, 151, i18n(I18N_MAINMENU_IN_MINUTES));
+    create_label(window, 170, 152, i18n(I18N_MAINMENU_IN_MINUTES));
 
     create_box(window, 15, 171, ww - 30, 1);
 
     /* map selector */
     Icon *no_map = resources.get_icon("map_preview");
-    cs_map_preview = create_picture(window, ww - 64 - 15, 193, no_map->get_tile()->get_tilegraphic());
+    cs_map_preview = create_picture(window, ww - 64 - 15, 194, no_map->get_tile()->get_tilegraphic());
 
     try {
         Icon *map_border = resources.get_icon("map_border");
-        create_picture(window, ww - 64 - 15, 193, map_border->get_tile()->get_tilegraphic());
+        create_picture(window, ww - 64 - 15, 194, map_border->get_tile()->get_tilegraphic());
     } catch (...) {
         /* chomp */
     }
 
-    cs_map_name = create_label(window, ww - 64 - 15, 193 + 64 + 1, "");
+    cs_map_name = create_label(window, ww - 64 - 15, 193 + 68, "");
 
     create_label(window, 15, 177, i18n(I18N_MAINMENU_SELECT_MAP));
-    int lbh = get_font()->get_font_height() * 6 + 2;
-    cs_maps = create_listbox(window, 15, 193, 255, lbh, "", static_map_selected, this);
+    int lbh = (get_font()->get_font_height()) * 6 + 2;
+    cs_maps = create_listbox(window, 15, 193, 243, lbh, "", static_map_selected, this);
 
     fill_map_listbox(static_cast<GamePlayType>(game_mode));
 
@@ -836,10 +835,10 @@ void MainMenu::list_packages_click() {
     Font *f = get_font();
     int vw = subsystem.get_view_width();
     int vh = subsystem.get_view_height();
-    int ww = 400;
+    int ww = 380;
     int wh = 256;
     int bh = 18;
-    const int hash_width = 150;
+    const int hash_width = 110;
 
     GuiWindow *window = push_window(vw / 2 - ww / 2, vh / 2 - wh / 2, ww, wh, i18n(I18N_MAINMENU_PACKAGES));
     window->set_cancelable(true);
@@ -892,7 +891,7 @@ void MainMenu::static_credits_click(GuiVirtualButton *sender, void *data) {
 void MainMenu::credits_click() {
     int vw = subsystem.get_view_width();
     int vh = subsystem.get_view_height();
-    int ww = 240;
+    int ww = 220;
     int wh = 178;
     int lft = 25;
     int tab = 87;
@@ -913,7 +912,7 @@ void MainMenu::credits_click() {
 
     if (title_music) {
         create_label(window, lft, y, i18n(I18N_MAINMENU_CREDITS_MUSIC));
-        create_label(window, tab, y, "daniel wressle");
+        create_label(window, tab, y, "Daniel Wressle");
         y += 15;
         wh += 15;
     }

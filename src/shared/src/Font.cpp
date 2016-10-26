@@ -37,9 +37,9 @@ static const int PageSize = 256;
 Font::Font(Subsystem& subsystem, FT_Library& ft, const std::string& filename, ZipReader *zip)
     throw (KeyValueException, FontException)
     : Properties(filename + ".font", zip), subsystem(subsystem),
-      i18n(subsystem.get_i18n()), ft(ft), max_height(0), start_page(create_new_page()),
+      i18n(subsystem.get_i18n()), ft(ft), start_page(create_new_page()),
       kerning(false), outline_monochrome(false), monochrome(false),
-      outline_alpha_factor(1.0), alpha_factor(1.0)
+      outline_alpha_factor(1.0), alpha_factor(1.0), total_height(0)
 {
     try {
         const std::string& fontfile(get_value("font"));
@@ -91,6 +91,10 @@ Font::Font(Subsystem& subsystem, FT_Library& ft, const std::string& filename, Zi
         FT_Stroker_Set(stroker, outline * width, FT_STROKER_LINECAP_ROUND, FT_STROKER_LINEJOIN_ROUND, 0);
 
         /* add two pixels (top/bottom) */
+        int overridden_height = atoi(get_value("overridden_height").c_str());
+        if (overridden_height) {
+            height = overridden_height;
+        }
         height += 2;
 
         /* done */
@@ -107,7 +111,7 @@ Font::~Font() {
     delete[] font_buffer;
 }
 
-int Font::get_font_height() {
+int Font::get_font_height() const {
     return height;
 }
 
@@ -234,11 +238,6 @@ void Font::create_character(const char *s) {
                 } else {
                     FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_NORMAL, 0, true);
                     bitmap_glyph = reinterpret_cast<FT_BitmapGlyph>(glyph);
-                }
-
-                /* increase maximal font height if needed */
-                if (bitmap_glyph->top > max_height) {
-                    max_height = bitmap_glyph->top;
                 }
 
                 /* create temporary white alpha picture from 8bit glyph bmp */
