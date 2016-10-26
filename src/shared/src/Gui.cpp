@@ -412,7 +412,7 @@ Gui::MessageBoxResponse Gui::show_inputbox(const std::string& title, std::string
     width = window->get_client_width();
     input_box = create_textbox(window, Spc, Spc, width - 2 * Spc, text);
     input_box->set_focus();
-    input_box->set_hide_characters(password);
+    input_box->set_type(password ? GuiTextbox::TypeHidden : GuiTextbox::TypeNormal);
     height = window->get_height() - window->get_client_height();
     window->set_height(height + 3 * Spc + input_box->get_height() + 18);
 

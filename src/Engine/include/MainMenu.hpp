@@ -91,6 +91,8 @@ private:
     int mw_h;
     Sound *menu_construction;
     Music *title_music;
+    GuiLabel *version_label;
+    GuiPicture *beta;
 
     gametime_t now;
     gametime_t startup;
@@ -188,6 +190,10 @@ private:
 
     bool create_server_locators() throw (Exception);
     void destroy_server_locators();
+
+    static void static_lang_change_cb(void *data);
+    void change_button_captions();
+    void set_version_label();
 };
 
 #endif

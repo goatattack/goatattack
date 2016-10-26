@@ -24,6 +24,7 @@
 #include "OptionsMenu.hpp"
 #include "Protocol.hpp"
 #include "Scope.hpp"
+#include "UTF8.hpp"
 
 #include <cstdlib>
 #include <algorithm>
@@ -41,8 +42,10 @@ MainMenu::MainMenu(Resources& resources, Subsystem& subsystem, Configuration& co
       gh(0), shown(MenuButtonStateNone), lan_broadcaster(0), master_query(0),
       main_window(0), mw_w(0), mw_h(0),
       menu_construction(resources.get_sound("menu_construction")),
-      title_music(0)
+      title_music(0), version_label(0), beta(0)
 {
+    i18n.register_callback(this->static_lang_change_cb, this);
+
     goat = resources.get_icon("title_goat");
     title = resources.get_icon("title_text");
 
@@ -142,17 +145,7 @@ void MainMenu::idle() throw (Exception) {
                 if (diff > 100) {
                     startup = now;
                     shown = MenuButtonStateDone;
-
-                    Font *f = get_font();
-                    int th = f->get_font_height();
-                    std::string version(i18n(I18N_MAINMENU_VERSION, GameVersion));
-                    int tw = f->get_text_width(version);
-                    create_label(main_window, mw_w / 2 - tw / 2, mw_h - th - 21, version)->set_follow_alpha(false);
-
-                    if (ProductIsBeta) {
-                        Icon *beta = resources.get_icon("beta");
-                        create_picture(main_window, mw_w / 2 + tw / 2, mw_h - 32 - Spc - 3, beta->get_tile()->get_tilegraphic())->set_follow_alpha(false);
-                    }
+                    set_version_label();
                 }
                 break;
             }
@@ -337,9 +330,10 @@ void MainMenu::play_click() {
     custom_ipaddress = create_textbox(frcustom, 90, 20, tab->get_width() - (2 * Spc) - 90 + 4, config.get_string("last_custom_address"));
     create_label(frcustom, 0, 41, i18n(I18N_MAINMENU_PORT));
     custom_port = create_textbox(frcustom, 90, 40, 100, config.get_string("last_custom_port"));
+    custom_port->set_type(GuiTextbox::TypeInteger);
     create_label(frcustom, 0, 61, i18n(I18N_MAINMENU_PASSWORD));
     custom_password = create_textbox(frcustom, 90, 60, tab->get_width() - (2 * Spc) - 90 + 4, "");
-    custom_password->set_hide_characters(true);
+    custom_password->set_type(GuiTextbox::TypeHidden);
 
     create_button(frcustom, frlan->get_width() - bw_connect, frlan->get_height() - bh, bw_connect, bh, btn_connect, static_play_manual, this);
 
@@ -563,6 +557,7 @@ void MainMenu::create_server_click() {
 
     create_label(window, 15, 35, i18n(I18N_MAINMENU_PORT));
     cs_server_port = create_textbox(window, 120, 35, 55, config.get_string("server_port"));
+    cs_server_port->set_type(GuiTextbox::TypeInteger);
 
     create_box(window, 15, 55, ww - 30, 1);
 
@@ -613,13 +608,16 @@ void MainMenu::create_server_click() {
     /* max players and duration */
     create_label(window, 15, 111, i18n(I18N_MAINMENU_MAX_PLAYERS));
     cs_max_players = create_textbox(window, 120, 111, 55, config.get_string("max_players"));
+    cs_max_players->set_type(GuiTextbox::TypeInteger);
 
     create_label(window, 15, 131, i18n(I18N_MAINMENU_WARMUP));
     cs_warmup = create_textbox(window, 120, 131, 55, config.get_string("warmup"));
+    cs_warmup->set_type(GuiTextbox::TypeInteger);
     create_label(window, 180, 131, i18n(I18N_MAINMENU_IN_SECONDS));
 
     create_label(window, 15, 151, i18n(I18N_MAINMENU_DURATION));
     cs_duration = create_textbox(window, 120, 151, 55, config.get_string("duration"));
+    cs_duration->set_type(GuiTextbox::TypeInteger);
     create_label(window, 180, 151, i18n(I18N_MAINMENU_IN_MINUTES));
 
     create_box(window, 15, 171, ww - 30, 1);
@@ -894,11 +892,10 @@ void MainMenu::static_credits_click(GuiVirtualButton *sender, void *data) {
 void MainMenu::credits_click() {
     int vw = subsystem.get_view_width();
     int vh = subsystem.get_view_height();
-    int ww = 200;
-    int wh = 210;
-    int left = 10;
-    int lft = 30;
-    int tab = 90;
+    int ww = 240;
+    int wh = 178;
+    int lft = 25;
+    int tab = 87;
 
     GuiWindow *window = push_window(vw / 2 - ww / 2, vh / 2 - wh / 2, ww, wh, i18n(I18N_MAINMENU_CREDITS));
     window->set_cancelable(true);
@@ -907,13 +904,12 @@ void MainMenu::credits_click() {
     create_label(window, tab, 10, "freanux");
 
     create_label(window, lft, 30, i18n(I18N_MAINMENU_CREDITS_GFX));
-    create_label(window, tab, 30, "freanux, ruby,");
-    create_label(window, tab, 45, "cataclisma");
+    create_label(window, tab, 30, "freanux, ruby, cataclisma");
 
-    create_label(window, lft, 65, i18n(I18N_MAINMENU_CREDITS_MAPS));
-    create_label(window, tab, 65, "ruby, freanux,");
-    create_label(window, tab, 80, "cataclisma");
-    int y = 100;
+    create_label(window, lft, 50, i18n(I18N_MAINMENU_CREDITS_MAPS));
+    create_label(window, tab, 50, "ruby, freanux, cataclisma");
+
+    int y = 70;
 
     if (title_music) {
         create_label(window, lft, y, i18n(I18N_MAINMENU_CREDITS_MUSIC));
@@ -922,10 +918,19 @@ void MainMenu::credits_click() {
         wh += 15;
     }
 
+    Font *f = get_font();
     y += 15;
-    create_label(window, left, y, i18n(I18N_MAINMENU_CREDITS_THANKS));
-    create_label(window, left, y + 15, "ruby, cataclisma, julia, tanja, luxi");
-    create_label(window, left, y + 30, i18n(I18N_MAINMENU_FREDERIC));
+
+    std::string t1(i18n(I18N_MAINMENU_CREDITS_THANKS));
+    int x1 = (ww - 2) / 2 - f->get_text_width(t1) / 2;
+    std::string t2("ruby, cataclisma, julia, tanja, luxi");
+    int x2 = (ww - 2) / 2 - f->get_text_width(t2) / 2;
+    std::string t3(i18n(I18N_MAINMENU_FREDERIC));
+    int x3 = (ww - 2) / 2 - f->get_text_width(t3) / 2;
+
+    create_label(window, x1, y, t1);
+    create_label(window, x2, y + 15, t2);
+    create_label(window, x3, y + 30, t3);
 
     window->set_height(wh);
     window->set_y(vh / 2 - wh / 2);
@@ -987,5 +992,61 @@ void MainMenu::destroy_server_locators() {
     if (master_query) {
         delete master_query;
         master_query = 0;
+    }
+}
+
+void MainMenu::static_lang_change_cb(void *data) {
+    reinterpret_cast<MainMenu *>(data)->change_button_captions();
+}
+
+void MainMenu::change_button_captions() {
+    for (int i = 0; i < 6; i++) {
+        if (rb[i]) {
+            std::string caption;
+            switch (i) {
+                case 0:
+                    caption = i18n(I18N_MAINMENU_PLAY);
+                    break;
+
+                case 1:
+                    caption = i18n(I18N_MAINMENU_LAN);
+                    break;
+
+                case 2:
+                    caption = i18n(I18N_MAINMENU_PACKAGES);
+                    break;
+
+                case 3:
+                    caption = i18n(I18N_MAINMENU_OPTIONS);
+                    break;
+
+                case 4:
+                    caption = i18n(I18N_MAINMENU_CREDITS);
+                    break;
+
+                case 5:
+                    caption = i18n(I18N_MAINMENU_QUIT);
+                    break;
+            }
+            rb[i]->set_caption(caption);
+        }
+    }
+    set_version_label();
+}
+
+void MainMenu::set_version_label() {
+    main_window->remove_object(version_label);
+    main_window->remove_object(beta);
+
+    Font *f = get_font();
+    int th = f->get_font_height();
+    std::string version(i18n(I18N_MAINMENU_VERSION, GameVersion));
+    int tw = f->get_text_width(version);
+    version_label = create_label(main_window, mw_w / 2 - tw / 2, mw_h - th - 21, version);
+    version_label->set_follow_alpha(false);
+
+    if (ProductIsBeta) {
+        Icon *beta_icon = resources.get_icon("beta");
+        create_picture(main_window, mw_w / 2 + tw / 2, mw_h - 32 - Spc - 3, beta_icon->get_tile()->get_tilegraphic())->set_follow_alpha(false);
     }
 }

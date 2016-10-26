@@ -286,8 +286,7 @@ const I18N::Text I18N::all_texts_portuguese[] = {
     { I18N_DIFFERENT_HASH, "O pak principal '${1}' tem uma hash diferente." },
     { I18N_NO_MAPS_DEFINED, "Sem mapas definidos no ficheiro de configuração do servidor." },
     { I18N_NO_DEDICATED_SERVER, "Este não é um servidor dedicado." },
-    { I18N_MUSIC_INFO1, "musica: ${1}" },
-    { I18N_MUSIC_INFO2, "musica: ${1} de ${2}" },
+    { I18N_MUSIC_INFO, "musica: ${1}" },
     { I18N_MUSIC_TOO_FAST, "ERRO: ${1} demasiado rapida, parando." },
     { I18N_NO_MUSIC_FOUND, "ERRO: nenhuma musica valida encontrada." },
     { I18N_ENTER_VALID_VALUE, "Insira um valor valido (${1})" },
@@ -435,6 +434,7 @@ const I18N::Text I18N::all_texts_portuguese[] = {
     { I18N_ME_OPTIONS1, "Options" },
 
     { I18N_FREETYPE_FAILED, "freetype initialization failed." },
+    { I18N_LANGUAGE, "Language" },
 
     { I18N_NONE, 0 }
 };

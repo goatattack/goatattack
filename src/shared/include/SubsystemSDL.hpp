@@ -69,7 +69,7 @@ public:
     virtual void draw_box(int x, int y, int width, int height);
     virtual int draw_text(Font *font, int x, int y, const std::string& text);
     virtual int draw_clipped_text(Font *font, int x, int y, int width, const std::string& text);
-    virtual int draw_char(Font *font, int x, int y, unsigned char c);
+    virtual int draw_char(Font *font, int x, int y, const char *s);
     virtual void draw_icon(Icon *icon, int x, int y);
 
     virtual int play_sound(Sound *sound, int loops);

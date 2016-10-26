@@ -72,24 +72,52 @@ inline size_t utf8_strlen(const char *s) {
     return len;
 }
 
-template<typename T> inline bool fast_mbstowcs(T *out, const char *s, size_t len) {
+inline size_t utf8_strnlen(const char *s, size_t maxlen) {
     int state = UTF8_ACCEPT;
-
-    for (uint32_t codepoint; len; ++s) {
-        if (!utf8_decode(*reinterpret_cast<const unsigned char *>(s), state, codepoint)) {
-            *out++ = codepoint;
-            len--;
-        }
-        if (!*s) {
-            break;
+    int len = 0;
+    for (uint32_t codepoint; *s && maxlen; ++s, --maxlen) {
+        if (!utf8_decode(*s, state, codepoint)) {
+            len++;
         }
     }
 
-    return (state == UTF8_ACCEPT);
+    return len;
 }
 
-template<typename T> inline bool fast_mbtowc(T& out, const char *s) {
-    return fast_mbstowcs(&out, s, 1);
+inline const char *utf8_real_char_ptr(const char *s, size_t pos) {
+    size_t x = 0;
+    while (*s && x < pos) {
+        int state = UTF8_ACCEPT;
+        uint32_t codepoint;
+        while (utf8_decode(*s++, state, codepoint));
+        x++;
+    }
+
+    return s;
+}
+
+inline size_t utf8_real_char_pos(const char *s, size_t pos) {
+    size_t x = 0;
+    const char *src = s;
+    while (*s && x < pos) {
+        int state = UTF8_ACCEPT;
+        uint32_t codepoint;
+        while (utf8_decode(*s++, state, codepoint));
+        x++;
+    }
+
+    return s - src;
+}
+
+inline size_t utf8_sequence_len(const char *s) {
+    size_t len = 1;
+    int state = UTF8_ACCEPT;
+    uint32_t codepoint;
+    while (utf8_decode(*s++, state, codepoint)) {
+        len++;
+    }
+
+    return len;
 }
 
 #endif

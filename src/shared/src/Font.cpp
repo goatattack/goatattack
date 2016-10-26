@@ -95,34 +95,6 @@ Font::Font(Subsystem& subsystem, FT_Library& ft, const std::string& filename, Zi
 
         /* done */
         font_buffer = tmpbuf.release();
-
-        /* old code */
-        PNG png(filename + ".png", zip);
-        MultiReader mr(filename + ".fds", zip);
-
-        char header[4];
-        mr.read(header, sizeof(header));
-        if (memcmp(header, "FNT1", 4)) {
-            throw FontException("wrong font file " + mr.get_filename());
-        }
-        mr.read(&font_height, sizeof font_height);
-        font_height = ntohl(font_height) * 2;
-        spacing = atoi(get_value("spacing").c_str());
-
-        font_char_t font;
-        for (int i = 0; i < NumOfChars; i++) {
-            mr.read(&font, sizeof font);
-            font.origin_x = ntohl(font.origin_x);
-            font.origin_y = ntohl(font.origin_y);
-            font.width = ntohl(font.width);
-            font.height = ntohl(font.height);
-
-            TileGraphic *tg = subsystem.create_tilegraphic(font.width, font.height);
-            tg->punch_out_tile(png, font.origin_x, font.origin_y, false);
-            tiles[i] = new Tile(tg, false, Tile::TileTypeNonblocking, 0, false, 0.0f);
-            fw[i] = font.width;
-            fh[i] = font.height;
-        }
     } catch (const Exception& e) {
         throw FontException(e.what());
     }
@@ -133,31 +105,24 @@ Font::~Font() {
     FT_Done_Face(face);
     delete_pages(start_page);
     delete[] font_buffer;
-
-    /* old code */
-    for (int i = 0; i < NumOfChars; i++) {
-        delete tiles[i];
-    }
-}
-
-Tile *Font::get_tile(int index) {
-    /* old code */
-    return tiles[index];
-}
-
-int Font::get_fw(int index) {
-    return fw[index];
-}
-
-int Font::get_spacing() {
-    return spacing;
 }
 
 int Font::get_font_height() {
-    return height; //max_height;
+    return height;
+}
 
-    /* old code */
-    return static_cast<int>(font_height);
+int Font::get_text_width(const char *s) {
+    const Font::Character *prev = 0;
+
+    int w = 0;
+    while (*s) {
+        const Font::Character *chr = get_character(s);
+        w += chr->advance + get_x_kerning(prev, chr);
+        s += chr->distance;
+        prev = chr;
+    }
+
+    return w;
 }
 
 int Font::get_text_width(const std::string& text) {
@@ -177,15 +142,8 @@ int Font::get_text_width(const std::string& text) {
     return w;
 }
 
-int Font::get_char_width(unsigned char c) {
-    int w = 0;
-
-    if (c >= FontMin && c <= FontMax) {
-        c -= FontMin;
-        w += fw[c] + spacing;
-    }
-
-    return w;
+int Font::get_char_width(const char *s) {
+    return get_character(s)->advance;
 }
 
 int Font::get_y_offset() const {

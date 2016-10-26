@@ -25,6 +25,7 @@
 #include "OptionsMenu.hpp"
 #include "KeyBinding.hpp"
 #include "ButtonNavigator.hpp"
+#include "I18N.hpp"
 
 class Client;
 
@@ -95,6 +96,9 @@ private:
 
     GuiTextbox *gs_music_path;
 
+    GuiListbox *lang_lb;
+    I18N::Language current_langugage;
+
     GuiTextbox *create_field(GuiWindow *parent, int x, int y,
         const std::string& text, GuiVirtualButton::OnClick on_click, bool erase_pic);
 
@@ -162,6 +166,9 @@ private:
 
     static void static_close_capture_window_click(GuiVirtualButton *sender, void *data);
 
+    static void static_language_click(GuiVirtualButton *sender, void *data);
+    static void static_language_ok_click(GuiVirtualButton *sender, void *data);
+
     void ck_erase_horz();
     void ck_erase_vert();
 
@@ -202,6 +209,13 @@ private:
 
     void toggle_fullscreen_click(bool state);
     void toggle_scanlines_click(bool state);
+
+    void language_click();
+    void language_ok_click();
+    void add_ok_cancel_buttons(GuiWindow *window, GuiVirtualButton::OnClick on_click);
+
+    static void static_change_button_texts(void *data);
+    void change_button_texts();
 
     virtual void options_closed() { }
 };

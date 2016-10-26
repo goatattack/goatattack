@@ -123,7 +123,7 @@ static void play_next_song() {
                         } else {
                             music_player_external_last_played = time(0);
                             music_player_external_last_song = em.shortname;
-                            music_player_tms->add_text_msg((*glbi18n)(I18N_MUSIC_INFO1, em.shortname));
+                            music_player_tms->add_text_msg((*glbi18n)(I18N_MUSIC_INFO, em.shortname));
                             ok = true;
                             break;
                         }
@@ -146,7 +146,7 @@ static void play_next_song() {
                 music = music_player_musics[music_player_current_index];
                 if (music != music_player_current_music) {
                     music_player_current_music = music;
-                    music_player_tms->add_text_msg((*glbi18n)(I18N_MUSIC_INFO2, music->get_description(), music->get_author()));
+                    music_player_tms->add_text_msg((*glbi18n)(I18N_MUSIC_INFO, music->get_description()));
                 }
             }
             if (music_player_current_music) {
@@ -571,13 +571,11 @@ int SubsystemSDL::draw_clipped_text(Font *font, int x, int y, int width, const s
     return x;
 }
 
-int SubsystemSDL::draw_char(Font *font, int x, int y, unsigned char c) {
-    if (c >= FontMin && c <= FontMax) {
-        c -= FontMin;
-        TileGraphic *tg = font->get_tile(c)->get_tilegraphic();
-        draw_tilegraphic(tg, x, y);
-        x += font->get_fw(c) + font->get_spacing();
-    }
+int SubsystemSDL::draw_char(Font *font, int x, int y, const char *s) {
+    int y_offset = font->get_y_offset();
+    const Font::Character *chr = font->get_character(s);
+    draw_tilegraphic(chr->tile->get_tilegraphic(), x, y + y_offset + chr->y_offset);
+    x += chr->advance;
 
     return x;
 }

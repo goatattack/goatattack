@@ -53,32 +53,36 @@ void OptionsMenu::show_options(bool force_game_over, int x, int y) {
             window = gui.push_window(vw / 2 - ww / 2, vh / 2- wh / 2, ww, wh, i18n(I18N_MAINMENU_OPTIONS));
         }
         if (!client) {
+            i18n.register_callback(static_change_button_texts, this);
             window->set_cancelable(true);
             window->set_cancel_callback(static_cancel_click, this);
         }
 
-        nav.add_button(gui.create_button(window, ww / 2 - bw / 2, 10, bw, 26, i18n(I18N_OPTIONS_PLAYER), static_player_click, this));
-        nav.add_button(gui.create_button(window, ww / 2 - bw / 2, 45, bw, 26, i18n(I18N_OPTIONS_GRAPHICS_AND_SOUND), static_graphics_and_sound_click, this));
-        nav.add_button(gui.create_button(window, ww / 2 - bw / 2, 80, bw, 26, i18n(I18N_OPTIONS_CONTROLLER), static_controller_and_keyboard_click, this));
+        nav.add_button(gui.create_button(window, ww / 2 - bw / 2, 10, bw, 26, i18n(I18N_OPTIONS_PLAYER), static_player_click, this))->set_tag(I18N_OPTIONS_PLAYER);
+        nav.add_button(gui.create_button(window, ww / 2 - bw / 2, 45, bw, 26, i18n(I18N_OPTIONS_GRAPHICS_AND_SOUND), static_graphics_and_sound_click, this))->set_tag(I18N_OPTIONS_GRAPHICS_AND_SOUND);
+        nav.add_button(gui.create_button(window, ww / 2 - bw / 2, 80, bw, 26, i18n(I18N_OPTIONS_CONTROLLER), static_controller_and_keyboard_click, this))->set_tag(I18N_OPTIONS_CONTROLLER);
         int top = 115;
         if (client) {
             if (!force_game_over && !client->is_game_over()) {
                 if (!client->is_spectating()) {
-                    nav.add_button(gui.create_button(window, ww / 2 - bw / 2, top + dh, bw, 26, i18n(I18N_OPTIONS_SPECTATE), static_spectate_click, this));
+                    nav.add_button(gui.create_button(window, ww / 2 - bw / 2, top + dh, bw, 26, i18n(I18N_OPTIONS_SPECTATE), static_spectate_click, this))->set_tag(I18N_OPTIONS_SPECTATE);
                     dh += 35;
                 }
             }
 
             if (resources.get_musics().size()) {
-                nav.add_button(gui.create_button(window, ww / 2 - bw / 2, top + dh, bw, 26, i18n(I18N_OPTIONS_SKIP_SONG), static_skip_song_click, this));
+                nav.add_button(gui.create_button(window, ww / 2 - bw / 2, top + dh, bw, 26, i18n(I18N_OPTIONS_SKIP_SONG), static_skip_song_click, this))->set_tag(I18N_OPTIONS_SKIP_SONG);
                 dh += 35;
             }
 
-            nav.add_button(gui.create_button(window, ww / 2 - bw / 2, top + dh, bw, 26, i18n(I18N_OPTIONS_RETURN), static_back_options_click, this));
+            nav.add_button(gui.create_button(window, ww / 2 - bw / 2, top + dh, bw, 26, i18n(I18N_OPTIONS_RETURN), static_back_options_click, this))->set_tag(I18N_OPTIONS_RETURN);
+            dh += 35;
+        } else {
+            nav.add_button(gui.create_button(window, ww / 2 - bw / 2, top + dh, bw, 26, i18n(I18N_LANGUAGE), static_language_click, this))->set_tag(I18N_LANGUAGE);
             dh += 35;
         }
 
-        nav.add_button(gui.create_button(window, ww / 2 - bw / 2, top + dh, bw, 26, i18n(I18N_BUTTON_CLOSE), static_close_options_click, this));
+        nav.add_button(gui.create_button(window, ww / 2 - bw / 2, top + dh, bw, 26, i18n(I18N_BUTTON_CLOSE), static_close_options_click, this))->set_tag(I18N_BUTTON_CLOSE);
 
         if (client) {
             nav.install_handlers(window, static_nav_close, this);
@@ -102,6 +106,9 @@ void OptionsMenu::close_options() {
         options_visible = false;
         gui.pop_window();
         options_closed();
+        if (!client) {
+            i18n.unregister_callback(static_change_button_texts);
+        }
         window = 0;
     }
 }
@@ -366,9 +373,11 @@ void OptionsMenu::controller_and_keyboard_click() {
 
     ck_dz_h = create_field(window, Col0, 150, i18n(I18N_OPTIONS_SETTINGS43), static_ck_erase_horz, true);
     ck_dz_h->set_text(config.get_string("deadzone_horizontal"));
+    ck_dz_h->set_type(GuiTextbox::TypeInteger);
 
     ck_dz_v = create_field(window, Col1, 150, i18n(I18N_OPTIONS_SETTINGS44), static_ck_erase_vert, true);
     ck_dz_v->set_text(config.get_string("deadzone_vertical"));
+    ck_dz_v->set_type(GuiTextbox::TypeInteger);
 
     std::string btn_close(i18n(I18N_BUTTON_CLOSE));
     int bw_close = gui.get_font()->get_text_width(btn_close) + 28;
@@ -794,6 +803,72 @@ bool OptionsMenu::capture_joybuttondown(int button) {
 }
 
 /* ************************************************************************** */
+/* Language                                                                   */
+/* ************************************************************************** */
+void OptionsMenu::static_language_click(GuiVirtualButton *sender, void *data) {
+    reinterpret_cast<OptionsMenu *>(data)->language_click();
+}
+
+void OptionsMenu::language_click() {
+    int vw = subsystem.get_view_width();
+    int vh = subsystem.get_view_height();
+    int ww = 220;
+    int wh = 160;
+
+    int lng = config.get_int("language");
+    current_langugage = static_cast<I18N::Language>(lng);
+
+    subsystem.clear_input_buffer();
+    GuiWindow *window = gui.push_window(vw / 2 - ww / 2, vh / 2- wh / 2, ww, wh, i18n(I18N_LANGUAGE));
+    window->set_cancelable(true);
+
+    lang_lb = gui.create_listbox(window, Gui::Spc, Gui::Spc, ww - 2 * Gui::Spc, wh - 4 * Gui::Spc - 18, "", 0, 0);
+
+    const char **lang = I18N::Languages;
+
+    int selected_lang = 0;
+    int cur = 0;
+    while (*lang) {
+        lang_lb->add_entry(*lang);
+        if (lng == cur) {
+            selected_lang = cur;
+        }
+        lang++;
+        cur++;
+    }
+    lang_lb->set_selected_index(selected_lang);
+
+    add_ok_cancel_buttons(window, static_language_ok_click);
+}
+
+void OptionsMenu::static_language_ok_click(GuiVirtualButton *sender, void *data) {
+    reinterpret_cast<OptionsMenu* >(data)->language_ok_click();
+}
+
+void OptionsMenu::language_ok_click() {
+    I18N::Language new_language = static_cast<I18N::Language>(lang_lb->get_selected_index());
+    if (new_language != current_langugage) {
+        config.set_int("language", static_cast<int>(new_language));
+        i18n.change(new_language);
+    }
+    gui.pop_window();
+}
+
+void OptionsMenu::add_ok_cancel_buttons(GuiWindow *window, GuiVirtualButton::OnClick on_click) {
+    std::string btn_cancel(i18n(I18N_BUTTON_CANCEL));
+    int bw_cancel = gui.get_font()->get_text_width(btn_cancel) + 24;
+
+    std::string btn_ok(i18n(I18N_BUTTON_OK));
+    int bw_ok = gui.get_font()->get_text_width(btn_ok) + 24;
+
+    int width = window->get_client_width();
+    int height = window->get_client_height();
+    int bh = 18;
+    gui.create_button(window, width - bw_cancel - Gui::Spc, height - bh - Gui::Spc, bw_cancel, bh, btn_cancel, static_close_window_click, this);
+    gui.create_button(window, width - bw_cancel - Gui::Spc - bw_ok - 5, height - bh - Gui::Spc, bw_ok, bh, btn_ok, on_click, this);
+}
+
+/* ************************************************************************** */
 /* Close window                                                               */
 /* ************************************************************************** */
 void OptionsMenu::static_close_window_click(GuiVirtualButton *sender, void *data) {
@@ -803,3 +878,19 @@ void OptionsMenu::static_close_window_click(GuiVirtualButton *sender, void *data
 void OptionsMenu::close_window_click() {
     gui.pop_window();
 }
+
+/* ************************************************************************** */
+/* Change language callback                                                   */
+/* ************************************************************************** */
+void OptionsMenu::static_change_button_texts(void *data) {
+    reinterpret_cast<OptionsMenu *>(data)->change_button_texts();
+}
+
+void OptionsMenu::change_button_texts() {
+    const ButtonNavigator::Buttons& btns = nav.get_buttons();
+    for (ButtonNavigator::Buttons::const_iterator it = btns.begin(); it != btns.end(); it++) {
+        GuiButton *btn = *it;
+        btn->set_caption(i18n(static_cast<I18NText>(btn->get_tag())));
+    }
+}
+

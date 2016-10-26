@@ -65,12 +65,10 @@ public:
     virtual ~Font();
 
     const Character *get_character(const char *s);
-    Tile *get_tile(int index);
-    int get_fw(int index);
-    int get_spacing();
     int get_font_height();
+    int get_text_width(const char *s);
     int get_text_width(const std::string& text);
-    int get_char_width(unsigned char c);
+    int get_char_width(const char *s);
     int get_y_offset() const;
     int get_x_kerning(const Character *prev, const Character *cur);
 
@@ -104,14 +102,6 @@ private:
     FT_Face face;
     FT_Stroker stroker;
     FT_Byte *font_buffer;
-
-    /* old */
-    int offset;
-    Tile *tiles[NumOfChars];
-    int fw[NumOfChars];
-    int fh[NumOfChars];
-    int32_t font_height;
-    int spacing;
 
     Data *create_new_page();
     void delete_pages(Data *page);

@@ -756,7 +756,7 @@ void GuiButton::paint() {
 
     /* draw caption */
     width -= 2;
-    int tw = f->get_text_width(caption);
+    int tw = f->get_text_width(caption) + 2;
     int th = f->get_font_height() + 2;
     s.set_color(text_r, text_b, text_b, alpha);
     switch (align) {
@@ -1058,22 +1058,30 @@ void GuiCheckbox::load_icons() {
 /* ****************************************************** */
 GuiTextbox::GuiTextbox(Gui& gui, GuiObject *parent)
     : GuiObject(gui, parent), start_position(0), caret_position(0),
-      text(), locked(false), hide_characters(false) { }
+      text(), locked(false), type(TypeNormal) { }
 
 GuiTextbox::GuiTextbox(Gui& gui, GuiObject *parent, int x, int y,
     int width, const std::string& text)
     : GuiObject(gui, parent, x, y, width, gui.get_font()->get_font_height() + 2),
-      start_position(0), caret_position(text.length()),
-      text(text), locked(false), hide_characters(false)
+      start_position(0), caret_position(utf8_strlen(text.c_str())),
+      text(text), locked(false), type(TypeNormal)
 {
     recalc();
 }
 
 GuiTextbox::~GuiTextbox() { }
 
+void GuiTextbox::set_type(Type type) {
+    this->type = type;
+}
+
+GuiTextbox::Type GuiTextbox::get_type() const {
+    return type;
+}
+
 void GuiTextbox::set_text(const std::string& text) {
     this->text = text;
-    caret_position = text.length();
+    caret_position = utf8_strlen(text.c_str());
 }
 
 const std::string& GuiTextbox::get_text() const {
@@ -1081,8 +1089,7 @@ const std::string& GuiTextbox::get_text() const {
 }
 
 void GuiTextbox::set_caret_position(int pos) {
-    int sz = static_cast<int>(text.length());
-
+    int sz = static_cast<int>(utf8_strlen(text.c_str()));
     caret_position = pos;
     if (caret_position > sz) {
         caret_position = sz;
@@ -1100,14 +1107,6 @@ void GuiTextbox::set_locked(bool state) {
 
 bool GuiTextbox::get_locked() const {
     return locked;
-}
-
-void GuiTextbox::set_hide_characters(bool state) {
-    hide_characters = state;
-}
-
-bool GuiTextbox::get_hide_characters() const {
-    return hide_characters;
 }
 
 bool GuiTextbox::can_have_focus() const {
@@ -1155,7 +1154,7 @@ bool GuiTextbox::keypress(InputData& input) {
 
                     case InputData::InputKeyTypeEnd:
                     {
-                        caret_position = static_cast<int>(text.length());
+                        caret_position = static_cast<int>(utf8_strlen(text.c_str()));
                         recalc();
                         break;
                     }
@@ -1171,7 +1170,7 @@ bool GuiTextbox::keypress(InputData& input) {
 
                     case InputData::InputKeyTypeRight:
                     {
-                        if (caret_position < static_cast<int>(text.length())) {
+                        if (caret_position < static_cast<int>(utf8_strlen(text.c_str()))) {
                             caret_position++;
                             recalc();
                         }
@@ -1180,8 +1179,11 @@ bool GuiTextbox::keypress(InputData& input) {
 
                     case InputData::InputKeyTypeDelete:
                     {
-                        if (static_cast<int>(text.length()) > caret_position) {
-                            text.erase(caret_position, 1);
+                        const char *tptr = text.c_str();
+                        if (static_cast<int>(utf8_strlen(tptr)) > caret_position) {
+                            int pos = static_cast<int>(utf8_real_char_pos(tptr, caret_position));
+                            int seqlen = static_cast<int>(utf8_sequence_len(&tptr[pos]));
+                            text.erase(pos, seqlen);
                             recalc();
                         }
                         break;
@@ -1191,9 +1193,12 @@ bool GuiTextbox::keypress(InputData& input) {
                     {
                         if (caret_position) {
                             caret_position--;
-                            text.erase(caret_position, 1);
-                            recalc();
+                            const char *tptr = text.c_str();
+                            int pos = static_cast<int>(utf8_real_char_pos(tptr, caret_position));
+                            int seqlen = static_cast<int>(utf8_sequence_len(&tptr[pos]));
+                            text.erase(pos, seqlen);
                         }
+                        break;
                     }
 
                     default:
@@ -1204,14 +1209,21 @@ bool GuiTextbox::keypress(InputData& input) {
 
             case InputData::InputDataTypeText:
             {
-                const unsigned char *p = input.text;
-                while (*p) {
-                    if (*p >= FontMin && *p <= FontMax) {
-                        text.insert(caret_position, 1, *p);
-                        caret_position++;
+                bool ok = true;
+                const char *p = reinterpret_cast<const char *>(input.text);
+                if (p) {
+                    if (type == TypeInteger) {
+                        if (strlen(p) != 1 || *p < '0' || *p > '9') {
+                            ok = false;
+                        }
+                    }
+
+                    if (ok) {
+                        int pos = static_cast<int>(utf8_real_char_pos(text.c_str(), caret_position));
+                        text.insert(pos, p);
+                        caret_position += utf8_strlen(p);
                         recalc();
                     }
-                    p++;
                 }
                 break;
             }
@@ -1229,12 +1241,16 @@ void GuiTextbox::recalc() {
         start_position = caret_position;
     }
 
+    const char *s = text.c_str();
+
     if (caret_position > start_position) {
         Font *f = gui.get_font();
+        const char *tptr = text.c_str();
         int cw = 0;
         int pos = start_position;
         while (pos < caret_position) {
-            cw += f->get_char_width(text[pos]);
+            const Font::Character *chr = f->get_character(utf8_real_char_ptr(tptr, pos));
+            cw += chr->advance;
             pos++;
         }
 
@@ -1245,7 +1261,7 @@ void GuiTextbox::recalc() {
             cw = 0;
             while (pos) {
                 pos--;
-                cw += f->get_char_width(text[pos]);
+                cw += f->get_char_width(utf8_real_char_ptr(tptr, pos));
                 if (cw > w) {
                     start_position = pos + 2;
                     break;
@@ -1268,7 +1284,6 @@ void GuiTextbox::paint() {
     int y = get_client_y();
     int w = get_width();
     int h = get_height();
-    int cw = 0;
     int rp = x + w - 2;
 
     /* draw box */
@@ -1281,27 +1296,30 @@ void GuiTextbox::paint() {
     /* draw text */
     int pos = start_position;
     int caret = caret_position;
-
-    int sz = static_cast<int>(text.length());
+    const char *tptr = text.c_str();
+    int sz = utf8_strlen(tptr);
     y++;
     x += 2;
     int cp = x;
     bool caret_drawn = false;
     int caretx = cp;
+    const char *p = text.c_str();
     while (pos < sz) {
-        unsigned char c = text[pos];
-        if (hide_characters) {
-            c = '*';
+        const char *str = utf8_real_char_ptr(tptr, pos);
+        const Font::Character *chr = f->get_character(str);
+
+        unsigned char c = *str;
+        if (type == TypeHidden) {
+            str = "*";
         }
-        cw = f->get_char_width(c);
-        if (cp + cw > rp) {
+        if (cp + chr->advance > rp) {
             break;
         }
         if (pos == caret && !caret_drawn) {
             caret_drawn = true;
             caretx = cp;
         }
-        cp = s.draw_char(f, cp, y, c);
+        cp = s.draw_char(f, cp, y, str);
         pos++;
     }
     if (!caret_drawn) {

@@ -17,15 +17,24 @@
 
 #include "I18N.hpp"
 
-I18N::I18N() : language(LanguageEnglish), current_language(all_texts_english) {
-    init();
+const char *I18N::Languages[] = {
+    "English",
+    "Deutsch",
+    "Français",
+    "Português",
+    0
+};
+
+I18N::I18N() : current_language(all_texts_english) {
+    init(LanguageEnglish);
 }
 
-I18N::I18N(Language language) : language(language), current_language(all_texts_english) {
-    init();
+I18N::I18N(Language language) : current_language(all_texts_english) {
+    init(language);
 }
 
-void I18N::init() {
+void I18N::init(Language language) {
+    this->language = language;
     switch (language) {
         case LanguageEnglish:
             current_language = all_texts_english;
@@ -42,6 +51,28 @@ void I18N::init() {
         case LanguagePortuguese:
             current_language = all_texts_portuguese;
             break;
+    }
+}
+
+void I18N::change(Language language) {
+    if (language != this->language) {
+        init(language);
+        for (Cbs::iterator it = cbs.begin(); it != cbs.end(); it++) {
+            it->cb(it->data);
+        }
+    }
+}
+
+void I18N::register_callback(Callback cb, void *data) {
+    cbs.push_back(Cb(cb, data));
+}
+
+void I18N::unregister_callback(Callback cb) {
+    for (Cbs::iterator it = cbs.begin(); it != cbs.end(); it++) {
+        if (it->cb == cb) {
+            cbs.erase(it);
+            break;
+        }
     }
 }
 

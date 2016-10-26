@@ -712,41 +712,41 @@ void MapEditor::draw_map(bool background) {
                                 TileGraphic *tg = tile->get_tilegraphic();
                                 subsystem.draw_tilegraphic(tg, cx, cy);
                                 if (draw_tile_props) {
-                                    unsigned char p = '?';
+                                    const char *p = "?";
                                     switch (tile->get_tile_type()) {
                                         case Tile::TileTypeNonblocking:
-                                            p = 'n';
+                                            p = "n";
                                             break;
 
                                         case Tile::TileTypeBlocking:
-                                            p = 'b';
+                                            p = "b";
                                             break;
 
                                         case Tile::TileTypeFallingOnlyBlocking:
-                                            p = 'f';
+                                            p = "f";
                                             break;
 
                                         case Tile::TileTypeBaseRed:
-                                            p = 'r';
+                                            p = "r";
                                             break;
 
                                         case Tile::TileTypeBaseBlue:
-                                            p = 'b';
+                                            p = "b";
                                             break;
 
                                         case Tile::TileTypeKilling:
-                                            p = 'k';
+                                            p = "k";
                                             break;
 
                                         default:
                                             break;
                                     }
-                                    int cw = f->get_char_width(p);
+                                    int cw = f->get_text_width(p);
                                     subsystem.draw_char(f, cx + tile_width / 2 - cw / 2, cy + tile_height / 2 - fh / 2, p);
                                 }
                                 if (draw_tile_zorder) {
-                                    unsigned char p = (tile->is_background() ? 'b' : 'f');
-                                    int cw = f->get_char_width(p);
+                                    const char *p = (tile->is_background() ? "b" : "f");
+                                    int cw = f->get_text_width(p);
                                     subsystem.draw_char(f, cx + tile_width / 2 - cw / 2, cy + tile_height / 2 - fh / 2, p);
                                 }
 

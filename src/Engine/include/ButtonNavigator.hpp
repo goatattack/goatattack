@@ -30,6 +30,7 @@ private:
     ButtonNavigator& operator=(const ButtonNavigator&);
 
 public:
+    typedef std::vector<GuiButton *> Buttons;
     typedef void (*OnCancel)(void *data);
 
     ButtonNavigator(Gui& gui, Configuration& config);
@@ -41,9 +42,9 @@ public:
     GuiButton *add_button(GuiButton *btn);
     void clear();
     void set_button_focus();
+    const Buttons& get_buttons() const;
 
 private:
-    typedef std::vector<GuiButton *> NavigatorButtons;
 
     Gui& gui;
     Configuration& config;
@@ -52,7 +53,7 @@ private:
     bool joymotion_up;
     bool joymotion_down;
 
-    NavigatorButtons navigator_buttons;
+    Buttons navigator_buttons;
     int current_index;
     KeyBinding binding;
 

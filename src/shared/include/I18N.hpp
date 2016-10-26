@@ -22,9 +22,12 @@
 
 #include <string>
 #include <cstdio>
+#include <vector>
 
 class I18N {
 public:
+    typedef void (*Callback)(void *data);
+
     enum Language {
         LanguageEnglish,
         LanguageGerman,
@@ -32,8 +35,14 @@ public:
         LanguagePortuguese
     };
 
+    static const char *Languages[];
+
     I18N();
     I18N(Language language);
+
+    void change(Language language);
+    void register_callback(Callback cb, void *data);
+    void unregister_callback(Callback cb);
 
     std::string operator()(I18NText id) {
         return get_text(id);
@@ -67,20 +76,32 @@ public:
     }
 
 private:
+    struct Cb {
+        Cb(Callback cb, void *data) : cb(cb), data(data) { }
+
+        Callback cb;
+        void *data;
+    };
+
+    typedef std::vector<Cb> Cbs;
+
     struct Text {
         I18NText id;
         const char *text;
     };
 
-    Language language;
     const Text *current_language;
+
+    Language language;
+    Cbs cbs;
 
     static const Text all_texts_english[];
     static const Text all_texts_german[];
     static const Text all_texts_french[];
     static const Text all_texts_portuguese[];
+    static const Text all_texts_swiss_german[];
 
-    void init();
+    void init(Language language);
     const char *get_text(I18NText id) const;
     void replace(std::string& s, const char *w, size_t wl, const char *p) const;
     void replace(std::string& s, const char *w, size_t wl, const std::string& p) const;

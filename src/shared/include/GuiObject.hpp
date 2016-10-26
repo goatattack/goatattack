@@ -376,20 +376,28 @@ private:
 /* GuiTextbox */
 class GuiTextbox : public GuiObject {
 public:
+    enum Type {
+        TypeNormal,
+        TypeHidden,
+        TypeInteger
+    };
+
     GuiTextbox(Gui& gui, GuiObject *parent);
     GuiTextbox(Gui& gui, GuiObject *parent, int x, int y, int width,
         const std::string& text);
 
     virtual ~GuiTextbox();
 
+    void set_type(Type type);
+    Type get_type() const;
     void set_text(const std::string& text);
     const std::string& get_text() const;
     void set_caret_position(int pos);
     int get_caret_position() const;
     void set_locked(bool state);
     bool get_locked() const;
-    void set_hide_characters(bool state);
-    bool get_hide_characters() const;
+    //void set_hide_characters(bool state);
+    //bool get_hide_characters() const;
 
     virtual bool can_have_focus() const;
     virtual bool can_have_mouse_events() const;
@@ -404,7 +412,8 @@ private:
     int caret_position;
     std::string text;
     bool locked;
-    bool hide_characters;
+    //bool hide_characters;
+    Type type;
 
     void recalc();
     void set_cursor_pos_from_mouse(int x);

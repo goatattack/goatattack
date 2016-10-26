@@ -108,7 +108,7 @@ int SubsystemNull::draw_clipped_text(Font *font, int x, int y, int width, const 
     return 0;
 }
 
-int SubsystemNull::draw_char(Font *font, int x, int y, unsigned char c) {
+int SubsystemNull::draw_char(Font *font, int x, int y, const char *s) {
     return x;
 }
 
