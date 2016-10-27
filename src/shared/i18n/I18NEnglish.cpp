@@ -256,7 +256,7 @@ const I18N::Text I18N::all_texts_english[] = {
     { I18N_TNMT_LOGOUT_MSG12, "" },
 
     { I18N_VERSION_MISMATCH_TITLE, "Version Mismatch" },
-    { I18N_VERSION_MISMATCH_MESSAGE, "Both protocols differ, you cannot connect to this server." },
+    { I18N_VERSION_MISMATCH_MESSAGE, "Protocols differ, you cannot connect to this server." },
     { I18N_SERVER_TITLE, "Server" },
     { I18N_SELECT_SERVER, "Please select a server first." },
     { I18N_ERROR_TITLE, "Error" },
@@ -425,7 +425,7 @@ const I18N::Text I18N::all_texts_english[] = {
     { I18N_ME_HC_TITLE, "Horizontal Copy" },
     { I18N_ME_HC_QUESTION, "This operation cannot be undone. Continue?" },
     { I18N_ME_PAK_NO_MAP, "No Map" },
-    { I18N_ME_PAK_CONFIGURE, "Please create or load a map first, before you can create a package." },
+    { I18N_ME_PAK_CONFIGURE, "Please create or load a map, before you can create a package." },
     { I18N_ME_PAK_SAVE_FIRST, "Please save your map first." },
     { I18N_ME_PAK_OVERWRITE1, "Overwrite?" },
     { I18N_ME_PAK_OVERWRITE2, "Overwrite existing package?" },

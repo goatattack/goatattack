@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
         init_hpet();
 
         Configuration config(UserDirectory, ConfigFilename);
-        I18N i18n(static_cast<I18N::Language>(config.get_int("language")));
+        I18N i18n(stream, static_cast<I18N::Language>(config.get_int("language")));
 
         /* load SDL subsystem */
         SubsystemSDL subsystem(stream, i18n, i18n(I18N_WINTITLE_EDITOR), config.get_bool("shading_pipeline"));
