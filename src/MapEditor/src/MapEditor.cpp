@@ -990,28 +990,28 @@ void MapEditor::light_editor(EditableLight *light) {
         int y = Spc;
         int nl = 20;
 
-        create_label(window, Spc, y + 2, i18n(I18N_ME_LP_RADIUS));
+        create_label(window, Spc, y + 1, i18n(I18N_ME_LP_RADIUS));
         sprintf(buffer, "%d", light->radius);
         lp_radius = create_textbox(window, tab, y, 50, buffer);
-        create_label(window, tab + 50 + 10, y + 2, "(1 - 256)");
+        create_label(window, tab + 50 + 10, y + 1, "(1 - 256)");
         y += nl;
 
-        create_label(window, Spc, y + 2, i18n(I18N_ME_LP_RED));
+        create_label(window, Spc, y + 1, i18n(I18N_ME_LP_RED));
         sprintf(buffer, "%d", light->r);
         lp_red = create_textbox(window, tab, y, 50, buffer);
-        create_label(window, tab + 50 + 10, y + 2, "(0 - 255)");
+        create_label(window, tab + 50 + 10, y + 1, "(0 - 255)");
         y += nl;
 
-        create_label(window, Spc, y + 2, i18n(I18N_ME_LP_GREEN));
+        create_label(window, Spc, y + 1, i18n(I18N_ME_LP_GREEN));
         sprintf(buffer, "%d", light->g);
         lp_green = create_textbox(window, tab, y, 50, buffer);
-        create_label(window, tab + 50 + 10, y + 2, "(0 - 255)");
+        create_label(window, tab + 50 + 10, y + 1, "(0 - 255)");
         y += nl;
 
-        create_label(window, Spc, y + 2, i18n(I18N_ME_LP_BLUE));
+        create_label(window, Spc, y + 1, i18n(I18N_ME_LP_BLUE));
         sprintf(buffer, "%d", light->b);
         lp_blue = create_textbox(window, tab, y, 50, buffer);
-        create_label(window, tab + 50 + 10, y + 2, "(0 - 255)");
+        create_label(window, tab + 50 + 10, y + 1, "(0 - 255)");
         y += nl;
 
         lp_radius->set_focus();

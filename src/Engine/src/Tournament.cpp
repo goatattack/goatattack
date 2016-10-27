@@ -21,6 +21,8 @@
 #include <cmath>
 #include <cstdlib>
 
+#include <iostream>
+
 Tournament::Tournament(Resources& resources, Subsystem& subsystem, Gui *gui, ServerLogger *logger,
     const std::string& game_file, bool server, const std::string& map_name,
     Players& players, int duration, bool warmup)
@@ -307,7 +309,13 @@ void Tournament::add_text_animation(GTextAnimation *animation) {
         gani = new GameTextAnimation;
         gani->font = resources.get_font(animation->font_name);
         gani->text = i18n(static_cast<I18NText>(animation->i18n_id));
-        gani->x = static_cast<int>(animation->x) - gani->font->get_text_width(gani->text) / 2;
+        int tw = gani->font->get_text_width(gani->text);
+        gani->x = static_cast<int>(animation->x) - tw / 2;
+        if (gani->x < 0) {
+            gani->x = 0;
+        } else if (gani->x + tw > map_width * tile_width) {
+            gani->x = map_width * tile_width - tw;
+        }
         gani->y = static_cast<int>(animation->y);
         gani->max_rise_counter = animation->max_counter;
         game_text_animations.push_back(gani);
