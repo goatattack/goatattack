@@ -261,19 +261,18 @@ void OptionsMenu::graphics_and_sound_click() {
     gui.create_checkbox(window, 15, 30, i18n(I18N_OPTIONS_SETTINGS22), subsystem.has_scanlines(), static_toggle_scanlines_click, this);
 
     gui.create_label(window, 15, 45, i18n(I18N_OPTIONS_SETTINGS23));
-    gui.create_hscroll(window, 130, 46, 143, 25, 100, config.get_int("scanlines_intensity"), static_scanlines_intensity_changed, this);
+    gui.create_hscroll(window, 130, 46, 140, 25, 100, config.get_int("scanlines_intensity"), static_scanlines_intensity_changed, this);
     gui.create_box(window, 15, 66, ww - 30, 1);
 
     gui.create_label(window, 15, 75, i18n(I18N_OPTIONS_SETTINGS24));
-    gui.create_hscroll(window, 130, 76, 143, 0, 100, config.get_int("music_volume"), static_music_volume_changed, this);
+    gui.create_hscroll(window, 130, 76, 140, 0, 100, config.get_int("music_volume"), static_music_volume_changed, this);
 
     gui.create_label(window, 15, 90, i18n(I18N_OPTIONS_SETTINGS25));
-    gui.create_hscroll(window, 130, 91, 143, 0, 128, config.get_int("sfx_volume"), static_sfx_volume_changed, this);
-
+    gui.create_hscroll(window, 130, 91, 140, 0, 128, config.get_int("sfx_volume"), static_sfx_volume_changed, this);
     gui.create_box(window, 15, 111, ww - 30, 1);
 
     gui.create_label(window, 15, 120, i18n(I18N_OPTIONS_SETTINGS26));
-    gui.create_hscroll(window, 130, 121, 143, 5, 15, config.get_int("text_fade_speed"), static_text_fade_speed_changed, this);
+    gui.create_hscroll(window, 130, 121, 140, 5, 15, config.get_int("text_fade_speed"), static_text_fade_speed_changed, this);
 
     std::string btn_close(i18n(I18N_BUTTON_CLOSE));
     int bw_close = gui.get_font()->get_text_width(btn_close) + 28;

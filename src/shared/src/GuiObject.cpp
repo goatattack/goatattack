@@ -2102,27 +2102,29 @@ void GuiListbox::select_from_mouse(int x, int y, bool from_mousemove) {
     int visible_entries = height / fh;
 
     /* title bar column click? */
-    if (title_bar_visible && y >= -fh && y < 0 && !from_mousemove) {
-        GuiListboxEntry::Columns& columns = title_bar->get_columns();
-        int width = get_width() - 2 - sb->get_width() + 1;
-        int index = columns.size() - 1;
-        int col_right = width + (get_client_x() + 1);
-        for (GuiListboxEntry::Columns::reverse_iterator it = columns.rbegin();
-            it != columns.rend(); it++)
-        {
-            GuiListboxEntry::Column& column = *it;
-            if (x >= col_right - column.width && x <= (col_right + GuiListboxEntry::Spc)) {
-                if (on_title_clicked) {
-                    on_title_clicked(this, on_title_clicked_data, index);
+    if (title_bar_visible && y >= -fh && y < 0) {
+        if (!from_mousemove) {
+            GuiListboxEntry::Columns& columns = title_bar->get_columns();
+            int width = get_width() - 2 - sb->get_width() + 1;
+            int index = columns.size() - 1;
+            int col_right = width + (get_client_x() + 1);
+            for (GuiListboxEntry::Columns::reverse_iterator it = columns.rbegin();
+                it != columns.rend(); it++)
+            {
+                GuiListboxEntry::Column& column = *it;
+                if (x >= col_right - column.width && x <= (col_right + GuiListboxEntry::Spc)) {
+                    if (on_title_clicked) {
+                        on_title_clicked(this, on_title_clicked_data, index);
+                    }
+                    return;
                 }
-                return;
+                col_right -= (column.width + GuiListboxEntry::Spc);
+                index--;
             }
-            col_right -= (column.width + GuiListboxEntry::Spc);
-            index--;
-        }
-        index = 0;
-        if (on_title_clicked) {
-            on_title_clicked(this, on_title_clicked_data, index);
+            index = 0;
+            if (on_title_clicked) {
+                on_title_clicked(this, on_title_clicked_data, index);
+            }
         }
         return;
     }
