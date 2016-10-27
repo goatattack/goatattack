@@ -30,7 +30,7 @@
 #include <algorithm>
 
 static const char *TitleMusic = "norway";
-static const char *SecuredSymbol = "*";
+static const char *SecuredSymbol = "\xe2\x84\xa2";
 static const int SecuredWidth = 16;
 
 MainMenu::MainMenu(Resources& resources, Subsystem& subsystem, Configuration& config)

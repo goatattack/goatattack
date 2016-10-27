@@ -25,11 +25,17 @@ const char *I18N::Languages[] = {
     0
 };
 
-I18N::I18N() : current_language(all_texts_english) {
+static const int FallbackCounterMax = 5;
+
+I18N::I18N(std::ostream& stream)
+    : stream(stream), current_language(all_texts_english), fallback_counter(0)
+{
     init(LanguageEnglish);
 }
 
-I18N::I18N(Language language) : current_language(all_texts_english) {
+I18N::I18N(std::ostream& stream, Language language)
+    : stream(stream), current_language(all_texts_english), fallback_counter(0)
+{
     init(language);
 }
 
@@ -81,7 +87,32 @@ const char *I18N::get_text(I18NText id) const {
         const Text& text = current_language[id - 1];
         if (text.id == id) {
             return text.text;
+        } else {
+            return get_text_fallback(id);
         }
+    }
+
+    return "???";
+}
+
+const char *I18N::get_text_fallback(I18NText id) const {
+    fallback_counter++;
+    if (fallback_counter == FallbackCounterMax) {
+        fallback_counter = 0;
+        stream << std::endl;
+        stream << "----------------------------------------" << std::endl;
+        stream << " WARNING: the i18n is inconstistent." << std::endl;
+        stream << " your game client seems to be outdated." << std::endl;
+        stream << " you should update as soon as possible." << std::endl;
+        stream << "----------------------------------------" << std::endl;
+        stream << std::endl;
+    }
+    const Text *texts = current_language;
+    while (texts->text) {
+        if (texts->id == id) {
+            return texts->text;
+        }
+        texts++;
     }
 
     return "???";

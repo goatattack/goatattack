@@ -23,6 +23,7 @@
 #include <string>
 #include <cstdio>
 #include <vector>
+#include <iostream>
 
 class I18N {
 public:
@@ -37,8 +38,8 @@ public:
 
     static const char *Languages[];
 
-    I18N();
-    I18N(Language language);
+    I18N(std::ostream& stream);
+    I18N(std::ostream& stream, Language language);
 
     void change(Language language);
     void register_callback(Callback cb, void *data);
@@ -90,7 +91,9 @@ private:
         const char *text;
     };
 
+    std::ostream& stream;
     const Text *current_language;
+    mutable int fallback_counter;
 
     Language language;
     Cbs cbs;
@@ -99,10 +102,10 @@ private:
     static const Text all_texts_german[];
     static const Text all_texts_french[];
     static const Text all_texts_portuguese[];
-    static const Text all_texts_swiss_german[];
 
     void init(Language language);
     const char *get_text(I18NText id) const;
+    const char *get_text_fallback(I18NText id) const;
     void replace(std::string& s, const char *w, size_t wl, const char *p) const;
     void replace(std::string& s, const char *w, size_t wl, const std::string& p) const;
     void replace(std::string& s, const char *w, size_t wl, int p) const;

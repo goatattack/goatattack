@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
     start_net();
     try {
         Configuration config(UserDirectory, ConfigFilename);
-        I18N i18n(static_cast<I18N::Language>(config.get_int("language")));
+        I18N i18n(stream, static_cast<I18N::Language>(config.get_int("language")));
 
 #ifdef DEDICATED_SERVER
         SubsystemNull subsystem(stream, i18n, i18n(I18N_WINTITLE_GAME));
