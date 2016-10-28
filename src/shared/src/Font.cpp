@@ -255,7 +255,7 @@ void Font::create_character(const char *s) {
                         if (do_monochrome) {
                             alpha = (*src++ ? 255 : 0);
                         } else {
-                            alpha = (static_cast<int>(*src++) * outline_alpha_factor);
+                            alpha = static_cast<int>(static_cast<int>(*src++) * outline_alpha_factor);
                         }
                         *dst++ = static_cast<unsigned char>(alpha > 255 ? 255 : alpha);
                     }
@@ -305,7 +305,7 @@ void Font::create_character(const char *s) {
                             if (do_monochrome) {
                                 alpha = (*src++ ? 255 : 0);
                             } else {
-                                int sharp_alpha = (static_cast<int>(*src++) * alpha_factor);
+                                int sharp_alpha = static_cast<int>(static_cast<int>(*src++) * alpha_factor);
                                 alpha = (sharp_alpha > 255 ? 255 : sharp_alpha);
                             }
                             dst[0] = ((alpha * (static_cast<unsigned char>(red) - dst[0])) >> 8) + dst[0];
