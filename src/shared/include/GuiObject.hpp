@@ -109,6 +109,7 @@ private:
     std::string tooltip_text;
 
     void set_parent(GuiObject *obj);
+    virtual void object_removing(GuiObject *object);
     virtual void paint() = 0;
 };
 
@@ -185,6 +186,7 @@ private:
     int window_title_height;
     Icon *screw1, *screw2, *screw3, *screw4;
 
+    virtual void object_removing(GuiObject *obj);
     virtual void paint();
     void prepare();
 };
@@ -396,8 +398,6 @@ public:
     int get_caret_position() const;
     void set_locked(bool state);
     bool get_locked() const;
-    //void set_hide_characters(bool state);
-    //bool get_hide_characters() const;
 
     virtual bool can_have_focus() const;
     virtual bool can_have_mouse_events() const;
@@ -412,8 +412,8 @@ private:
     int caret_position;
     std::string text;
     bool locked;
-    //bool hide_characters;
     Type type;
+    bool mouse_is_down;
 
     void recalc();
     void set_cursor_pos_from_mouse(int x);

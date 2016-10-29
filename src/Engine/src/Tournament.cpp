@@ -708,18 +708,18 @@ void Tournament::player_damage(identifier_t owner, Player *p, NPC *npc, int dama
     if (damage) {
         check_friendly_fire(owner, p);
 
-        /* get damage levels */
-        int damage2 = damage / (p->state.server_state.armor ? 2 : 1);
-
         /* reduce armor */
-        if (damage >= p->state.server_state.armor) {
-            p->state.server_state.armor = 0;
+        unsigned char& armor = p->state.server_state.armor;
+        if (damage >= armor) {
+            damage = damage - armor + armor / 2;
+            armor = 0;
         } else {
-            p->state.server_state.armor -= damage;
+            armor -= damage;
+            damage /= 2;
         }
 
         /* reduce health */
-        if (damage2 >= p->state.server_state.health) {
+        if (damage >= p->state.server_state.health) {
             /* player dies */
             player_dies(p, I18N_NONE);
 
@@ -750,7 +750,7 @@ void Tournament::player_damage(identifier_t owner, Player *p, NPC *npc, int dama
             }
         } else {
             add_state_response(GPCPlayerHurt, 0, 0);
-            p->state.server_state.health -= damage2;
+            p->state.server_state.health -= damage;
         }
     }
 }

@@ -67,10 +67,6 @@ const char *TournamentCTF::tournament_type() {
     return "CTF";
 }
 
-void TournamentCTF::write_stats_in_server_log() {
-    // TODO: check if this empty function is needed
-}
-
 void TournamentCTF::subintegrate(ns_t ns) {
     double period_f = ns / static_cast<double>(ns_fc);
     if (server) {

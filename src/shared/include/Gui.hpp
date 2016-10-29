@@ -146,6 +146,7 @@ public:
     bool has_focus(GuiObject *object) const;
     bool get_blink_on() const;
     void set_mousepointer(Mousepointer mouse);
+    void reset_blinker();
 
     MessageBoxResponse show_messagebox(MessageBoxIcon icon, const std::string& title, const std::string& text);
     MessageBoxResponse show_questionbox(const std::string& title, const std::string& text);
@@ -203,7 +204,6 @@ private:
     bool process_joymotion(InputData& input);
     bool process_joybuttondown(InputData& input);
     bool process_joybuttonup(InputData& input);
-    void reset_blinker();
     void destroy_tooltip();
     void set_tooltip(GuiObject *object);
     void idle_tooltip();

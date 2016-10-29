@@ -383,8 +383,6 @@ void Server::thread() {
                                 }
 
                                 /* update animations */
-                                /* -> have to discuss, if these animations must be populated */
-                                /* -> every cycle. all animations are rendered clientside */
                                 GAnimationState anistat;
                                 Tournament::GameAnimations& animations = tournament->get_game_animations();
                                 for (Tournament::GameAnimations::iterator it = animations.begin();

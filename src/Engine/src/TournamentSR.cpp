@@ -213,7 +213,6 @@ void TournamentSR::round_finished_set_time(Player *p, GTransportTime *race) {
         if ((has_entries && diff < best_time) || !has_entries) {
             sprintf(buffer, "%.2f", diff);
             add_i18n_response(I18N_TNMT_SR_RECORD, p->get_player_name().c_str(), buffer);
-            add_msg_response(buffer);
             add_sound_response("round_complete_best");
             if (logger) {
                 logger->log(ServerLogger::LogTypeRoundFinished, i18n(I18N_TNMT_SR_RECORD, p->get_player_name().c_str(), buffer), p, 0, &diff);

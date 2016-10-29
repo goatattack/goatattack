@@ -45,6 +45,7 @@ GuiObject::~GuiObject() {
 void GuiObject::remove_all_objects() {
     for (Children::iterator it = children.begin(); it != children.end(); it++) {
         GuiObject *obj = *it;
+        object_removing(obj);
         delete obj;
     }
     children.clear();
@@ -54,6 +55,7 @@ void GuiObject::remove_object(GuiObject *object) {
     for (Children::iterator it = children.begin(); it != children.end(); it++) {
         GuiObject *obj = *it;
         if (obj == object) {
+            object_removing(obj);
             delete obj;
             children.erase(it);
             break;
@@ -246,6 +248,8 @@ void GuiObject::set_parent(GuiObject *obj) {
     }
 }
 
+void GuiObject::object_removing(GuiObject *obj) { }
+
 /* ****************************************************** */
 /* GuiWindow                                              */
 /* ****************************************************** */
@@ -427,6 +431,13 @@ int GuiWindow::get_client_x() const {
 
 int GuiWindow::get_client_y() const {
     return GuiObject::get_y() + window_title_height;
+}
+
+
+void GuiWindow::object_removing(GuiObject *object) {
+    if (object == focused_object) {
+        focused_object = 0;
+    }
 }
 
 void GuiWindow::paint() {
@@ -1059,13 +1070,13 @@ void GuiCheckbox::load_icons() {
 /* ****************************************************** */
 GuiTextbox::GuiTextbox(Gui& gui, GuiObject *parent)
     : GuiObject(gui, parent), start_position(0), caret_position(0),
-      text(), locked(false), type(TypeNormal) { }
+      text(), locked(false), type(TypeNormal), mouse_is_down(false) { }
 
 GuiTextbox::GuiTextbox(Gui& gui, GuiObject *parent, int x, int y,
     int width, const std::string& text)
     : GuiObject(gui, parent, x, y, width, gui.get_font()->get_font_height() + 2),
       start_position(0), caret_position(utf8_strlen(text.c_str())),
-      text(text), locked(false), type(TypeNormal)
+      text(text), locked(false), type(TypeNormal), mouse_is_down(false)
 {
     recalc();
 }
@@ -1120,6 +1131,7 @@ bool GuiTextbox::can_have_mouse_events() const {
 
 bool GuiTextbox::mousedown(int button, int x, int y) {
     if (button == 0) {
+        mouse_is_down = true;
         set_cursor_pos_from_mouse(x);
     }
 
@@ -1133,6 +1145,10 @@ bool GuiTextbox::mousemove(int x, int y) {
 }
 
 bool GuiTextbox::mouseup(int button, int x, int y) {
+    if (button == 0) {
+        mouse_is_down = false;
+    }
+
     return true;
 }
 
@@ -1257,13 +1273,13 @@ void GuiTextbox::recalc() {
 
         int w = get_width() - 2 - 2;
 
-        if (cw > w) {
+        if (cw >= w) {
             int pos = caret_position;
             cw = 0;
             while (pos) {
                 pos--;
                 cw += f->get_char_width(utf8_real_char_ptr(tptr, pos));
-                if (cw > w) {
+                if (cw >= w) {
                     start_position = pos + 2;
                     break;
                 }
@@ -1273,7 +1289,42 @@ void GuiTextbox::recalc() {
 }
 
 void GuiTextbox::set_cursor_pos_from_mouse(int x) {
-    // TODO -> next release
+    if (mouse_is_down) {
+        Font *f = gui.get_font();
+        int cx = get_client_x();
+        int rp = cx + get_width() - 2 - 2;
+        int pos = start_position;
+        int caret = caret_position;
+        const char *tptr = text.c_str();
+        int sz = utf8_strlen(tptr);
+        int curx = cx + 2;
+        while (pos < sz + 1 && curx <= rp) {
+            bool ok = false;
+            int advance = 0;
+            if (pos < sz) {
+                const char *str = utf8_real_char_ptr(tptr, pos);
+                const Font::Character *chr = f->get_character(str);
+                advance = chr->advance;
+                if (x >= curx && x < curx + chr->advance) {
+                    ok = true;
+                }
+            } else {
+                if (x >= curx) {
+                    ok = true;
+                }
+            }
+            if (ok) {
+                if (caret_position != pos) {
+                    caret_position = pos;
+                    gui.reset_blinker();
+                }
+                break;
+            }
+            curx += advance;
+            pos++;
+        }
+        recalc();
+    }
 }
 
 void GuiTextbox::paint() {
@@ -1306,14 +1357,9 @@ void GuiTextbox::paint() {
     int caretx = cp;
     const char *p = text.c_str();
     while (pos < sz) {
-        const char *str = utf8_real_char_ptr(tptr, pos);
+        const char *str = (type == TypeHidden ? "*" : utf8_real_char_ptr(tptr, pos));
         const Font::Character *chr = f->get_character(str);
-
-        unsigned char c = *str;
-        if (type == TypeHidden) {
-            str = "*";
-        }
-        if (cp + chr->advance > rp) {
+        if (cp + chr->advance >= rp) {
             break;
         }
         if (pos == caret && !caret_drawn) {
@@ -1324,7 +1370,7 @@ void GuiTextbox::paint() {
         pos++;
     }
     if (!caret_drawn) {
-        caretx = cp + 1;
+        caretx = cp;
     }
     if (gui.has_focus(this) && !locked) {
         if (gui.get_blink_on()) {

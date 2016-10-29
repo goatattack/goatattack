@@ -113,10 +113,10 @@ void Client::sevt_data(ServerEvent& evt) {
         t->from_net();
 
 #ifdef SAFE_ALIGNMENT
-            data_t *data_ptr = aligned_buffer;
-            memcpy(data_ptr, t->data, t->len);
+        data_t *data_ptr = aligned_buffer;
+        memcpy(data_ptr, t->data, t->len);
 #else
-            data_t *data_ptr = t->data;
+        data_t *data_ptr = t->data;
 #endif
         switch (t->cmd) {
             case GPCServerMessage:
