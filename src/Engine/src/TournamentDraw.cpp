@@ -394,6 +394,7 @@ void Tournament::draw_lives_armor(int amount, Icon *full, Icon *half, Icon *empt
 }
 
 void Tournament::draw_players() {
+    subsystem.reset_color();
     for (Players::iterator it = players.begin(); it != players.end(); it++) {
         Player *p = *it;
         if (p->is_alive_and_playing()) {
@@ -406,7 +407,6 @@ void Tournament::draw_players() {
             subsystem.draw_tilegraphic(tg, p->state.client_state.iconindex,
                 static_cast<int>(p->state.client_server_state.x) + left,
                 static_cast<int>(p->state.client_server_state.y) + top - height);
-            subsystem.reset_color();
 
             /* draw armor */
             if (p->state.server_state.armor) {

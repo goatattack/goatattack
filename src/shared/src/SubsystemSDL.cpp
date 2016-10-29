@@ -96,7 +96,7 @@ int music_player_current_external_index = -1;
 time_t music_player_external_last_played = 0;
 std::string music_player_external_last_song;
 
-static void play_next_song() {
+static void play_next_song(bool print) {
     if (music_player_tms) {
         if (music_player_external) {
             if (music_player_external_music_handle) {
@@ -123,7 +123,9 @@ static void play_next_song() {
                         } else {
                             music_player_external_last_played = time(0);
                             music_player_external_last_song = em.shortname;
-                            music_player_tms->add_text_msg((*glbi18n)(I18N_MUSIC_INFO, em.shortname));
+                            if (Mix_VolumeMusic(-1) || print) {
+                                music_player_tms->add_text_msg((*glbi18n)(I18N_MUSIC_INFO, em.shortname));
+                            }
                             ok = true;
                             break;
                         }
@@ -146,7 +148,9 @@ static void play_next_song() {
                 music = music_player_musics[music_player_current_index];
                 if (music != music_player_current_music) {
                     music_player_current_music = music;
-                    music_player_tms->add_text_msg((*glbi18n)(I18N_MUSIC_INFO, music->get_description()));
+                    if (Mix_VolumeMusic(-1) || print) {
+                        music_player_tms->add_text_msg((*glbi18n)(I18N_MUSIC_INFO, music->get_description()));
+                    }
                 }
             }
             if (music_player_current_music) {
@@ -159,10 +163,10 @@ static void play_next_song() {
 
 static void music_finished() {
     if (music_player_external) {
-        play_next_song();
+        play_next_song(false);
     } else {
         if (music_player_current_music) {
-            play_next_song();
+            play_next_song(false);
         }
     }
 }
@@ -699,12 +703,12 @@ void SubsystemSDL::start_music_player(Resources& resources, TextMessageSystem& t
         std::random_shuffle(music_player_musics.begin(), music_player_musics.end());
     }
 
-    play_next_song();
+    play_next_song(false);
 }
 
 void SubsystemSDL::skip_music_player_song() {
     music_player_external_last_played = 0;
-    play_next_song();
+    play_next_song(true);
 }
 
 void SubsystemSDL::stop_music_player() {

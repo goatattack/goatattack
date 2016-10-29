@@ -20,6 +20,7 @@
 
 #include <stdint.h>
 #include <cstdlib>
+#include <string>
 
 /*
  * Parts of this code is based on the utf-8 decoder of Bjoern Hoehrmann.
@@ -118,6 +119,23 @@ inline size_t utf8_sequence_len(const char *s) {
     }
 
     return len;
+}
+
+inline std::string utf8_validate(const char *s) {
+    std::string out;
+    std::string sequence;
+    int state = UTF8_ACCEPT;
+    uint32_t codepoint;
+    while (*s) {
+        sequence += *s;
+        if (!utf8_decode(*s, state, codepoint)) {
+            out += sequence;
+            sequence.clear();
+        }
+        s++;
+    }
+
+    return out;
 }
 
 #endif

@@ -195,7 +195,7 @@ int TournamentDM::draw_stats(Font *f, int x, int y) {
         sprintf(buffer, "%d", rank);
         subsystem.draw_text(f, x, y, buffer);
 
-        subsystem.draw_text(f, x + 20, y, p->get_player_name());
+        subsystem.draw_clipped_text(f, x + 20, y, 110, p->get_player_name());
 
         sprintf(buffer, "%d", current_score);
         subsystem.draw_text(f, x + 140, y, buffer);

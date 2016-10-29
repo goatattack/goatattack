@@ -16,12 +16,14 @@
  */
 
 #include "Player.hpp"
+#include "UTF8.hpp"
 
 static const char *CharactersetFallback = "goat";
 
 Player::Player(Resources& resources, const Connection *c, player_id_t player_id,
     const std::string& player_name, const std::string& characterset_name)
-    : resources(resources), c(c), player_id(player_id), player_name(player_name),
+    : resources(resources), c(c), player_id(player_id),
+      player_name(utf8_validate(player_name.c_str())),
       fallback_characterset(get_characterset(CharactersetFallback)),
       characterset(get_characterset(characterset_name)), org_characterset(characterset),
       check_characterset(true), characterset_name(characterset_name),
@@ -41,7 +43,7 @@ const std::string& Player::get_player_name() const {
 }
 
 void Player::set_player_name(const std::string& name) {
-    player_name = name;
+    player_name = utf8_validate(name.c_str());
 }
 
 Characterset *Player::get_characterset() const {

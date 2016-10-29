@@ -30,8 +30,8 @@
 #include <algorithm>
 
 static const char *TitleMusic = "norway";
-static const char *SecuredSymbol = "\xe2\x84\xa2";
-static const int SecuredWidth = 16;
+static const char *SecuredSymbol = "\xe2\x9a\xbf";
+static const int SecuredWidth = 8;
 
 MainMenu::MainMenu(Resources& resources, Subsystem& subsystem, Configuration& config)
     : Gui(resources, subsystem, resources.get_font("normal")),
@@ -545,7 +545,6 @@ void MainMenu::create_server_click() {
     int vh = subsystem.get_view_height();
     int ww = 347;
     int wh = 325;
-    int bw = 140;
     GuiWindow *window = push_window(vw / 2 - ww / 2, vh / 2 - wh / 2, ww, wh, i18n(I18N_MAINMENU_LAN));
     window->set_cancelable(true);
 
@@ -641,17 +640,23 @@ void MainMenu::create_server_click() {
     fill_map_listbox(static_cast<GamePlayType>(game_mode));
 
     /* buttons */
+    std::string btn_start(i18n(I18N_BUTTON_START_SERVER));
+    int bw_start = f->get_text_width(btn_start) + 24;
+    create_button(window, 15, wh - 43, bw_start, 18, btn_start, static_start_server_click, this);
+
+
+
     std::string text(i18n(I18N_BUTTON_CANCEL));
-    bw = f->get_text_width(text) + 28;
-    create_button(window, ww - bw - 17, wh - 43, bw, 18, text, static_close_window_click, this);
+    int bw = f->get_text_width(text) + 24;
+    create_button(window, ww - bw - 16, wh - 43, bw, 18, text, static_close_window_click, this);
 
     text = i18n(I18N_BUTTON_START_SERVER);
-    bw = f->get_text_width(text) + 28;
+    bw = f->get_text_width(text) + 24;
     int last_bw = bw;
     create_button(window, 15, wh - 43, bw, 18, text, static_start_server_click, this);
 
     text = i18n(I18N_BUTTON_CLOSE);
-    bw = f->get_text_width(text) + 28;
+    bw = f->get_text_width(text) + 24;
     create_button(window, last_bw + 20, wh - 43, bw, 18, text, static_close_start_server_click, this);
 }
 
@@ -922,7 +927,7 @@ void MainMenu::credits_click() {
 
     std::string t1(i18n(I18N_MAINMENU_CREDITS_THANKS));
     int x1 = (ww - 2) / 2 - f->get_text_width(t1) / 2;
-    std::string t2("ruby, cataclisma, julia, tanja, luxi");
+    std::string t2("ruby, cataclisma, julia, harambe, bier");
     int x2 = (ww - 2) / 2 - f->get_text_width(t2) / 2;
     std::string t3(i18n(I18N_MAINMENU_FREDERIC));
     int x3 = (ww - 2) / 2 - f->get_text_width(t3) / 2;

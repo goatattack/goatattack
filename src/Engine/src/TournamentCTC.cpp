@@ -616,7 +616,7 @@ int TournamentCTC::draw_stats(Font *f, int x, int y) {
             sprintf(buffer, "%d", rank);
             subsystem.draw_text(f, x, y, buffer);
 
-            subsystem.draw_text(f, x + 20, y, top.player->get_player_name());
+            subsystem.draw_clipped_text(f, x + 20, y, 110, top.player->get_player_name());
 
             sprintf(buffer, "%d:%02d", total_minutes, total);
             subsystem.draw_text(f, x + 140, y, buffer);

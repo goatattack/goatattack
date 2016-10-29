@@ -18,6 +18,7 @@
 #include "Client.hpp"
 #include "Utils.hpp"
 #include "Scope.hpp"
+#include "UTF8.hpp"
 
 #include <iostream>
 #include <algorithm>
@@ -284,6 +285,8 @@ void Client::idle() throw (Exception) {
         if (cmsg->player.length()) {
             subsystem.set_color(0.5f, 1.0f, 0.5f, alpha);
             x = subsystem.draw_text(font, x, y, cmsg->player);
+            subsystem.set_color(0.75f, 0.75f, 1.0f, alpha);
+            x = subsystem.draw_text(font, x, y, ": ");
             subsystem.set_color(1.0f, 1.0f, 1.0f, alpha);
         } else {
             subsystem.set_color(0.75f, 0.75f, 1.0f, alpha);
@@ -520,8 +523,7 @@ void Client::window_close_click() {
 }
 
 void Client::chat_send_message() {
-    chat_textbox->set_text(trim(chat_textbox->get_text()));
-    const std::string& text = chat_textbox->get_text();
+    const std::string& text(utf8_validate(trim(chat_textbox->get_text()).substr(0, 200).c_str()));
 
     if (text.length() && conn) {
         {

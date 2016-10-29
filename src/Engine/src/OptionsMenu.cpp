@@ -185,12 +185,12 @@ void OptionsMenu::player_click() {
     GuiWindow *window = gui.push_window(vw / 2 - ww / 2, vh / 2- wh / 2, ww, wh, i18n(I18N_OPTIONS_PLAYER));
     window->set_cancelable(true);
 
-    gui.create_label(window, 15, 16, i18n(I18N_OPTIONS_SETTINGS11));
-    player_name = gui.create_textbox(window, 120, 15, 150, config.get_string("player_name"));
-    show_player_name  = gui.create_checkbox(window, 15, 35, i18n(I18N_OPTIONS_SETTINGS12), config.get_bool("show_player_name"), 0, 0);
-    gui.create_label(window, 15, 53, i18n(I18N_OPTIONS_SETTINGS13));
-    player_skin = gui.create_listbox(window, 120, 56, 150, 54, "", static_player_skin_click, this);
-    player_skin_pic = gui.create_picture(window, 15, 70, 0);
+    gui.create_label(window, Gui::Spc, 16, i18n(I18N_OPTIONS_SETTINGS11));
+    player_name = gui.create_textbox(window, 120, 15, 153, config.get_string("player_name"));
+    show_player_name  = gui.create_checkbox(window, Gui::Spc, 35, i18n(I18N_OPTIONS_SETTINGS12), config.get_bool("show_player_name"), 0, 0);
+    gui.create_label(window, Gui::Spc, 53, i18n(I18N_OPTIONS_SETTINGS13));
+    player_skin = gui.create_listbox(window, 120, 56, 153, 54, "", static_player_skin_click, this);
+    player_skin_pic = gui.create_picture(window, Gui::Spc, 70, 0);
 
     /* read all charactersets and sort them */
     Resources::ResourceObjects& sets = resources.get_charactersets();
@@ -215,9 +215,7 @@ void OptionsMenu::player_click() {
     player_skin->set_selected_index(selected_skin);
     player_name->set_focus();
 
-    std::string btn_close(i18n(I18N_BUTTON_CLOSE));
-    int bw_close = gui.get_font()->get_text_width(btn_close) + 28;
-    gui.create_button(window, ww / 2 - bw_close / 2, wh - 43, bw_close, 18, btn_close, static_close_player_click, this);
+    add_ok_cancel_buttons(window, static_close_player_click);
 }
 
 void OptionsMenu::static_player_skin_click(GuiListbox *sender, void *data, int index) {
@@ -818,10 +816,10 @@ void OptionsMenu::language_click() {
     current_langugage = static_cast<I18N::Language>(lng);
 
     subsystem.clear_input_buffer();
-    GuiWindow *window = gui.push_window(vw / 2 - ww / 2, vh / 2- wh / 2, ww, wh, i18n(I18N_LANGUAGE));
+    GuiWindow *window = gui.push_window(vw / 2 - ww / 2, vh / 2 - wh / 2, ww, wh, i18n(I18N_LANGUAGE));
     window->set_cancelable(true);
 
-    lang_lb = gui.create_listbox(window, Gui::Spc, Gui::Spc, ww - 2 * Gui::Spc, wh - 4 * Gui::Spc - 18, "", 0, 0);
+    lang_lb = gui.create_listbox(window, Gui::Spc, Gui::Spc, ww - 2 * Gui::Spc - 2, wh - 4 * Gui::Spc - 20, "", 0, 0);
 
     const char **lang = I18N::Languages;
 

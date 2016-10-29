@@ -464,7 +464,7 @@ void Client::sevt_data(ServerEvent& evt) {
                     Player *p = *it;
                     if (p->state.id == chat_msg->id) {
                         std::string msg(reinterpret_cast<char *>(chat_msg->data), chat_msg->len);
-                        add_text_msg(p->get_player_name() + ": ", msg);
+                        add_text_msg(p->get_player_name(), msg);
                         subsystem.play_sound(resources.get_sound("chat"), 0);
                         break;
                     }

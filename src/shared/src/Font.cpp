@@ -207,13 +207,13 @@ const Font::Character *Font::get_character(const char *s) {
 void Font::create_character(const char *s) {
     Data *page = start_page;
     int state = UTF8_ACCEPT;
-    uint32_t codepoint;
+    uint32_t codepoint = 0;
     int distance = 1;
     char buffer[64];
     while (true) {
         const unsigned char c = *reinterpret_cast<const unsigned char *>(s);
         Data& data = page[c];
-        if (!utf8_decode(c, state, codepoint)) {
+        if (!utf8_decode(c, state, codepoint) || !c) {
             /* create glyph bitmap from char index */
             FT_UInt glyph_index = FT_Get_Char_Index(face, codepoint);
             FT_Load_Glyph(face, glyph_index, FT_LOAD_DEFAULT);
