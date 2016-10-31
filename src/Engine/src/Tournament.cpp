@@ -23,6 +23,13 @@
 
 #include <iostream>
 
+static const int MaxBombs = 100;
+static const int MaxFrogs = 100;
+static const int MaxArmor = 100;
+static const int MaxGrenades = 100;
+static const int MaxHealth = 100;
+static const int MaxAmmo = 100;
+
 Tournament::Tournament(Resources& resources, Subsystem& subsystem, Gui *gui, ServerLogger *logger,
     const std::string& game_file, bool server, const std::string& map_name,
     Players& players, int duration, bool warmup)
@@ -451,11 +458,11 @@ void Tournament::spawn_object(Object *obj, identifier_t id, int x, int y, flags_
 }
 
 void Tournament::add_player_spawn_animation(Player *p) {
-    Animation *ani = resources.get_animation(Characterset::SpawnAnimation);
+    Animation *ani = resources.get_animation(p->get_characterset()->get_spawn_animation());
     TileGraphic *tg = ani->get_tile()->get_tilegraphic();
     int x = static_cast<int>(p->state.client_server_state.x);
     int y = static_cast<int>(p->state.client_server_state.y) - Characterset::Height;
-    add_animation(Characterset::SpawnAnimation, 0, 0, 0, x, y, 0.0f, 0.0f, tg->get_width(), tg->get_height());
+    add_animation(p->get_characterset()->get_spawn_animation(), 0, 0, 0, x, y, 0.0f, 0.0f, tg->get_width(), tg->get_height());
     subsystem.play_sound(resources.get_sound("respawn"), 0);
 }
 
@@ -596,17 +603,25 @@ bool Tournament::pick_item(Player *p, GameObject *obj) {
     switch (obj->object->get_type()) {
         case Object::ObjectTypeBomb:
             /* pick bomb */
-            p->state.server_state.bombs++;
-            if (p->state.server_state.bombs > 100) {
-                p->state.server_state.bombs = 100;
+            if (p->state.server_state.bombs < MaxBombs) {
+                p->state.server_state.bombs++;
+                if (p->state.server_state.bombs > MaxBombs) {
+                    p->state.server_state.bombs = MaxBombs;
+                }
+            } else {
+                return false;
             }
             break;
 
         case Object::ObjectTypeFrog:
-            reset_frog_spawn_counter();
-            p->state.server_state.frogs++;
-            if (p->state.server_state.frogs > 100) {
-                p->state.server_state.frogs = 100;
+            if (p->state.server_state.frogs < MaxFrogs) {
+                reset_frog_spawn_counter();
+                p->state.server_state.frogs++;
+                if (p->state.server_state.frogs > MaxFrogs) {
+                    p->state.server_state.frogs = MaxFrogs;
+                }
+            } else {
+                return false;
             }
             break;
 
@@ -617,9 +632,13 @@ bool Tournament::pick_item(Player *p, GameObject *obj) {
 
         case Object::ObjectTypeArmor:
             /* pick armor */
-            p->state.server_state.armor += 25;
-            if (p->state.server_state.armor > 100) {
-                p->state.server_state.armor = 100;
+            if (p->state.server_state.armor < MaxArmor) {
+                p->state.server_state.armor += 25;
+                if (p->state.server_state.armor > MaxArmor) {
+                    p->state.server_state.armor = MaxArmor;
+                }
+            } else {
+                return false;
             }
             break;
 
@@ -629,25 +648,37 @@ bool Tournament::pick_item(Player *p, GameObject *obj) {
 
         case Object::ObjectTypeGrenade:
             /* pick grenade */
-            p->state.server_state.grenades += 5;
-            if (p->state.server_state.grenades > 100) {
-                p->state.server_state.grenades = 100;
+            if (p->state.server_state.grenades < MaxGrenades) {
+                p->state.server_state.grenades += 5;
+                if (p->state.server_state.grenades > MaxGrenades) {
+                    p->state.server_state.grenades = MaxGrenades;
+                }
+            } else {
+                return false;
             }
             break;
 
         case Object::ObjectTypeMedikitBig:
             /* pick big medikit */
-            p->state.server_state.health += 100;
-            if (p->state.server_state.health > 100) {
-                p->state.server_state.health = 100;
+            if (p->state.server_state.health < MaxHealth) {
+                p->state.server_state.health += MaxHealth;
+                if (p->state.server_state.health > MaxHealth) {
+                    p->state.server_state.health = MaxHealth;
+                }
+            } else {
+                return false;
             }
             break;
 
         case Object::ObjectTypeMedikitSmall:
             /* pick small medikit */
-            p->state.server_state.health += 25;
-            if (p->state.server_state.health > 100) {
-                p->state.server_state.health = 100;
+            if (p->state.server_state.health < MaxHealth) {
+                p->state.server_state.health += 25;
+                if (p->state.server_state.health > MaxHealth) {
+                    p->state.server_state.health = MaxHealth;
+                }
+            } else {
+                return false;
             }
             break;
 
@@ -663,9 +694,13 @@ bool Tournament::pick_item(Player *p, GameObject *obj) {
         case Object::ObjectTypeAmmo:
             /* pick ammo */
             if (p->state.server_state.flags & PlayerServerFlagHasShotgunBelt) {
-                p->state.server_state.ammo += 10;
-                if (p->state.server_state.ammo > 100) {
-                    p->state.server_state.ammo = 100;
+                if (p->state.server_state.ammo < MaxAmmo) {
+                    p->state.server_state.ammo += 10;
+                    if (p->state.server_state.ammo > MaxAmmo) {
+                        p->state.server_state.ammo = MaxAmmo;
+                    }
+                } else {
+                    return false;
                 }
             } else {
                 return false;
@@ -675,9 +710,13 @@ bool Tournament::pick_item(Player *p, GameObject *obj) {
         case Object::ObjectTypeAmmobox:
             /* pick ammo */
             if (p->state.server_state.flags & PlayerServerFlagHasShotgunBelt) {
-                p->state.server_state.ammo += 40;
-                if (p->state.server_state.ammo > 100) {
-                    p->state.server_state.ammo = 100;
+                if (p->state.server_state.ammo < MaxAmmo) {
+                    p->state.server_state.ammo += 40;
+                    if (p->state.server_state.ammo > MaxAmmo) {
+                        p->state.server_state.ammo = MaxAmmo;
+                    }
+                } else {
+                    return false;
                 }
             } else {
                 return false;
@@ -764,7 +803,14 @@ void Tournament::player_dies(Player *p, I18NText id, const char *addon) {
         add_i18n_response(id, addon);
     }
     try {
-        Animation *tempani = resources.get_animation(properties.get_value("die_animation"));
+        const char *die_animation = 0;
+        const std::string& p_die_animation = p->get_characterset()->get_die_animation();
+        if (p_die_animation.length()) {
+            die_animation = p_die_animation.c_str();
+        } else {
+            die_animation = properties.get_value("die_animation").c_str();
+        }
+        Animation *tempani = resources.get_animation(die_animation);
 
         GAnimation *ani = new GAnimation;
         memset(ani, 0, sizeof(GAnimation));

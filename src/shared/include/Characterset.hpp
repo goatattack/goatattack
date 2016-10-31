@@ -55,7 +55,6 @@ public:
     static const int CoinDropOffsetX;
     static const int CoinDropOffsetY;
     static const int ProjectileOffsetY;
-    static const char *SpawnAnimation;
     static const char *JumpSound;
 
     Characterset(Subsystem& subsystem, const std::string& filename, ZipReader *zip = 0)
@@ -66,12 +65,16 @@ public:
     Tile *get_armor_overlay(Direction direction, CharacterAnimation animation);
     Tile *get_rifle_overlay(Direction direction, CharacterAnimation animation);
     bool get_suppress_shot_animation() const;
+    const std::string& get_spawn_animation() const;
+    const std::string& get_die_animation() const;
 
 private:
     Tile *tiles[_DirectionMAX][_CharacterAnimationMAX];
     Tile *armor_overlays[_DirectionMAX][_CharacterAnimationMAX];
     Tile *rifle_overlays[_DirectionMAX][_CharacterAnimationMAX];
     bool suppress_shot_animation;
+    std::string spawn_animation;
+    std::string die_animation;
 
     void create_character(CharacterAnimation type, const std::string& filename,
         int animation_speed, bool one_shot, ZipReader *zip) throw (Exception);

@@ -32,8 +32,9 @@ const int Characterset::CoinOffsetY = -64;
 const int Characterset::CoinDropOffsetX = 0;
 const int Characterset::CoinDropOffsetY = -41;
 const int Characterset::ProjectileOffsetY = 5;
-const char *Characterset::SpawnAnimation = "player_spawn";
 const char *Characterset::JumpSound = "jump";
+
+static const char *FallbackSpawnAnimation = "player_spawn";
 
 Characterset::Characterset(Subsystem& subsystem, const std::string& filename, ZipReader *zip)
     throw (KeyValueException, MovableException)
@@ -43,6 +44,11 @@ Characterset::Characterset(Subsystem& subsystem, const std::string& filename, Zi
         read_base_informations(*this);
 
         suppress_shot_animation = (atoi(get_value("suppress_shot_animation").c_str()) != 0);
+        spawn_animation = get_value("spawn_animation");
+        if (!spawn_animation.length()) {
+            spawn_animation = FallbackSpawnAnimation;
+        }
+        die_animation = get_value("die_animation");
 
         create_character(CharacterAnimationStanding, filename + "_standing.png", get_speed(*this, "standing", 30), get_one_shot(*this, "standing", false), zip);
         create_character(CharacterAnimationRunning, filename + "_running.png", get_speed(*this, "running", 30), get_one_shot(*this, "running", false), zip);
@@ -90,6 +96,14 @@ Tile *Characterset::get_rifle_overlay(Direction direction, CharacterAnimation an
 
 bool Characterset::get_suppress_shot_animation() const {
     return suppress_shot_animation;
+}
+
+const std::string& Characterset::get_spawn_animation() const {
+    return spawn_animation;
+}
+
+const std::string& Characterset::get_die_animation() const {
+    return die_animation;
 }
 
 void Characterset::create_character(CharacterAnimation type,

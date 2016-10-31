@@ -179,7 +179,7 @@ void OptionsMenu::player_click() {
     int vw = subsystem.get_view_width();
     int vh = subsystem.get_view_height();
     int ww = 287;
-    int wh = 164;
+    int wh = 193;
 
     subsystem.clear_input_buffer();
     GuiWindow *window = gui.push_window(vw / 2 - ww / 2, vh / 2- wh / 2, ww, wh, i18n(I18N_OPTIONS_PLAYER));
@@ -189,8 +189,9 @@ void OptionsMenu::player_click() {
     player_name = gui.create_textbox(window, 120, 15, 153, config.get_string("player_name"));
     show_player_name  = gui.create_checkbox(window, Gui::Spc, 35, i18n(I18N_OPTIONS_SETTINGS12), config.get_bool("show_player_name"), 0, 0);
     gui.create_label(window, Gui::Spc, 53, i18n(I18N_OPTIONS_SETTINGS13));
-    player_skin = gui.create_listbox(window, 120, 56, 153, 54, "", static_player_skin_click, this);
+    player_skin = gui.create_listbox(window, 120, 56, 153, 80, "", static_player_skin_click, this);
     player_skin_pic = gui.create_picture(window, Gui::Spc, 70, 0);
+    player_skin_name = gui.create_label(window, Gui::Spc, 70 + 32 + 3, "");
 
     /* read all charactersets and sort them */
     Resources::ResourceObjects& sets = resources.get_charactersets();
@@ -213,6 +214,7 @@ void OptionsMenu::player_click() {
         }
     }
     player_skin->set_selected_index(selected_skin);
+    player_skin->set_top_index(selected_skin);
     player_name->set_focus();
 
     add_ok_cancel_buttons(window, static_close_player_click);
@@ -225,6 +227,7 @@ void OptionsMenu::static_player_skin_click(GuiListbox *sender, void *data, int i
 void OptionsMenu::player_skin_click(int index) {
     const Characterset *cs = static_cast<const Characterset *>(player_skin->get_entry(index)->get_ptr_tag());
     player_skin_pic->set_picture(const_cast<Characterset *>(cs)->get_tile(DirectionRight, CharacterAnimationStanding)->get_tilegraphic());
+    player_skin_name->set_caption(cs->get_name());
 }
 
 void OptionsMenu::static_close_player_click(GuiVirtualButton *sender, void *data) {

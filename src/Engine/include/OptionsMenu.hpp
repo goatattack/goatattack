@@ -76,6 +76,7 @@ private:
     GuiCheckbox *show_player_name;
     GuiListbox *player_skin;
     GuiPicture *player_skin_pic;
+    GuiLabel *player_skin_name;
 
     GuiTextbox *ck_up[KeyBinding::MaxBindings];
     GuiTextbox *ck_down[KeyBinding::MaxBindings];
