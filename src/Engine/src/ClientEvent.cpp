@@ -96,6 +96,9 @@ void Client::sevt_login(ServerEvent& evt) {
     GPakHash gph;
     for (Resources::LoadedPaks::const_iterator it = paks.begin(); it != paks.end(); it++) {
         const Resources::LoadedPak& pak = *it;
+        if (pak.pak_short_name.length() > 31) {
+            throw ClientException(ClientServer::i18n(I18N_PAK_NAME_TOO_LONG, pak.pak_short_name));
+        }
         memset(&gph, 0, GPakHashLen);
         strncpy(gph.pak_name, pak.pak_short_name.c_str(), NameLength - 1);
         strncpy(gph.pak_hash, pak.pak_hash.c_str(), GPakHash::HashLength);
@@ -103,7 +106,7 @@ void Client::sevt_login(ServerEvent& evt) {
         stacked_send_data(evt.c, 0, GPSPakSyncHash, NetFlagsReliable, GPakHashLen, &gph);
     }
     stacked_send_data(evt.c, 0, GPSPakSyncHashFinished, NetFlagsReliable, 0, 0);
-    flush_stacked_send_data(evt.c, 0);
+    flush_stacked_send_data(evt.c, NetFlagsReliable);
 }
 
 void Client::sevt_data(ServerEvent& evt) {
