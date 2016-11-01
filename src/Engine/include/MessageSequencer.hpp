@@ -33,12 +33,14 @@ public:
     MessageSequencerException(std::string msg) : Exception(msg) { }
 };
 
-/* we start to resend after 50ms,                       */
-/* then doubling the resend interval after each resend. */
+/* obsolete behavior:                   */
+/* ------------------                   */
+/* we start to resend after 50ms, then  */
+/* doubling the interval each resend.   */
 struct QueueMessage {
     QueueMessage() { }
     QueueMessage(sequence_no_t seq_no, flags_t flags, command_t cmd, data_len_t len, data_t *data)
-        : resends(0), last_resend_ms(50), seq_no(seq_no), flags(flags), cmd(cmd), len(len), data(data)
+        : resends(0), last_resend_ms(25), seq_no(seq_no), flags(flags), cmd(cmd), len(len), data(data)
     {
         touch.tv_nsec = 0;
         touch.tv_sec = 0;

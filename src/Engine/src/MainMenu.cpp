@@ -26,6 +26,8 @@
 #include "Scope.hpp"
 #include "UTF8.hpp"
 
+#include "Lagometer.hpp"
+
 #include <cstdlib>
 #include <algorithm>
 

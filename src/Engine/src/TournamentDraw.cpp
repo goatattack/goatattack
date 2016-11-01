@@ -314,13 +314,29 @@ void Tournament::draw_hud() {
         subsystem.reset_color();
     }
 
+    /* bottom up */
+    int bottom_up_y = view_height;
+
     /* draw tournament icon */
     if (tournament_icon) {
         subsystem.set_color(1.0f, 1.0f, 1.0f, 0.75f);
         TileGraphic *tg = tournament_icon->get_tile()->get_tilegraphic();
         int width = tg->get_width();
         int height = tg->get_height();
-        subsystem.draw_icon(tournament_icon, view_width - width - 5, view_height - height - 25);
+        bottom_up_y -= height + 25;
+        subsystem.draw_icon(tournament_icon, view_width - width - 5, bottom_up_y); //view_height - height - 25);
+        subsystem.reset_color();
+    }
+
+
+    /* draw lagometer */
+    if (lagometer) {
+        subsystem.set_color(1.0f, 1.0f, 1.0f, 0.75f);
+        TileGraphic *tg = lagometer->get_tilegraphic();
+        int width = tg->get_width();
+        int height = tg->get_height();
+        bottom_up_y -= height + 5;
+        subsystem.draw_tilegraphic(tg, view_width - width - 5, bottom_up_y);
         subsystem.reset_color();
     }
 

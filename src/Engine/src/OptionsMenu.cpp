@@ -253,7 +253,7 @@ void OptionsMenu::graphics_and_sound_click() {
     int vw = subsystem.get_view_width();
     int vh = subsystem.get_view_height();
     int ww = 285;
-    int wh = 184;
+    int wh = 203;
 
     GuiWindow *window = gui.push_window(vw / 2 - ww / 2, vh / 2- wh / 2, ww, wh, i18n(I18N_OPTIONS_GRAPHICS_AND_SOUND));
     window->set_cancelable(true);
@@ -274,6 +274,8 @@ void OptionsMenu::graphics_and_sound_click() {
 
     gui.create_label(window, 15, 120, i18n(I18N_OPTIONS_SETTINGS26));
     gui.create_hscroll(window, 130, 121, 140, 5, 15, config.get_int("text_fade_speed"), static_text_fade_speed_changed, this);
+
+    gui.create_checkbox(window, 15, 139, i18n(I18N_SHOW_LAGOMETER), config.get_bool("lagometer"), static_toggle_lagometer_click, this);
 
     std::string btn_close(i18n(I18N_BUTTON_CLOSE));
     int bw_close = gui.get_font()->get_text_width(btn_close) + 28;
@@ -296,6 +298,14 @@ void OptionsMenu::static_toggle_scanlines_click(GuiCheckbox *sender, void *data,
 void OptionsMenu::toggle_scanlines_click(bool state) {
     subsystem.set_scanlines(state);
     config.set_bool("show_scanlines", state);
+}
+
+void OptionsMenu::static_toggle_lagometer_click(GuiCheckbox *sender, void *data, bool state) {
+    (reinterpret_cast<OptionsMenu *>(data))->toggle_lagometer_click(state);
+}
+
+void OptionsMenu::toggle_lagometer_click(bool state) {
+    config.set_bool("lagometer", state);
 }
 
 void OptionsMenu::static_scanlines_intensity_changed(GuiVirtualScroll *sender, void *data, int value) {

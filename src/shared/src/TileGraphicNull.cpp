@@ -22,9 +22,15 @@ TileGraphicNull::TileGraphicNull(int width, int height, bool keep_pictures)
 
 TileGraphicNull::~TileGraphicNull() { }
 
+void TileGraphicNull::reset() {
+    current_index = 0;
+}
+
 void TileGraphicNull::add_tile(int bytes_per_pixel, const void *pic, bool desc, bool linear) {
     sz++;
 }
+
+void TileGraphicNull::replace_tile(int index, int bytes_per_pixel, const void *pic) throw (TileGraphicException) { }
 
 void TileGraphicNull::punch_out_tile(PNG& png, int tilex, int tiley, bool desc, bool linear) {
     add_tile(0, 0, false, linear);

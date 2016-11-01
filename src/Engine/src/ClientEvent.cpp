@@ -193,6 +193,7 @@ void Client::sevt_data(ServerEvent& evt) {
                 tournament->set_following_id(my_id);
                 tournament->set_player_configuration(&player_config);
                 tournament->set_team_names(team_red_name, team_blue_name);
+                tournament->set_lagometer(show_lagometer ? &lagometer : 0);
                 add_text_msg(ClientServer::i18n(I18N_CLIENT_MAP_INFO, tournament->get_map().get_description()));
 
                 /* reopen, if join request window is already open */
@@ -334,7 +335,7 @@ void Client::sevt_data(ServerEvent& evt) {
 
             case GPCUpdatePlayerState:
             {
-                if (t->tournament_id== factory.get_tournament_id()) {
+                if (t->tournament_id == factory.get_tournament_id()) {
                     GPTAllStates *state = reinterpret_cast<GPTAllStates *>(data_ptr);
                     state->from_net();
 
@@ -346,6 +347,12 @@ void Client::sevt_data(ServerEvent& evt) {
                             p->state.server_state = state->server_state;
                             if (p != me) {
                                 p->state.client_server_state = state->client_server_state;
+                            } else {
+                                if (tournament) {
+                                    if (show_lagometer) {
+                                        lagometer.update(p->state.server_state.ping_time);
+                                    }
+                                }
                             }
                             break;
                         }

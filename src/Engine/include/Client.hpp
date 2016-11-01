@@ -30,6 +30,7 @@
 #include "OptionsMenu.hpp"
 #include "KeyBinding.hpp"
 #include "Mutex.hpp"
+#include "Lagometer.hpp"
 
 #include <string>
 #include <vector>
@@ -104,6 +105,8 @@ private:
     FILE *fhnd;
     bool running;
     bool reload_resources;
+    Lagometer lagometer;
+    bool show_lagometer;
 
     double text_message_duration;
     double text_message_fade_out_at;

@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
         MapEditor editor(resources, subsystem, config);
         editor.run();
     } catch (const Exception& e) {
-        std::cout << e.what() << std::endl;
+        stream << e.what() << std::endl;
     }
 
     stream << "\nbye bye... :)" << std::endl;

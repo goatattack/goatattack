@@ -436,6 +436,7 @@ const I18N::Text I18N::all_texts_german[] = {
     { I18N_FREETYPE_FAILED, "Freetype Initialisierung fehlgeschlagen." },
     { I18N_LANGUAGE, "Sprache" },
     { I18N_PAK_NAME_TOO_LONG, "Pak-Name '${1}' zu lang (max. 31). Bitte umbenennen." },
+    { I18N_SHOW_LAGOMETER, "Lagometer anzeigen" },
 
     { I18N_NONE, 0 }
 };

@@ -33,6 +33,7 @@
 #include "Globals.hpp"
 #include "ServerLogger.hpp"
 #include "I18N.hpp"
+#include "Lagometer.hpp"
 
 #include <vector>
 #include <deque>
@@ -182,6 +183,7 @@ public:
     void spectate_accepted();
     void show_stats(bool state);
     void update_states(ns_t ns);
+    void set_lagometer(Lagometer *lagometer);
 
     void add_animation(GAnimation *animation);
     void add_spawnable_npc(GSpawnNPC *npc);
@@ -305,6 +307,7 @@ protected:
     ServerLogger *logger;
     bool gui_is_destroyed;
     bool do_friendly_fire_alarm;
+    Lagometer *lagometer;
 
     int tilex;
     int tiley;

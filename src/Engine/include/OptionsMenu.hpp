@@ -164,6 +164,7 @@ private:
     static void static_close_window_click(GuiVirtualButton *sender, void *data);
     static void static_toggle_fullscreen_click(GuiCheckbox *sender, void *data, bool state);
     static void static_toggle_scanlines_click(GuiCheckbox *sender, void *data, bool state);
+    static void static_toggle_lagometer_click(GuiCheckbox *sender, void *data, bool state);
 
     static void static_close_capture_window_click(GuiVirtualButton *sender, void *data);
 
@@ -210,6 +211,7 @@ private:
 
     void toggle_fullscreen_click(bool state);
     void toggle_scanlines_click(bool state);
+    void toggle_lagometer_click(bool state);
 
     void language_click();
     void language_ok_click();

@@ -46,7 +46,8 @@ Client::Client(Resources& resources, Subsystem& subsystem, hostaddr_t host,
       logged_in(false), me(0), updatecnt(0),
       factory(resources, subsystem, this), my_id(0), login_sent(false),
       throw_exception(false), exception_msg(), force_send(false),
-      fhnd(0), running(true), reload_resources(true)
+      fhnd(0), running(true), reload_resources(true), lagometer(subsystem),
+      show_lagometer(player_config.get_bool("lagometer"))
 {
     conn = 0;
     get_now(last);
@@ -208,10 +209,10 @@ void Client::idle() throw (Exception) {
                         std::string msg(reinterpret_cast<const char *>(resp->data), resp->len);
                         add_text_msg(msg);
                     } else {
-                        stacked_send_data(conn, factory.get_tournament_id(), resp->action, 0, resp->len, resp->data);
+                        stacked_send_data(conn, factory.get_tournament_id(), resp->action, NetFlagsReliable, resp->len, resp->data);
                     }
                 }
-                flush_stacked_send_data(conn, 0);
+                flush_stacked_send_data(conn, NetFlagsReliable);
             }
         }
         tournament->delete_responses();
@@ -461,6 +462,16 @@ void Client::options_closed() {
     }
 
     update_text_fade_speed();
+
+    /* lagometer */
+    bool new_lagometer = player_config.get_bool("lagometer");
+    if (new_lagometer != show_lagometer) {
+        show_lagometer = new_lagometer;
+        lagometer.clear();
+        if (tournament) {
+            tournament->set_lagometer(show_lagometer ? &lagometer : 0);
+        }
+    }
 }
 
 void Client::static_window_close_click(GuiVirtualButton *sender, void *data) {

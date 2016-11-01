@@ -436,6 +436,7 @@ const I18N::Text I18N::all_texts_french[] = {
     { I18N_FREETYPE_FAILED, "freetype initialization failed." },
     { I18N_LANGUAGE, "Language" },
     { I18N_PAK_NAME_TOO_LONG, "Pak name '${1}' too long (max. 31). Please rename it." },
+    { I18N_SHOW_LAGOMETER, "show lagometer" },
 
     { I18N_NONE, 0 }
 };

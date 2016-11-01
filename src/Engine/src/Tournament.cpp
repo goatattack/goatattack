@@ -66,7 +66,7 @@ Tournament::Tournament(Resources& resources, Subsystem& subsystem, Gui *gui, Ser
       hud_frogs(resources.get_icon("frog")),
       enemy_indicator(resources.get_icon("enemy_indicator_neutral")),
       game_over(false), logger(logger), gui_is_destroyed(false),
-      do_friendly_fire_alarm(true)
+      do_friendly_fire_alarm(true), lagometer(0)
 {
     /* init */
     char kvb[128];
@@ -934,4 +934,8 @@ void Tournament::add_i18n_response(I18NText id, const std::string& p) {
 
 void Tournament::add_i18n_response(I18NText id, const std::string& p1, const std::string& p2) {
     add_i18n_response(id, (p1 + "\t" + p2).c_str());
+}
+
+void Tournament::set_lagometer(Lagometer *lagometer) {
+    this->lagometer = lagometer;
 }

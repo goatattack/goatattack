@@ -321,7 +321,7 @@ void Font::create_character(const char *s) {
 
                     /* add tile to character */
                     TileGraphic *tg = subsystem.create_tilegraphic(fw, fh);
-                    tg->add_tile(4, &tmppic[0], 0, false);
+                    tg->add_tile(4, &tmppic[0], false, false);
                     data.chr->tile = new Tile(tg, false, Tile::TileTypeNonblocking, 0, false, 0.0f);
                     delete[] tmppic;
                 }
