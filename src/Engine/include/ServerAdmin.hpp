@@ -66,6 +66,7 @@ private:
 
     void sc_op(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);
     void sc_deop(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);
+    void sc_list(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);
     void sc_kick(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);
     void sc_ban(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);
     void sc_unban(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);

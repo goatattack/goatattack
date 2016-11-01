@@ -75,8 +75,7 @@ struct SequencerHeap : public Connection {
     typedef std::deque<QueueMessage *> QueuedMessages;
 
     SequencerHeap(hostaddr_t host, hostport_t port)
-        : Connection(host, port), sent_pings(0), active(true),
-          processing(false), deferred_kill(false),
+        : Connection(host, port), sent_pings(0), active(true), deferred_kill(false),
           last_send_unrel_seq_no(0), last_send_rel_seq_no(0),
           last_recv_unrel_seq_no(0), last_recv_rel_seq_no(0)
     {
@@ -86,7 +85,6 @@ struct SequencerHeap : public Connection {
 
     int sent_pings;
     bool active;
-    bool processing;
     bool deferred_kill;
 
     sequence_no_t last_send_unrel_seq_no;

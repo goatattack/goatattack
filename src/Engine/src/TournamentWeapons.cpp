@@ -159,68 +159,72 @@ void Tournament::fire_frog(Player *p, unsigned char direction) {
 void Tournament::firing_animation(Player *p, int flag, const std::string& animation_name,
     const std::string& start_sound, int yoffset, unsigned char direction, unsigned char& mun)
 {
-    mun--;
-    const CollisionBox& colbox = Characterset::Colbox;
-    Animation *animation = resources.get_animation(animation_name);
-    const CollisionBox& a_colbox = animation->get_physics_colbox();
-    int ah = animation->get_tile()->get_tilegraphic()->get_height();
+    if (mun) {
+        mun--;
+        const CollisionBox& colbox = Characterset::Colbox;
+        Animation *animation = resources.get_animation(animation_name);
+        const CollisionBox& a_colbox = animation->get_physics_colbox();
+        int ah = animation->get_tile()->get_tilegraphic()->get_height();
 
-    GAnimation *ani = new GAnimation;
-    memset(ani, 0, sizeof(GAnimation));
-    strncpy(ani->animation_name, animation->get_name().c_str(), NameLength - 1);
-    strncpy(ani->sound_name, properties.get_value(start_sound).c_str(), NameLength - 1);
-    ani->id = ++animation_id;
-    ani->duration = animation->get_duration();
-    ani->owner = p->state.id;
-    ani->x = p->state.client_server_state.x + colbox.x + (colbox.width / 2) - a_colbox.x - (a_colbox.width / 2);
-    ani->y = p->state.client_server_state.y - colbox.y - (colbox.height / 2) - ah + (a_colbox.height / 2) + yoffset;
-    double impact = animation->get_impact();
-    if (animation->is_projectile()) {
-        ani->y += static_cast<double>(Characterset::ProjectileOffsetY);
-        if (direction == DirectionRight) {
-            ani->accel_x = impact;
+        GAnimation *ani = new GAnimation;
+        memset(ani, 0, sizeof(GAnimation));
+        strncpy(ani->animation_name, animation->get_name().c_str(), NameLength - 1);
+        strncpy(ani->sound_name, properties.get_value(start_sound).c_str(), NameLength - 1);
+        ani->id = ++animation_id;
+        ani->duration = animation->get_duration();
+        ani->owner = p->state.id;
+        ani->x = p->state.client_server_state.x + colbox.x + (colbox.width / 2) - a_colbox.x - (a_colbox.width / 2);
+        ani->y = p->state.client_server_state.y - colbox.y - (colbox.height / 2) - ah + (a_colbox.height / 2) + yoffset;
+        double impact = animation->get_impact();
+        if (animation->is_projectile()) {
+            ani->y += static_cast<double>(Characterset::ProjectileOffsetY);
+            if (direction == DirectionRight) {
+                ani->accel_x = impact;
+            } else {
+                ani->accel_x = -impact;
+            }
+            ani->accel_y = 0.0f;
         } else {
-            ani->accel_x = -impact;
+            if (direction == DirectionRight) {
+                ani->accel_x = fabs(p->state.client_server_state.accel_x) * impact;
+            } else {
+                ani->accel_x = fabs(p->state.client_server_state.accel_x) * -impact;
+            }
+            ani->accel_y = (p->state.client_server_state.accel_y + p->state.client_server_state.jump_accel_y) * impact;
         }
-        ani->accel_y = 0.0f;
-    } else {
-        if (direction == DirectionRight) {
-            ani->accel_x = fabs(p->state.client_server_state.accel_x) * impact;
-        } else {
-            ani->accel_x = fabs(p->state.client_server_state.accel_x) * -impact;
-        }
-        ani->accel_y = (p->state.client_server_state.accel_y + p->state.client_server_state.jump_accel_y) * impact;
+        add_animation(ani);
+        ani->to_net();
+        add_state_response(GPCAddAnimation, sizeof(GAnimation), ani);
     }
-    add_animation(ani);
-    ani->to_net();
-    add_state_response(GPCAddAnimation, sizeof(GAnimation), ani);
 }
 
 void Tournament::firing_npc(Player *p, int flag, const std::string& npc_name,
     const std::string& start_sound, int yoffset, unsigned char direction, unsigned char& mun)
 {
-    mun--;
-    NPC *npc = resources.get_npc(npc_name);
-    GSpawnNPC *snpc = new GSpawnNPC;
-    memset(snpc, 0, sizeof(GSpawnNPC));
-    strncpy(snpc->npc_name, npc_name.c_str(), NameLength - 1);
-    strncpy(snpc->sound_name, properties.get_value(start_sound).c_str(), NameLength - 1);
-    snpc->id = get_free_npc_id();
-    snpc->owner = p->state.id;
-    snpc->direction = direction;
-    snpc->icon = static_cast<unsigned char>(NPCAnimationStanding);
-    snpc->x = p->state.client_server_state.x;
-    snpc->y = p->state.client_server_state.y;
-    double impact = npc->get_impact();
-    if (direction == DirectionRight) {
-        snpc->accel_x = fabs(p->state.client_server_state.accel_x) * impact;
-    } else {
-        snpc->accel_x = fabs(p->state.client_server_state.accel_x) * -impact;
+    if (mun) {
+        mun--;
+        NPC *npc = resources.get_npc(npc_name);
+        GSpawnNPC *snpc = new GSpawnNPC;
+        memset(snpc, 0, sizeof(GSpawnNPC));
+        strncpy(snpc->npc_name, npc_name.c_str(), NameLength - 1);
+        strncpy(snpc->sound_name, properties.get_value(start_sound).c_str(), NameLength - 1);
+        snpc->id = get_free_npc_id();
+        snpc->owner = p->state.id;
+        snpc->direction = direction;
+        snpc->icon = static_cast<unsigned char>(NPCAnimationStanding);
+        snpc->x = p->state.client_server_state.x;
+        snpc->y = p->state.client_server_state.y;
+        double impact = npc->get_impact();
+        if (direction == DirectionRight) {
+            snpc->accel_x = fabs(p->state.client_server_state.accel_x) * impact;
+        } else {
+            snpc->accel_x = fabs(p->state.client_server_state.accel_x) * -impact;
+        }
+        snpc->accel_y = (p->state.client_server_state.accel_y + p->state.client_server_state.jump_accel_y) * impact;
+        add_spawnable_npc(snpc);
+        snpc->to_net();
+        add_state_response(GPCSpawnNPC, sizeof(GSpawnNPC), snpc);
     }
-    snpc->accel_y = (p->state.client_server_state.accel_y + p->state.client_server_state.jump_accel_y) * impact;
-    add_spawnable_npc(snpc);
-    snpc->to_net();
-    add_state_response(GPCSpawnNPC, sizeof(GSpawnNPC), snpc);
 }
 
 void Tournament::check_killing_animation(int x, int y, Animation *ani,

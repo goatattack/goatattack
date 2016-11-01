@@ -445,6 +445,12 @@ const I18N::Text I18N::all_texts_portuguese[] = {
     { I18N_LANGUAGE, "Lingua" },
     { I18N_PAK_NAME_TOO_LONG, "Pak name '${1}' too long (max. 31). Please rename it." },
     { I18N_SHOW_LAGOMETER, "show lagometer" },
+    { I18N_SERVE_NO_COMMAND, "No server command entered" },
+    { I18N_SERVE_LIST_USAGE, "Usage: /list [part_of_player_name]" },
+    { I18N_CLIENT_LOGGED_OUT_RPL, "${1} logged out." },
+    { I18N_CLIENT_PING_TIMEOUT_RPL, "${1} logged out. (ping timeout)" },
+    { I18N_CLIENT_TOO_MANY_RESENDS_RPL, "${1} logged out. (too many resends)" },
+    { I18N_CLIENT_APPLICATION_LAYER_RPL, "${1} logged out. (application layer quit)" },
 
     { I18N_NONE, 0 }
 };

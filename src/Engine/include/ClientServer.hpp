@@ -92,6 +92,7 @@ public:
 protected:
     char *create_text(const std::string& txt, size_t& sz);
     I18NText get_logout_text_id(LogoutReason reason);
+    I18NText get_logout_text_id_client(LogoutReason reason);
 
 private:
     char buffer[1024];

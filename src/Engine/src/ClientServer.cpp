@@ -208,6 +208,29 @@ I18NText ClientServer::get_logout_text_id(LogoutReason reason) {
     return id;
 }
 
+I18NText ClientServer::get_logout_text_id_client(LogoutReason reason) {
+    I18NText id = I18N_CLIENT_LOGGED_OUT_RPL;
+    switch (reason) {
+        case LogoutReasonRegular:
+            id = I18N_CLIENT_LOGGED_OUT_RPL;
+            break;
+
+        case LogoutReasonPingTimeout:
+            id = I18N_CLIENT_PING_TIMEOUT_RPL;
+            break;
+
+        case LogoutReasonTooManyResends:
+            id = I18N_CLIENT_TOO_MANY_RESENDS_RPL;
+            break;
+
+        case LogoutReasonApplicationQuit:
+            id = I18N_CLIENT_APPLICATION_LAYER_RPL;
+            break;
+    }
+
+    return id;
+}
+
 void ClientServer::set_server(Server *server) {
     this->server = server;
 }

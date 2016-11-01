@@ -24,6 +24,7 @@
 ServerAdmin::ServerCommand ServerAdmin::server_commands[] = {
     { "op", &ServerAdmin::sc_op },
     { "deop", &ServerAdmin::sc_deop },
+    { "list", &ServerAdmin::sc_list },
     { "kick", &ServerAdmin::sc_kick },
     { "ban", &ServerAdmin::sc_ban },
     { "unban", &ServerAdmin::sc_unban },
@@ -69,7 +70,11 @@ void ServerAdmin::execute(const Connection *c, Player *p, std::string cmd, std::
         }
 
         if (!found) {
-            send_i18n_msg(c, I18N_SERVE_UNKNOWN_COMMAND, cmd.c_str());
+            if (cmd.length()) {
+                send_i18n_msg(c, I18N_SERVE_UNKNOWN_COMMAND, cmd.c_str());
+            } else {
+                send_i18n_msg(c, I18N_SERVE_NO_COMMAND);
+            }
         }
     } catch (const std::exception& e) {
         throw ServerAdminException(e.what());
@@ -119,15 +124,31 @@ void ServerAdmin::sc_deop(const Connection *c, Player *p, const std::string& par
     }
 }
 
+void ServerAdmin::sc_list(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
+    if (check_if_authorized(c, p)) {
+        Players& players = server.get_players();
+        for (Players::iterator it = players.begin(); it != players.end(); it++) {
+            Player *v = *it;
+            if (params.length() == 0 || v->get_characterset_name().find(params)) {
+                char buffer[64];
+                sprintf(buffer, "%d", v->state.id);
+                std::string msg(v->get_player_name() + " (" + buffer + ")");
+                server.send_data(c, 0, GPCTextMessage, NetFlagsReliable, msg.length(), msg.c_str());
+            }
+        }
+    }
+}
+
 void ServerAdmin::sc_kick(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
     if (check_if_authorized(c, p) && check_if_params(c, params)) {
+        player_id_t id = atoi(params.c_str());
         Players& players = server.get_players();
         bool found = false;
         for (Players::iterator it = players.begin(); it != players.end(); it++) {
             Player *v = *it;
             std::string pn(v->get_player_name());
             instant_trim(pn);
-            if (pn == params) {
+            if ((id > 0 && v->state.id == id) || pn == params) {
                 found = true;
                 if (v->get_connection() == c) {
                     send_i18n_msg(c, I18N_SERVE_KICK_YOURSELF);

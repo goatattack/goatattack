@@ -886,7 +886,7 @@ void Server::event_logout(const Connection *c, LogoutReason reason) throw (Excep
             }
 
             player_id_t id = htons(p->state.id);
-            I18NText logout_id = get_logout_text_id(reason);
+            I18NText logout_id = get_logout_text_id_client(reason);
 
             /* inform clients */
             broadcast_data(factory.get_tournament_id(), GPCRemovePlayer, NetFlagsReliable, sizeof(id), &id);
@@ -929,7 +929,7 @@ void Server::event_logout(const Connection *c, LogoutReason reason) throw (Excep
 
             /* send text message */
             size_t msglen;
-            AutoPtr<char[]> txtptr(Tournament::create_i18n_response(logout_id, msglen));
+            AutoPtr<char[]> txtptr(Tournament::create_i18n_response(logout_id, msglen, p->get_player_name().c_str()));
             GI18NText *txtmsg = reinterpret_cast<GI18NText *>(&txtptr[0]);
             broadcast_data(factory.get_tournament_id(), GPCI18NText, NetFlagsReliable, static_cast<data_len_t>(msglen), txtmsg);
             logger.log(ServerLogger::LogTypePlayerDisconnect, ClientServer::i18n(logout_id), p);
