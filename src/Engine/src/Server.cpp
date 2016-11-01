@@ -358,6 +358,8 @@ void Server::thread() {
                                             const Connection *c = p->get_connection();
                                             if (c) {
                                                 p->state.server_state.ping_time = static_cast<pico_size_t>(c->ping_time);
+                                                size_t outq_sz = get_outq_sz(c);
+                                                p->state.server_state.outq_sz = static_cast<nano_size_t>(outq_sz > 255 ? 255 : outq_sz);
                                             }
                                             stat.id = p->state.id;
                                             stat.server_state = p->state.server_state;
@@ -422,6 +424,8 @@ void Server::thread() {
                                     const Connection *c = p->get_connection();
                                     if (c) {
                                         p->state.server_state.ping_time = static_cast<pico_size_t>(c->ping_time);
+                                        size_t outq_sz = get_outq_sz(c);
+                                        p->state.server_state.outq_sz = static_cast<nano_size_t>(outq_sz > 255 ? 255 : outq_sz);
                                     }
                                     if (p->state.client_server_state.flags & PlayerClientServerFlagForceBroadcast) {
                                         p->state.client_server_state.flags &= ~PlayerClientServerFlagForceBroadcast;

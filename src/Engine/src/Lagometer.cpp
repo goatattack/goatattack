@@ -24,16 +24,18 @@ static const int IntervalInMs = 500;
 static const ms_t MaxPing = 100;
 
 Lagometer::Lagometer(Subsystem& subsystem) throw (LagometerException)
-    : meter(0), width(60), height(16), tpic(new unsigned char[width * height * BytesPerPixel]),
-      max_ping(0)
+    : meter(0), width(32), height(32), height2(height / 2), height4(height / 4),
+      pictop(height - 1), tpic(new unsigned char[width * height * BytesPerPixel]),
+      max_ping(0), max_server_outq_sz(0), max_client_outq_sz(0)
 {
     create(subsystem);
     get_now(last_update);
 }
 
 Lagometer::Lagometer(Subsystem& subsystem, int width, int height) throw (LagometerException)
-    : meter(0), width(width), height(height), tpic(new unsigned char[width * height * BytesPerPixel]),
-      max_ping(0)
+    : meter(0), width(width), height(height), height2(height / 2), height4(height / 4),
+      pictop(height - 1), tpic(new unsigned char[width * height * BytesPerPixel]),
+      max_ping(0), max_server_outq_sz(0), max_client_outq_sz(0)
 {
     create(subsystem);
     get_now(last_update);
@@ -43,9 +45,15 @@ Lagometer::~Lagometer() {
     delete meter;
 }
 
-void Lagometer::update(ms_t ping) {
+void Lagometer::update(ms_t ping, int server_outq_sz, int client_outq_sz) {
     if (ping > max_ping) {
         max_ping = ping;
+    }
+    if (server_outq_sz > max_server_outq_sz) {
+        max_server_outq_sz = server_outq_sz;
+    }
+    if (client_outq_sz > max_client_outq_sz) {
+        max_client_outq_sz = client_outq_sz;
     }
 }
 
@@ -53,7 +61,7 @@ void Lagometer::clear() {
     /* fill vector with zeros */
     pings.clear();
     for (int w = 0; w < width; w++) {
-        pings.push_back(0);
+        pings.push_back(LagInfo(0, 0, 0));
     }
 }
 
@@ -66,22 +74,43 @@ TileGraphic *Lagometer::get_tilegraphic() {
         last_update = now;
         pings.erase(pings.begin());
         ms_t ping = (max_ping < MaxPing ? max_ping : MaxPing);
-        ping = height * ping / MaxPing;
-        pings.push_back(ping);
+        ping = height2 * ping / MaxPing;
+        int srvoutq = (max_server_outq_sz > height4 ? height4 : max_server_outq_sz);
+        int clioutq = (max_client_outq_sz > height4 ? height4 : max_client_outq_sz);
+        pings.push_back(LagInfo(ping, srvoutq, clioutq));
         max_ping = 0;
+        max_server_outq_sz = 0;
+        max_client_outq_sz = 0;
 
         /* update picture */
         for (int x = 0; x < width; x++) {
-            int current_value = pings[x];
-            unsigned char colr = (static_cast<double>(current_value) / height * 255);
+            /* get current strip info */
+            LagInfo& li = pings[x];
+            unsigned char colr = li.ping * 255 / height2;
             unsigned char colg = 255 - colr;
-            for (int y = 0; y < height; y++) {
-                unsigned char *pptr = &tpic[((height - 1) - y) * width * BytesPerPixel + x * BytesPerPixel];
-                if (y < current_value) {
-                    pptr[0] = colr; pptr[1] = colg; pptr[2] = 0; pptr[3] = 255;
-                } else {
-                    pptr[0] = 0; pptr[1] = 0; pptr[2] = 0; pptr[3] = 255;
-                }
+
+            /* clear strip */
+            for (int y = li.ping; y < height; y++) {
+                unsigned char *pptr = &tpic[(pictop - y) * width * BytesPerPixel + x * BytesPerPixel];
+                pptr[0] = 0; pptr[1] = 0; pptr[2] = 0; pptr[3] = 255;
+            }
+
+            /* draw pings */
+            for (int y = 0; y < li.ping; y++) {
+                unsigned char *pptr = &tpic[(pictop - y) * width * BytesPerPixel + x * BytesPerPixel];
+                pptr[0] = colr; pptr[1] = colg; pptr[2] = 0; pptr[3] = 255;
+            }
+
+            /* draw server outq */
+            for (int y = 0; y < li.server_outq_sz; y++) {
+                unsigned char *pptr = &tpic[(height4 - y - 1) * width * BytesPerPixel + x * BytesPerPixel];
+                pptr[0] = 255; pptr[1] = 255; pptr[2] = 0; pptr[3] = 255;
+            }
+
+            /* draw client outq */
+            for (int y = 0; y < li.client_outq_sz; y++) {
+                unsigned char *pptr = &tpic[(height4 + y) * width * BytesPerPixel + x * BytesPerPixel];
+                pptr[0] = 127; pptr[1] = 127; pptr[2] = 255; pptr[3] = 255;
             }
         }
         meter->replace_tile(0, BytesPerPixel, &tpic[0]);

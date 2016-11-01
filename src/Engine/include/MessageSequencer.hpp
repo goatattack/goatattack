@@ -142,6 +142,8 @@ public:
     void push(flags_t flags, command_t cmd, data_len_t len, const void *data) throw (Exception);
     void push(const Connection *c, flags_t flags, data_len_t len, const void *data) throw (Exception);
     void push(const Connection *c, command_t cmd, flags_t flags, data_len_t len, const void *data) throw (Exception);
+    size_t get_outq_sz(const Connection *c);
+    size_t get_inq_sz(const Connection *c);
     bool cycle() throw (Exception);
     void kill(const Connection *c) throw (Exception);
     void new_settings(hostport_t port, pico_size_t num_heaps, const std::string& name,

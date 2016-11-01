@@ -42,18 +42,32 @@ public:
     Lagometer(Subsystem& subsystem, int width, int height) throw (LagometerException);
     ~Lagometer();
 
-    void update(ms_t ping);
+    void update(ms_t ping, int server_outq_sz, int client_outq_sz);
     void clear();
     TileGraphic *get_tilegraphic();
 
 private:
-    typedef std::vector<int> Pings;
+    struct LagInfo {
+        LagInfo(ms_t ping, int server_outq_sz, int client_outq_sz)
+            : ping(ping), server_outq_sz(server_outq_sz), client_outq_sz(client_outq_sz) { }
+
+        ms_t ping;
+        int server_outq_sz;
+        int client_outq_sz;
+    };
+
+    typedef std::vector<LagInfo> Pings;
 
     TileGraphic *meter;
     int width;
     int height;
+    int height2;
+    int height4;
+    int pictop;
     AutoPtr<unsigned char[]> tpic;
     ms_t max_ping;
+    int max_server_outq_sz;
+    int max_client_outq_sz;
     gametime_t last_update;
 
     Pings pings;

@@ -152,6 +152,24 @@ void MessageSequencer::push(const Connection *c, command_t cmd, flags_t flags,
     }
 }
 
+size_t MessageSequencer::get_outq_sz(const Connection *c) {
+    SequencerHeap *h = find_heap(c);
+    if (h) {
+        return h->out_queue.size();
+    }
+
+    return 0;
+}
+
+size_t MessageSequencer::get_inq_sz(const Connection *c) {
+    SequencerHeap *h = find_heap(c);
+    if (h) {
+        return h->in_queue.size();
+    }
+
+    return 0;
+}
+
 bool MessageSequencer::cycle() throw (Exception) {
     hostaddr_t host;
     hostport_t port;
@@ -303,7 +321,6 @@ bool MessageSequencer::cycle() throw (Exception) {
                     again = true;
                     tmp_smsg->touch = touch;
                     tmp_smsg->resends++;
-                    //tmp_smsg->last_resend_ms *= 2;
                     if (tmp_smsg->resends > MaxResends) {
                         /* disconnect after too many resends */
                         kill_heap_with_logout(h, LogoutReasonTooManyResends);

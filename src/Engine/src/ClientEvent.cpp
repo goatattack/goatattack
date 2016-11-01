@@ -350,7 +350,7 @@ void Client::sevt_data(ServerEvent& evt) {
                             } else {
                                 if (tournament) {
                                     if (show_lagometer) {
-                                        lagometer.update(p->state.server_state.ping_time);
+                                        lagometer.update(p->state.server_state.ping_time, p->state.server_state.outq_sz, get_outq_sz(conn));
                                     }
                                 }
                             }

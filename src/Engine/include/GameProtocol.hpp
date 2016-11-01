@@ -30,6 +30,7 @@ typedef int16_t joyvalue_t;
 typedef int16_t scounter_t;
 typedef int16_t identifier_t;
 typedef unsigned char transflag_t;
+typedef unsigned char nano_size_t;
 typedef uint16_t score_t;
 typedef int16_t sscore_t;
 typedef uint16_t playerflags_t;
@@ -228,6 +229,7 @@ struct GPlayerServerState {
     sscore_t score;              // 2
     score_t frags;               // 2
     score_t kills;               // 2
+    nano_size_t outq_sz;         // 1
     playerflags_t flags;         // 1
     unsigned char health;        // 1
     unsigned char ammo;          // 1
