@@ -26,6 +26,7 @@ static const ms_t MaxPing = 100;
 Lagometer::Lagometer(Subsystem& subsystem) throw (LagometerException)
     : meter(0), width(32), height(32), height2(height / 2), height4(height / 4),
       pictop(height - 1), tpic(new unsigned char[width * height * BytesPerPixel]),
+      red(new unsigned char[height2 + 1]), green(new unsigned char[height2 + 1]),
       max_ping(0), max_server_outq_sz(0), max_client_outq_sz(0)
 {
     create(subsystem);
@@ -35,6 +36,7 @@ Lagometer::Lagometer(Subsystem& subsystem) throw (LagometerException)
 Lagometer::Lagometer(Subsystem& subsystem, int width, int height) throw (LagometerException)
     : meter(0), width(width), height(height), height2(height / 2), height4(height / 4),
       pictop(height - 1), tpic(new unsigned char[width * height * BytesPerPixel]),
+      red(new unsigned char[height2 + 1]), green(new unsigned char[height2 + 1]),
       max_ping(0), max_server_outq_sz(0), max_client_outq_sz(0)
 {
     create(subsystem);
@@ -86,8 +88,6 @@ TileGraphic *Lagometer::get_tilegraphic() {
         for (int x = 0; x < width; x++) {
             /* get current strip info */
             LagInfo& li = pings[x];
-            unsigned char colr = li.ping * 255 / height2;
-            unsigned char colg = 255 - colr;
 
             /* clear strip */
             for (int y = li.ping; y < height; y++) {
@@ -98,7 +98,7 @@ TileGraphic *Lagometer::get_tilegraphic() {
             /* draw pings */
             for (int y = 0; y < li.ping; y++) {
                 unsigned char *pptr = &tpic[(pictop - y) * width * BytesPerPixel + x * BytesPerPixel];
-                pptr[0] = colr; pptr[1] = colg; pptr[2] = 0; pptr[3] = 255;
+                pptr[0] = red[y]; pptr[1] = green[y]; pptr[2] = 0; pptr[3] = 255;
             }
 
             /* draw server outq */
@@ -132,5 +132,20 @@ void Lagometer::create(Subsystem& subsystem) throw (LagometerException) {
 
     AutoPtr<TileGraphic> tmeter(subsystem.create_tilegraphic(width, height));
     tmeter->add_tile(BytesPerPixel, &tpic[0], false, false);
+
+    /* create color transition */
+    for (int y = 0; y <= height2; y++) {
+        int v = y * 1.4;
+        if (v > height2) {
+            v = height2;
+        }
+        unsigned char colr = v * 255 / height2;
+        unsigned char colg = 255 - colr;
+        unsigned char diff = 255 - (colr > colg ? colr : colg);
+        red[y] = colr + diff;
+        green[y] = colg + diff;
+    }
+
+    /* done */
     meter = tmeter.release();
 }

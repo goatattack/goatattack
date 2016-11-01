@@ -65,6 +65,8 @@ private:
     int height4;
     int pictop;
     AutoPtr<unsigned char[]> tpic;
+    AutoPtr<unsigned char[]> red;
+    AutoPtr<unsigned char[]> green;
     ms_t max_ping;
     int max_server_outq_sz;
     int max_client_outq_sz;
