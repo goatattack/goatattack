@@ -1012,7 +1012,7 @@ void Server::cleanup_held_players() {
 void Server::quit_client(const Connection *c, Player *p, const std::string& message) {
     send_data(c, 0, GPCServerQuit, NetFlagsReliable, message.length(), message.c_str());
     p->server_force_quit_client = true;
-    p->server_force_quit_client_counter = 50;
+    p->server_force_quit_client_counter = 1000;
 }
 
 void Server::sync_client(const Connection *c, Player *p) {

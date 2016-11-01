@@ -30,7 +30,7 @@
 /* some consts to tweak */
 static const int PingTimeout = 5000;        /* 5 seconds         */
 static const int PingInterval = 500;        /* 500 ms            */
-static const int MaxResends = 40;           /* 1000 ms           */
+static const int MaxResends = 80;           /* 2000 ms           */
 
 /* protocol v4 changed status request structure */
 static const int NewStatusProtocolVersion = 4;
