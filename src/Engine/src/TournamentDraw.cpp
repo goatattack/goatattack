@@ -465,7 +465,7 @@ void Tournament::draw_players() {
 
             /* draw collision box */
             if (debug) {
-                const CollisionBox& colbox = Characterset::Colbox;
+                const CollisionBox& colbox = Characterset::DamageColbox;
                 subsystem.set_color(1.0f, 0.0f, 0.0f, 0.5f);
                 subsystem.draw_box(static_cast<int>(p->state.client_server_state.x) + left + colbox.x,
                     static_cast<int>(p->state.client_server_state.y) + top - colbox.height - colbox.y,

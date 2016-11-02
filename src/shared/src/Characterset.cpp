@@ -22,7 +22,7 @@
 const int Characterset::Width = 32;
 const int Characterset::Height = 32;
 const CollisionBox Characterset::Colbox(7, 0, 18, 18);
-const CollisionBox Characterset::DamageColbox(2, 0, 28, 22);
+const CollisionBox Characterset::DamageColbox(2, 0, 28, 27);
 const int Characterset::FlagOffsetX = 7;
 const int Characterset::FlagOffsetY = -64;
 const int Characterset::FlagDropOffsetX = 7;
