@@ -561,6 +561,9 @@ void Client::update_text_fade_speed() {
     text_message_fade_out_at = text_message_duration - 1500.0f;
 }
 
+/*
+ * the client thread is used, to decouple net cycle from vsync
+ */
 void Client::thread() {
     /* net loop */
     while (running) {

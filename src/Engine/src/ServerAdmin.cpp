@@ -36,6 +36,7 @@ ServerAdmin::ServerCommand ServerAdmin::server_commands[] = {
     { "set", &ServerAdmin::sc_set },
     { "reset", &ServerAdmin::sc_reset },
     { "vote", &ServerAdmin::sc_vote },
+    { "stats", &ServerAdmin::sc_stats },
     { 0, 0 }
 };
 
@@ -129,7 +130,7 @@ void ServerAdmin::sc_list(const Connection *c, Player *p, const std::string& par
         Players& players = server.get_players();
         for (Players::iterator it = players.begin(); it != players.end(); it++) {
             Player *v = *it;
-            if (params.length() == 0 || v->get_characterset_name().find(params)) {
+            if (params.length() == 0 || v->get_player_name().find(params) != std::string::npos) {
                 char buffer[64];
                 sprintf(buffer, "%d", v->state.id);
                 std::string msg(std::string(buffer) + ": " + v->get_player_name());
@@ -269,6 +270,7 @@ void ServerAdmin::sc_reset(const Connection *c, Player *p, const std::string& pa
             send_i18n_msg(c, I18N_SERVE_RESET_USAGE);
         } else {
             properties.set_value(tokens[0], "");
+            update_configuration(c);
             send_i18n_msg(c, I18N_SERVE_VAR_CLEARED, tokens[0].c_str());
         }
     }
@@ -276,6 +278,35 @@ void ServerAdmin::sc_reset(const Connection *c, Player *p, const std::string& pa
 
 void ServerAdmin::sc_vote(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
     send_i18n_msg(c, I18N_SERVE_NOT_IMPLEMENTED);
+}
+
+void ServerAdmin::sc_stats(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
+    if (check_if_authorized(c, p)) {
+        unsigned char bytes[4];
+        Players& players = server.get_players();
+        for (Players::iterator it = players.begin(); it != players.end(); it++) {
+            Player *v = *it;
+            if (params.length() == 0 || v->get_player_name().find(params) != std::string::npos) {
+                const SequencerHeap *h = server.get_heap(c);
+                char buffer[128];
+                if (h) {
+                    bytes[0] = h->host & 0xff;
+                    bytes[1] = (h->host >> 8) & 0xf;
+                    bytes[2] = (h->host >> 16) & 0xff;
+                    bytes[3] = (h->host >> 24) & 0xff;
+                    sprintf(buffer, "%d.%d.%d.%d:%u, io: unrel(%d %d), rel(%d %d), q(%d %d)",
+                        bytes[3], bytes[2], bytes[1], bytes[0], h->port,
+                        h->last_recv_unrel_seq_no, h->last_send_unrel_seq_no,
+                        h->last_recv_rel_seq_no, h->last_send_rel_seq_no,
+                        static_cast<int>(h->in_queue.size()),
+                        static_cast<int>(h->out_queue.size())
+                    );
+                    std::string msg(v->get_player_name() + ": " + buffer);
+                    server.send_data(c, 0, GPCTextMessage, NetFlagsReliable, msg.length(), msg.c_str());
+                }
+            }
+        }
+    }
 }
 
 /* helper functions */

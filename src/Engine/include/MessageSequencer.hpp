@@ -146,6 +146,7 @@ public:
     void kill(const Connection *c) throw (Exception);
     void new_settings(hostport_t port, pico_size_t num_heaps, const std::string& name,
         const std::string& password) throw (Exception);
+    const SequencerHeap *get_heap(const Connection *c) const;
 
     virtual void event_status(hostaddr_t host, hostport_t port, const std::string& name,
         int max_clients, int cur_clients, ms_t ping_time, bool secured,

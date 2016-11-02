@@ -379,6 +379,15 @@ void MessageSequencer::new_settings(hostport_t port, pico_size_t num_heaps,
     socket.set_port(port);
 }
 
+const SequencerHeap *MessageSequencer::get_heap(const Connection *c) const {
+    for (SequencerHeaps::const_iterator it = heaps.begin(); it != heaps.end(); it++) {
+        if (*it == c) {
+            return *it;
+        }
+    }
+    return 0;
+}
+
 void MessageSequencer::ack(SequencerHeap *heap, sequence_no_t seq_no) throw (Exception) {
     sequence_no_t net_seq_no = htonl(seq_no);
     slack_send(heap->host, heap->port, ++heap->last_send_unrel_seq_no,
@@ -476,7 +485,7 @@ SequencerHeap *MessageSequencer::find_heap(hostaddr_t host, hostport_t port) {
 SequencerHeap *MessageSequencer::find_heap(const Connection *c) {
     for (SequencerHeaps::iterator it = heaps.begin(); it != heaps.end(); it++) {
         if (*it == c) {
-            return static_cast<SequencerHeap *>(const_cast<Connection *>(c));
+            return *it;
         }
     }
 
