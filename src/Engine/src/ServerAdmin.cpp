@@ -132,7 +132,7 @@ void ServerAdmin::sc_list(const Connection *c, Player *p, const std::string& par
             if (params.length() == 0 || v->get_characterset_name().find(params)) {
                 char buffer[64];
                 sprintf(buffer, "%d", v->state.id);
-                std::string msg(v->get_player_name() + " (" + buffer + ")");
+                std::string msg(std::string(buffer) + ": " + v->get_player_name());
                 server.send_data(c, 0, GPCTextMessage, NetFlagsReliable, msg.length(), msg.c_str());
             }
         }

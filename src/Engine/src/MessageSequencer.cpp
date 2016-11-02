@@ -28,9 +28,11 @@
  */
 
 /* some consts to tweak */
-static const int PingTimeout = 5000;        /* 5 seconds         */
-static const int PingInterval = 500;        /* 500 ms            */
-static const int MaxResends = 80;           /* 2000 ms           */
+static const int PingTimeout = 5000;            /* 5 seconds                    */
+static const int PingInterval = 500;            /* 500 ms                       */
+static const int ShapingEnd = 4;                /* 4 * 25 ms                    */
+static const int MaxResends = 13 + ShapingEnd;  /* 2000 ms + ShapingEnd * 25 ms */
+static const int MaxThrottle = 200;             /* 200 ms                       */
 
 /* protocol v4 changed status request structure */
 static const int NewStatusProtocolVersion = 4;
@@ -316,6 +318,15 @@ bool MessageSequencer::cycle() throw (Exception) {
                     again = true;
                     tmp_smsg->touch = touch;
                     tmp_smsg->resends++;
+                    /* throttle resend/traffic shaping */
+                    if (tmp_smsg->resends > ShapingEnd) {
+                        if (tmp_smsg->last_resend_ms < MaxThrottle) {
+                            tmp_smsg->last_resend_ms *= 2;
+                            if (tmp_smsg->last_resend_ms > MaxThrottle) {
+                                tmp_smsg->last_resend_ms = MaxThrottle;
+                            }
+                        }
+                    }
                     if (tmp_smsg->resends > MaxResends) {
                         /* disconnect after too many resends */
                         kill_heap_with_logout(h, LogoutReasonTooManyResends);

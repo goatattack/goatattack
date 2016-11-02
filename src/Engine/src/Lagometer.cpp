@@ -135,7 +135,7 @@ void Lagometer::create(Subsystem& subsystem) throw (LagometerException) {
 
     /* create color transition */
     for (int y = 0; y <= height2; y++) {
-        int v = y * 1.4;
+        int v = static_cast<int>(y * 1.4);
         if (v > height2) {
             v = height2;
         }
