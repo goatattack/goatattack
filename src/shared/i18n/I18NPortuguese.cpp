@@ -278,7 +278,7 @@ const I18N::Text I18N::all_texts_portuguese[] = {
     { I18N_XFER_OPEN_FAILED, "AVISO: não conseguiu abrir o ficheiro: ${1}" },
     { I18N_XFER_ALREADY_OPEN, "AVISO: não conseguiu receber ${1}. O ficheiro esta aberto." },
     { I18N_THREAD_FAILED, "Falhou iniciamento do thread." },
-    { I18N_HEAP_CHANGE_ERROR, "Não pode meter num_heaps para ${1}, ${2} esta conectado." },
+    { I18N_HEAP_CHANGE_ERROR, "Não pode meter num_players para ${1}, ${2} esta conectado." },
     { I18N_SERVER_TOO_OLD, "---[ servidor demasiado antigo ]---" },
     { I18N_ANIMATION_FAILED, "falhou criação da animação: ${1}" },
     { I18N_MISSING_SPAWN_POINTS, "Faltam spawn points neste mapa." },

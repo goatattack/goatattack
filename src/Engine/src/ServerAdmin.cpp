@@ -127,10 +127,13 @@ void ServerAdmin::sc_deop(const Connection *c, Player *p, const std::string& par
 
 void ServerAdmin::sc_list(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
     if (check_if_authorized(c, p)) {
+        player_id_t id = atoi(params.c_str());
         Players& players = server.get_players();
         for (Players::iterator it = players.begin(); it != players.end(); it++) {
             Player *v = *it;
-            if (params.length() == 0 || v->get_player_name().find(params) != std::string::npos) {
+            if ((id > 0 && v->state.id == id) || params.length() == 0 ||
+                v->get_player_name().find(params) != std::string::npos)
+            {
                 char buffer[64];
                 sprintf(buffer, "%d", v->state.id);
                 std::string msg(std::string(buffer) + ": " + v->get_player_name());
@@ -252,26 +255,34 @@ void ServerAdmin::sc_get(const Connection *c, Player *p, const std::string& para
 
 void ServerAdmin::sc_set(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
     if (check_if_authorized(c, p)) {
-        StringTokens tokens = tokenize(params, ' ', 2);
-        if (tokens.size() != 2) {
-            send_i18n_msg(c, I18N_SERVE_SET_USAGE);
-        } else {
-            properties.set_value(tokens[0], tokens[1]);
-            update_configuration(c);
-            send_i18n_msg(c, I18N_SERVE_SET_VAR_TO, tokens[0], tokens[1]);
+        try {
+            StringTokens tokens = tokenize(params, ' ', 2);
+            if (tokens.size() != 2) {
+                send_i18n_msg(c, I18N_SERVE_SET_USAGE);
+            } else {
+                properties.set_value(tokens[0], tokens[1]);
+                update_configuration(c);
+                send_i18n_msg(c, I18N_SERVE_SET_VAR_TO, tokens[0], tokens[1]);
+            }
+        } catch (const Exception& e) {
+            throw ServerAdminException(e.what());
         }
     }
 }
 
 void ServerAdmin::sc_reset(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
     if (check_if_authorized(c,  p)) {
-        StringTokens tokens = tokenize(params, ' ');
-        if (tokens.size() != 1) {
-            send_i18n_msg(c, I18N_SERVE_RESET_USAGE);
-        } else {
-            properties.set_value(tokens[0], "");
-            update_configuration(c);
-            send_i18n_msg(c, I18N_SERVE_VAR_CLEARED, tokens[0].c_str());
+        try {
+            StringTokens tokens = tokenize(params, ' ');
+            if (tokens.size() != 1) {
+                send_i18n_msg(c, I18N_SERVE_RESET_USAGE);
+            } else {
+                properties.set_value(tokens[0], "");
+                update_configuration(c);
+                send_i18n_msg(c, I18N_SERVE_VAR_CLEARED, tokens[0].c_str());
+            }
+        } catch (const Exception& e) {
+            throw ServerAdminException(e.what());
         }
     }
 }
@@ -282,20 +293,24 @@ void ServerAdmin::sc_vote(const Connection *c, Player *p, const std::string& par
 
 void ServerAdmin::sc_stats(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
     if (check_if_authorized(c, p)) {
+        player_id_t id = atoi(params.c_str());
         unsigned char bytes[4];
         Players& players = server.get_players();
         for (Players::iterator it = players.begin(); it != players.end(); it++) {
             Player *v = *it;
-            if (params.length() == 0 || v->get_player_name().find(params) != std::string::npos) {
-                const SequencerHeap *h = server.get_heap(c);
+            if ((id > 0 && v->state.id == id) || params.length() == 0 ||
+                v->get_player_name().find(params) != std::string::npos)
+            {
+                const SequencerHeap *h = server.get_heap(v->get_connection());
                 char buffer[128];
                 if (h) {
                     bytes[0] = h->host & 0xff;
                     bytes[1] = (h->host >> 8) & 0xf;
                     bytes[2] = (h->host >> 16) & 0xff;
                     bytes[3] = (h->host >> 24) & 0xff;
-                    sprintf(buffer, "%d.%d.%d.%d:%u, io: unrel(%d %d), rel(%d %d), q(%d %d)",
+                    sprintf(buffer, "%d.%d.%d.%d:%u (%d ms), io: unrel(%d %d), rel(%d %d), q(%d %d)",
                         bytes[3], bytes[2], bytes[1], bytes[0], h->port,
+                        v->state.server_state.ping_time,
                         h->last_recv_unrel_seq_no, h->last_send_unrel_seq_no,
                         h->last_recv_rel_seq_no, h->last_send_rel_seq_no,
                         static_cast<int>(h->in_queue.size()),

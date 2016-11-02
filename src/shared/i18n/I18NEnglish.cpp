@@ -270,7 +270,7 @@ const I18N::Text I18N::all_texts_english[] = {
     { I18N_XFER_OPEN_FAILED, "WARNING: cannot open file: ${1}" },
     { I18N_XFER_ALREADY_OPEN, "WARNING: cannot receive ${1}. This file is already opened." },
     { I18N_THREAD_FAILED, "Starting thread failed." },
-    { I18N_HEAP_CHANGE_ERROR, "Cannot set num_heaps to ${1}, ${2} are logged in." },
+    { I18N_HEAP_CHANGE_ERROR, "Cannot set num_players to ${1}, ${2} are logged in." },
     { I18N_SERVER_TOO_OLD, "---[ server too old ]---" },
     { I18N_ANIMATION_FAILED, "creating animation failed: ${1}" },
     { I18N_MISSING_SPAWN_POINTS, "Missing spawn points in this map." },

@@ -370,7 +370,7 @@ void MessageSequencer::new_settings(hostport_t port, pico_size_t num_heaps,
     const std::string& name, const std::string& password) throw (Exception)
 {
     int current = static_cast<int>(heaps.size());
-    if (current >= num_heaps) {
+    if (current > num_heaps) {
         throw MessageSequencerException(i18n(I18N_HEAP_CHANGE_ERROR, num_heaps, current));
     }
     this->name = name;

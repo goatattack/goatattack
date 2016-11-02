@@ -270,7 +270,7 @@ const I18N::Text I18N::all_texts_german[] = {
     { I18N_XFER_OPEN_FAILED, "WARNUNG: kann Datei nicht öffnen: ${1}" },
     { I18N_XFER_ALREADY_OPEN, "WARNUNG: kann ${1} nicht empfangen. Diese Datei ist bereits geöffnet." },
     { I18N_THREAD_FAILED, "Starten des Threads fehlgeschlagen." },
-    { I18N_HEAP_CHANGE_ERROR, "Kann num_heaps nicht auf ${1} setzen, da ${2} eingeloggt sind." },
+    { I18N_HEAP_CHANGE_ERROR, "Kann num_players nicht auf ${1} setzen, da ${2} eingeloggt sind." },
     { I18N_SERVER_TOO_OLD, "---[ Server zu alt ]---" },
     { I18N_ANIMATION_FAILED, "Animation erstellen fehlgeschlagen: ${1}" },
     { I18N_MISSING_SPAWN_POINTS, "Es fehlen Spawnpunkte in dieser Karte." },

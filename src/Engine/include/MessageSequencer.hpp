@@ -33,10 +33,8 @@ public:
     MessageSequencerException(std::string msg) : Exception(msg) { }
 };
 
-/* obsolete behavior:                   */
-/* ------------------                   */
-/* we start to resend after 50ms, then  */
-/* doubling the interval each resend.   */
+/* we start to resend after 25ms, retry 4 times with a delay of 25 ms, */
+/* then doubling the interval each resend.                             */
 struct QueueMessage {
     QueueMessage() { }
     QueueMessage(sequence_no_t seq_no, flags_t flags, command_t cmd, data_len_t len, data_t *data)
