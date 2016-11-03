@@ -130,6 +130,8 @@ bool SubsystemNull::is_sound_playing(Sound *sound) {
     return false;
 }
 
+void SubsystemNull::stop_sound(int channel) { }
+
 bool SubsystemNull::play_music(Music *music) {
     return false;
 }

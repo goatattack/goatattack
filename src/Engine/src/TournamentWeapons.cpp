@@ -232,7 +232,7 @@ void Tournament::check_killing_animation(int x, int y, Animation *ani,
 {
     if (server) {
         if (ani->get_damage()) {
-            int spread = ani->get_spread();
+            int spread = ani->get_damage_spread();
 
             CollisionBox colbox;
             colbox.x = x - spread / 2;

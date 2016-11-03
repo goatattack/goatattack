@@ -55,6 +55,8 @@ public:
 
     void extract();
 
+    KeyValue& get_key_value();
+
 private:
     bool save_at_exit;
     std::string filename;

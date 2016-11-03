@@ -14,3 +14,4 @@ physics_colbox_y=0
 physics_colbox_width=8
 physics_colbox_height=16
 finished_animation=grenade_explosion
+can_be_shot=1

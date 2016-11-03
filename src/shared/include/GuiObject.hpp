@@ -290,6 +290,8 @@ public:
     void show_bolts(bool state);
     void set_color(float r, float g, float b);
     void reset_color();
+    void set_pressed(bool state);
+    bool get_pressed() const;
 
 private:
     bool bolts;
@@ -297,6 +299,7 @@ private:
     float text_r;
     float text_g;
     float text_b;
+    bool pressed;
 
     virtual void paint();
     void prepare();

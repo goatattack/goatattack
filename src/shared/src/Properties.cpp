@@ -19,6 +19,9 @@
 
 Properties::Properties() { }
 
+Properties::Properties(const KeyValue& kv) throw (KeyValueException)
+    : KeyValue(kv) { }
+
 Properties::Properties(const std::string& filename, ZipReader *zip) throw (KeyValueException)
     : KeyValue(filename, zip), filename(filename)
 {

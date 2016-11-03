@@ -545,32 +545,38 @@ void MainMenu::create_server_click() {
     Font *f = get_font();
     int vw = subsystem.get_view_width();
     int vh = subsystem.get_view_height();
-    int ww = 347;
-    int wh = 325;
+    int ww = 347 + 15;
+    int wh = 308;
     GuiWindow *window = push_window(vw / 2 - ww / 2, vh / 2 - wh / 2, ww, wh, i18n(I18N_MAINMENU_LAN));
     window->set_cancelable(true);
 
-    /* server settings */
-    create_label(window, 15, 16, i18n(I18N_MAINMENU_SERVER_NAME2));
-    cs_server_name = create_textbox(window, 110, 15, 221, config.get_string("server_name"));
+    /* tab container */
+    int wcw = window->get_client_width();
+    int wch = window->get_client_height();
+    creation_tab = create_tab(window, Spc, Spc, wcw - (2 * Spc), wch - 25 - (2 * Spc));
+
+    /* *** SERVER *** */
+    GuiFrame *frserver = creation_tab->create_tab(i18n(I18N_MAINMENU_CREATE_SERVER1));
+    create_label(frserver, 0, 1, i18n(I18N_MAINMENU_SERVER_NAME2));
+    cs_server_name = create_textbox(frserver, 95, 0, 221, config.get_string("server_name"));
     cs_server_name->set_focus();
 
-    create_label(window, 15, 36, i18n(I18N_MAINMENU_PORT));
-    cs_server_port = create_textbox(window, 110, 35, 55, config.get_string("server_port"));
+    create_label(frserver, 0, 21, i18n(I18N_MAINMENU_PORT));
+    cs_server_port = create_textbox(frserver, 95, 20, 55, config.get_string("port"));
     cs_server_port->set_type(GuiTextbox::TypeInteger);
 
-    create_box(window, 15, 55, ww - 30, 1);
+    create_box(frserver, 0, 43, frserver->get_width(), 1);
 
     /* game modes */
     int game_mode = config.get_int("game_mode");
-    create_label(window, 15, 60, i18n(I18N_MAINMENU_GAME_MODE));
-    cs_dm = create_checkbox(window, 110, 61, i18n(I18N_MAINMENU_GM_DM), game_mode == GamePlayTypeDM, static_game_mode_click, this);
-    cs_tdm = create_checkbox(window, 110, 74, i18n(I18N_MAINMENU_GM_TDM), game_mode == GamePlayTypeTDM, static_game_mode_click, this);
-    cs_ctf = create_checkbox(window, 110, 87, i18n(I18N_MAINMENU_GM_CTF), game_mode == GamePlayTypeCTF, static_game_mode_click, this);
+    create_label(frserver, 0, 49, i18n(I18N_MAINMENU_GAME_MODE));
+    cs_dm = create_checkbox(frserver, 95, 50, i18n(I18N_MAINMENU_GM_DM), game_mode == GamePlayTypeDM, static_game_mode_click, this);
+    cs_tdm = create_checkbox(frserver, 95, 63, i18n(I18N_MAINMENU_GM_TDM), game_mode == GamePlayTypeTDM, static_game_mode_click, this);
+    cs_ctf = create_checkbox(frserver, 95, 76, i18n(I18N_MAINMENU_GM_CTF), game_mode == GamePlayTypeCTF, static_game_mode_click, this);
 
-    cs_sr = create_checkbox(window, 230, 61, i18n(I18N_MAINMENU_GM_SR), game_mode == GamePlayTypeSR, static_game_mode_click, this);
-    cs_ctc = create_checkbox(window, 230, 74, i18n(I18N_MAINMENU_GM_CTC), game_mode == GamePlayTypeCTC, static_game_mode_click, this);
-    cs_goh = create_checkbox(window, 230, 87, i18n(I18N_MAINMENU_GM_GOH), game_mode == GamePlayTypeGOH, static_game_mode_click, this);
+    cs_sr = create_checkbox(frserver, 215, 50, i18n(I18N_MAINMENU_GM_SR), game_mode == GamePlayTypeSR, static_game_mode_click, this);
+    cs_ctc = create_checkbox(frserver, 215, 63, i18n(I18N_MAINMENU_GM_CTC), game_mode == GamePlayTypeCTC, static_game_mode_click, this);
+    cs_goh = create_checkbox(frserver, 215, 76, i18n(I18N_MAINMENU_GM_GOH), game_mode == GamePlayTypeGOH, static_game_mode_click, this);
 
     cs_current_mode = cs_dm;
     if (game_mode == GamePlayTypeTDM) {
@@ -603,63 +609,73 @@ void MainMenu::create_server_click() {
     cs_goh->set_style(GuiCheckbox::CheckBoxStyleCircle);
     cs_goh->set_tag(GamePlayTypeGOH);
 
-    create_box(window, 15, 104, ww - 30, 1);
-
-    /* max players and duration */
-    create_label(window, 15, 112, i18n(I18N_MAINMENU_MAX_PLAYERS));
-    cs_max_players = create_textbox(window, 110, 111, 55, config.get_string("max_players"));
-    cs_max_players->set_type(GuiTextbox::TypeInteger);
-
-    create_label(window, 15, 132, i18n(I18N_MAINMENU_WARMUP));
-    cs_warmup = create_textbox(window, 110, 131, 55, config.get_string("warmup"));
-    cs_warmup->set_type(GuiTextbox::TypeInteger);
-    create_label(window, 170, 132, i18n(I18N_MAINMENU_IN_SECONDS));
-
-    create_label(window, 15, 152, i18n(I18N_MAINMENU_DURATION));
-    cs_duration = create_textbox(window, 110, 151, 55, config.get_string("duration"));
-    cs_duration->set_type(GuiTextbox::TypeInteger);
-    create_label(window, 170, 152, i18n(I18N_MAINMENU_IN_MINUTES));
-
-    create_box(window, 15, 171, ww - 30, 1);
+    create_box(frserver, 0, 93, frserver->get_width(), 1);
 
     /* map selector */
     Icon *no_map = resources.get_icon("map_preview");
-    cs_map_preview = create_picture(window, ww - 64 - 15, 194, no_map->get_tile()->get_tilegraphic());
+    cs_map_preview = create_picture(frserver, creation_tab->get_width() - 83, 116, no_map->get_tile()->get_tilegraphic());
 
     try {
         Icon *map_border = resources.get_icon("map_border");
-        create_picture(window, ww - 64 - 15, 194, map_border->get_tile()->get_tilegraphic());
+        create_picture(frserver, creation_tab->get_width() - 83, 116, map_border->get_tile()->get_tilegraphic());
     } catch (...) {
         /* chomp */
     }
 
-    cs_map_name = create_label(window, ww - 64 - 15, 193 + 68, "");
+    cs_map_name = create_label(frserver, creation_tab->get_width() - 83, 115 + 68, "");
 
-    create_label(window, 15, 177, i18n(I18N_MAINMENU_SELECT_MAP));
+    create_label(frserver, 0, 99, i18n(I18N_MAINMENU_SELECT_MAP));
     int lbh = (get_font()->get_font_height()) * 6 + 2;
-    cs_maps = create_listbox(window, 15, 193, 243, lbh, "", static_map_selected, this);
+    cs_maps = create_listbox(frserver, 0, 115, 243, lbh, "", static_map_selected, this);
 
     fill_map_listbox(static_cast<GamePlayType>(game_mode));
+
+    /* *** SETTINGS *** */
+    GuiFrame *frsettings = creation_tab->create_tab(i18n(I18N_MAINMENU_CREATE_SERVER2));
+
+    /* max players and duration */
+    create_label(frsettings, 0, 1, i18n(I18N_MAINMENU_MAX_PLAYERS));
+    cs_max_players = create_textbox(frsettings, 95, 0, 55, config.get_string("num_players"));
+    cs_max_players->set_type(GuiTextbox::TypeInteger);
+
+    create_label(frsettings, 0, 21, i18n(I18N_MAINMENU_WARMUP));
+    cs_warmup = create_textbox(frsettings, 95, 20, 55, config.get_string("warmup"));
+    cs_warmup->set_type(GuiTextbox::TypeInteger);
+    create_label(frsettings, 155, 21, i18n(I18N_MAINMENU_IN_SECONDS));
+
+    create_label(frsettings, 0, 41, i18n(I18N_MAINMENU_DURATION));
+    cs_duration = create_textbox(frsettings, 95, 40, 55, config.get_string("duration"));
+    cs_duration->set_type(GuiTextbox::TypeInteger);
+    create_label(frsettings, 155, 41, i18n(I18N_MAINMENU_IN_MINUTES));
+
+    create_box(frsettings, 0, 63, frserver->get_width(), 1);
+
+    /* server settings */
+    cs_opt_hold_disconnected_players = create_checkbox(frsettings, 0, 70, i18n(I18N_MAINMENU_HOLD_DISCONNECTED_PLAYERS), config.get_bool("hold_disconnected_player"), 0, 0);
+    create_label(frsettings, 0, 86, i18n(I18N_MAINMENU_RECONNECT_KILLS1));
+    cs_opt_reconnect_kills = create_textbox(frsettings, 95, 85, 55, config.get_string("reconnect_kills"));
+    cs_opt_reconnect_kills->set_type(GuiTextbox::TypeInteger);
+
+    create_box(frsettings, 0, 107, frserver->get_width(), 1);
+
+    cs_opt_friendly_fire = create_checkbox(frsettings, 0, 114, i18n(I18N_MAINMENU_FRIENDLY_FIRE), config.get_bool("friendly_fire_alarm"), 0, 0);
+    cs_opt_shooting_explosives = create_checkbox(frsettings, 0, 129, i18n(I18N_MAINMENU_SHOOT_EXPLOSIVES), config.get_bool("shot_explosives"), 0, 0);
+    cs_opt_prevent_pick = create_checkbox(frsettings, 0, 144, i18n(I18N_MAINMENU_PREVENT_PICK), config.get_bool("prevent_pick"), 0, 0);
+
 
     /* buttons */
     std::string btn_start(i18n(I18N_BUTTON_START_SERVER));
     int bw_start = f->get_text_width(btn_start) + 24;
-    create_button(window, 15, wh - 43, bw_start, 18, btn_start, static_start_server_click, this);
+    create_button(window, 12, wh - 46, bw_start, 18, btn_start, static_start_server_click, this);
 
-
-
-    std::string text(i18n(I18N_BUTTON_CANCEL));
+    std::string text(i18n(I18N_BUTTON_CLOSE));
     int bw = f->get_text_width(text) + 24;
-    create_button(window, ww - bw - 16, wh - 43, bw, 18, text, static_close_window_click, this);
+    create_button(window, bw_start + 20, wh - 46, bw, 18, text, static_close_start_server_click, this);
 
-    text = i18n(I18N_BUTTON_START_SERVER);
+    text = i18n(I18N_BUTTON_CANCEL);
     bw = f->get_text_width(text) + 24;
-    int last_bw = bw;
-    create_button(window, 15, wh - 43, bw, 18, text, static_start_server_click, this);
+    create_button(window, ww - bw - 14, wh - 46, bw, 18, text, static_close_window_click, this);
 
-    text = i18n(I18N_BUTTON_CLOSE);
-    bw = f->get_text_width(text) + 24;
-    create_button(window, last_bw + 20, wh - 43, bw, 18, text, static_close_start_server_click, this);
 }
 
 bool MainMenu::MapEntryCompare(const MapEntry& lhs, const MapEntry& rhs) {
@@ -739,6 +755,7 @@ void MainMenu::static_close_start_server_click(GuiVirtualButton *sender, void *d
 
 void MainMenu::server_validate(bool close) {
     if (!cs_server_name->get_text().length()) {
+        creation_tab->select_tab(0);
         show_messagebox(Gui::MessageBoxIconError, i18n(I18N_MAINMENU_SERVER_NAME), i18n(I18N_MAINMENU_INVALID_SERVERNAME));
         cs_server_name->set_focus();
         return;
@@ -746,6 +763,7 @@ void MainMenu::server_validate(bool close) {
 
     int port = atoi(cs_server_port->get_text().c_str());
     if (port < 1 || port > 65535) {
+        creation_tab->select_tab(0);
         show_messagebox(Gui::MessageBoxIconError, i18n(I18N_PORT_TITLE), i18n(I18N_INVALID_PORT));
         cs_server_port->set_focus();
         return;
@@ -755,6 +773,7 @@ void MainMenu::server_validate(bool close) {
 
     int max_players = atoi(cs_max_players->get_text().c_str());
     if (max_players < 2 || max_players > 64) {
+        creation_tab->select_tab(1);
         show_messagebox(Gui::MessageBoxIconError, i18n(I18N_MAINMENU_MAX_PLAYERS_TITLE), i18n(I18N_MAINMENU_INVALID_GENERIC_NUMBER, "2 - 64"));
         cs_max_players->set_focus();
         return;
@@ -762,6 +781,7 @@ void MainMenu::server_validate(bool close) {
 
     int duration = atoi(cs_duration->get_text().c_str());
     if (duration < 2 || duration > 240) {
+        creation_tab->select_tab(1);
         show_messagebox(Gui::MessageBoxIconError, i18n(I18N_MAINMENU_DURATION2), i18n(I18N_MAINMENU_INVALID_GENERIC_NUMBER, "2 - 240"));
         cs_duration->set_focus();
         return;
@@ -769,8 +789,17 @@ void MainMenu::server_validate(bool close) {
 
     int warmup = atoi(cs_warmup->get_text().c_str());
     if (warmup < 0 || warmup > 60) {
+        creation_tab->select_tab(1);
         show_messagebox(Gui::MessageBoxIconError, i18n(I18N_MAINMENU_WARMUP2), i18n(I18N_MAINMENU_INVALID_GENERIC_NUMBER, "0 - 60"));
         cs_warmup->set_focus();
+        return;
+    }
+
+    int reconnect_kills = atoi(cs_opt_reconnect_kills->get_text().c_str());
+    if (reconnect_kills < 0 || reconnect_kills > 100) {
+        creation_tab->select_tab(1);
+        show_messagebox(Gui::MessageBoxIconError, i18n(I18N_MAINMENU_RECONNECT_KILLS2), i18n(I18N_MAINMENU_INVALID_GENERIC_NUMBER, "0 - 100"));
+        cs_opt_reconnect_kills->set_focus();
         return;
     }
 
@@ -778,6 +807,7 @@ void MainMenu::server_validate(bool close) {
     Resources::ResourceObjects& maps = resources.get_maps();
     int sz = static_cast<int>(maps.size());
     if (selected_map < 0 || selected_map >= sz) {
+        creation_tab->select_tab(0);
         show_messagebox(Gui::MessageBoxIconError, i18n(I18N_MAINMENU_SELECT_MAP2), i18n(I18N_MAINMENU_SELECT_MAP3));
         cs_maps->set_focus();
         return;
@@ -786,6 +816,7 @@ void MainMenu::server_validate(bool close) {
 
     /* game mode map match */
     if (!map_is_valid(static_cast<GamePlayType>(game_mode), map->get_game_play_type())) {
+        creation_tab->select_tab(0);
         show_messagebox(Gui::MessageBoxIconError, i18n(I18N_WRONG_MAPTYPE), i18n(I18N_WRONG_MAPTYPE2));
         cs_maps->set_focus();
         return;
@@ -793,12 +824,17 @@ void MainMenu::server_validate(bool close) {
 
     /* persist */
     config.set_string("server_name", cs_server_name->get_text());
-    config.set_int("server_port", port);
+    config.set_int("port", port);
     config.set_int("game_mode", game_mode);
-    config.set_int("max_players", max_players);
+    config.set_int("num_players", max_players);
     config.set_int("duration", duration);
     config.set_int("warmup", warmup);
     config.set_string("map_name", map->get_name());
+    config.set_bool("friendly_fire_alarm", cs_opt_friendly_fire->get_state());
+    config.set_bool("shot_explosives", cs_opt_shooting_explosives->get_state());
+    config.set_bool("prevent_pick", cs_opt_prevent_pick->get_state());
+    config.set_bool("hold_disconnected_player", cs_opt_hold_disconnected_players->get_state());
+    config.set_int("reconnect_kills", reconnect_kills);
 
     /* start server or close window */
     if (close) {
@@ -807,8 +843,9 @@ void MainMenu::server_validate(bool close) {
         try {
             ScopeMusicStopper stop_music(subsystem, title_music);
             GamePlayType type = static_cast<GamePlayType>(game_mode);
-            Server server(resources, subsystem, port, max_players, config.get_string("server_name"),
-                type, config.get_string("map_name"), duration, warmup);
+            Server server(resources, subsystem, config.get_key_value(), type,
+                config.get_string("map_name"), duration, warmup
+            );
             ScopeServer scope_server(server);
             Client client(resources, subsystem, INADDR_LOOPBACK, port, config, "");
             client.link_mouse(*this);

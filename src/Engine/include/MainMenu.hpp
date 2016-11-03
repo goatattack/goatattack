@@ -120,6 +120,12 @@ private:
     GuiTextbox *custom_port;
     GuiTextbox *custom_password;
     GuiRoundedButton *rb[6];
+    GuiTab *creation_tab;
+    GuiCheckbox *cs_opt_friendly_fire;
+    GuiCheckbox *cs_opt_shooting_explosives;
+    GuiCheckbox *cs_opt_prevent_pick;
+    GuiCheckbox *cs_opt_hold_disconnected_players;
+    GuiTextbox *cs_opt_reconnect_kills;
 
     const void *wan_list_selected_entry;
     const void *lan_list_selected_entry;

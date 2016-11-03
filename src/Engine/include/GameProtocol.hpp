@@ -104,7 +104,8 @@ enum GPC {
     GPCPakHash,
     GPCServerQuit,
     GPCSpectate,
-    GPCI18NText
+    GPCI18NText,
+    GPCTournamentSetting
 };
 
 /* game protocol client to server */
@@ -167,6 +168,14 @@ struct GTournament {
         duration = htons(duration);
         warmup = htons(warmup);
     }
+};
+#pragma pack()
+
+// OK
+#pragma pack(1)
+struct GTournamentSetting {
+    unsigned char setting_id;       // 1
+    flags_t flag;                   // 1
 };
 #pragma pack()
 
@@ -885,6 +894,7 @@ struct GChatMessage {
 const int GTransportLen = sizeof(GTransport) - 1;
 const int GPlayerInfoLen = sizeof(GPlayerInfo);
 const int GTournamentLen = sizeof(GTournament);
+const int GTournamentSettingLen = sizeof(GTournamentSetting);
 const int GPlayerStateLen = sizeof(GPlayerState);
 const int GPTAllStatesLen = sizeof(GPTAllStates);
 const int GPlayerClientStateLen = sizeof(GPlayerClientState);

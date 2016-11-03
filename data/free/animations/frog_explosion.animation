@@ -8,6 +8,7 @@ speed=25
 spread=140
 spread_count=50
 damage=200
+damage_spread=200
 randomized_index=4
 x_offset=-32
 y_offset=-32

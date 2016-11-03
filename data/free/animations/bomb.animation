@@ -13,3 +13,5 @@ physics_colbox_y=0
 physics_colbox_width=8
 physics_colbox_height=12
 finished_animation=bomb_explosion
+can_be_shot=1
+stop_sound_if_shot=1

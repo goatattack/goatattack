@@ -66,7 +66,7 @@ Tournament::Tournament(Resources& resources, Subsystem& subsystem, Gui *gui, Ser
       hud_frogs(resources.get_icon("frog")),
       enemy_indicator(resources.get_icon("enemy_indicator_neutral")),
       game_over(false), logger(logger), gui_is_destroyed(false),
-      do_friendly_fire_alarm(true), lagometer(0)
+      lagometer(0)
 {
     /* init */
     char kvb[128];
@@ -127,6 +127,9 @@ Tournament::Tournament(Resources& resources, Subsystem& subsystem, Gui *gui, Ser
     if (logger) {
         logger->set_map(&map);
     }
+
+    /* clear settings */
+    memset(settings, 0, sizeof(settings));
 }
 
 Tournament::~Tournament() {
@@ -274,7 +277,7 @@ void Tournament::add_animation(GAnimation *animation) {
         }
         if (!server) {
             if (strlen(animation->sound_name)) {
-                subsystem.play_sound(resources.get_sound(animation->sound_name), 0);
+                gani->sound_channel = subsystem.play_sound(resources.get_sound(animation->sound_name), 0);
             }
         }
     } catch (const ResourcesException& e) {
@@ -302,7 +305,7 @@ void Tournament::add_animation(const std::string& name, identifier_t id,
         gani->state.accel_y = accel_y;
         game_animations.push_back(gani);
         if (!server) {
-            subsystem.play_sound(ani->get_sound(), ani->get_sound_loops());
+            gani->sound_channel = subsystem.play_sound(ani->get_sound(), ani->get_sound_loops());
         }
     } catch (const ResourcesException& e) {
         if (gani) delete gani;
@@ -603,7 +606,7 @@ bool Tournament::pick_item(Player *p, GameObject *obj) {
     switch (obj->object->get_type()) {
         case Object::ObjectTypeBomb:
             /* pick bomb */
-            if (p->state.server_state.bombs < MaxBombs) {
+            if (!settings[SettingEnablePreventPick] || p->state.server_state.bombs < MaxBombs) {
                 p->state.server_state.bombs++;
                 if (p->state.server_state.bombs > MaxBombs) {
                     p->state.server_state.bombs = MaxBombs;
@@ -614,7 +617,7 @@ bool Tournament::pick_item(Player *p, GameObject *obj) {
             break;
 
         case Object::ObjectTypeFrog:
-            if (p->state.server_state.frogs < MaxFrogs) {
+            if (!settings[SettingEnablePreventPick] || p->state.server_state.frogs < MaxFrogs) {
                 reset_frog_spawn_counter();
                 p->state.server_state.frogs++;
                 if (p->state.server_state.frogs > MaxFrogs) {
@@ -632,7 +635,7 @@ bool Tournament::pick_item(Player *p, GameObject *obj) {
 
         case Object::ObjectTypeArmor:
             /* pick armor */
-            if (p->state.server_state.armor < MaxArmor) {
+            if (!settings[SettingEnablePreventPick] || p->state.server_state.armor < MaxArmor) {
                 p->state.server_state.armor += 25;
                 if (p->state.server_state.armor > MaxArmor) {
                     p->state.server_state.armor = MaxArmor;
@@ -648,7 +651,7 @@ bool Tournament::pick_item(Player *p, GameObject *obj) {
 
         case Object::ObjectTypeGrenade:
             /* pick grenade */
-            if (p->state.server_state.grenades < MaxGrenades) {
+            if (!settings[SettingEnablePreventPick] || p->state.server_state.grenades < MaxGrenades) {
                 p->state.server_state.grenades += 5;
                 if (p->state.server_state.grenades > MaxGrenades) {
                     p->state.server_state.grenades = MaxGrenades;
@@ -660,7 +663,7 @@ bool Tournament::pick_item(Player *p, GameObject *obj) {
 
         case Object::ObjectTypeMedikitBig:
             /* pick big medikit */
-            if (p->state.server_state.health < MaxHealth) {
+            if (!settings[SettingEnablePreventPick] || p->state.server_state.health < MaxHealth) {
                 p->state.server_state.health += MaxHealth;
                 if (p->state.server_state.health > MaxHealth) {
                     p->state.server_state.health = MaxHealth;
@@ -672,7 +675,7 @@ bool Tournament::pick_item(Player *p, GameObject *obj) {
 
         case Object::ObjectTypeMedikitSmall:
             /* pick small medikit */
-            if (p->state.server_state.health < MaxHealth) {
+            if (!settings[SettingEnablePreventPick] || p->state.server_state.health < MaxHealth) {
                 p->state.server_state.health += 25;
                 if (p->state.server_state.health > MaxHealth) {
                     p->state.server_state.health = MaxHealth;
@@ -694,7 +697,7 @@ bool Tournament::pick_item(Player *p, GameObject *obj) {
         case Object::ObjectTypeAmmo:
             /* pick ammo */
             if (p->state.server_state.flags & PlayerServerFlagHasShotgunBelt) {
-                if (p->state.server_state.ammo < MaxAmmo) {
+                if (!settings[SettingEnablePreventPick] || p->state.server_state.ammo < MaxAmmo) {
                     p->state.server_state.ammo += 10;
                     if (p->state.server_state.ammo > MaxAmmo) {
                         p->state.server_state.ammo = MaxAmmo;
@@ -710,7 +713,7 @@ bool Tournament::pick_item(Player *p, GameObject *obj) {
         case Object::ObjectTypeAmmobox:
             /* pick ammo */
             if (p->state.server_state.flags & PlayerServerFlagHasShotgunBelt) {
-                if (p->state.server_state.ammo < MaxAmmo) {
+                if (!settings[SettingEnablePreventPick] || p->state.server_state.ammo < MaxAmmo) {
                     p->state.server_state.ammo += 40;
                     if (p->state.server_state.ammo > MaxAmmo) {
                         p->state.server_state.ammo = MaxAmmo;
@@ -902,10 +905,6 @@ void Tournament::destroy_generic_data(void *data) { }
 
 void Tournament::generic_data_delivery(void *data) { }
 
-void Tournament::set_friendly_fire_alarm(bool state) {
-    do_friendly_fire_alarm = state;
-}
-
 char *Tournament::create_i18n_response(I18NText id, size_t& sz, const char *addon) {
     sz = (addon ? strlen(addon) : 0);
     char *p = new char[GI18NTextLen + sz];
@@ -938,4 +937,19 @@ void Tournament::add_i18n_response(I18NText id, const std::string& p1, const std
 
 void Tournament::set_lagometer(Lagometer *lagometer) {
     this->lagometer = lagometer;
+}
+
+void Tournament::retrieve_flags() {
+    for (int i = 0; i < static_cast<int>(_MAXSettings); i++) {
+        GTournamentSetting *ts = new GTournamentSetting;
+        ts->setting_id = static_cast<unsigned char>(i);
+        ts->flag = (settings[i] ? 1 : 0);
+        add_state_response(GPCTournamentSetting, sizeof(GTournamentSetting), ts);
+    }
+}
+
+void Tournament::set_flag(Setting setting, bool value) {
+    if (setting >= 0 && setting < _MAXSettings) {
+        settings[setting] = value;
+    }
 }

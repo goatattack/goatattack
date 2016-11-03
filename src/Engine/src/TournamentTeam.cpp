@@ -387,7 +387,7 @@ bool TournamentTeam::player_joins(Player *p, playerflags_t flags) {
 }
 
 void TournamentTeam::check_friendly_fire(identifier_t owner, Player *p) {
-    if (do_friendly_fire_alarm && owner) {
+    if (settings[SettingEnableFriendlyFire] && owner) {
         for (Players::iterator it = players.begin(); it != players.end(); it++) {
             Player *fp = *it;
             if (fp->state.id == owner) {

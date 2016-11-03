@@ -37,14 +37,13 @@ public:
     ServerException(std::string msg) : Exception(msg) { }
 };
 
-class Server : public Properties, public ClientServer, public Thread {
+class Server : public Properties, public ClientServer, private ServerAdmin, public Thread {
 private:
     Server(const Server&);
     Server& operator=(const Server&);
 
 public:
-    Server(Resources& resources, Subsystem& subsystem,
-        hostport_t port, pico_size_t num_players, const std::string& server_name,
+    Server(Resources& resources, Subsystem& subsystem, KeyValue kv,
         GamePlayType type, const std::string& map_name, int duration, int warmup)
         throw (Exception);
 
@@ -112,8 +111,8 @@ private:
     std::string team_blue_name;
     std::ofstream *log_file;
     ServerLogger logger;
-    ServerAdmin *server_admin;
     bool reload_map_rotation;
+    bool broadcast_settings;
 
     MapConfigurations map_configs;
     HeldPlayerStats held_player_stats;

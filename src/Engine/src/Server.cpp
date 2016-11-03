@@ -44,21 +44,27 @@ const char *DefaultTeamRed = "team red";
 const char *DefaultTeamBlue = "team blue";
 
 /* ingame server constructor */
-Server::Server(Resources& resources, Subsystem& subsystem,
-    hostport_t port, pico_size_t num_players, const std::string& server_name,
-    GamePlayType type, const std::string& map_name, int duration, int warmup) throw (Exception)
-    : Properties(""), ClientServer(subsystem.get_i18n(), port, num_players, server_name, ""),
+Server::Server(Resources& resources, Subsystem& subsystem, KeyValue kv, GamePlayType type,
+    const std::string& map_name, int duration, int warmup) throw (Exception)
+    : Properties(kv),
+      ClientServer(subsystem.get_i18n(), atoi(get_value("port").c_str()), atoi(get_value("num_players").c_str()), get_value("server_name"), ""),
+      ServerAdmin(resources, *this, *this),
       resources(resources), subsystem(subsystem),
       factory(resources, subsystem, 0),
       nbr_logout_msg(0), running(false), current_config(0), score_board_counter(0),
-      warmup(false), hold_disconnected_players(false), reconnect_kills(0),
+      warmup(false), hold_disconnected_players(atoi(get_value("hold_disconnected_player").c_str()) != 0 ? true : false),
+      reconnect_kills(atoi(get_value("reconnect_kills").c_str())),
       hdp_counter(0), master_server(0), ms_counter(0), master_socket(),
       rotation_current_index(0), team_red_name(DefaultTeamRed), team_blue_name(DefaultTeamBlue),
-      log_file(0), logger(subsystem.get_stream(), true), server_admin(0),
-      reload_map_rotation(false)
+      log_file(0), logger(subsystem.get_stream(), true),
+      reload_map_rotation(false), broadcast_settings(false)
 {
     setup_loaded_paks();
     map_configs.push_back(MapConfiguration(type, map_name, duration, warmup));
+
+    /* create server admin console */
+    set_server(this);
+    set_admin_server_is_on_client(true);
 }
 
 /* dedicated server constructor */
@@ -66,6 +72,7 @@ Server::Server(Resources& resources, Subsystem& subsystem,
     const std::string& server_config_file) throw (Exception)
     : Properties(server_config_file),
       ClientServer(subsystem.get_i18n(), atoi(get_value("port").c_str()), atoi(get_value("num_players").c_str()), get_value("server_name"), get_value("server_password")),
+      ServerAdmin(resources, *this, *this),
       resources(resources), subsystem(subsystem),
       factory(resources, subsystem, 0),
       nbr_logout_msg(0), running(false), current_config(0), score_board_counter(0),
@@ -75,8 +82,8 @@ Server::Server(Resources& resources, Subsystem& subsystem,
       ms_counter(0), master_socket(), rotation_current_index(0),
       team_red_name(get_value("clan_red_name")),
       team_blue_name(get_value("clan_blue_name")),
-      log_file(0), logger(create_log_stream(), true), server_admin(0),
-      reload_map_rotation(false)
+      log_file(0), logger(create_log_stream(), true),
+      reload_map_rotation(false), broadcast_settings(false)
 {
     setup_loaded_paks();
     load_map_rotation();
@@ -84,15 +91,9 @@ Server::Server(Resources& resources, Subsystem& subsystem,
 
     /* create server admin console */
     set_server(this);
-    server_admin = new ServerAdmin(resources, *this, *this);
 }
 
 Server::~Server() {
-    /* delete server console */
-    if (server_admin) {
-        delete server_admin;
-    }
-
     /* delete complete client pak list */
     destroy_paks(0);
 
@@ -140,11 +141,14 @@ void Server::reload_config() throw (ServerException) {
      * Properties& through all levels and call an update() from derived class */
     hold_disconnected_players = (atoi(get_value("hold_disconnected_player").c_str()) != 0 ? true : false);
     reconnect_kills = atoi(get_value("reconnect_kills").c_str());
-    master_server = resolve_host(get_value("master_server"));
+    if (!get_admin_server_is_on_client()) {
+        master_server = resolve_host(get_value("master_server"));
+    }
     team_red_name = get_value("clan_red_name");
     team_blue_name = get_value("clan_blue_name");
     check_team_names();
     reload_map_rotation = true;
+    broadcast_settings = true;
     factory.set_tournament_server_flags(*this, tournament);
 }
 
@@ -159,6 +163,9 @@ void Server::thread() {
             nbr_logout_msg++;
             curtxt++;
         }
+
+        /* wait for 50 ms */
+        wait_ns(50000000);
 
         /* start */
         gametime_t now;
@@ -191,6 +198,10 @@ void Server::thread() {
                     /* tournament update */
                     if (tournament) {
                         tournament->update_states(diff_now);
+                        if (broadcast_settings) {
+                            broadcast_settings = false;
+                            tournament->retrieve_flags();
+                        }
                         Tournament::StateResponses& responses = tournament->get_state_responses();
                         size_t sz = responses.size();
                         for (size_t i = 0; i < sz; i++) {
@@ -255,6 +266,18 @@ void Server::thread() {
                             gt.flags |= (warmup ? TournamentFlagWarmup : 0);
                             gt.to_net();
                             stacked_broadcast_data_synced(factory.get_tournament_id(), GPCMapState, NetFlagsReliable, GTournamentLen, &gt);
+
+                            /* send tournament flags */
+                            if (tournament) {
+                                tournament->retrieve_flags();
+                                Tournament::StateResponses& responses = tournament->get_state_responses();
+                                size_t sz = responses.size();
+                                for (size_t i = 0; i < sz; i++) {
+                                    StateResponse *resp = responses[i];
+                                    stacked_broadcast_data_synced(factory.get_tournament_id(), resp->action, NetFlagsReliable, resp->len, resp->data);
+                                }
+                                tournament->delete_responses();
+                            }
 
                             /* send object states */
                             GPlaceObject gpo;
@@ -932,7 +955,7 @@ void Server::event_logout(const Connection *c, LogoutReason reason) throw (Excep
             AutoPtr<char[]> txtptr(Tournament::create_i18n_response(logout_id, msglen, p->get_player_name().c_str()));
             GI18NText *txtmsg = reinterpret_cast<GI18NText *>(&txtptr[0]);
             broadcast_data(factory.get_tournament_id(), GPCI18NText, NetFlagsReliable, static_cast<data_len_t>(msglen), txtmsg);
-            logger.log(ServerLogger::LogTypePlayerDisconnect, ClientServer::i18n(logout_id), p);
+            logger.log(ServerLogger::LogTypePlayerDisconnect, ClientServer::i18n(logout_id, p->get_player_name()), p);
 
             /* delete client pak list */
             destroy_paks(p);
@@ -1039,8 +1062,9 @@ void Server::sync_client(const Connection *c, Player *p) {
         stacked_send_data(c, factory.get_tournament_id(), GPCMapState, NetFlagsReliable, GTournamentLen, &gt);
     }
 
-    /* send subclassed tournament states */
+    /* send subclassed tournament states and flags */
     if (tournament) {
+        tournament->retrieve_flags();
         tournament->retrieve_states();
         Tournament::StateResponses& responses = tournament->get_state_responses();
         size_t sz = responses.size();
@@ -1318,9 +1342,6 @@ std::ostream& Server::create_log_stream() {
 }
 
 void Server::parse_command(const Connection *c, Player *p, data_len_t len, void *data) throw (ServerAdminException) {
-    if (!server_admin) {
-        throw ServerAdminException(ClientServer::i18n(I18N_NO_DEDICATED_SERVER));
-    }
     char *pcmd = static_cast<char *>(data);
     std::string command(&pcmd[1], len - 1);
     std::string param;
@@ -1330,7 +1351,7 @@ void Server::parse_command(const Connection *c, Player *p, data_len_t len, void 
         command = command.substr(0, pos);
     }
 
-    server_admin->execute(c, p, command, param);
+    execute(c, p, command, param);
 }
 
 void Server::setup_loaded_paks() {

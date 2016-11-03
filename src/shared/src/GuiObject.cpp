@@ -697,7 +697,7 @@ int GuiVirtualButton::get_client_y() const {
 /* ****************************************************** */
 GuiButton::GuiButton(Gui& gui, GuiObject *parent)
     : GuiVirtualButton(gui, parent), bolts(true),
-      text_r(1.0f), text_g(1.0f), text_b(1.0f)
+      text_r(1.0f), text_g(1.0f), text_b(1.0f), pressed(false)
 {
     prepare();
 }
@@ -706,7 +706,7 @@ GuiButton::GuiButton(Gui& gui, GuiObject *parent, int x, int y,
     int width, int height, const std::string& caption,
     GuiVirtualButton::OnClick on_click, void *on_click_data)
     : GuiVirtualButton(gui, parent, x, y, width, height, caption, on_click, on_click_data),
-      bolts(true), text_r(1.0f), text_g(1.0f), text_b(1.0f)
+      bolts(true), text_r(1.0f), text_g(1.0f), text_b(1.0f), pressed(false)
 {
     prepare();
 }
@@ -727,6 +727,14 @@ void GuiButton::reset_color() {
     text_r = text_g = text_b = 1.0f;
 }
 
+void GuiButton::set_pressed(bool state) {
+    pressed = state;
+}
+
+bool GuiButton::get_pressed() const {
+    return pressed;
+}
+
 void GuiButton::paint() {
     Subsystem& s = gui.get_subsystem();
     Font *f = gui.get_font();
@@ -734,6 +742,7 @@ void GuiButton::paint() {
     int y = GuiObject::get_client_y();
     int width = get_width();
     int height = get_height();
+    bool draw_pressed = (mouse_is_down && mouse_is_in_button) || pressed;
 
     /* set alpha */
     float alpha = gui.get_alpha(this);
@@ -742,7 +751,7 @@ void GuiButton::paint() {
     s.set_color(0.5f, 0.5f, 1.0f, alpha);
     s.draw_box(x, y, width, height);
 
-    if (mouse_is_down && mouse_is_in_button) {
+    if (draw_pressed) {
         s.set_color(0.1f, 0.1f, 0.2f, alpha);
     } else {
         s.set_color(0.2f, 0.2f, 0.6f, alpha);
@@ -750,11 +759,11 @@ void GuiButton::paint() {
     s.draw_box(x + 1, y + 1, width - 2, height - 2);
 
     /* pressed offset */
-    int ofs = (mouse_is_down && mouse_is_in_button ? 1 : 0) + 1;
+    int ofs = (draw_pressed ? 1 : 0) + 1;
 
     /* draw bolts */
     if (bolts) {
-        if (mouse_is_down && mouse_is_in_button) {
+        if (draw_pressed) {
             s.set_color(0.75f, 0.75f, 0.75f, alpha);
         } else {
             s.set_color(1.0f, 1.0f, 1.0f, alpha);
@@ -1448,7 +1457,7 @@ GuiFrame *GuiTab::create_tab(const std::string& name) {
     Font *f = gui.get_font();
     int x = current_button_x;
     int y = 0;
-    int width = f->get_text_width(name) + 24; //16;
+    int width = f->get_text_width(name) + 24;
     Tab *tab = new Tab;
     tab->owner = this;
     tab->tab_number = static_cast<int>(tabs.size());
@@ -1460,6 +1469,7 @@ GuiFrame *GuiTab::create_tab(const std::string& name) {
     if (!current_tab) {
         current_tab = tab;
         tab->tab->set_visible(true);
+        tab->button->set_pressed(true);
         tab->tab->set_focus_on_first_child();
     }
 
@@ -1474,9 +1484,11 @@ void GuiTab::select_tab(int index) {
         for (Tabs::iterator it = tabs.begin(); it != tabs.end(); it++) {
             Tab *tab = *it;
             tab->tab->set_visible(false);
+            tab->button->set_pressed(false);
         }
         Tab *tab = tabs[index];
         tab->tab->set_visible(true);
+        tab->button->set_pressed(true);
         tab->tab->set_focus_on_first_child();
     }
 }

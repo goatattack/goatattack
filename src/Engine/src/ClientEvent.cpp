@@ -800,6 +800,17 @@ void Client::sevt_data(ServerEvent& evt) {
                 add_text_msg(txt);
                 break;
             }
+
+            case GPCTournamentSetting:
+            {
+                if (tournament) {
+                    if (t->tournament_id == factory.get_tournament_id()) {
+                        GTournamentSetting *ts = reinterpret_cast<GTournamentSetting *>(data_ptr);
+                        tournament->set_flag(static_cast<Tournament::Setting>(ts->setting_id), (ts->flag ? true : false));
+                    }
+                }
+                break;
+            }
         }
 
         /* advance to next element */

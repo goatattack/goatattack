@@ -15,14 +15,6 @@
  *  along with Goat Attack.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* í
- * ú
- * ã
- * á
- * õ
- * ohwohB1c
- * */
-
 #include "I18N.hpp"
 
 const I18N::Text I18N::all_texts_portuguese[] = {
@@ -130,8 +122,8 @@ const I18N::Text I18N::all_texts_portuguese[] = {
     { I18N_OPTIONS_SETTINGS40, "bate-papo:" },
     { I18N_OPTIONS_SETTINGS41, "estatísticas:" },
     { I18N_OPTIONS_SETTINGS42, "escape:" },
-    { I18N_OPTIONS_SETTINGS43, "horz. gamepad deadzone:" },
-    { I18N_OPTIONS_SETTINGS44, "vert. gamepad deadzone:" },
+    { I18N_OPTIONS_SETTINGS43, "horz. comando deadzone:" },
+    { I18N_OPTIONS_SETTINGS44, "vert. comando deadzone:" },
     { I18N_OPTIONS_SETTINGS45, "Procurar Comandos" },
     { I18N_OPTIONS_SETTINGS46, "Gravando" },
     { I18N_OPTIONS_SETTINGS47, "Pressione a tecla ou botão do comando..." },
@@ -146,10 +138,10 @@ const I18N::Text I18N::all_texts_portuguese[] = {
     { I18N_CLIENT_CONNECTING_TO2, ", necessita palavra-passe" },
     { I18N_CLIENT_CONNECTING_TO3, "(clientes: ${1}/${2})" },
     { I18N_CLIENT_LOGGED_IN, "você conectou" },
-    { I18N_CLIENT_LOGGED_OUT, "Você desconectou." },
-    { I18N_CLIENT_PING_TIMEOUT, "Você desconectou. (ping timeout)" },
-    { I18N_CLIENT_TOO_MANY_RESENDS, "Você desconectou. (too many resends)" },
-    { I18N_CLIENT_APPLICATION_LAYER, "Você desconectou. (application layer quit)" },
+    { I18N_CLIENT_LOGGED_OUT, "Você desconectou" },
+    { I18N_CLIENT_PING_TIMEOUT, "Você desconectou (ping timeout)" },
+    { I18N_CLIENT_TOO_MANY_RESENDS, "Você desconectou (too many resends)" },
+    { I18N_CLIENT_APPLICATION_LAYER, "Você desconectou (application layer quit)" },
     { I18N_CLIENT_SERVER_MESSAGE, "Mensagem do Servidor" },
     { I18N_CLIENT_MAP_INFO, "mapa: ${1}" },
     { I18N_CLIENT_JOIN_REFUSED, "O SEU PEDIDO FOI RECUSADO" },
@@ -441,16 +433,24 @@ const I18N::Text I18N::all_texts_portuguese[] = {
     { I18N_ME_PAK_DONE2, "O seu pacote '${1}.pak' foi criado." },
     { I18N_ME_OPTIONS1, "Opções" },
 
-    { I18N_FREETYPE_FAILED, "inicialização freetype falhou." },
-    { I18N_LANGUAGE, "Lingua" },
+    { I18N_FREETYPE_FAILED, "freetype initialization failed." },
+    { I18N_LANGUAGE, "Language" },
     { I18N_PAK_NAME_TOO_LONG, "Pak name '${1}' too long (max. 31). Please rename it." },
     { I18N_SHOW_LAGOMETER, "show lagometer" },
     { I18N_SERVE_NO_COMMAND, "No server command entered" },
     { I18N_SERVE_LIST_USAGE, "Usage: /list [part_of_player_name]" },
-    { I18N_CLIENT_LOGGED_OUT_RPL, "${1} logged out." },
-    { I18N_CLIENT_PING_TIMEOUT_RPL, "${1} logged out. (ping timeout)" },
-    { I18N_CLIENT_TOO_MANY_RESENDS_RPL, "${1} logged out. (too many resends)" },
-    { I18N_CLIENT_APPLICATION_LAYER_RPL, "${1} logged out. (application layer quit)" },
+    { I18N_CLIENT_LOGGED_OUT_RPL, "${1} logged out" },
+    { I18N_CLIENT_PING_TIMEOUT_RPL, "${1} logged out (ping timeout)" },
+    { I18N_CLIENT_TOO_MANY_RESENDS_RPL, "${1} logged out (too many resends)" },
+    { I18N_CLIENT_APPLICATION_LAYER_RPL, "${1} logged out (application layer quit)" },
+    { I18N_MAINMENU_CREATE_SERVER1, "Server" },
+    { I18N_MAINMENU_CREATE_SERVER2, "Options" },
+    { I18N_MAINMENU_RECONNECT_KILLS1, "reconnect kills" },
+    { I18N_MAINMENU_RECONNECT_KILLS2, "Reconnect Kills" },
+    { I18N_MAINMENU_HOLD_DISCONNECTED_PLAYERS, "hold disconnected players" },
+    { I18N_MAINMENU_FRIENDLY_FIRE, "friendly fire alarm" },
+    { I18N_MAINMENU_SHOOT_EXPLOSIVES, "enable shooting explosives" },
+    { I18N_MAINMENU_PREVENT_PICK, "prevent pick item, if inventory full" },
 
     { I18N_NONE, 0 }
 };

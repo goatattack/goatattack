@@ -28,6 +28,7 @@
 class Properties : public KeyValue {
 public:
     Properties();
+    Properties(const KeyValue& kv) throw (KeyValueException);
     Properties(const std::string& filename, ZipReader *zip = 0) throw (KeyValueException);
     virtual ~Properties();
 

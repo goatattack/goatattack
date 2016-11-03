@@ -65,7 +65,7 @@ struct GameAnimation {
     GameAnimation() : animation(0), animation_counter(0.0f),
         index(0), falling(false),
         last_falling_y_pos(Player::PlayerFallingTestMaxY),
-        delete_me(false) { }
+        sound_channel(-1), delete_me(false) { }
 
     Animation *animation;
     GAnimationState state;
@@ -73,6 +73,7 @@ struct GameAnimation {
     int index;
     bool falling;
     int last_falling_y_pos;
+    int sound_channel;
     bool delete_me;
 };
 
@@ -157,6 +158,13 @@ public:
     typedef std::vector<SpawnableNPC *> SpawnableNPCs;
     typedef std::vector<GameAnimation *> GameAnimations;
 
+    enum Setting {
+        SettingEnableFriendlyFire = 0,
+        SettingEnablePreventPick,
+        SettingEnableShotExplosives,
+        _MAXSettings
+    };
+
     Tournament(Resources& resources, Subsystem& subsystem, Gui *gui, ServerLogger *logger,
         const std::string& game_file, bool server,
         const std::string& map_name, Players& players, int duration, bool warmup)
@@ -201,7 +209,8 @@ public:
     void fire_grenade(Player *p, unsigned char direction);
     void fire_bomb(Player *p, unsigned char direction);
     void fire_frog(Player *p, unsigned char direction);
-    void set_friendly_fire_alarm(bool state);
+    void retrieve_flags();
+    void set_flag(Setting setting, bool value);
 
     void draw();
     void delete_responses();
@@ -306,7 +315,6 @@ protected:
     bool game_over;
     ServerLogger *logger;
     bool gui_is_destroyed;
-    bool do_friendly_fire_alarm;
     Lagometer *lagometer;
 
     int tilex;
@@ -318,6 +326,7 @@ protected:
     SpawnPoints spawn_points;
     FrogSpawnPoints frog_spawn_points;
     SpawnableNPCs spawnable_npcs;
+    bool settings[_MAXSettings];
 
     bool has_frogs;
     double frog_respawn_counter;

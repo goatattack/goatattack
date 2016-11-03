@@ -33,6 +33,7 @@ Animation::Animation(Subsystem& subsystem, const std::string& filename, ZipReade
         springiness = atof(get_value("springiness").c_str());
         impact = atof(get_value("impact").c_str());
         spread = atoi(get_value("spread").c_str());
+        damage_spread = atoi(get_value("damage_spread").c_str());
 
         x_offset = atoi(get_value("x_offset").c_str());
         y_offset = atoi(get_value("y_offset").c_str());
@@ -45,8 +46,9 @@ Animation::Animation(Subsystem& subsystem, const std::string& filename, ZipReade
         screen_shaker = atoi(get_value("screen_shaker").c_str());
 
         in_background = (atoi(get_value("background").c_str()) ? true : false);
-
+        can_be_shot = (atoi(get_value("can_be_shot").c_str()) ? true : false);
         projectile = (atoi(get_value("projectile").c_str()) ? true : false);
+        stop_sound_if_shot = (atoi(get_value("stop_sound_if_shot").c_str()) ? true : false);
         damage = atoi(get_value("damage").c_str());
         randomized_index = atoi(get_value("randomized_index").c_str());
 
@@ -133,6 +135,14 @@ int Animation::get_spread_count() const {
     return spread_count;
 }
 
+int Animation::get_damage_spread() const {
+    return damage_spread;
+}
+
+bool Animation::get_stop_sound_if_shot() const {
+    return stop_sound_if_shot;
+}
+
 int Animation::get_randomized_index() const {
     if (randomized_index) {
         return rand() % randomized_index;
@@ -155,6 +165,10 @@ int Animation::get_y_offset() const {
 
 int Animation::get_screen_shaker() const {
     return screen_shaker;
+}
+
+bool Animation::get_can_be_shot() const {
+    return can_be_shot;
 }
 
 void Animation::create_tile(const std::string& filename, ZipReader *zip) throw (Exception) {

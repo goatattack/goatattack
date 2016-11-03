@@ -43,12 +43,12 @@ ServerAdmin::ServerCommand ServerAdmin::server_commands[] = {
 ServerAdmin::ServerAdmin(Resources& resources, ClientServer& client_server,
     Properties& properties)
     : resources(resources), server(client_server), properties(properties),
-      admin_password(properties.get_value("admin_password")) { }
+      admin_password(properties.get_value("admin_password")), is_client(false) { }
 
 ServerAdmin::ServerAdmin(Resources& resources, ClientServer& client_server,
     Properties& properties, const std::string& admin_password)
     : resources(resources), server(client_server), properties(properties),
-      admin_password(admin_password) { }
+      admin_password(admin_password), is_client(false) { }
 
 ServerAdmin::~ServerAdmin() { }
 
@@ -82,6 +82,14 @@ void ServerAdmin::execute(const Connection *c, Player *p, std::string cmd, std::
     }
 }
 
+void ServerAdmin::set_admin_server_is_on_client(bool state) {
+    is_client = state;
+}
+
+bool ServerAdmin::get_admin_server_is_on_client() const {
+    return is_client;
+}
+
 void ServerAdmin::update_configuration(const Connection *c) throw (Exception) {
     hostport_t port = atoi(properties.get_value("port").c_str());
     pico_size_t num_players = atoi(properties.get_value("num_players").c_str());
@@ -91,30 +99,38 @@ void ServerAdmin::update_configuration(const Connection *c) throw (Exception) {
     server.reload_config(port, num_players, server_name, server_password);
 }
 
-void ServerAdmin::send_i18n_msg(const Connection *c, I18NText id, const char *addon) {
-    size_t msglen;
-    AutoPtr<char[]> txtptr(Tournament::create_i18n_response(id, msglen, addon));
-    GI18NText *txtmsg = reinterpret_cast<GI18NText *>(&txtptr[0]);
-    if (c) {
-        server.send_data(c, 0, GPCI18NText, NetFlagsReliable, static_cast<data_len_t>(msglen), &*txtmsg);
-    } else {
-        server.broadcast_data(0, GPCI18NText, NetFlagsReliable, static_cast<data_len_t>(msglen), &*txtmsg);
+void ServerAdmin::send_i18n_msg(const Connection *c, I18NText id, const char *addon) throw (ServerAdminException) {
+    try {
+        size_t msglen;
+        AutoPtr<char[]> txtptr(Tournament::create_i18n_response(id, msglen, addon));
+        GI18NText *txtmsg = reinterpret_cast<GI18NText *>(&txtptr[0]);
+        if (c) {
+            server.send_data(c, 0, GPCI18NText, NetFlagsReliable, static_cast<data_len_t>(msglen), &*txtmsg);
+        } else {
+            server.broadcast_data(0, GPCI18NText, NetFlagsReliable, static_cast<data_len_t>(msglen), &*txtmsg);
+        }
+    } catch (const Exception& e) {
+        throw ServerAdminException(e.what());
     }
 }
 
-void ServerAdmin::send_i18n_msg(const Connection *c, I18NText id, const std::string& p1, const std::string& p2) {
+void ServerAdmin::send_i18n_msg(const Connection *c, I18NText id, const std::string& p1, const std::string& p2) throw (ServerAdminException) {
     send_i18n_msg(c, id, (p1 + "\t" + p2).c_str());
 }
 
 /* server functions */
 void ServerAdmin::sc_op(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
-    if (params != admin_password) {
+    if (params != admin_password && !is_client) {
         send_i18n_msg(c, I18N_SERVE_WRONG_PASSWORD);
     } else if (p->server_admin) {
         send_i18n_msg(c, I18N_SERVE_ALREADY_ADMIN);
     } else {
-        p->server_admin = true;
-        send_i18n_msg(0, I18N_SERVE_NEW_ADMIN, p->get_player_name().c_str());
+        if (!is_client || c->host == INADDR_LOOPBACK) {
+            p->server_admin = true;
+            send_i18n_msg(0, I18N_SERVE_NEW_ADMIN, p->get_player_name().c_str());
+        } else {
+            send_i18n_msg(c, I18N_SERVE_NOT_AUTHORIZED);
+        }
     }
 }
 
@@ -126,20 +142,24 @@ void ServerAdmin::sc_deop(const Connection *c, Player *p, const std::string& par
 }
 
 void ServerAdmin::sc_list(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
-    if (check_if_authorized(c, p)) {
-        player_id_t id = atoi(params.c_str());
-        Players& players = server.get_players();
-        for (Players::iterator it = players.begin(); it != players.end(); it++) {
-            Player *v = *it;
-            if ((id > 0 && v->state.id == id) || params.length() == 0 ||
-                v->get_player_name().find(params) != std::string::npos)
-            {
-                char buffer[64];
-                sprintf(buffer, "%d", v->state.id);
-                std::string msg(std::string(buffer) + ": " + v->get_player_name());
-                server.send_data(c, 0, GPCTextMessage, NetFlagsReliable, msg.length(), msg.c_str());
+    try {
+        if (check_if_authorized(c, p)) {
+            player_id_t id = atoi(params.c_str());
+            Players& players = server.get_players();
+            for (Players::iterator it = players.begin(); it != players.end(); it++) {
+                Player *v = *it;
+                if ((id > 0 && v->state.id == id) || params.length() == 0 ||
+                    v->get_player_name().find(params) != std::string::npos)
+                {
+                    char buffer[64];
+                    sprintf(buffer, "%d%s", v->state.id, (v->server_admin ? "*" : ""));
+                    std::string msg(std::string(buffer) + ": " + v->get_player_name());
+                    server.send_data(c, 0, GPCTextMessage, NetFlagsReliable, msg.length(), msg.c_str());
+                }
             }
         }
+    } catch (const Exception& e) {
+        throw ServerAdminException(e.what());
     }
 }
 
@@ -179,8 +199,10 @@ void ServerAdmin::sc_unban(const Connection *c, Player *p, const std::string& pa
 
 void ServerAdmin::sc_next(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
     if (check_if_authorized(c, p) && check_if_no_params(c, params)) {
-        server.delete_tournament();
-        send_i18n_msg(0, I18N_SERVE_NEXT_MAP, p->get_player_name().c_str());
+        if (check_if_is_server(c)) {
+            server.delete_tournament();
+            send_i18n_msg(0, I18N_SERVE_NEXT_MAP, p->get_player_name().c_str());
+        }
     }
 }
 
@@ -219,23 +241,27 @@ void ServerAdmin::sc_map(const Connection *c, Player *p, const std::string& para
 
 void ServerAdmin::sc_reload(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
     if (check_if_authorized(c, p) && check_if_no_params(c, params)) {
-        try {
-            properties.reload_configuration();
-            update_configuration(c);
-            send_i18n_msg(c, I18N_SERVE_CONFIG_RELOADED);
-        } catch (const Exception& e) {
-            throw ServerAdminException(e.what());
+        if (check_if_is_server(c)) {
+            try {
+                properties.reload_configuration();
+                update_configuration(c);
+                send_i18n_msg(c, I18N_SERVE_CONFIG_RELOADED);
+            } catch (const Exception& e) {
+                throw ServerAdminException(e.what());
+            }
         }
     }
 }
 
 void ServerAdmin::sc_save(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
     if (check_if_authorized(c, p) && check_if_no_params(c, params)) {
-        try {
-            properties.save_configuration();
-            send_i18n_msg(c, I18N_SERVE_CONFIG_SAVED);
-        } catch (const Exception& e) {
-            throw ServerAdminException(e.what());
+        if (check_if_is_server(c)) {
+            try {
+                properties.save_configuration();
+                send_i18n_msg(c, I18N_SERVE_CONFIG_SAVED);
+            } catch (const Exception& e) {
+                throw ServerAdminException(e.what());
+            }
         }
     }
 }
@@ -246,33 +272,37 @@ void ServerAdmin::sc_get(const Connection *c, Player *p, const std::string& para
         if (tokens.size() != 1) {
             send_i18n_msg(c, I18N_SERVE_GET_USAGE);
         } else {
-            const std::string& value = properties.get_value(tokens[0]);
-            std::string msg(tokens[0] + "=" + value);
-            server.send_data(c, 0, GPCTextMessage, NetFlagsReliable, msg.length(), msg.c_str());
+            try {
+                const std::string& value = properties.get_value(tokens[0]);
+                std::string msg(tokens[0] + "=" + value);
+                server.send_data(c, 0, GPCTextMessage, NetFlagsReliable, msg.length(), msg.c_str());
+            } catch (const Exception& e) {
+                throw ServerAdminException(e.what());
+            }
         }
     }
 }
 
 void ServerAdmin::sc_set(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
     if (check_if_authorized(c, p)) {
-        try {
-            StringTokens tokens = tokenize(params, ' ', 2);
-            if (tokens.size() != 2) {
-                send_i18n_msg(c, I18N_SERVE_SET_USAGE);
-            } else {
+        StringTokens tokens = tokenize(params, ' ', 2);
+        if (tokens.size() != 2) {
+            send_i18n_msg(c, I18N_SERVE_SET_USAGE);
+        } else {
+            try {
                 properties.set_value(tokens[0], tokens[1]);
                 update_configuration(c);
                 send_i18n_msg(c, I18N_SERVE_SET_VAR_TO, tokens[0], tokens[1]);
+            } catch (const Exception& e) {
+                throw ServerAdminException(e.what());
             }
-        } catch (const Exception& e) {
-            throw ServerAdminException(e.what());
         }
     }
 }
 
 void ServerAdmin::sc_reset(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
-    if (check_if_authorized(c,  p)) {
-        try {
+    try {
+        if (check_if_authorized(c,  p)) {
             StringTokens tokens = tokenize(params, ' ');
             if (tokens.size() != 1) {
                 send_i18n_msg(c, I18N_SERVE_RESET_USAGE);
@@ -281,9 +311,9 @@ void ServerAdmin::sc_reset(const Connection *c, Player *p, const std::string& pa
                 update_configuration(c);
                 send_i18n_msg(c, I18N_SERVE_VAR_CLEARED, tokens[0].c_str());
             }
-        } catch (const Exception& e) {
-            throw ServerAdminException(e.what());
         }
+    } catch (const Exception& e) {
+        throw ServerAdminException(e.what());
     }
 }
 
@@ -293,33 +323,37 @@ void ServerAdmin::sc_vote(const Connection *c, Player *p, const std::string& par
 
 void ServerAdmin::sc_stats(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
     if (check_if_authorized(c, p)) {
-        player_id_t id = atoi(params.c_str());
-        unsigned char bytes[4];
-        Players& players = server.get_players();
-        for (Players::iterator it = players.begin(); it != players.end(); it++) {
-            Player *v = *it;
-            if ((id > 0 && v->state.id == id) || params.length() == 0 ||
-                v->get_player_name().find(params) != std::string::npos)
-            {
-                const SequencerHeap *h = server.get_heap(v->get_connection());
-                char buffer[128];
-                if (h) {
-                    bytes[0] = h->host & 0xff;
-                    bytes[1] = (h->host >> 8) & 0xf;
-                    bytes[2] = (h->host >> 16) & 0xff;
-                    bytes[3] = (h->host >> 24) & 0xff;
-                    sprintf(buffer, "%d.%d.%d.%d:%u (%d ms), io: unrel(%d %d), rel(%d %d), q(%d %d)",
-                        bytes[3], bytes[2], bytes[1], bytes[0], h->port,
-                        v->state.server_state.ping_time,
-                        h->last_recv_unrel_seq_no, h->last_send_unrel_seq_no,
-                        h->last_recv_rel_seq_no, h->last_send_rel_seq_no,
-                        static_cast<int>(h->in_queue.size()),
-                        static_cast<int>(h->out_queue.size())
-                    );
-                    std::string msg(v->get_player_name() + ": " + buffer);
-                    server.send_data(c, 0, GPCTextMessage, NetFlagsReliable, msg.length(), msg.c_str());
+        try {
+            player_id_t id = atoi(params.c_str());
+            unsigned char bytes[4];
+            Players& players = server.get_players();
+            for (Players::iterator it = players.begin(); it != players.end(); it++) {
+                Player *v = *it;
+                if ((id > 0 && v->state.id == id) || params.length() == 0 ||
+                    v->get_player_name().find(params) != std::string::npos)
+                {
+                    const SequencerHeap *h = server.get_heap(v->get_connection());
+                    char buffer[128];
+                    if (h) {
+                        bytes[0] = h->host & 0xff;
+                        bytes[1] = (h->host >> 8) & 0xf;
+                        bytes[2] = (h->host >> 16) & 0xff;
+                        bytes[3] = (h->host >> 24) & 0xff;
+                        sprintf(buffer, "%d.%d.%d.%d:%u (%d ms), io: unrel(%d %d), rel(%d %d), q(%d %d)",
+                            bytes[3], bytes[2], bytes[1], bytes[0], h->port,
+                            v->state.server_state.ping_time,
+                            h->last_recv_unrel_seq_no, h->last_send_unrel_seq_no,
+                            h->last_recv_rel_seq_no, h->last_send_rel_seq_no,
+                            static_cast<int>(h->in_queue.size()),
+                            static_cast<int>(h->out_queue.size())
+                        );
+                        std::string msg(v->get_player_name() + ": " + buffer);
+                        server.send_data(c, 0, GPCTextMessage, NetFlagsReliable, msg.length(), msg.c_str());
+                    }
                 }
             }
+        } catch (const Exception& e) {
+            throw ServerAdminException(e.what());
         }
     }
 }
@@ -346,6 +380,15 @@ bool ServerAdmin::check_if_params(const Connection *c, const std::string& params
 bool ServerAdmin::check_if_no_params(const Connection *c, const std::string& params) throw (ServerAdminException) {
     if (params.length()) {
         send_i18n_msg(c, I18N_SERVE_NO_PARM_NEEDED);
+        return false;
+    }
+
+    return true;
+}
+
+bool ServerAdmin::check_if_is_server(const Connection *c) throw (ServerAdminException) {
+    if (is_client) {
+        send_i18n_msg(c, I18N_NO_DEDICATED_SERVER);
         return false;
     }
 

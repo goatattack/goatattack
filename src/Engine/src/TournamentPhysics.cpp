@@ -296,6 +296,30 @@ bool Tournament::render_physics(double period_f, bool projectile, int damage,
             }
         }
 
+        /* test animations */
+        if (settings[SettingEnableShotExplosives]) {
+            for (GameAnimations::iterator it = game_animations.begin(); it != game_animations.end(); it++) {
+                GameAnimation *gani = *it;
+                if (gani->animation->get_can_be_shot()) {
+                    if (!gani->animation->is_projectile() && gani->animation->get_physics()) {
+                        TileGraphic *tg = gani->animation->get_tile()->get_tilegraphic();
+                        CollisionBox a_colbox = gani->animation->get_physics_colbox();
+                        a_colbox.x += static_cast<int>(gani->state.x);
+                        a_colbox.y = static_cast<int>(gani->state.y) + tg->get_height() - colbox.height - colbox.y;
+                        if (obj_colbox.intersects(a_colbox)) {
+                            if (gani->animation->get_stop_sound_if_shot()) {
+                                subsystem.stop_sound(gani->sound_channel);
+                            }
+                            gani->state.duration = 0;
+                            gani->animation_counter = static_cast<double>(gani->animation->get_animation_speed());
+                            gani->index = static_cast<int>(tg->get_tile_count());
+                            is_collision = true;
+                        }
+                    }
+                }
+            }
+        }
+
         /* test npcs */
         for (SpawnableNPCs::iterator it = spawnable_npcs.begin();
             it != spawnable_npcs.end(); it++)

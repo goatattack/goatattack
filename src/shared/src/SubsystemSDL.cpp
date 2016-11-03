@@ -272,6 +272,7 @@ SubsystemSDL::SubsystemSDL(std::ostream& stream, I18N& i18n, const std::string& 
         throw SubsystemException(i18n(I18N_SSSDL_AUDIO_FAILED, std::string(Mix_GetError())));
     }
     Mix_ChannelFinished(channel_done);
+    Mix_AllocateChannels(128);
     Mix_ReserveChannels(1);
 
     Mix_HookMusicFinished(music_finished);
@@ -589,6 +590,7 @@ void SubsystemSDL::draw_icon(Icon *icon, int x, int y) {
 }
 
 int SubsystemSDL::play_sound(Sound *sound, int loops) {
+    int channel = -1;
     if (sound) {
         const AudioSDL *audio = static_cast<const AudioSDL *>(sound->get_audio());
         int c = Mix_GroupAvailable(-1);
@@ -599,10 +601,10 @@ int SubsystemSDL::play_sound(Sound *sound, int loops) {
                 channel_done(c);
             }
         }
-        return Mix_PlayChannel(-1, audio->get_chunk(), loops);
-    } else {
-        return -1;
+        channel = Mix_PlayChannel(-1, audio->get_chunk(), loops);
     }
+
+    return channel;
 }
 
 void SubsystemSDL::play_system_sound(Sound *sound) {
@@ -629,6 +631,12 @@ int SubsystemSDL::play_controlled_sound(Sound *sound, int loops) {
 
 bool SubsystemSDL::is_sound_playing(Sound *sound) {
     return (std::find(playing_sounds.begin(), playing_sounds.end(), sound) != playing_sounds.end());
+}
+
+void SubsystemSDL::stop_sound(int channel) {
+    if (channel > -1) {
+        Mix_HaltChannel(channel);
+    }
 }
 
 bool SubsystemSDL::play_music(Music *music) {
