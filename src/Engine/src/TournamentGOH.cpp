@@ -109,7 +109,6 @@ void TournamentGOH::subintegrate(ns_t ns) {
 
                     if (first_player_on_hill->state.server_state.flags & PlayerServerFlagTeamRed) {
                         score.score_red++;
-                        std::string team_name = uppercase(team_red_name);
                         add_team_score_animation(first_player_on_hill, I18N_TNMT_TEAM_RED_SCORED2);
                         add_i18n_response(I18N_TNMT_TEAM_RED_SCORED1);
                         if (logger) {
@@ -117,7 +116,6 @@ void TournamentGOH::subintegrate(ns_t ns) {
                         }
                     } else {
                         score.score_blue++;
-                        std::string team_name = uppercase(team_blue_name);
                         add_team_score_animation(first_player_on_hill, I18N_TNMT_TEAM_BLUE_SCORED2);
                         add_i18n_response(I18N_TNMT_TEAM_BLUE_SCORED1);
                         if (logger) {

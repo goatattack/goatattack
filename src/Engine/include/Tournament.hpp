@@ -184,7 +184,6 @@ public:
     void set_ping_time(ms_t ms);
     void set_player_configuration(Configuration *config);
     void set_ready();
-    void set_team_names(const std::string& team_red, const std::string& team_blue);
     bool is_ready() const;
     bool is_game_over() const;
     void spectate_request();
@@ -331,8 +330,6 @@ protected:
     bool has_frogs;
     double frog_respawn_counter;
     int frog_spawn_init;
-    std::string team_red_name;
-    std::string team_blue_name;
 
     enum TestType {
         TestTypeNormal,

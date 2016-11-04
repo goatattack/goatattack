@@ -881,11 +881,6 @@ bool Tournament::friendly_fire_alarm(GFriendyFireAlarm *alarm) {
     return false;
 }
 
-void Tournament::set_team_names(const std::string& team_red, const std::string& team_blue) {
-    team_red_name = team_red;
-    team_blue_name = team_blue;
-}
-
 void Tournament::destroy_generic_data_list(GenericData *data) {
     GenericData *s = data;
     GenericData *next = 0;

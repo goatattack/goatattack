@@ -40,9 +40,6 @@ const uint16_t MasterHeartbeatPort = 25112;
 
 const size_t MaxServerMsgLength = PacketMaxSize - 100;
 
-const char *DefaultTeamRed = "team red";
-const char *DefaultTeamBlue = "team blue";
-
 /* ingame server constructor */
 Server::Server(Resources& resources, Subsystem& subsystem, KeyValue kv, GamePlayType type,
     const std::string& map_name, int duration, int warmup) throw (Exception)
@@ -55,8 +52,7 @@ Server::Server(Resources& resources, Subsystem& subsystem, KeyValue kv, GamePlay
       warmup(false), hold_disconnected_players(atoi(get_value("hold_disconnected_player").c_str()) != 0 ? true : false),
       reconnect_kills(atoi(get_value("reconnect_kills").c_str())),
       hdp_counter(0), master_server(0), ms_counter(0), master_socket(),
-      rotation_current_index(0), team_red_name(DefaultTeamRed), team_blue_name(DefaultTeamBlue),
-      log_file(0), logger(subsystem.get_stream(), true),
+      rotation_current_index(0),  log_file(0), logger(subsystem.get_stream(), true),
       reload_map_rotation(false), broadcast_settings(false)
 {
     setup_loaded_paks();
@@ -80,14 +76,11 @@ Server::Server(Resources& resources, Subsystem& subsystem,
       reconnect_kills(atoi(get_value("reconnect_kills").c_str())),
       hdp_counter(0), master_server(resolve_host(get_value("master_server"))),
       ms_counter(0), master_socket(), rotation_current_index(0),
-      team_red_name(get_value("clan_red_name")),
-      team_blue_name(get_value("clan_blue_name")),
       log_file(0), logger(create_log_stream(), true),
       reload_map_rotation(false), broadcast_settings(false)
 {
     setup_loaded_paks();
     load_map_rotation();
-    check_team_names();
 
     /* create server admin console */
     set_server(this);
@@ -144,9 +137,6 @@ void Server::reload_config() throw (ServerException) {
     if (!get_admin_server_is_on_client()) {
         master_server = resolve_host(get_value("master_server"));
     }
-    team_red_name = get_value("clan_red_name");
-    team_blue_name = get_value("clan_blue_name");
-    check_team_names();
     reload_map_rotation = true;
     broadcast_settings = true;
     factory.set_tournament_server_flags(*this, tournament);
@@ -1016,7 +1006,6 @@ bool Server::select_map() {
     }
 
     tournament = factory.create_tournament(*current_config, true, warmup, players, &logger);
-    tournament->set_team_names(team_red_name, team_blue_name);
     factory.set_tournament_server_flags(*this, tournament);
     score_board_counter = 30000;
 
@@ -1170,13 +1159,6 @@ void Server::sync_client(const Connection *c, Player *p) {
         send_data(c, factory.get_tournament_id(), GPCServerMessage, NetFlagsReliable, static_cast<data_len_t>(srv_msg.length()), srv_msg.c_str());
     }
 
-    /* send team/clan names */
-    GClanNames names;
-    memset(&names, 0, GClanNamesLen);
-    strncpy(names.red_name, team_red_name.c_str(), NameLength - 1);
-    strncpy(names.blue_name, team_blue_name.c_str(), NameLength - 1);
-    send_data(c, factory.get_tournament_id(), GPCClanNames, NetFlagsReliable, GClanNamesLen, &names);
-
     /* send ready to client */
     send_data(c, factory.get_tournament_id(), GPCReady, NetFlagsReliable, 0, 0);
 
@@ -1281,17 +1263,6 @@ void Server::destroy_paks(Player *p) {
                 break;
             }
         }
-    }
-}
-
-void Server::check_team_names() {
-    /* default team/clan names */
-    if (!team_red_name.length()) {
-        team_red_name = DefaultTeamRed;
-    }
-
-    if (!team_blue_name.length()) {
-        team_blue_name = DefaultTeamBlue;
     }
 }
 

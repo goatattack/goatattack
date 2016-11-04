@@ -60,6 +60,11 @@ Animation::Animation(Subsystem& subsystem, const std::string& filename, ZipReade
         physics_colbox.width = atoi(get_value("physics_colbox_width").c_str());
         physics_colbox.height = atoi(get_value("physics_colbox_height").c_str());
 
+        damage_colbox.x = atoi(get_value("damage_colbox_x").c_str());
+        damage_colbox.y = atoi(get_value("damage_colbox_y").c_str());
+        damage_colbox.width = atoi(get_value("damage_colbox_width").c_str());
+        damage_colbox.height = atoi(get_value("damage_colbox_height").c_str());
+
         if (tile_width != tile_height || tile_width < 16 || tile_width > 64) {
             throw AnimationException("Malformed tile size: " + filename);
         }
@@ -101,6 +106,10 @@ bool Animation::get_physics() const {
 
 const CollisionBox& Animation::get_physics_colbox() const {
     return physics_colbox;
+}
+
+const CollisionBox& Animation::get_damage_colbox() const {
+    return damage_colbox;
 }
 
 int Animation::get_duration() const {

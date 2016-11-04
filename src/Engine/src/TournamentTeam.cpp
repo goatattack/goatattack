@@ -542,8 +542,8 @@ void TournamentTeam::write_stats_in_server_log() {
 
     /* team score */
     logger->log(header_type, i18n(I18N_TNMT_STATS_TEAM), 0, 0,
-        team_red_name.c_str(), &score.score_red,
-        team_blue_name.c_str(), &score.score_blue);
+        i18n(I18N_TNMT_TEAM_RED_CAP).c_str(), &score.score_red,
+        i18n(I18N_TNMT_TEAM_BLUE_CAP).c_str(), &score.score_blue);
 
     /* player scores */
     for (int i = 0; i < 2; i++) {

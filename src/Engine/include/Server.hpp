@@ -107,8 +107,6 @@ private:
     int ms_counter;
     UDPSocket master_socket;
     size_t rotation_current_index;
-    std::string team_red_name;
-    std::string team_blue_name;
     std::ofstream *log_file;
     ServerLogger logger;
     bool reload_map_rotation;
@@ -131,7 +129,6 @@ private:
     void process_sync_pak(const Connection *c, Player *p) throw (ServerException);
     ClientPak *get_unsynced_client_pak(PlayerClientPak *pcpak);
     void destroy_paks(Player *p);
-    void check_team_names();
     void load_map_rotation();
 
     std::ostream& create_log_stream();

@@ -183,7 +183,7 @@ void Tournament::firing_animation(Player *p, int flag, const std::string& animat
             } else {
                 ani->accel_x = -impact;
             }
-            ani->accel_y = 0.0f;
+            ani->accel_y = 0.0;
         } else {
             if (direction == DirectionRight) {
                 ani->accel_x = fabs(p->state.client_server_state.accel_x) * impact;

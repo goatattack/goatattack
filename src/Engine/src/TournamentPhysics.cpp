@@ -303,7 +303,7 @@ bool Tournament::render_physics(double period_f, bool projectile, int damage,
                 if (gani->animation->get_can_be_shot()) {
                     if (!gani->animation->is_projectile() && gani->animation->get_physics()) {
                         TileGraphic *tg = gani->animation->get_tile()->get_tilegraphic();
-                        CollisionBox a_colbox = gani->animation->get_physics_colbox();
+                        CollisionBox a_colbox = gani->animation->get_damage_colbox();
                         a_colbox.x += static_cast<int>(gani->state.x);
                         a_colbox.y = static_cast<int>(gani->state.y) + tg->get_height() - colbox.height - colbox.y;
                         if (obj_colbox.intersects(a_colbox)) {

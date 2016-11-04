@@ -192,7 +192,6 @@ void Client::sevt_data(ServerEvent& evt) {
                 factory.set_tournament_id(tour->tournament_id);
                 tournament->set_following_id(my_id);
                 tournament->set_player_configuration(&player_config);
-                tournament->set_team_names(team_red_name, team_blue_name);
                 tournament->set_lagometer(show_lagometer ? &lagometer : 0);
                 add_text_msg(ClientServer::i18n(I18N_CLIENT_MAP_INFO, tournament->get_map().get_description()));
 
@@ -678,18 +677,6 @@ void Client::sevt_data(ServerEvent& evt) {
             {
                 if (tournament) {
                     tournament->score_transport_raw(data_ptr);
-                }
-                break;
-            }
-
-            case GPCClanNames:
-            {
-                GClanNames *names = reinterpret_cast<GClanNames *>(data_ptr);
-                names->from_net();
-                team_red_name = names->red_name;
-                team_blue_name = names->blue_name;
-                if (tournament) {
-                    tournament->set_team_names(team_red_name, team_blue_name);
                 }
                 break;
             }
