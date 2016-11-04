@@ -588,9 +588,12 @@ public:
 
     class Column {
     public:
-        Column(const std::string& text, int width) : text(text), width(width) { }
+        Column(const std::string& text, int width) : icon(0), icon_width(0), text(text), width(width) { }
+        Column(Icon *icon, int icon_width, const std::string& text, int width) : icon(icon), icon_width(icon_width), text(text), width(width) { }
         ~Column() { }
 
+        Icon *icon;
+        int icon_width;
         std::string text;
         int width;
     };
@@ -600,6 +603,7 @@ public:
     GuiListboxEntry(Gui& gui, GuiObject *parent);
     GuiListboxEntry(Gui& gui, GuiObject *parent, const std::string& text);
     GuiListboxEntry(Gui& gui, GuiObject *parent, const std::string& text, int width);
+    GuiListboxEntry(Gui& gui, GuiObject *parent, Icon *icon, int icon_width, const std::string& text, int width);
     GuiListboxEntry(Gui& gui, GuiObject *parent, const Column& column);
 
     virtual ~GuiListboxEntry();
@@ -607,6 +611,7 @@ public:
     Columns& get_columns();
     void add_column(const Column& column);
     void add_column(const std::string& text, int width);
+    void add_column(Icon *icon, int icon_width, const std::string& text, int width);
 
     void draw(int x, int y, int width, DrawType draw_type);
 
@@ -627,6 +632,9 @@ public:
     GuiListbox(Gui& gui, GuiObject *parent, int x, int y, int width, int height,
         const std::string& title, OnItemSelected on_item_selected,
         void *on_item_selected_data);
+    GuiListbox(Gui& gui, GuiObject *parent, int x, int y, int width, int height,
+        Icon *icon, int icon_width, const std::string& title,
+        OnItemSelected on_item_selected, void *on_item_selected_data);
 
     virtual ~GuiListbox();
 
@@ -638,6 +646,7 @@ public:
     int get_entry_count() const;
     GuiListboxEntry *get_entry(int index);
     GuiListboxEntry *add_entry(const std::string& text);
+    GuiListboxEntry *add_entry(Icon *icon, int icon_width, const std::string& text);
     GuiListboxEntry *add_entry(const std::string& text, int width);
     GuiListboxEntry *add_entry(const GuiListboxEntry::Column& column);
     GuiListboxEntry *get_title_bar();
@@ -668,7 +677,7 @@ private:
 
     virtual void paint();
     void my_down_mousemove(int x, int y, bool from_mousemove);
-    void setup(const std::string& title);
+    void setup(Icon *icon, int icon_width, const std::string& title);
     void recalc();
     void select_from_mouse(int x, int y, bool from_mousemove);
 

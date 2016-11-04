@@ -681,6 +681,17 @@ void Client::sevt_data(ServerEvent& evt) {
                 break;
             }
 
+            case GPCRemoveAnimation:
+            {
+                if (tournament) {
+                    if (t->tournament_id == factory.get_tournament_id()) {
+                        identifier_t *id = reinterpret_cast<identifier_t *>(data_ptr);
+                        tournament->remove_animation(ntohs(*id));
+                    }
+                }
+                break;
+            }
+
             case GPCXferHeader:
             {
                 reload_resources = true;

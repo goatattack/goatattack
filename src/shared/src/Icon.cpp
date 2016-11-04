@@ -19,14 +19,18 @@
 
 #include <cstdlib>
 
-Icon::Icon(Subsystem& subsystem, const std::string& filename, ZipReader *zip)
+Icon::Icon(Subsystem& subsystem, const std::string& filename, ZipReader *zip, const std::string& direct)
     throw (KeyValueException, IconException)
-    : Properties(filename + ".icon", zip), subsystem(subsystem), tile(0),
+    : Properties(direct.length() ? "" : filename + ".icon", zip), subsystem(subsystem), tile(0),
       hotspot_x(0), hotspot_y(0)
 {
     try {
-        hotspot_x = atoi(get_value("hotspot_x").c_str());
-        hotspot_y = atoi(get_value("hotspot_y").c_str());
+        if (direct.length()) {
+            set_name(direct, true);
+        } else {
+            hotspot_x = atoi(get_value("hotspot_x").c_str());
+            hotspot_y = atoi(get_value("hotspot_y").c_str());
+        }
         create_tile(filename + ".png", zip);
     } catch (const IconException&) {
         throw;

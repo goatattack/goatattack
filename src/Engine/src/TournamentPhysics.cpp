@@ -314,6 +314,11 @@ bool Tournament::render_physics(double period_f, bool projectile, int damage,
                             gani->animation_counter = static_cast<double>(gani->animation->get_animation_speed());
                             gani->index = static_cast<int>(tg->get_tile_count());
                             is_collision = true;
+                            if (server) {
+                                identifier_t *id = new identifier_t;
+                                *id = htons(gani->state.id);
+                                add_state_response(GPCRemoveAnimation, sizeof(id), id);
+                            }
                         }
                     }
                 }

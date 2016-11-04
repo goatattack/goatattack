@@ -193,6 +193,7 @@ public:
     void set_lagometer(Lagometer *lagometer);
 
     void add_animation(GAnimation *animation);
+    void remove_animation(identifier_t id);
     void add_spawnable_npc(GSpawnNPC *npc);
     void add_npc_remove_animation(SpawnableNPC *npc);
     void remove_marked_npcs();

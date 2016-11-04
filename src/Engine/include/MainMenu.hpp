@@ -200,6 +200,7 @@ private:
     static void static_lang_change_cb(void *data);
     void change_button_captions();
     void set_version_label();
+    Icon *get_flag_from_name(std::string& name);
 };
 
 #endif

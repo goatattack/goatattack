@@ -248,6 +248,15 @@ GuiListbox *Gui::create_listbox(GuiObject *parent, int x, int y, int width,
         on_item_selected, on_item_selected_data);
 }
 
+GuiListbox *Gui::create_listbox(GuiObject *parent, int x, int y, int width,
+    int height, Icon *icon, int icon_width, const std::string& title,
+    GuiListbox::OnItemSelected on_item_selected, void *on_item_selected_data) throw (GuiException)
+{
+    check_parent(parent);
+    return new GuiListbox(*this, parent, x, y, width, height, icon, icon_width, title,
+        on_item_selected, on_item_selected_data);
+}
+
 GuiWindow *Gui::get_current_window() const {
     return current_window;
 }

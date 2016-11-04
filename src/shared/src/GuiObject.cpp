@@ -1864,6 +1864,13 @@ GuiListboxEntry::GuiListboxEntry(Gui& gui, GuiObject *parent,
 }
 
 GuiListboxEntry::GuiListboxEntry(Gui& gui, GuiObject *parent,
+    Icon *icon, int icon_width, const std::string& text, int width)
+    : GuiObject(gui, parent, 0, 0, 0, 0)
+{
+    add_column(icon, icon_width, text, width);
+}
+
+GuiListboxEntry::GuiListboxEntry(Gui& gui, GuiObject *parent,
     const GuiListboxEntry::Column& column)
     : GuiObject(gui, parent, 0, 0, 0, 0)
 {
@@ -1882,6 +1889,10 @@ void GuiListboxEntry::add_column(const Column& column) {
 
 void GuiListboxEntry::add_column(const std::string& text, int width) {
     add_column(Column(text, width));
+}
+
+void GuiListboxEntry::add_column(Icon *icon, int icon_width, const std::string& text, int width) {
+    add_column(Column(icon, icon_width, text, width));
 }
 
 void GuiListboxEntry::draw(int x, int y, int width, DrawType draw_type) {
@@ -1923,6 +1934,15 @@ void GuiListboxEntry::paint() { }
 
 void GuiListboxEntry::draw_column(const Column& column, int x, int y, int max_width) {
     Subsystem& s = gui.get_subsystem();
+    if (column.icon) {
+        Font *f = gui.get_font();
+        int th = f->get_font_height();
+        TileGraphic *tg = column.icon->get_tile()->get_tilegraphic();
+        int gh = tg->get_height();
+        int gw = tg->get_width();
+        s.draw_icon(column.icon, x + (column.icon_width - gw) / 2, y + (th - gh) / 2);
+    }
+    x += column.icon_width;
     s.draw_clipped_text(gui.get_font(), x, y, max_width, column.text);
 }
 
@@ -1933,7 +1953,7 @@ GuiListbox::GuiListbox(Gui& gui, GuiObject *parent)
     : GuiObject(gui, parent), on_item_selected(0), on_item_selected_data(0),
       on_title_clicked(0), on_title_clicked_data(0)
 {
-    setup("");
+    setup(0, 0, "");
 }
 
 GuiListbox::GuiListbox(Gui& gui, GuiObject *parent, int x, int y, int width,
@@ -1944,7 +1964,18 @@ GuiListbox::GuiListbox(Gui& gui, GuiObject *parent, int x, int y, int width,
       on_item_selected_data(on_item_selected_data),
       on_title_clicked(0), on_title_clicked_data(0)
 {
-    setup(title);
+    setup(0, 0, title);
+}
+
+GuiListbox::GuiListbox(Gui& gui, GuiObject *parent, int x, int y, int width,
+    int height, Icon *icon, int icon_width, const std::string& title,
+    OnItemSelected on_item_selected, void *on_item_selected_data)
+    : GuiObject(gui, parent, x, y, width, height),
+      on_item_selected(on_item_selected),
+      on_item_selected_data(on_item_selected_data),
+      on_title_clicked(0), on_title_clicked_data(0)
+{
+    setup(icon, icon_width, title);
 }
 
 GuiListbox::~GuiListbox() { }
@@ -2009,6 +2040,10 @@ GuiListboxEntry *GuiListbox::get_entry(int index) {
 
 GuiListboxEntry *GuiListbox::add_entry(const std::string& text) {
     return add_entry(GuiListboxEntry::Column(text, 0));
+}
+
+GuiListboxEntry *GuiListbox::add_entry(Icon *icon, int icon_width, const std::string& text) {
+    return add_entry(GuiListboxEntry::Column(icon, icon_width, text, 0));
 }
 
 GuiListboxEntry *GuiListbox::add_entry(const std::string& text, int width) {
@@ -2127,11 +2162,15 @@ void GuiListbox::my_down_mousemove(int x, int y, bool from_mousemove) {
     }
 }
 
-void GuiListbox::setup(const std::string& title) {
+void GuiListbox::setup(Icon *icon, int icon_width, const std::string& title) {
     sb = gui.create_vscroll(this, get_width() - GuiVirtualScroll::Size, 0, get_height(),
         0, 0, 0, static_scroll_changed, this);
 
-    title_bar = new GuiListboxEntry(gui, this, title);
+    if (icon || icon_width) {
+        title_bar = new GuiListboxEntry(gui, this, icon, icon_width, title, 0);
+    } else {
+        title_bar = new GuiListboxEntry(gui, this, title);
+    }
     title_bar_visible = false;
 
     start_index = 0;

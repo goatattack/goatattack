@@ -86,7 +86,7 @@ void TileGraphicGL::replace_tile(int index, int bytes_per_pixel, const void *pic
 }
 
 void TileGraphicGL::punch_out_tile(PNG& png, int tilex, int tiley, bool desc, bool linear) {
-    int bytes_per_pixel = (png.ColorFormatRGBA ? 4 : 3);
+    int bytes_per_pixel = (png.get_color_format() == png.ColorFormatRGBA ? 4 : 3);
     int row_len = png.get_width() * bytes_per_pixel;
 
     /* copy rect into a new 'temporary' picture array */
@@ -117,7 +117,7 @@ void TileGraphicGL::punch_out_tile(PNG& png, int tilex, int tiley, bool desc, bo
 }
 
 bool TileGraphicGL::punch_out_lightmap(PNG& png, int tilex, int tiley) {
-    int bytes_per_pixel = (png.ColorFormatRGBA ? 4 : 3);
+    int bytes_per_pixel = (png.get_color_format() == png.ColorFormatRGBA ? 4 : 3);
     int row_len = png.get_width() * bytes_per_pixel;
 
     /* copy rect into a new temporary picture array */

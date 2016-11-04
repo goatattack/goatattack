@@ -34,6 +34,7 @@
 static const char *TitleMusic = "norway";
 static const char *SecuredSymbol = "\xe2\x9a\xbf";
 static const int SecuredWidth = 8;
+static const int FlagWidth = 18;
 
 MainMenu::MainMenu(Resources& resources, Subsystem& subsystem, Configuration& config)
     : Gui(resources, subsystem, resources.get_font("normal")),
@@ -181,7 +182,9 @@ void MainMenu::idle() throw (Exception) {
             it != hosts.end(); it++)
         {
             const GameserverInformation *info = *it;
-            GuiListboxEntry *entry = play_lan_list->add_entry(info->server_name);
+            std::string server_name(info->server_name);
+            Icon *flag = get_flag_from_name(server_name);
+            GuiListboxEntry *entry = play_lan_list->add_entry(flag, FlagWidth, server_name);
             entry->add_column((info->secured ? SecuredSymbol : ""), SecuredWidth);
             sprintf(buffer, "%d/%d", info->cur_clients, info->max_clients);
             entry->add_column(buffer, 50);
@@ -204,7 +207,9 @@ void MainMenu::idle() throw (Exception) {
         {
             const MasterQueryClient *info = static_cast<MasterQueryClient *>(*it);
             if (info->received) {
-                GuiListboxEntry *entry = play_wan_list->add_entry(info->server_name);
+                std::string server_name(info->server_name);
+                Icon *flag = get_flag_from_name(server_name);
+                GuiListboxEntry *entry = play_wan_list->add_entry(flag, FlagWidth, server_name);
                 entry->add_column((info->secured ? SecuredSymbol : ""), SecuredWidth);
                 sprintf(buffer, "%d/%d", info->cur_clients, info->max_clients);
                 entry->add_column(buffer, 50);
@@ -298,7 +303,7 @@ void MainMenu::play_click() {
     /* internet */
     GuiFrame *frwan = tab->create_tab(i18n(I18N_MAINMENU_INTERNET));
     create_label(frwan, 0, 0, i18n(I18N_MAINMENU_INTERNET_SERVERS));
-    play_wan_list = create_listbox(frwan, 0, 15, frwan->get_width(), frwan->get_height() + 2 - (15 + bh + Spc), i18n(I18N_MAINMENU_SERVER_NAME), static_on_wan_entry_click, this);
+    play_wan_list = create_listbox(frwan, 0, 15, frwan->get_width(), frwan->get_height() + 2 - (15 + bh + Spc), 0, FlagWidth, i18n(I18N_MAINMENU_SERVER_NAME), static_on_wan_entry_click, this);
     play_wan_list->show_title_bar(true);
     play_wan_list->set_on_title_clicked(static_play_wan_sort_click, this);
 
@@ -313,7 +318,7 @@ void MainMenu::play_click() {
     /* LAN */
     GuiFrame *frlan = tab->create_tab(i18n(I18N_MAINMENU_LAN_TITLE));
     create_label(frlan, 0, 0, i18n(I18N_MAINMENU_LAN_SERVERS));
-    play_lan_list = create_listbox(frlan, 0, 15, frlan->get_width(), frlan->get_height() + 2 - (15 + bh + Spc), i18n(I18N_MAINMENU_SERVER_NAME), static_on_lan_entry_click, this);
+    play_lan_list = create_listbox(frlan, 0, 15, frlan->get_width(), frlan->get_height() + 2 - (15 + bh + Spc), 0, FlagWidth, i18n(I18N_MAINMENU_SERVER_NAME), static_on_lan_entry_click, this);
     play_lan_list->show_title_bar(true);
     play_lan_list->set_on_title_clicked(static_play_lan_sort_click, this);
     create_button(frlan, frlan->get_width() - bw_connect, frlan->get_height() - bh, bw_connect, bh, btn_connect, static_play_connect_lan_click, this);
@@ -1092,4 +1097,19 @@ void MainMenu::set_version_label() {
         Icon *beta_icon = resources.get_icon("beta");
         create_picture(main_window, mw_w / 2 + tw / 2, mw_h - 32 - Spc - 3, beta_icon->get_tile()->get_tilegraphic())->set_follow_alpha(false);
     }
+}
+
+Icon *MainMenu::get_flag_from_name(std::string& name) {
+    Icon *flag = 0;
+    if (name.length() && name[0] == '[') {
+        std::string::size_type pos = name.find(']', 0);
+        if (pos != std::string::npos) {
+            flag = resources.get_flag(name.substr(1, pos - 1), true);
+            if (flag) {
+                name = name.substr(pos + 1);
+            }
+        }
+    }
+
+    return flag;
 }

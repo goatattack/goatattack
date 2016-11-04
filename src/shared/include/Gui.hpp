@@ -139,6 +139,10 @@ public:
         int height, const std::string& title, GuiListbox::OnItemSelected on_item_selected,
         void *on_item_selected_data) throw (GuiException);
 
+    GuiListbox *create_listbox(GuiObject *parent, int x, int y, int width,
+        int height, Icon *icon, int icon_width, const std::string& title,
+        GuiListbox::OnItemSelected on_item_selected, void *on_item_selected_data) throw (GuiException);
+
     GuiWindow *get_current_window() const;
     bool is_active(GuiObject *object) const;
     float get_alpha(GuiObject *object) const;

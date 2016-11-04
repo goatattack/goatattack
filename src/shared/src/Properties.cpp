@@ -45,22 +45,28 @@ const std::string& Properties::get_description() const {
     return description;
 }
 
-void Properties::set_name(const std::string& name) throw (KeyValueException) {
-    set_value("name", name);
+void Properties::set_name(const std::string& name, bool no_touch) throw (KeyValueException) {
+    set_value("name", name, no_touch);
     this->name = name;
-    touch();
+    if (!no_touch) {
+        touch();
+    }
 }
 
-void Properties::set_author(const std::string& author) throw (KeyValueException) {
-    set_value("author", author);
+void Properties::set_author(const std::string& author, bool no_touch) throw (KeyValueException) {
+    set_value("author", author, no_touch);
     this->author = author;
-    touch();
+    if (!no_touch) {
+        touch();
+    }
 }
 
-void Properties::set_description(const std::string& description) throw (KeyValueException) {
-    set_value("description", description);
+void Properties::set_description(const std::string& description, bool no_touch) throw (KeyValueException) {
+    set_value("description", description, no_touch);
     this->description = description;
-    touch();
+    if (!no_touch) {
+        touch();
+    }
 }
 
 void Properties::reload_configuration() throw (KeyValueException) {

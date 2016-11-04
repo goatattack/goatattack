@@ -97,7 +97,7 @@ enum GPC {
     GPCPlayerChanged,
     GPCPlaySound,
     GPCScoreTransportRaw,
-    GPCReserved,                // can be used for future
+    GPCRemoveAnimation,
     GPCXferHeader,
     GPCXferDataChunk,
     GPCGenericData,

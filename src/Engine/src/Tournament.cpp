@@ -286,6 +286,18 @@ void Tournament::add_animation(GAnimation *animation) {
     }
 }
 
+void Tournament::remove_animation(identifier_t id) {
+    if (id) {
+        for (GameAnimations::iterator it = game_animations.begin(); it != game_animations.end(); it++) {
+            GameAnimation *gani = *it;
+            if (gani->state.id == id) {
+                gani->delete_me = true;
+                break;
+            }
+        }
+    }
+}
+
 void Tournament::add_animation(const std::string& name, identifier_t id,
     scounter_t duration, identifier_t owner, int x, int y,
     double accel_x, double accel_y, int width, int height)

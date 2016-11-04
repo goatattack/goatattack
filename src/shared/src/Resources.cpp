@@ -233,6 +233,15 @@ Shader *Resources::get_shader(const std::string& name) throw (ResourcesException
     throw ResourcesException(i18n(I18N_RES_SHADER_NOT_FOUND, name));
 }
 
+Icon *Resources::get_flag(const std::string& name, bool no_throw) throw (ResourcesException) {
+    Icon *o = find_object<Icon>(flags, name);
+    if (!o && !no_throw) {
+        throw ResourcesException(i18n(I18N_RES_FLAG_NOT_FOUND, name));
+    }
+
+    return o;
+}
+
 const Resources::LoadedPaks& Resources::get_loaded_paks() const {
     return loaded_paks;
 }
@@ -287,6 +296,10 @@ Resources::ResourceObjects& Resources::get_game_settings() {
 
 Resources::ResourceObjects& Resources::get_shaders() {
     return shaders;
+}
+
+Resources::ResourceObjects& Resources::get_flags() {
+    return flags;
 }
 
 void Resources::read_tilesets(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception) {
@@ -538,6 +551,30 @@ void Resources::read_shaders(const std::string& directory, ZipReader *zip, bool 
     }
 }
 
+void Resources::read_flags(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception) {
+    const char *entry = 0;
+    try {
+        Directory dir(directory, ".png", zip);
+        while ((entry = dir.get_entry())) {
+            try {
+                std::string flag_name(entry);
+                std::string::size_type pos = flag_name.rfind('/', flag_name.length() - 1);
+                if (pos != std::string::npos) {
+                    flag_name = flag_name.substr(pos + 1);
+                }
+                AutoPtr<Icon> new_object(new Icon(subsystem, (zip ? "" : directory + dir_separator) + entry, zip, flag_name));
+                if (!check_duplicate<Icon>(subsystem, flags, "flags", new_object->get_name())) {
+                    flags.push_back(ResourceObject(new_object.release(), base_resource));
+                }
+            } catch (const Exception& e) {
+                subsystem << e.what() << std::endl;
+            }
+        }
+    } catch (const DirectoryException&) {
+        /* chomp */
+    }
+}
+
 void Resources::load_resources(bool home_paks_only) throw (ResourcesException, ResourcesMissingException) {
     try {
         //const char **pak = 0;
@@ -649,6 +686,7 @@ void Resources::read_all(const std::string& fdir, ZipReader *fzip, bool base_res
     read_musics(fdir + "music", fzip, base_resource);
     read_game_settings(fdir + "game", fzip, base_resource);
     read_shaders(fdir + "shaders", fzip, base_resource);
+    read_flags(fdir + "flags", fzip, base_resource);
 }
 
 void Resources::destroy_resources(bool home_paks_only) {
@@ -665,6 +703,7 @@ void Resources::destroy_resources(bool home_paks_only) {
     erase_resource_objects<Object>(objects, home_paks_only);
     erase_resource_objects<Tileset>(tilesets, home_paks_only);
     erase_resource_objects<Shader>(shaders, home_paks_only);
+    erase_resource_objects<Icon>(flags, home_paks_only);
 
     erase_loaded_pak(loaded_paks, home_paks_only);
 }
