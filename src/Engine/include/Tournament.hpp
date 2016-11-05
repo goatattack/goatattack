@@ -50,16 +50,16 @@ public:
     TournamentException(const std::string& msg) : Exception(msg) { }
 };
 
-const double AnimationMultiplier = 3.0f;
-const double TextAnimationSpeed = 5.0f;
-const double XAccel = 0.055f;
-const double XDecel = 0.01f;
-const double XMaxAccel = 1.75f;
-const double YAccelGravity = 0.075f;
-const double YMaxAccel = 4.5f;
-const double YVeloLanding = 2.25f;
-const double YDecelJumpNormal = 0.075f;
-const double YDecelJump = 0.005f;
+const double AnimationMultiplier = 3.0;
+const double TextAnimationSpeed = 5.0;
+const double XAccel = 0.055;
+const double XDecel = 0.01;
+const double XMaxAccel = 1.75;
+const double YAccelGravity = 0.075;
+const double YMaxAccel = 4.5;
+const double YVeloLanding = 1.5;
+const double YDecelJumpNormal = 0.075;
+const double YDecelJump = 0.005;
 
 struct GameAnimation {
     GameAnimation() : animation(0), animation_counter(0.0f),

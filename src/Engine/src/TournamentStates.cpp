@@ -19,8 +19,8 @@
 
 #include <algorithm>
 
-static double YInitialJumpImpulse = 3.8f;
-static double YVeloJumpToLanding = 2.0f;
+static double YInitialJumpImpulse = 3.8;
+static double YVeloJumpToLanding = 2.0;
 static ns_t IntegrateMaxTimeStep = 10000000;
 
 void Tournament::update_states(ns_t ns) {
@@ -157,6 +157,9 @@ void Tournament::integrate(ns_t ns) {
         if (finished) {
             gani->delete_me = true;
             if (server) {
+                identifier_t *id = new identifier_t;
+                *id = htons(gani->state.id);
+                add_state_response(GPCRemoveAnimation, sizeof(id), id);
                 const std::string& finished_animation = gani->animation->get_value("finished_animation");
                 if (finished_animation.length()) {
                     Animation *ani = resources.get_animation(finished_animation);

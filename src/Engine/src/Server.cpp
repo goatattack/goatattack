@@ -41,7 +41,7 @@ const uint16_t MasterHeartbeatPort = 25112;
 const size_t MaxServerMsgLength = PacketMaxSize - 100;
 
 /* ingame server constructor */
-Server::Server(Resources& resources, Subsystem& subsystem, KeyValue kv, GamePlayType type,
+Server::Server(Resources& resources, Subsystem& subsystem, const KeyValue& kv, GamePlayType type,
     const std::string& map_name, int duration, int warmup) throw (Exception)
     : Properties(kv),
       ClientServer(subsystem.get_i18n(), atoi(get_value("port").c_str()), atoi(get_value("num_players").c_str()), get_value("server_name"), ""),
@@ -136,8 +136,8 @@ void Server::reload_config() throw (ServerException) {
     reconnect_kills = atoi(get_value("reconnect_kills").c_str());
     if (!get_admin_server_is_on_client()) {
         master_server = resolve_host(get_value("master_server"));
+        reload_map_rotation = true;
     }
-    reload_map_rotation = true;
     broadcast_settings = true;
     factory.set_tournament_server_flags(*this, tournament);
 }
@@ -154,9 +154,6 @@ void Server::thread() {
             curtxt++;
         }
 
-        /* wait for 50 ms */
-        wait_ns(50000000);
-
         /* start */
         gametime_t now;
         gametime_t last;
@@ -164,8 +161,9 @@ void Server::thread() {
         ns_t diff_now = 0;
         ms_t diff_milliseconds = 0;
 
-        /* init */
+        /* init, construct tournament in 20ms */
         get_now(last);
+        add_ns(20000000, last);
 
         /* loop */
         int send_counter = 0;
@@ -973,6 +971,7 @@ bool Server::select_map() {
     if (use_temporary_map_config()) {
         if (tournament) {
             delete tournament;
+            tournament = 0;
         }
         current_config = &get_temporary_map_config();
         warmup = (current_config->warmup_in_seconds > 0);
@@ -980,6 +979,7 @@ bool Server::select_map() {
     } else {
         if (tournament) {
             delete tournament;
+            tournament = 0;
             switch_to_game = warmup;
         }
 

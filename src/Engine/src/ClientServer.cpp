@@ -36,6 +36,7 @@ ClientServer::~ClientServer() {
     if (tournament) {
         tournament->set_gui_is_destroyed(true);
         delete tournament;
+        tournament = 0;
     }
 }
 

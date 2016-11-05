@@ -43,7 +43,7 @@ private:
     Server& operator=(const Server&);
 
 public:
-    Server(Resources& resources, Subsystem& subsystem, KeyValue kv,
+    Server(Resources& resources, Subsystem& subsystem, const KeyValue& kv,
         GamePlayType type, const std::string& map_name, int duration, int warmup)
         throw (Exception);
 
