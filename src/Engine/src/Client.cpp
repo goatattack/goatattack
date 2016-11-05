@@ -47,7 +47,8 @@ Client::Client(Resources& resources, Subsystem& subsystem, hostaddr_t host,
       factory(resources, subsystem, this), my_id(0), login_sent(false),
       throw_exception(false), exception_msg(), force_send(false),
       fhnd(0), running(true), reload_resources(true), lagometer(subsystem),
-      show_lagometer(player_config.get_bool("lagometer"))
+      show_lagometer(player_config.get_bool("lagometer")),
+      chat_icon(*resources.get_icon("chat"))
 {
     conn = 0;
     get_now(last);
@@ -283,6 +284,11 @@ void Client::idle() throw (Exception) {
         }
 
         int x = 5;
+        if (cmsg->icon) {
+            subsystem.set_color(1.0f, 1.0f, 1.0f, alpha);
+            subsystem.draw_icon(cmsg->icon, x, y);
+            x += cmsg->icon_width;
+        }
         if (cmsg->player.length()) {
             subsystem.set_color(0.5f, 1.0f, 0.5f, alpha);
             x = subsystem.draw_text(font, x, y, cmsg->player);

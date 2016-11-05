@@ -32,9 +32,10 @@
 #include <algorithm>
 
 static const char *TitleMusic = "norway";
-static const char *SecuredSymbol = "\xe2\x9a\xbf";
 static const int SecuredWidth = 8;
 static const int FlagWidth = 18;
+static const char *AscendingArrow = "\xe2\x86\x91";
+static const char *DescendingArrow = "\xe2\x86\x93";
 
 MainMenu::MainMenu(Resources& resources, Subsystem& subsystem, Configuration& config)
     : Gui(resources, subsystem, resources.get_font("normal")),
@@ -185,7 +186,7 @@ void MainMenu::idle() throw (Exception) {
             std::string server_name(info->server_name);
             Icon *flag = get_flag_from_name(server_name);
             GuiListboxEntry *entry = play_lan_list->add_entry(flag, FlagWidth, server_name);
-            entry->add_column((info->secured ? SecuredSymbol : ""), SecuredWidth);
+            entry->add_column((info->secured ? resources.get_icon("lock") : 0), 9, "", 16);
             sprintf(buffer, "%d/%d", info->cur_clients, info->max_clients);
             entry->add_column(buffer, 50);
             sprintf(buffer, "%d", static_cast<int>(info->ping_time));
@@ -210,7 +211,7 @@ void MainMenu::idle() throw (Exception) {
                 std::string server_name(info->server_name);
                 Icon *flag = get_flag_from_name(server_name);
                 GuiListboxEntry *entry = play_wan_list->add_entry(flag, FlagWidth, server_name);
-                entry->add_column((info->secured ? SecuredSymbol : ""), SecuredWidth);
+                entry->add_column((info->secured ? resources.get_icon("lock") : 0), 9, "", 16);
                 sprintf(buffer, "%d/%d", info->cur_clients, info->max_clients);
                 entry->add_column(buffer, 50);
                 sprintf(buffer, "%d", static_cast<int>(info->ping_time));
@@ -311,9 +312,11 @@ void MainMenu::play_click() {
     create_button(frwan, 0, frwan->get_height() - bh, bw_refresh, bh, btn_refresh, static_play_refresh_wan_click, this);
 
     title_bar = play_wan_list->get_title_bar();
-    title_bar->add_column(SecuredSymbol, SecuredWidth);
+    title_bar->add_column(resources.get_icon("lock"), 9, "", 16);
     title_bar->add_column(i18n(I18N_MAINMENU_PLAYERS), 50);
     title_bar->add_column(i18n(I18N_MAINMENU_PING), 40);
+
+    title_bar->get_columns()[0].addon = AscendingArrow;
 
     /* LAN */
     GuiFrame *frlan = tab->create_tab(i18n(I18N_MAINMENU_LAN_TITLE));
@@ -325,9 +328,11 @@ void MainMenu::play_click() {
     create_button(frlan, 0, frlan->get_height() - bh, bw_refresh, bh, btn_refresh, static_play_refresh_lan_click, this);
 
     title_bar = play_lan_list->get_title_bar();
-    title_bar->add_column(SecuredSymbol, SecuredWidth);
+    title_bar->add_column(resources.get_icon("lock"), 9, "", 16);
     title_bar->add_column(i18n(I18N_MAINMENU_PLAYERS), 50);
     title_bar->add_column(i18n(I18N_MAINMENU_PING), 40);
+
+    title_bar->get_columns()[0].addon = AscendingArrow;
 
     /* custom server */
     GuiFrame *frcustom = tab->create_tab(i18n(I18N_MAINMENU_CUSTOM_SERVER));
@@ -386,7 +391,12 @@ void MainMenu::static_play_wan_sort_click(GuiListbox *sender, void *data, int in
 
 void MainMenu::play_wan_sort_click(int index) {
     if (master_query) {
-        master_query->sort(index);
+        ServerSort dir = master_query->sort(index);
+        GuiListboxEntry::Columns& columns = play_wan_list->get_title_bar()->get_columns();
+        for (GuiListboxEntry::Columns::iterator it = columns.begin(); it != columns.end(); it++) {
+            it->addon = "";
+        }
+        columns[index].addon = (dir == Ascending ? AscendingArrow : DescendingArrow);
     }
 }
 
@@ -396,7 +406,12 @@ void MainMenu::static_play_lan_sort_click(GuiListbox *sender, void *data, int in
 
 void MainMenu::play_lan_sort_click(int index) {
     if (lan_broadcaster) {
-        lan_broadcaster->sort(index);
+        ServerSort dir = lan_broadcaster->sort(index);
+        GuiListboxEntry::Columns& columns = play_lan_list->get_title_bar()->get_columns();
+        for (GuiListboxEntry::Columns::iterator it = columns.begin(); it != columns.end(); it++) {
+            it->addon = "";
+        }
+        columns[index].addon = (dir == Ascending ? AscendingArrow : DescendingArrow);
     }
 }
 
@@ -885,7 +900,7 @@ void MainMenu::list_packages_click() {
     int vw = subsystem.get_view_width();
     int vh = subsystem.get_view_height();
     int ww = 380;
-    int wh = 256;
+    int wh = 250;
     int bh = 18;
     const int hash_width = 110;
 
@@ -893,7 +908,7 @@ void MainMenu::list_packages_click() {
     window->set_cancelable(true);
     wh = window->get_client_height() + 2;
 
-    GuiListbox *lb = create_listbox(window, Spc, Spc, ww - 2 * Spc, wh - 3 * Spc - bh, i18n(I18N_MAINMENU_PACKAGE), 0, 0);
+    GuiListbox *lb = create_listbox(window, Spc, Spc, ww - 2 * Spc, wh - 3 * Spc - bh + 3, i18n(I18N_MAINMENU_PACKAGE), 0, 0);
     lb->show_title_bar(true);
     GuiListboxEntry *titlebar = lb->get_title_bar();
     titlebar->add_column(i18n(I18N_MAINMENU_HASH), hash_width);
@@ -1012,7 +1027,7 @@ void MainMenu::close_window_click() {
 bool MainMenu::create_server_locators() throw (Exception) {
     destroy_server_locators();
     try {
-        lan_broadcaster = new LANBroadcaster(i18n, config.get_int("server_port"));
+        lan_broadcaster = new LANBroadcaster(i18n, config.get_int("port"));
     } catch (const Exception& e) {
         destroy_server_locators();
         show_messagebox(MessageBoxIconError, i18n(I18N_ERROR_TITLE), e.what());

@@ -21,22 +21,32 @@
 #include <string>
 #include <vector>
 
+class Icon;
+
 class TextMessageSystem {
 public:
     TextMessageSystem();
     virtual ~TextMessageSystem();
 
     void add_text_msg(const std::string& player, const std::string& msg);
+    void add_text_msg(Icon& icon, const std::string& player, const std::string& msg);
     void add_text_msg(const std::string& msg);
 
 protected:
     struct TextMessage {
         TextMessage(const std::string& player, const std::string& text)
-            : player(player), text(text), duration(0.0f), delete_me(false) { }
+            : icon(0), icon_width(0), player(player), text(text), duration(0.0),
+              delete_me(false) { }
+
+        TextMessage(Icon& icon, const std::string& player, const std::string& text);
 
         TextMessage(const std::string& text)
-            : text(text), duration(0.0f), delete_me(false) { }
+            : icon(0), icon_width(0), text(text), duration(0.0), delete_me(false) { }
 
+        TextMessage(Icon& icon, const std::string& text);
+
+        Icon *icon;
+        int icon_width;
         std::string player;
         std::string text;
         double duration;

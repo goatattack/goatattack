@@ -596,6 +596,7 @@ public:
         int icon_width;
         std::string text;
         int width;
+        std::string addon;
     };
 
     typedef std::vector<Column> Columns;

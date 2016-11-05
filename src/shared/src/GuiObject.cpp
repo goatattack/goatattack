@@ -1943,7 +1943,7 @@ void GuiListboxEntry::draw_column(const Column& column, int x, int y, int max_wi
         s.draw_icon(column.icon, x + (column.icon_width - gw) / 2, y + (th - gh) / 2);
     }
     x += column.icon_width;
-    s.draw_clipped_text(gui.get_font(), x, y, max_width, column.text);
+    s.draw_clipped_text(gui.get_font(), x, y, max_width, column.text + column.addon);
 }
 
 /* ****************************************************** */

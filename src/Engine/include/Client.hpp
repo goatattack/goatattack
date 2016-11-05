@@ -107,6 +107,7 @@ private:
     bool reload_resources;
     Lagometer lagometer;
     bool show_lagometer;
+    Icon& chat_icon;
 
     double text_message_duration;
     double text_message_fade_out_at;

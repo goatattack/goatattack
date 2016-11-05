@@ -61,9 +61,9 @@ public:
     virtual ~ServerList();
 
     const Hosts& get_hosts() const;
-    void sort(int index, ServerSort dir);
-    void sort(int index);
-    void sort();
+    ServerSort sort(int index, ServerSort dir);
+    ServerSort sort(int index);
+    ServerSort sort();
 
 private:
     typedef bool (*ServerSorter)(GameserverInformation *lhs, GameserverInformation *rhs);
