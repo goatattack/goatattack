@@ -165,7 +165,7 @@ void MainMenu::idle() throw (Exception) {
     if (lan_broadcaster) {
         /* refresh */
         ms_t diff = diff_ms(last_lan_info, now);
-        if (diff > 5000) {
+        if (diff > 2000) {
             try {
                 Scope<Mutex> lock(lan_broadcaster->get_mutex());
                 lan_broadcaster->refresh();
@@ -176,6 +176,8 @@ void MainMenu::idle() throw (Exception) {
         }
         /* update list */
         int top_index = play_lan_list->get_top_index();
+        const void *selected_ptr = lan_list_selected_entry;
+        lan_list_selected_entry = 0;
         play_lan_list->clear();
         Scope<Mutex> lock(lan_broadcaster->get_mutex());
         const Hosts& hosts = lan_broadcaster->get_hosts();
@@ -192,6 +194,10 @@ void MainMenu::idle() throw (Exception) {
             sprintf(buffer, "%d", static_cast<int>(info->ping_time));
             entry->add_column(buffer, 40);
             entry->set_ptr_tag(info);
+            if (selected_ptr == info) {
+                lan_list_selected_entry = info;
+                play_lan_list->set_selected_index(play_lan_list->get_entry_count() - 1);
+            }
         }
         play_lan_list->set_top_index(top_index);
     }

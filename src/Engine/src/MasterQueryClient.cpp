@@ -55,6 +55,7 @@ void MasterQueryClient::event_status(hostaddr_t host, hostport_t port, const std
     this->ping_time = ping_time;
     this->secured = secured;
     this->protocol_version = protocol_version;
+    this->last_status = time(0);
 
     received = true;
 

@@ -2080,6 +2080,8 @@ void GuiListbox::clear() {
         remove_object(entries[i]);
     }
     entries.clear();
+    start_index = 0;
+    selected_index = -1;
 }
 
 bool GuiListbox::can_have_focus() const {

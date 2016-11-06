@@ -47,6 +47,7 @@ public:
     int protocol_version;
     bool secured;
     ms_t ping_time;
+    time_t last_status;
 };
 
 typedef std::vector<GameserverInformation *> Hosts;

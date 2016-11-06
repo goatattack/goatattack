@@ -87,6 +87,7 @@ void LANBroadcaster::event_status(hostaddr_t host, hostport_t port,
     info->ping_time = ping_time;
     info->secured = secured;
     info->protocol_version = protocol_version;
+    info->last_status = time(0);
 
     sort();
 }
@@ -99,10 +100,30 @@ void LANBroadcaster::cleanup() {
 }
 
 void LANBroadcaster::thread() {
+    int counter = 0;
     while (running) {
         {
             Scope<Mutex> lock(mtx);
             while(cycle());
+        }
+
+        /* remove old servers */
+        counter++;
+        if (counter > 1000) {
+            counter = 0;
+            bool again;
+            time_t now = time(0);
+            do {
+                again = false;
+                for (Hosts::iterator it = hosts.begin(); it != hosts.end(); it++) {
+                    GameserverInformation *info = *it;
+                    if (now - info->last_status >= 5) {
+                        hosts.erase(it);
+                        again = true;
+                        break;
+                    }
+                }
+            } while (again);
         }
         wait_ns(1000000);
     }
