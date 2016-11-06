@@ -633,10 +633,12 @@ bool SubsystemSDL::is_sound_playing(Sound *sound) {
     return (std::find(playing_sounds.begin(), playing_sounds.end(), sound) != playing_sounds.end());
 }
 
-void SubsystemSDL::stop_sound(int channel) {
+int SubsystemSDL::stop_sound(int channel) {
     if (channel > -1) {
         Mix_HaltChannel(channel);
     }
+
+    return -1;
 }
 
 bool SubsystemSDL::play_music(Music *music) {

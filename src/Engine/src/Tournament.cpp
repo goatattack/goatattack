@@ -292,6 +292,9 @@ void Tournament::remove_animation(identifier_t id) {
             GameAnimation *gani = *it;
             if (gani->state.id == id) {
                 gani->delete_me = true;
+                if (gani->animation->get_stop_sound_if_shot()) {
+                    gani->sound_channel = subsystem.stop_sound(gani->sound_channel);
+                }
                 break;
             }
         }

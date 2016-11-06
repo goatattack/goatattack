@@ -297,7 +297,7 @@ bool Tournament::render_physics(double period_f, bool projectile, int damage,
         }
 
         /* test animations */
-        if (settings[SettingEnableShotExplosives]) {
+        if (server && settings[SettingEnableShotExplosives]) {
             for (GameAnimations::iterator it = game_animations.begin(); it != game_animations.end(); it++) {
                 GameAnimation *gani = *it;
                 if (gani->animation->get_can_be_shot()) {
@@ -308,17 +308,15 @@ bool Tournament::render_physics(double period_f, bool projectile, int damage,
                         a_colbox.y = static_cast<int>(gani->state.y) + tg->get_height() - colbox.height - colbox.y;
                         if (obj_colbox.intersects(a_colbox)) {
                             if (gani->animation->get_stop_sound_if_shot()) {
-                                subsystem.stop_sound(gani->sound_channel);
+                                gani->sound_channel = subsystem.stop_sound(gani->sound_channel);
                             }
                             gani->state.duration = 0;
                             gani->animation_counter = static_cast<double>(gani->animation->get_animation_speed());
                             gani->index = static_cast<int>(tg->get_tile_count());
                             is_collision = true;
-                            if (server) {
-                                identifier_t *id = new identifier_t;
-                                *id = htons(gani->state.id);
-                                add_state_response(GPCRemoveAnimation, sizeof(id), id);
-                            }
+                            identifier_t *id = new identifier_t;
+                            *id = htons(gani->state.id);
+                            add_state_response(GPCRemoveAnimation, sizeof(id), id);
                         }
                     }
                 }

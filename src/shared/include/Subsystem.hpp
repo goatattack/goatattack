@@ -174,7 +174,7 @@ public:
     virtual void play_system_sound(Sound *sound) = 0;
     virtual int play_controlled_sound(Sound *sound, int loops) = 0;
     virtual bool is_sound_playing(Sound *sound) = 0;
-    virtual void stop_sound(int channel) = 0;
+    virtual int stop_sound(int channel) = 0;
 
     virtual bool play_music(Music *music) = 0;
     virtual void stop_music() = 0;

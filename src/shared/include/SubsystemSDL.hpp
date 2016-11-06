@@ -76,7 +76,7 @@ public:
     virtual void play_system_sound(Sound *sound);
     virtual int play_controlled_sound(Sound *sound, int loops);
     virtual bool is_sound_playing(Sound *sound);
-    virtual void stop_sound(int channel);
+    virtual int stop_sound(int channel);
 
     virtual bool play_music(Music *music);
     virtual void stop_music();
