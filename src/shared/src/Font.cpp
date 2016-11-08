@@ -50,7 +50,7 @@ Font::Font(Subsystem& subsystem, FT_Library& ft, const std::string& filename, Zi
         /* get base informations */
         width = atoi(get_value("width").c_str());
         height = atoi(get_value("height").c_str());
-        outline = atoi(get_value("outline").c_str());
+        float outline = atof(get_value("outline").c_str());
         y_offset = atoi(get_value("y_offset").c_str());
         outline_monochrome = (atoi(get_value("outline_monochrome").c_str()) ? true : false);
         monochrome = (atoi(get_value("monochrome").c_str()) ? true : false);
@@ -88,7 +88,7 @@ Font::Font(Subsystem& subsystem, FT_Library& ft, const std::string& filename, Zi
         FT_Set_Pixel_Sizes(face, width, height);
         kerning = FT_HAS_KERNING(face);
         FT_Stroker_New(ft, &stroker);
-        FT_Stroker_Set(stroker, outline * width, FT_STROKER_LINECAP_ROUND, FT_STROKER_LINEJOIN_ROUND, 0);
+        FT_Stroker_Set(stroker, static_cast<FT_Fixed>(outline * 64), FT_STROKER_LINECAP_ROUND, FT_STROKER_LINEJOIN_ROUND, 0);
 
         /* add two pixels (top/bottom) */
         int overridden_height = atoi(get_value("overridden_height").c_str());
@@ -248,7 +248,7 @@ void Font::create_character(const char *s) {
                     fh = bitmap_glyph->bitmap.rows;
                     tmppic = new unsigned char[sz * 4];
                     unsigned char *dst = tmppic;
-                    unsigned char *src = (do_monochrome ? mono_bitmap.buffer : bitmap_glyph->bitmap.buffer); //bitmap_glyph->bitmap.buffer;
+                    unsigned char *src = (do_monochrome ? mono_bitmap.buffer : bitmap_glyph->bitmap.buffer);
                     int alpha = 0;
                     for (unsigned int i = 0; i < sz; i++) {
                         *dst++ = 0; *dst++ = 0; *dst++ = 0;
@@ -279,8 +279,9 @@ void Font::create_character(const char *s) {
                     int y_diff = (fh - bitmap_glyph->bitmap.rows);
                     int yt_diff = y_diff - (fh - bitmap_glyph->bitmap.rows) / 2;
                     int x_diff = (fw - bitmap_glyph->bitmap.width);
-                    int xr_diff =  x_diff / 2;
-                    int xl_diff = x_diff - xr_diff;
+                    int xl_diff = x_diff / 2;
+                    int xr_diff = x_diff - xl_diff;
+
                     unsigned int h = bitmap_glyph->bitmap.rows;
                     double gradient_h = static_cast<double>(h > 1 ? h - 1 : 1);
                     double red = static_cast<double>(red1);

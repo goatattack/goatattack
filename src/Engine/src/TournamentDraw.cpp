@@ -369,7 +369,7 @@ void Tournament::draw_hud() {
 
     /* warmup */
     if (warmup) {
-        if (gui && gui->get_blink_on()) {
+        if (gui && gui->get_tick_on()) {
             std::string txt(i18n(I18N_TNMT_WARMUP));
             int tw = fnt->get_text_width(txt);
             int x = view_width / 2 - tw / 2;

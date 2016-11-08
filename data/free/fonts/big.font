@@ -1,11 +1,10 @@
 name=big
 author=Canonical Ltd.
 description=Big font
-spacing=-2
 font=ubuntu-bold.ttf
 width=15
 height=15
-outline=5
+outline=1.25
 y_offset=-4
 red1=255
 green1=255

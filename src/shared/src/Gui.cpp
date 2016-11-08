@@ -17,16 +17,18 @@
 
 #include "Gui.hpp"
 
-static float WindowAlphaActive = 0.8f;
-static float WindowAlphaInactive = 0.55f;
+static const float WindowAlphaActive = 0.8f;
+static const float WindowAlphaInactive = 0.55f;
+static const ms_t CaretBlinkInterval = 500;
+static const ms_t TickInterval = 500;
 
 Gui::Gui(Resources& resources, Subsystem& subsystem, Font *font)
     throw (GuiException, ResourcesException)
     : resources(resources), subsystem(subsystem), i18n(subsystem.get_i18n()),
-      font(font), current_window(0), active_object(0), blink_on(true), running(false),
-      mouse_is_down(false), mouse_is_visible(true), local_mousex(0), local_mousey(0),
-      pmousex(&local_mousex), pmousey(&local_mousey), tooltip(0), tooltip_object(0),
-      tooltip_x(0), tooltip_y(0)
+      font(font), current_window(0), active_object(0), blink_on(true), tick_on(true),
+      running(false), mouse_is_down(false), mouse_is_visible(true), local_mousex(0),
+      local_mousey(0), pmousex(&local_mousex), pmousey(&local_mousey), tooltip(0),
+      tooltip_object(0), tooltip_x(0), tooltip_y(0)
 {
     if (!font) {
         throw GuiException(i18n(I18N_NO_FONT));
@@ -37,6 +39,7 @@ Gui::Gui(Resources& resources, Subsystem& subsystem, Font *font)
     load_resources();
 
     get_now(last);
+    get_now(last_tick);
     now = last;
 }
 
@@ -302,6 +305,10 @@ bool Gui::get_blink_on() const {
     return blink_on;
 }
 
+bool Gui::get_tick_on() const {
+    return tick_on;
+}
+
 void Gui::set_mousepointer(Mousepointer mouse) {
     switch (mouse) {
         case MousepointerDefault:
@@ -451,9 +458,15 @@ void Gui::idleloop(int stack_counter) throw (Exception) {
     while (running && static_cast<int>(windows.size()) > stack_counter) {
         /* update caret blinker */
         get_now(now);
-        if (diff_ms(last, now) > 500) {
+        if (diff_ms(last, now) > CaretBlinkInterval) {
             blink_on = !blink_on;
             last = now;
+        }
+
+        /* update independent blinker */
+        if (diff_ms(last_tick, now) > TickInterval) {
+            tick_on = !tick_on;
+            last_tick = now;
         }
 
         /* go */

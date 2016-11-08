@@ -92,7 +92,6 @@ private:
 
     unsigned int width;
     unsigned int height;
-    unsigned int outline;
     unsigned char red1;
     unsigned char green1;
     unsigned char blue1;

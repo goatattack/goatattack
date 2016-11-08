@@ -33,33 +33,6 @@ public:
     MessageSequencerException(std::string msg) : Exception(msg) { }
 };
 
-/* we start to resend after 25ms, retry 4 times with a delay of 25 ms, */
-/* then doubling the interval each resend.                             */
-struct QueueMessage {
-    QueueMessage() { }
-    QueueMessage(sequence_no_t seq_no, flags_t flags, command_t cmd, data_len_t len, data_t *data)
-        : resends(0), last_resend_ms(25), seq_no(seq_no), flags(flags), cmd(cmd), len(len), data(data)
-    {
-        touch.tv_nsec = 0;
-        touch.tv_sec = 0;
-    }
-
-    ~QueueMessage() {
-        if (data) {
-            delete[] data;
-        }
-    }
-
-    gametime_t touch;
-    pico_size_t resends;
-    int last_resend_ms;
-    sequence_no_t seq_no;
-    flags_t flags;
-    command_t cmd;
-    data_len_t len;
-    data_t *data;
-};
-
 struct Connection {
     Connection(hostaddr_t host, hostport_t port)
         : host(host), port(port), ping_time(0) { }
@@ -69,11 +42,14 @@ struct Connection {
     ms_t ping_time;
 };
 
+class QueueMessage;
+
 struct SequencerHeap : public Connection {
     typedef std::deque<QueueMessage *> QueuedMessages;
 
     SequencerHeap(hostaddr_t host, hostport_t port)
-        : Connection(host, port), sent_pings(0), active(true), deferred_kill(false),
+        : Connection(host, port),
+          sent_pings(0), active(true), deferred_kill(false),
           last_send_unrel_seq_no(0), last_send_rel_seq_no(0),
           last_recv_unrel_seq_no(0), last_recv_rel_seq_no(0)
     {
@@ -94,15 +70,6 @@ struct SequencerHeap : public Connection {
 
     QueuedMessages in_queue;
     QueuedMessages out_queue;
-};
-
-class ScopeHeapMarker {
-public:
-    ScopeHeapMarker(SequencerHeap& heap);
-    ~ScopeHeapMarker();
-
-private:
-    SequencerHeap& heap;
 };
 
 class MessageSequencer {
@@ -128,11 +95,12 @@ public:
     MessageSequencer(I18N& i18n, hostaddr_t server_host, hostport_t server_port) throw (Exception);
     virtual ~MessageSequencer();
 
+    /* actions */
+    void request_server_info(hostaddr_t host, hostport_t port) throw (Exception);
     void login(const std::string& password, data_len_t len, const void *data) throw (Exception);
     void login(data_len_t len, const void *data) throw (Exception);
     void logout() throw (Exception);
 
-    void request_server_info(hostaddr_t host, hostport_t port) throw (Exception);
     void broadcast(flags_t flags, data_len_t len, const void *data) throw (Exception);
     void push(flags_t flags, data_len_t len, const void *data) throw (Exception);
     void push(flags_t flags, command_t cmd, data_len_t len, const void *data) throw (Exception);
@@ -146,6 +114,7 @@ public:
         const std::string& password) throw (Exception);
     const SequencerHeap *get_heap(const Connection *c) const;
 
+    /* events */
     virtual void event_status(hostaddr_t host, hostport_t port, const std::string& name,
         int max_clients, int cur_clients, ms_t ping_time, bool secured,
         int protocol_version) throw (Exception) { }

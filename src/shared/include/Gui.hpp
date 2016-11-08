@@ -149,6 +149,7 @@ public:
     void set_focus(GuiObject *object);
     bool has_focus(GuiObject *object) const;
     bool get_blink_on() const;
+    bool get_tick_on() const;
     void set_mousepointer(Mousepointer mouse);
     void reset_blinker();
 
@@ -166,6 +167,7 @@ private:
     GuiWindow *current_window;
     GuiObject *active_object;
     bool blink_on;
+    bool tick_on;
     bool running;
     bool mouse_is_down;
     bool mouse_is_visible;
@@ -190,6 +192,7 @@ private:
     Icon *msg_error;
     gametime_t now;
     gametime_t last;
+    gametime_t last_tick;
     gametime_t tooltip_init;
     MessageBoxResponse last_response;
     GuiTextbox *input_box;
