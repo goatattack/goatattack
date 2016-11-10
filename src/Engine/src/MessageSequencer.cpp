@@ -97,12 +97,10 @@ MessageSequencer::~MessageSequencer() {
 }
 
 void MessageSequencer::request_server_info(hostaddr_t host, hostport_t port) throw (Exception) {
-    if (is_client) {
-        ServerStatusMsg stat;
-        memset(&stat, 0, sizeof(stat));
-        get_now(stat.ping);
-        slack_send(host, port, 0, 0, NetCommandStatReq, ServerStatusLength, &stat);
-    }
+    ServerStatusMsg stat;
+    memset(&stat, 0, sizeof(stat));
+    get_now(stat.ping);
+    slack_send(host, port, 0, 0, NetCommandStatReq, ServerStatusLength, &stat);
 }
 
 void MessageSequencer::login(const std::string& password, data_len_t len, const void *data) throw (Exception) {
