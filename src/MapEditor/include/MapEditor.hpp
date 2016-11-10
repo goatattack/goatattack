@@ -100,6 +100,7 @@ private:
     bool is_drawing_rect;
     bool is_selecting;
     bool use_selection;
+    int tile_selector_page;
 
     SelectRect select_rect;
     int lightmap_w;

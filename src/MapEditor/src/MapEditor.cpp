@@ -74,7 +74,7 @@ MapEditor::MapEditor(Resources& resources, Subsystem& subsystem, Configuration& 
       draw_light_sources(true), draw_mode(DrawModeTile),
       light_source(resources.get_icon("light_source")), compile_thread(0),
       home_workdir(get_home_directory() + dir_separator + UserDirectory),
-      is_drawing_rect(true), is_selecting(false), use_selection(false)
+      is_drawing_rect(true), is_selecting(false), use_selection(false), tile_selector_page(0)
 {
     ts_picture = 0;
     os_picture = 0;
@@ -101,10 +101,10 @@ void MapEditor::idle() throw (Exception) {
 
     /* picture blinker */
     if (ts_picture) {
-        ts_picture->set_visible(get_tick_on());
+        ts_picture->set_visible(get_blink_on());
     }
     if (os_picture) {
-        os_picture->set_visible(get_tick_on());
+        os_picture->set_visible(get_blink_on());
     }
 
     /* get mouse position */
@@ -135,29 +135,33 @@ void MapEditor::idle() throw (Exception) {
     if (draw_decoration_on_screen) {
         draw_decoration();
     }
+
     if (draw_lightmap_on_screen) {
         draw_lightmap();
     }
+
+    if (use_selection && draw_mode == DrawModeTile && drawing_decoration && draw_sel_ok) {
+        draw_selection(sx, sy, true);
+    }
+
     if (draw_map_on_screen) {
         draw_map(true);
     }
+
     if (draw_objects_on_screen) {
         draw_objects();
     }
+
     if (draw_map_on_screen) {
         draw_map(false);
     }
+
     if (draw_light_sources) {
         draw_lights();
     }
 
-    if (draw_mode == DrawModeTile && use_selection && draw_sel_ok) {
-        if (drawing_decoration) {
-            draw_selection(sx, sy, true);
-        }
-        if (!drawing_decoration) {
-            draw_selection(sx, sy, false);
-        }
+    if (use_selection && draw_mode == DrawModeTile && !drawing_decoration && draw_sel_ok) {
+        draw_selection(sx, sy, false);
     }
 
     /* draw center cross */
@@ -347,10 +351,6 @@ void MapEditor::on_input_event(const InputData& input) {
                             y -= top;
                             x /= w;
                             y /= h;
-                            if (x < 0) x = 0;
-                            if (x >= wmap->get_width()) x = wmap->get_width() - 1;
-                            if (y < 0) y = 0;
-                            if (y >= wmap->get_height()) y = wmap->get_height() - 1;
                             insert_selection(x, y, drawing_decoration);
                         }
                     }
@@ -1212,7 +1212,12 @@ void MapEditor::insert_selection(int x, int y, bool decoration) {
                 for (int sx = 0; sx < select_rect.width; sx++) {
                     int dx = x + sx;
                     if (dx < wmap->get_width()) {
-                        dst[dy][dx] = src[sy][sx];
+                        if (dy >= 0 && dy < wmap->get_height() &&
+                            dx >= 0 && dx < wmap->get_width() &&
+                            src[sy][sx] > -1)
+                        {
+                            dst[dy][dx] = src[sy][sx];
+                        }
                     }
                 }
             }
@@ -1663,6 +1668,7 @@ void MapEditor::mp_ok_click() {
         wmap->set_game_play_type(GamePlayTypeGOH);
     }
 
+    tile_selector_page = 0;
     pop_window();
 }
 
@@ -1727,6 +1733,7 @@ void MapEditor::load_map_ok_click() {
             show_messagebox(Gui::MessageBoxIconError, i18n(I18N_ME_ERROR_TITLE), e.what());
         }
         pop_window();
+        tile_selector_page = 0;
 
     } else {
         show_messagebox(Gui::MessageBoxIconInformation, i18n(I18N_ME_NO_SELECTION), i18n(I18N_ME_SELECT_MAP));
@@ -1780,6 +1787,13 @@ void MapEditor::tile_selector_click() {
     ts_window->set_on_keydown(static_ts_keydown, this);
     add_buttons(true, ts_window, 0);
     ts_buttons_on_page = ts_end_index + 1;
+
+    /* jump to last opened page */
+    int page = tile_selector_page;
+    tile_selector_page = 0;
+    for (int i = 0; i < page; i++) {
+        ts_next_click();
+    }
 }
 
 void MapEditor::add_buttons(bool first, GuiWindow *window, int from_tile_index) {
@@ -1857,6 +1871,10 @@ void MapEditor::ts_previous_click() {
         new_index = 0;
     }
     add_buttons(false, ts_window, new_index);
+    tile_selector_page--;
+    if (tile_selector_page < 0) {
+        tile_selector_page = 0;
+    }
 }
 
 void MapEditor::static_ts_next_click(GuiVirtualButton *sender, void *data) {
@@ -1869,6 +1887,7 @@ void MapEditor::ts_next_click() {
     int new_index = ts_start_index + ts_buttons_on_page;
     if (new_index < sz) {
         add_buttons(false, ts_window, new_index);
+        tile_selector_page++;
     }
 }
 
@@ -2199,6 +2218,7 @@ void MapEditor::zap_click() {
     }
 
     wmap = new EditableMap(resources, subsystem);
+    tile_selector_page = 0;
 }
 
 /* ************************************************************************** */

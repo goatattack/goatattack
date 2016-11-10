@@ -540,12 +540,29 @@ void Client::window_close_click() {
 }
 
 void Client::chat_send_message() {
-    const std::string& text(utf8_validate(trim(chat_textbox->get_text()).substr(0, 200).c_str()));
-
-    if (text.length() && conn) {
-        {
-            Scope<Mutex> lock(mtx);
-            send_data(conn, factory.get_tournament_id(), GPSChatMessage, NetFlagsReliable, static_cast<data_len_t>(text.length()), text.c_str());
+    std::string text(trim(chat_textbox->get_text()));
+    if (text.length()) {
+        /* find abbreviation */
+        int no_abbr = player_config.get_int("no_tokens");
+        char key[64];
+        for (int i = 0; i < no_abbr; i++) {
+            sprintf(key, "token%d", i);
+            const std::string& abbr = player_config.get_string(key);
+            if (abbr.length()) {
+                if (text == abbr) {
+                    sprintf(key, "token_text%d", i);
+                    text = player_config.get_string(key);
+                    break;
+                }
+            }
+        }
+        text = utf8_validate(trim(text).substr(0, 200).c_str());
+        /* send now */
+        if (text.length() && conn) {
+            {
+                Scope<Mutex> lock(mtx);
+                send_data(conn, factory.get_tournament_id(), GPSChatMessage, NetFlagsReliable, static_cast<data_len_t>(text.length()), text.c_str());
+            }
         }
     }
     window_close_click();
