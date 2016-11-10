@@ -452,6 +452,7 @@ const I18N::Text I18N::all_texts_german[] = {
     { I18N_MAINMENU_SHOOT_EXPLOSIVES, "Sprengbares durch Schiessen zerstören" },
     { I18N_MAINMENU_PREVENT_PICK, "Objekt aufnehmen verhindern, wenn Inventar voll" },
     { I18N_RES_FLAG_NOT_FOUND, "Flagge ${1} nicht gefunden" },
+    { I18N_ME_SELECT, "auswählen" },
 
     { I18N_NONE, 0 }
 };

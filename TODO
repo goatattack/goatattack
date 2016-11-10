@@ -2,7 +2,6 @@ PENDING:
 * spectator mode -> following other players
 * server filter (sort out full or protected server)
 * speed up rendering, using texture atlas
-* change to font rendering system freetype (static or dynamic)
 * ded server: sending clan badges png files via udp
 * map voting
 * client server handshake to prevent clientside cheating
@@ -19,7 +18,6 @@ PENDING:
 WISHES:
 * integrated collision detection of characters (by dev)
 * use ini-format for server-config (sections)
-* currently the ingame-chat has no support for special characters (like äöüß).
 
 
 DONE:
@@ -107,6 +105,8 @@ DONE:
 * optionally working with vbo
 * spectate button added
 * switch team done with specate and rejoining other team
+* change to font rendering system freetype (static or dynamic)
+* currently the ingame-chat has no support for special characters (like äöüß).
 
 DEFERRED:
 * OSX: too short filename buffer -> hardegger bug (not reproducable)

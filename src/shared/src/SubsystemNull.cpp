@@ -114,6 +114,10 @@ int SubsystemNull::draw_char(Font *font, int x, int y, const char *s) {
 
 void SubsystemNull::draw_icon(Icon *icon, int x, int y) { }
 
+void SubsystemNull::enable_cliprect(int x, int y, int width, int height) { }
+
+void SubsystemNull::disable_cliprect() { }
+
 int SubsystemNull::play_sound(Sound *sound, int loops) {
     return 0;
 }

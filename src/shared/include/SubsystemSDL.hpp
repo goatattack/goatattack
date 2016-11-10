@@ -71,6 +71,8 @@ public:
     virtual int draw_clipped_text(Font *font, int x, int y, int width, const std::string& text);
     virtual int draw_char(Font *font, int x, int y, const char *s);
     virtual void draw_icon(Icon *icon, int x, int y);
+    virtual void enable_cliprect(int x, int y, int width, int height);
+    virtual void disable_cliprect();
 
     virtual int play_sound(Sound *sound, int loops);
     virtual void play_system_sound(Sound *sound);

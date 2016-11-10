@@ -26,8 +26,6 @@
 #include "Scope.hpp"
 #include "UTF8.hpp"
 
-#include "Lagometer.hpp"
-
 #include <cstdlib>
 #include <algorithm>
 
@@ -649,6 +647,7 @@ void MainMenu::create_server_click() {
     }
 
     cs_map_name = create_label(frserver, creation_tab->get_width() - 83, 115 + 68, "");
+    cs_map_name->set_clip_width(64);
 
     create_label(frserver, 0, 99, i18n(I18N_MAINMENU_SELECT_MAP));
     int lbh = (get_font()->get_font_height()) * 6 + 2;

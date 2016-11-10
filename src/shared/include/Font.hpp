@@ -31,17 +31,6 @@ public:
     FontException(const std::string& msg) : Exception(msg) { }
 };
 
-static const int FontMin = 32;
-static const int FontMax = 128;
-static const int NumOfChars = FontMax - FontMin;
-
-typedef struct font_char {
-    int32_t origin_x;
-    int32_t origin_y;
-    int32_t width;
-    int32_t height;
-} font_char_t;
-
 class Font : public Properties {
 private:
     Font(const Font&);
@@ -66,11 +55,16 @@ public:
 
     const Character *get_character(const char *s);
     int get_font_height() const;
+    int get_font_total_height() const;
     int get_text_width(const char *s);
     int get_text_width(const std::string& text);
     int get_char_width(const char *s);
     int get_y_offset() const;
     int get_x_kerning(const Character *prev, const Character *cur);
+    void clip_on(int x, int y, int width, int height);
+    void clip_on(int x, int y, int width);
+    void clip_off();
+
 
 private:
     struct Data {

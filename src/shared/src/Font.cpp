@@ -50,6 +50,7 @@ Font::Font(Subsystem& subsystem, FT_Library& ft, const std::string& filename, Zi
         /* get base informations */
         width = atoi(get_value("width").c_str());
         height = atoi(get_value("height").c_str());
+        total_height = height;
         float outline = atof(get_value("outline").c_str());
         y_offset = atoi(get_value("y_offset").c_str());
         outline_monochrome = (atoi(get_value("outline_monochrome").c_str()) ? true : false);
@@ -115,6 +116,10 @@ int Font::get_font_height() const {
     return height;
 }
 
+int Font::get_font_total_height() const {
+    return total_height;
+}
+
 int Font::get_text_width(const char *s) {
     const Font::Character *prev = 0;
 
@@ -162,6 +167,18 @@ int Font::get_x_kerning(const Character *prev, const Character *cur) {
     }
 
     return 0;
+}
+
+void Font::clip_on(int x, int y, int width, int height) {
+    subsystem.enable_cliprect(x, y + total_height + y_offset, width, height);
+}
+
+void Font::clip_on(int x, int y, int width) {
+    clip_on(x, y, width, height);
+}
+
+void Font::clip_off() {
+    subsystem.disable_cliprect();
 }
 
 Font::Data *Font::create_new_page() {

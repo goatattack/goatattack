@@ -556,21 +556,23 @@ int SubsystemSDL::draw_clipped_text(Font *font, int x, int y, int width, const s
     const Font::Character *prev = 0;
 
     if (sz) {
+        font->clip_on(x, y, width);
         int totw = 0;
-        int y_offset = font->get_y_offset();
         const char *p = text.c_str();
+        int font_y_offset = font->get_y_offset();
         while (*p) {
             const Font::Character *chr = font->get_character(p);
             int advance = chr->advance + font->get_x_kerning(prev, chr);
+            draw_tilegraphic(chr->tile->get_tilegraphic(), x, y + font_y_offset + chr->y_offset);
+            x += advance;
             totw += advance;
             if (totw > width) {
                 break;
             }
-            draw_tilegraphic(chr->tile->get_tilegraphic(), x, y + y_offset + chr->y_offset);
-            x += advance;
             p += chr->distance;
             prev = chr;
         }
+        font->clip_off();
     }
 
     return x;
@@ -587,6 +589,21 @@ int SubsystemSDL::draw_char(Font *font, int x, int y, const char *s) {
 
 void SubsystemSDL::draw_icon(Icon *icon, int x, int y) {
     draw_tile(icon->get_tile(), x, y);
+}
+
+
+void SubsystemSDL::enable_cliprect(int x, int y, int width, int height) {
+    glScissor(
+        ((x - x_offset) * current_zoom),
+        (ViewHeight - (y - y_offset)) * current_zoom,
+        width * current_zoom,
+        height * current_zoom
+    );
+    glEnable(GL_SCISSOR_TEST);
+}
+
+void SubsystemSDL::disable_cliprect() {
+    glDisable(GL_SCISSOR_TEST);
 }
 
 int SubsystemSDL::play_sound(Sound *sound, int loops) {
@@ -887,6 +904,16 @@ bool SubsystemSDL::get_input(InputData& input) {
 
                     case SDLK_TAB:
                         input.key_type = InputData::InputKeyTypeStatistics;
+                        break;
+
+                    case SDLK_LSHIFT:
+                    case SDLK_RSHIFT:
+                        input.key_type = InputData::InputKeyTypeShift;
+                        break;
+
+                    case SDLK_LCTRL:
+                    case SDLK_RCTRL:
+                        input.key_type = InputData::InputKeyTypeControl;
                         break;
                 }
                 break;

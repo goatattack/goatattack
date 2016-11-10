@@ -452,6 +452,7 @@ const I18N::Text I18N::all_texts_french[] = {
     { I18N_MAINMENU_SHOOT_EXPLOSIVES, "enable shooting explosives" },
     { I18N_MAINMENU_PREVENT_PICK, "prevent pick item, if inventory full" },
     { I18N_RES_FLAG_NOT_FOUND, "flag ${1} not found" },
+    { I18N_ME_SELECT, "select" },
 
     { I18N_NONE, 0 }
 };

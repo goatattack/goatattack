@@ -96,6 +96,8 @@ struct InputData {
         InputKeyTypeButtonY,
         InputKeyTypeStatistics,
         InputKeyTypeChat,
+        InputKeyTypeShift,
+        InputKeyTypeControl,
         _InputKeyTypeMAX
     };
 
@@ -169,6 +171,8 @@ public:
     virtual int draw_clipped_text(Font *font, int x, int y, int width, const std::string& text) = 0;
     virtual int draw_char(Font *font, int x, int y, const char *s) = 0;
     virtual void draw_icon(Icon *icon, int x, int y) = 0;
+    virtual void enable_cliprect(int x, int y, int width, int height) = 0;
+    virtual void disable_cliprect() = 0;
 
     virtual int play_sound(Sound *sound, int loops) = 0;
     virtual void play_system_sound(Sound *sound) = 0;

@@ -558,12 +558,13 @@ void GuiBox::paint() {
 /* ****************************************************** */
 GuiLabel::GuiLabel(Gui& gui, GuiObject *parent)
     : GuiObject(gui, parent), follow_alpha(true),
-      bg_r(1.0f), bg_g(1.0f), bg_b(1.0f) { }
+      bg_r(1.0f), bg_g(1.0f), bg_b(1.0f), clip_width(0) { }
 
 GuiLabel::GuiLabel(Gui& gui, GuiObject *parent, int x, int y,
     int width, int height, const std::string& caption)
     : GuiObject(gui, parent, x, y, width, height),
-      follow_alpha(true), bg_r(1.0f), bg_g(1.0f), bg_b(1.0f), caption(caption) { }
+      follow_alpha(true), bg_r(1.0f), bg_g(1.0f), bg_b(1.0f),
+      caption(caption), clip_width(0) { }
 
 GuiLabel::~GuiLabel() { }
 
@@ -585,13 +586,27 @@ void GuiLabel::set_color(float bg_r, float bg_g, float bg_b) {
     this->bg_b = bg_b;
 }
 
+int GuiLabel::get_clip_width() const {
+    return clip_width;
+}
+
+void GuiLabel::set_clip_width(int width) {
+    if (width >= 0) {
+        clip_width = width;
+    }
+}
+
 void GuiLabel::paint() {
     int x = get_client_x();
     int y = get_client_y();
     Subsystem& s = gui.get_subsystem();
 
     s.set_color(bg_r, bg_g, bg_b, (follow_alpha ? gui.get_alpha(this) : 1.0f));
-    s.draw_text(gui.get_font(), x, y, caption);
+    if (clip_width) {
+        s.draw_clipped_text(gui.get_font(), x, y, clip_width, caption);
+    } else {
+        s.draw_text(gui.get_font(), x, y, caption);
+    }
     s.reset_color();
 }
 
@@ -1365,22 +1380,29 @@ void GuiTextbox::paint() {
     bool caret_drawn = false;
     int caretx = cp;
     const char *p = text.c_str();
+    bool last_char = false;
+    f->clip_on(x, y, w - 4);
     while (pos < sz) {
         const char *str = (type == TypeHidden ? "*" : utf8_real_char_ptr(tptr, pos));
         const Font::Character *chr = f->get_character(str);
         if (cp + chr->advance >= rp) {
-            break;
-        }
-        if (pos == caret && !caret_drawn) {
-            caret_drawn = true;
-            caretx = cp;
+            last_char = true;
+        } else {
+            if (pos == caret && !caret_drawn) {
+                caret_drawn = true;
+                caretx = cp;
+            }
         }
         cp = s.draw_char(f, cp, y, str);
+        if (last_char) {
+            break;
+        }
+        if (!caret_drawn) {
+            caretx = cp;
+        }
         pos++;
     }
-    if (!caret_drawn) {
-        caretx = cp;
-    }
+    f->clip_off();
     if (gui.has_focus(this) && !locked) {
         if (gui.get_blink_on()) {
             s.draw_box(caretx, y + 1, 1, fh - 2);

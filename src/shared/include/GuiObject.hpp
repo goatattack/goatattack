@@ -223,6 +223,8 @@ public:
     const std::string& get_caption() const;
     void set_color(float bg_r, float bg_g, float bg_b);
     void set_follow_alpha(bool state);
+    int get_clip_width() const;
+    void set_clip_width(int width);
 
 private:
     bool follow_alpha;
@@ -230,6 +232,7 @@ private:
     float bg_g;
     float bg_b;
     std::string caption;
+    int clip_width;
 
     virtual void paint();
 };

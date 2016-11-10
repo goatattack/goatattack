@@ -28,6 +28,40 @@
 const double AnimationMultiplier = 3.0f;
 static const ns_t ns_fc = 10000000;   /* for 0.01 s */
 
+MapEditor::SelectRect::SelectRect() : width(0), height(0), decoration(0), map(0) {
+    reset();
+}
+
+MapEditor::SelectRect::~SelectRect() {
+    clear();
+}
+
+void MapEditor::SelectRect::reset() {
+    select_index = 0;
+}
+
+void MapEditor::SelectRect::clear() {
+    for (int i = 0; i < height; i++) {
+        delete[] decoration[i];
+        delete[] map[i];
+    }
+    delete[] decoration;
+    delete[] map;
+    decoration = 0;
+    map = 0;
+}
+
+bool MapEditor::SelectRect::add_point(int x, int y) {
+    px[select_index] = x;
+    py[select_index] = y;
+    if (select_index < 1) {
+        select_index++;
+        return false;
+    }
+
+    return true;
+}
+
 MapEditor::MapEditor(Resources& resources, Subsystem& subsystem, Configuration& config)
     : Gui(resources, subsystem, resources.get_font("normal")),
       resources(resources), subsystem(subsystem), i18n(subsystem.get_i18n()),
@@ -39,7 +73,8 @@ MapEditor::MapEditor(Resources& resources, Subsystem& subsystem, Configuration& 
       draw_lightmap_on_screen(true), draw_map_on_screen(true), draw_objects_on_screen(true),
       draw_light_sources(true), draw_mode(DrawModeTile),
       light_source(resources.get_icon("light_source")), compile_thread(0),
-      home_workdir(get_home_directory() + dir_separator + UserDirectory)
+      home_workdir(get_home_directory() + dir_separator + UserDirectory),
+      is_drawing_rect(true), is_selecting(false), use_selection(false)
 {
     ts_picture = 0;
     os_picture = 0;
@@ -66,10 +101,33 @@ void MapEditor::idle() throw (Exception) {
 
     /* picture blinker */
     if (ts_picture) {
-        ts_picture->set_visible(get_blink_on());
+        ts_picture->set_visible(get_tick_on());
     }
     if (os_picture) {
-        os_picture->set_visible(get_blink_on());
+        os_picture->set_visible(get_tick_on());
+    }
+
+    /* get mouse position */
+    bool draw_sel_ok = false;
+    int sx = 0;
+    int sy = 0;
+    if (wmap) {
+        Tileset *ts = wmap->get_tileset_ptr();
+        if (ts) {
+            int w = ts->get_tile_width();
+            int h = ts->get_tile_height();
+            sx = get_mouse_x();
+            sy = get_mouse_y();
+            sx -= left;
+            sy -= top;
+            sx /= w;
+            sy /= h;
+            sx *= w;
+            sy *= h;
+            sx += left;
+            sy += top;
+            draw_sel_ok = true;
+        }
     }
 
     /* draw stuff */
@@ -91,6 +149,15 @@ void MapEditor::idle() throw (Exception) {
     }
     if (draw_light_sources) {
         draw_lights();
+    }
+
+    if (draw_mode == DrawModeTile && use_selection && draw_sel_ok) {
+        if (drawing_decoration) {
+            draw_selection(sx, sy, true);
+        }
+        if (!drawing_decoration) {
+            draw_selection(sx, sy, false);
+        }
     }
 
     /* draw center cross */
@@ -196,27 +263,61 @@ void MapEditor::idle() throw (Exception) {
     Font *f = get_font();
     subsystem.draw_text(f, 5, subsystem.get_view_height() - f->get_font_height() - 5, txt);
 
+    /* draw "select" */
+    if (is_selecting) {
+        subsystem.draw_text(f, 5, subsystem.get_view_height() - f->get_font_height() * 2 - 5, i18n(I18N_ME_SELECT));
+    }
+
     /* draw object blinking */
-    if (get_blink_on()) {
-        if (wmap) {
-            Tileset *ts = wmap->get_tileset_ptr();
-            if (ts) {
-                x = get_mouse_x();
-                y = get_mouse_y();
-                x -= left;
-                y -= top;
-                x /= ts->get_tile_width();
-                y /= ts->get_tile_height();
-                x *= ts->get_tile_width();
-                y *= ts->get_tile_height();
-                x += left;
-                y += top;
+    if (wmap) {
+        Tileset *ts = wmap->get_tileset_ptr();
+        if (ts) {
+            Object *obj = static_cast<Object *>(resources.get_objects()[selected_object_index].object);
+            int w = ts->get_tile_width();
+            int h = ts->get_tile_height();
+            x = get_mouse_x();
+            y = get_mouse_y();
+            x -= left;
+            y -= top;
+            x /= w;
+            y /= h;
+            x *= w;
+            y *= h;
+            x += left;
+            y += top;
+            if (get_tick_on()) {
                 if (draw_mode == DrawModeObject) {
-                    Object *obj = static_cast<Object *>(resources.get_objects()[selected_object_index].object);
                     subsystem.draw_tilegraphic(obj->get_tile()->get_tilegraphic(), x, y);
                 } else if (draw_mode == DrawModeLightSources) {
                     subsystem.draw_icon(light_source, x, y);
                 }
+            }
+            if (is_drawing_rect) {
+                if (is_selecting && select_rect.select_index) {
+                    x = select_rect.px[0] * w + left;
+                    y = select_rect.py[0] * h + top;
+                    int x2 = get_mouse_x();
+                    int y2 = get_mouse_y();
+                    x2 -= left;
+                    y2 -= top;
+                    x2 /= w;
+                    y2 /= h;
+                    x2 *= w;
+                    y2 *= h;
+                    x2 += left;
+                    y2 += top;
+                    if (x > x2) std::swap(x, x2);
+                    if (y > y2) std::swap(y, y2);
+                    w = x2 - x + w;
+                    h = y2 - y + h;
+                } else if (draw_mode == DrawModeObject) {
+                    w = obj->get_tile()->get_tilegraphic()->get_width();
+                    h = obj->get_tile()->get_tilegraphic()->get_height();
+                }
+                subsystem.set_color(1.0f, 1.0f, 1.0f, 0.85f);
+                draw_rect(x, y, w, h);
+                subsystem.reset_color();
+
             }
         }
     }
@@ -234,18 +335,63 @@ void MapEditor::on_input_event(const InputData& input) {
     if (get_stack_count() == 1) {
         switch (input.data_type) {
             case InputData::InputDataTypeMouseLeftDown:
-                mouse_down_mode = 1;
-                hand_draw(input.param1, input.param2);
+                if (use_selection) {
+                    if (draw_mode == DrawModeTile && wmap) {
+                        Tileset *ts = wmap->get_tileset_ptr();
+                        if (ts) {
+                            int w = ts->get_tile_width();
+                            int h = ts->get_tile_height();
+                            int x = input.param1 / subsystem.get_zoom_factor();
+                            int y = input.param2 / subsystem.get_zoom_factor();
+                            x -= left;
+                            y -= top;
+                            x /= w;
+                            y /= h;
+                            if (x < 0) x = 0;
+                            if (x >= wmap->get_width()) x = wmap->get_width() - 1;
+                            if (y < 0) y = 0;
+                            if (y >= wmap->get_height()) y = wmap->get_height() - 1;
+                            insert_selection(x, y, drawing_decoration);
+                        }
+                    }
+                } else if (is_selecting) {
+                    if (wmap) {
+                        Tileset *ts = wmap->get_tileset_ptr();
+                        if (ts) {
+                            int w = ts->get_tile_width();
+                            int h = ts->get_tile_height();
+                            int x = input.param1 / subsystem.get_zoom_factor();
+                            int y = input.param2 / subsystem.get_zoom_factor();
+                            x -= left;
+                            y -= top;
+                            x /= w;
+                            y /= h;
+                            if (x < 0) x = 0;
+                            if (x >= wmap->get_width()) x = wmap->get_width() - 1;
+                            if (y < 0) y = 0;
+                            if (y >= wmap->get_height()) y = wmap->get_height() - 1;
+                            if (select_rect.add_point(x, y)) {
+                                copy_selection();
+                                is_selecting = false;
+                            }
+                        }
+                    }
+                } else {
+                    mouse_down_mode = 1;
+                    hand_draw(input.param1, input.param2);
+                }
                 break;
 
             case InputData::InputDataTypeMouseRightDown:
-                mouse_down_mode = 2;
-                hand_draw(input.param1, input.param2);
+                if (!is_selecting) {
+                    mouse_down_mode = 2;
+                    hand_draw(input.param1, input.param2);
+                }
                 break;
 
             case InputData::InputDataTypeMouseMiddleDown:
-                move_origin_x = input.param1;
-                move_origin_y = input.param2;
+                move_origin_x = input.param1 / subsystem.get_zoom_factor();
+                move_origin_y = input.param2 / subsystem.get_zoom_factor();
                 move_origin_left = left;
                 move_origin_top = top;
                 set_mousepointer(MousepointerMove);
@@ -261,7 +407,9 @@ void MapEditor::on_input_event(const InputData& input) {
                 if (move_map) {
                     mouse_move_map(input.param1, input.param2);
                 } else if (mouse_down_mode) {
-                    hand_draw(input.param1, input.param2);
+                    if (!is_selecting) {
+                        hand_draw(input.param1, input.param2);
+                    }
                 }
                 break;
 
@@ -271,87 +419,127 @@ void MapEditor::on_input_event(const InputData& input) {
                 break;
 
             case InputData::InputDataTypeKeyDown:
-                switch (input.keycode) {
-                    case 9:
-                        mode_selector_click();
+                switch (input.key_type) {
+                    case InputData::InputKeyTypeShift:
+                    {
+                        if (draw_mode == DrawModeTile) {
+                            is_selecting = true;
+                            select_rect.reset();
+                        } else {
+                            is_selecting = false;
+                        }
                         break;
+                    }
 
-                    case '1':
-                        draw_decoration_on_screen = !draw_decoration_on_screen;
+                    case InputData::InputKeyTypeControl:
+                    {
+                        use_selection = true;
                         break;
+                    }
 
-                    case '2':
-                        draw_lightmap_on_screen = !draw_lightmap_on_screen;
-                        break;
+                    default:
+                    {
+                        switch (input.keycode) {
+                            case 9:
+                                mode_selector_click();
+                                break;
 
-                    case '3':
-                        draw_map_on_screen = !draw_map_on_screen;
-                        break;
+                            case '1':
+                                draw_decoration_on_screen = !draw_decoration_on_screen;
+                                break;
 
-                    case '4':
-                        draw_objects_on_screen = !draw_objects_on_screen;
-                        break;
+                            case '2':
+                                draw_lightmap_on_screen = !draw_lightmap_on_screen;
+                                break;
 
-                    case '5':
-                        draw_light_sources = !draw_light_sources;
-                        break;
+                            case '3':
+                                draw_map_on_screen = !draw_map_on_screen;
+                                break;
 
-                    case 't':
-                        tile_selector_click();
-                        break;
+                            case '4':
+                                draw_objects_on_screen = !draw_objects_on_screen;
+                                break;
 
-                    case 'o':
-                        object_selector_click();
-                        break;
+                            case '5':
+                                draw_light_sources = !draw_light_sources;
+                                break;
 
-                    case 'c':
-                        center_map();
-                        break;
+                            case 't':
+                                tile_selector_click();
+                                break;
 
-                    case 'm':
-                        mirrored_drawing = !mirrored_drawing;
-                        break;
+                            case 'o':
+                                object_selector_click();
+                                break;
 
-                    case 'd':
-                        drawing_decoration = !drawing_decoration;
-                        break;
+                            case 'c':
+                                center_map();
+                                break;
 
-                    case 'p':
-                        draw_tile_props = true;
-                        break;
+                            case 'm':
+                                mirrored_drawing = !mirrored_drawing;
+                                break;
 
-                    case 'z':
-                        draw_tile_zorder = true;
-                        break;
+                            case 'd':
+                                drawing_decoration = !drawing_decoration;
+                                break;
 
-                    case 'n':
-                        draw_tile_number = true;
-                        break;
+                            case 'p':
+                                draw_tile_props = true;
+                                break;
 
-                    case 'e':
-                        draw_even_only = true;
+                            case 'z':
+                                draw_tile_zorder = true;
+                                break;
+
+                            case 'n':
+                                draw_tile_number = true;
+                                break;
+
+                            case 'e':
+                                draw_even_only = true;
+                                break;
+                        }
                         break;
+                    }
                 }
                 break;
 
             case InputData::InputDataTypeKeyUp:
-                switch (input.keycode) {
-                    case 'p':
-                        draw_tile_props = false;
+                switch (input.key_type) {
+                    case InputData::InputKeyTypeShift:
+                    {
+                        is_selecting = false;
                         break;
+                    }
 
-                    case 'z':
-                        draw_tile_zorder = false;
+                    case InputData::InputKeyTypeControl:
+                    {
+                        use_selection = false;
                         break;
+                    }
 
-                    case 'n':
-                        draw_tile_number = false;
+                    default:
+                    {
+                        switch (input.keycode) {
+                            case 'p':
+                                draw_tile_props = false;
+                                break;
+
+                            case 'z':
+                                draw_tile_zorder = false;
+                                break;
+
+                            case 'n':
+                                draw_tile_number = false;
+                                break;
+
+                            case 'e':
+                                draw_even_only = false;
+                                break;
+                        }
                         break;
-
-                    case 'e':
-                        draw_even_only = false;
-                        break;
-
+                    }
                 }
                 break;
 
@@ -931,8 +1119,11 @@ void MapEditor::place_light(int x, int y, bool erasing) {
 }
 
 void MapEditor::mouse_move_map(int x, int y) {
-    left = move_origin_left + (x - move_origin_x) / subsystem.get_zoom_factor();
-    top = move_origin_top + (y - move_origin_y) / subsystem.get_zoom_factor();
+    int zoom = subsystem.get_zoom_factor();
+    x /= zoom;
+    y /= zoom;
+    left = move_origin_left + (x - move_origin_x);
+    top = move_origin_top + (y - move_origin_y);
 }
 
 void MapEditor::edit_light(int x, int y) {
@@ -952,6 +1143,81 @@ void MapEditor::edit_light(int x, int y) {
                 light_editor(wmap->get_light(x, y));
             }
         }
+    }
+}
+
+void MapEditor::draw_rect(int x, int y, int w, int h) {
+    subsystem.draw_box(x, y, 4, 1);
+    subsystem.draw_box(x, y + 1, 1, 3);
+    subsystem.draw_box(x + w - 4, y, 4, 1);
+    subsystem.draw_box(x + w - 1, y + 1, 1, 3);
+    subsystem.draw_box(x, y + h - 1, 4, 1);
+    subsystem.draw_box(x, y + h - 4, 1, 3);
+    subsystem.draw_box(x + w - 4, y + h - 1, 4, 1);
+    subsystem.draw_box(x + w - 1, y + h - 4, 1, 3);
+}
+
+void MapEditor::copy_selection() {
+    select_rect.clear();
+    int x1 = select_rect.px[0];
+    int y1 = select_rect.py[0];
+    int x2 = select_rect.px[1];
+    int y2 = select_rect.py[1];
+    if (x1 > x2) std::swap(x1, x2);
+    if (y1 > y2) std::swap(y1, y2);
+    select_rect.width = x2 - x1 + 1;
+    select_rect.height = y2 - y1 + 1;
+    select_rect.decoration = new short *[select_rect.height];
+    select_rect.map = new short *[select_rect.height];
+    for (int y = 0; y < select_rect.height; y++) {
+        select_rect.decoration[y] = new short[select_rect.width];
+        select_rect.map[y] = new short[select_rect.width];
+        for (int x = 0; x < select_rect.width; x++) {
+            select_rect.decoration[y][x] = wmap->get_decoration()[y + y1][x + x1];
+            select_rect.map[y][x] = wmap->get_map()[y + y1][x + x1];
+        }
+    }
+}
+
+void MapEditor::draw_selection(int x, int y, bool decoration) {
+    if (wmap) {
+        Tileset *ts = wmap->get_tileset_ptr();
+        if (ts) {
+            int w = ts->get_tile_width();
+            int h = ts->get_tile_height();
+            int save_x = x;
+            for (int ty = 0; ty < select_rect.height; ty++) {
+                for (int tx = 0; tx < select_rect.width; tx++) {
+                    int index = (decoration ? select_rect.decoration : select_rect.map)[ty][tx];
+                    if (index > -1) {
+                        Tile *tile = ts->get_tile(index);
+                        subsystem.draw_tile(tile, x, y);
+                    }
+                    x += w;
+                }
+                x = save_x;
+                y += h;
+            }
+        }
+    }
+}
+
+void MapEditor::insert_selection(int x, int y, bool decoration) {
+    if (wmap) {
+        short **src = (decoration ? select_rect.decoration : select_rect.map);
+        short **dst = (decoration ? wmap->get_decoration() : wmap->get_map());
+        for (int sy = 0; sy < select_rect.height; sy++) {
+            int dy = y + sy;
+            if (dy < wmap->get_height()) {
+                for (int sx = 0; sx < select_rect.width; sx++) {
+                    int dx = x + sx;
+                    if (dx < wmap->get_width()) {
+                        dst[dy][dx] = src[sy][sx];
+                    }
+                }
+            }
+        }
+        wmap->touch();
     }
 }
 
