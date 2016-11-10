@@ -28,7 +28,7 @@ Your dedicated server will create detailed log entries depending on each action.
 1. Clone the repo `git clone https://github.com/goatattack/goatattack`
 2. `cd goatattack`
 2. `autoreconf -i`
-3. `./configure` with map-editor: `./configure --enable-map-editor` (for music, add: `--enable-non-free`)
+3. `./configure` with map-editor: `./configure --enable-map-editor` (for music, add: `--enable-non-free-pak`)
 4. `make`
 5. `make install`
 
