@@ -27,6 +27,8 @@
 
 const double AnimationMultiplier = 3.0f;
 static const ns_t ns_fc = 10000000;   /* for 0.01 s */
+static const char *left_arrow = "\xe2\x86\x90";
+static const char *right_arrow = "\xe2\x86\x92";
 
 MapEditor::SelectRect::SelectRect() : width(0), height(0), decoration(0), map(0) {
     reset();
@@ -1848,17 +1850,17 @@ void MapEditor::add_buttons(bool first, GuiWindow *window, int from_tile_index) 
     }
     add_close_button(window, static_ts_close_click);
 
-    int bw = 40;
+    int bw = 39;
     int bh = 18;
     int bl = Spc;
     int bb = window->get_client_height() - bh - Spc;
-    create_button(window, bl, bb, bw, bh, "<", static_ts_previous_click, this);
+    create_button(window, bl, bb, bw, bh, left_arrow, static_ts_previous_click, this);
     bl += bw + Spc;
 
     std::string btn_prop(i18n(I18N_ME_ST_PROPERTIES));
     int bw_prop = get_font()->get_text_width(btn_prop) + 28;
     create_button(window, bl, bb, bw_prop, bh, btn_prop, static_ts_properties_click, this);
-    create_button(window, window->get_client_width() - bw - Spc, bb, bw, bh, ">", static_ts_next_click, this);
+    create_button(window, window->get_client_width() - bw - Spc, bb, bw, bh, right_arrow, static_ts_next_click, this);
 }
 
 void MapEditor::static_ts_previous_click(GuiVirtualButton *sender, void *data) {
