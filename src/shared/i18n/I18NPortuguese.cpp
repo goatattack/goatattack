@@ -452,7 +452,7 @@ const I18N::Text I18N::all_texts_portuguese[] = {
     { I18N_MAINMENU_SHOOT_EXPLOSIVES, "permitir disparos nos explosivos" },
     { I18N_MAINMENU_PREVENT_PICK, "previnir apanha de objeto, quando inventório está cheio" },
     { I18N_RES_FLAG_NOT_FOUND, "bandereira ${1} não encontrada" },
-    { I18N_ME_SELECT, "auswählen" },
+    { I18N_ME_SELECT, "selecionar" },
 
     { I18N_NONE, 0 }
 };
