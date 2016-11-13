@@ -49,11 +49,12 @@ public:
     void resize_map(int new_width, int new_height);
     void set_tile(int x, int y, short index);
     void set_decoration(int x, int y, short index);
-    void set_object(Object *obj, int x, int y);
+    EditableObject *set_object(Object *obj, int x, int y);
+    EditableObject *get_object(int x, int y);
     void set_game_play_type(GamePlayType type);
     void set_frog_spawn_init(int t);
     void erase_object(int x, int y);
-    void set_light(int x, int y);
+    EditableLight *set_light(int x, int y);
     void erase_light(int x, int y);
     EditableLight *get_light(int x, int y);
     void save() throw (Exception);

@@ -49,6 +49,9 @@ private:
     };
 
     struct SelectRect {
+        typedef std::vector<EditableObject> Objects;
+        typedef std::vector<EditableLight> Lights;
+
         SelectRect();
         ~SelectRect();
 
@@ -63,6 +66,8 @@ private:
         int select_index;
         int px[2];
         int py[2];
+        Objects objects;
+        Lights lights;
     };
 
     Resources& resources;
@@ -138,7 +143,11 @@ private:
     void draw_rect(int x, int y, int w, int h);
     void copy_selection();
     void draw_selection(int x, int y, bool decoration);
+    void draw_selection_objects(int x, int y);
+    void draw_selection_lights(int x, int y);
     void insert_selection(int x, int y, bool decoration);
+    void insert_selection_objects(int x, int y);
+    void insert_selection_lights(int x, int y);
 
     static void static_center_map(GuiVirtualButton *sender, void *data);
     void center_map();

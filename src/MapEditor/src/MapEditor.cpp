@@ -51,6 +51,8 @@ void MapEditor::SelectRect::clear() {
     delete[] map;
     decoration = 0;
     map = 0;
+    objects.clear();
+    lights.clear();
 }
 
 bool MapEditor::SelectRect::add_point(int x, int y) {
@@ -160,6 +162,14 @@ void MapEditor::idle() throw (Exception) {
 
     if (draw_light_sources) {
         draw_lights();
+    }
+
+    if (use_selection && draw_mode == DrawModeObject && draw_sel_ok) {
+        draw_selection_objects(sx, sy);
+    }
+
+    if (use_selection && draw_mode == DrawModeLightSources && draw_sel_ok) {
+        draw_selection_lights(sx, sy);
     }
 
     if (use_selection && draw_mode == DrawModeTile && !drawing_decoration && draw_sel_ok) {
@@ -291,7 +301,7 @@ void MapEditor::idle() throw (Exception) {
             y *= h;
             x += left;
             y += top;
-            if (get_tick_on()) {
+            if (get_tick_on() && !use_selection) {
                 if (draw_mode == DrawModeObject) {
                     subsystem.draw_tilegraphic(obj->get_tile()->get_tilegraphic(), x, y);
                 } else if (draw_mode == DrawModeLightSources) {
@@ -342,7 +352,7 @@ void MapEditor::on_input_event(const InputData& input) {
         switch (input.data_type) {
             case InputData::InputDataTypeMouseLeftDown:
                 if (use_selection) {
-                    if (draw_mode == DrawModeTile && wmap) {
+                    if (wmap) {
                         Tileset *ts = wmap->get_tileset_ptr();
                         if (ts) {
                             int w = ts->get_tile_width();
@@ -353,7 +363,23 @@ void MapEditor::on_input_event(const InputData& input) {
                             y -= top;
                             x /= w;
                             y /= h;
-                            insert_selection(x, y, drawing_decoration);
+                            switch (draw_mode) {
+                                case DrawModeTile:
+                                    insert_selection(x, y, drawing_decoration);
+                                    break;
+
+                                case DrawModeObject:
+                                    insert_selection_objects(x, y);
+                                    break;
+
+                                case DrawModeLightSources:
+                                    insert_selection_lights(x, y);
+                                    break;
+
+                                default:
+                                    /* do nothing */
+                                    break;
+                            }
                         }
                     }
                 } else if (is_selecting) {
@@ -424,12 +450,8 @@ void MapEditor::on_input_event(const InputData& input) {
                 switch (input.key_type) {
                     case InputData::InputKeyTypeShift:
                     {
-                        if (draw_mode == DrawModeTile) {
-                            is_selecting = true;
-                            select_rect.reset();
-                        } else {
-                            is_selecting = false;
-                        }
+                        is_selecting = true;
+                        select_rect.reset();
                         break;
                     }
 
@@ -1177,6 +1199,22 @@ void MapEditor::copy_selection() {
         for (int x = 0; x < select_rect.width; x++) {
             select_rect.decoration[y][x] = wmap->get_decoration()[y + y1][x + x1];
             select_rect.map[y][x] = wmap->get_map()[y + y1][x + x1];
+
+            EditableObject *object = wmap->get_object(x + x1, y + y1);
+            if (object) {
+                EditableObject new_object(*object);
+                new_object.x = x;
+                new_object.y = y;
+                select_rect.objects.push_back(new_object);
+            }
+
+            EditableLight *light = wmap->get_light(x + x1, y + y1);
+            if (light) {
+                EditableLight new_light(*light);
+                new_light.x = x;
+                new_light.y = y;
+                select_rect.lights.push_back(new_light);
+            }
         }
     }
 }
@@ -1204,6 +1242,32 @@ void MapEditor::draw_selection(int x, int y, bool decoration) {
     }
 }
 
+void MapEditor::draw_selection_objects(int x, int y) {
+    if (wmap) {
+        Tileset *ts = wmap->get_tileset_ptr();
+        if (ts) {
+            int w = ts->get_tile_width();
+            int h = ts->get_tile_height();
+            for (SelectRect::Objects::iterator it = select_rect.objects.begin(); it != select_rect.objects.end(); it++) {
+                subsystem.draw_tile(it->object->get_tile(), it->x * w + x, it->y * h + y);
+            }
+        }
+    }
+}
+
+void MapEditor::draw_selection_lights(int x, int y) {
+    if (wmap) {
+        Tileset *ts = wmap->get_tileset_ptr();
+        if (ts) {
+            int w = ts->get_tile_width();
+            int h = ts->get_tile_height();
+            for (SelectRect::Lights::iterator it = select_rect.lights.begin(); it != select_rect.lights.end(); it++) {
+                subsystem.draw_icon(light_source, it->x * w + x, it->y * h + y);
+            }
+        }
+    }
+}
+
 void MapEditor::insert_selection(int x, int y, bool decoration) {
     if (wmap) {
         short **src = (decoration ? select_rect.decoration : select_rect.map);
@@ -1225,6 +1289,28 @@ void MapEditor::insert_selection(int x, int y, bool decoration) {
             }
         }
         wmap->touch();
+    }
+}
+
+void MapEditor::insert_selection_objects(int x, int y) {
+    if (wmap) {
+        for (SelectRect::Objects::iterator it = select_rect.objects.begin(); it != select_rect.objects.end(); it++) {
+            wmap->erase_object(it->x + x, it->y + y);
+            wmap->set_object(it->object, it->x + x, it->y + y);
+        }
+    }
+}
+
+void MapEditor::insert_selection_lights(int x, int y) {
+    if (wmap) {
+        for (SelectRect::Lights::iterator it = select_rect.lights.begin(); it != select_rect.lights.end(); it++) {
+            wmap->erase_light(it->x + x, it->y + y);
+            EditableLight *light = wmap->set_light(it->x + x, it->y + y);
+            light->radius = it->radius;
+            light->r = it->r;
+            light->g = it->g;
+            light->b = it->b;
+        }
     }
 }
 
