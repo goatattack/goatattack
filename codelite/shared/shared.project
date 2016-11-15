@@ -151,6 +151,7 @@
     <File Name="../../src/shared/i18n/I18NFrench.cpp"/>
     <File Name="../../src/shared/i18n/I18NGerman.cpp"/>
     <File Name="../../src/shared/i18n/I18NPortuguese.cpp"/>
+    <File Name="../../src/shared/i18n/I18NSpanish.cpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

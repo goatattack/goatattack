@@ -33,7 +33,8 @@ public:
         LanguageEnglish,
         LanguageGerman,
         LanguageFrench,
-        LanguagePortuguese
+        LanguagePortuguese,
+        LanguageSpanish
     };
 
     static const char *Languages[];
@@ -102,6 +103,7 @@ private:
     static const Text all_texts_german[];
     static const Text all_texts_french[];
     static const Text all_texts_portuguese[];
+    static const Text all_texts_spanish[];
 
     void init(Language language);
     const char *get_text(I18NText id) const;

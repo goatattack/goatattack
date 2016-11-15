@@ -22,6 +22,7 @@ const char *I18N::Languages[] = {
     "Deutsch",
     "Français",
     "Português",
+    "Español",
     0
 };
 
@@ -56,6 +57,10 @@ void I18N::init(Language language) {
 
         case LanguagePortuguese:
             current_language = all_texts_portuguese;
+            break;
+
+        case LanguageSpanish:
+            current_language = all_texts_spanish;
             break;
     }
 }
