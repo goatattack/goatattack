@@ -53,6 +53,7 @@ src/MapEditor/Makefile.in
 src/MasterServer/goatattack-masterserver
 src/MasterServer/Makefile.in
 src/shared/libshared.a
+.DS_Store
 base.pak
 base.pak_dist
 base-non-free.pak

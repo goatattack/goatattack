@@ -1,4 +1,8 @@
 # Goat Attack
+
+[![Travis](https://img.shields.io/travis/goatattack/goatattack.svg)]()
+[![license](https://img.shields.io/github/license/goatattack/goatattack.svg)]()
+
 ![alt tag](https://raw.githubusercontent.com/goatattack/goatattack/master/pictures/goatattack1.png)
 
 ## Goat Attack is a fast-paced multiplayer pixel art shooter game.
