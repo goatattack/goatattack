@@ -11,8 +11,6 @@ AM_PROG_CC_C_O
 
 AC_CONFIG_MACRO_DIR([m4])
 
-CXX_FLAGS="${CXX_FLAGS} -pedantic"
-
 AC_HEADER_STDC
 
 # --- check headers ---

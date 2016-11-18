@@ -903,4 +903,3 @@ void OptionsMenu::change_button_texts() {
         btn->set_caption(i18n(static_cast<I18NText>(btn->get_tag())));
     }
 }
-

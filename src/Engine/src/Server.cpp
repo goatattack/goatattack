@@ -28,17 +28,17 @@
 #include <cstdio>
 #include <cerrno>
 
-const ns_t CycleS = 1000000000;
+static const ns_t CycleS = 1000000000;
 
-const int CalcCyclesPerS = 60; /* 60Hz */
-const ns_t CalcCycleNS = CycleS / CalcCyclesPerS;
+static const int CalcCyclesPerS = 60; /* 60Hz */
+static const ns_t CalcCycleNS = CycleS / CalcCyclesPerS;
 
-const int BroadcastsPerS = 15;
-const int BroadcastCount = CalcCyclesPerS / BroadcastsPerS;
+static const int BroadcastsPerS = 15;
+static const int BroadcastCount = CalcCyclesPerS / BroadcastsPerS;
 
-const uint16_t MasterHeartbeatPort = 25112;
+static const uint16_t MasterHeartbeatPort = 25112;
 
-const size_t MaxServerMsgLength = PacketMaxSize - 100;
+static const size_t MaxServerMsgLength = PacketMaxSize - 100;
 
 /* ingame server constructor */
 Server::Server(Resources& resources, Subsystem& subsystem, const KeyValue& kv, GamePlayType type,

@@ -3,7 +3,7 @@ include ../Engine/game.mk
 
 bin_PROGRAMS = goatattack
 goatattack_SOURCES = $(sources)
-goatattack_CXXFLAGS = $(cxxflags) -DPNG_SKIP_SETJMP_CHECK
+goatattack_CXXFLAGS = $(cxxflags) -DPNG_SKIP_SETJMP_CHECK -pedantic -Wextra -Wno-unused-parameter -Wno-unused-result
 goatattack_LDADD = $(ldadd) -lGL -lSDL2 -lSDL2_mixer -lfreetype
 iconsdir = $(datarootdir)/icons/hicolor/scalable/apps
 dist_icons_DATA = ../../packages/linux/goatattack.svg

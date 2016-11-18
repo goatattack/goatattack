@@ -204,10 +204,10 @@ void Font::delete_pages(Data *page) {
 
 const Font::Character *Font::get_character(const char *s) {
     while (true) {
-        const char *p = s;
+        const unsigned char *p = reinterpret_cast<const unsigned char *>(s);
         Data *page = start_page;
         while (true) {
-            const unsigned char c = *reinterpret_cast<const unsigned char *>(p++);
+            const unsigned char c = *p++;
             Data& data = page[c];
             if (data.chr) {
                 return data.chr;
@@ -227,8 +227,9 @@ void Font::create_character(const char *s) {
     uint32_t codepoint = 0;
     int distance = 1;
     char buffer[64];
+    const unsigned char *p = reinterpret_cast<const unsigned char *>(s);
     while (true) {
-        const unsigned char c = *reinterpret_cast<const unsigned char *>(s);
+        const unsigned char c = *p;
         Data& data = page[c];
         if (!utf8_decode(c, state, codepoint) || !c) {
             /* create glyph bitmap from char index */
@@ -354,6 +355,6 @@ void Font::create_character(const char *s) {
             page = data.next;
             distance++;
         }
-        s++;
+        p++;
     }
 }

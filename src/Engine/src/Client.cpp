@@ -23,9 +23,9 @@
 #include <iostream>
 #include <algorithm>
 
-const ns_t CycleS = 1000000000;
-const int BroadcastsPerS = 15;
-const ns_t UpdatePeriod = CycleS / BroadcastsPerS;
+static const ns_t CycleS = 1000000000;
+static const int BroadcastsPerS = 15;
+static const ns_t UpdatePeriod = CycleS / BroadcastsPerS;
 
 template <class T> static bool erase_element(T *elem) {
     if (elem->delete_me) {
