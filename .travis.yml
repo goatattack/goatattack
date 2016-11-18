@@ -8,5 +8,5 @@ before_install:
 
 script:
     - autoreconf -i
-    - CPPFLAGS="/usr/include/freetype" ./configure --enable-dedicated-server
+    - CPPFLAGS="/usr/include/freetype2" ./configure --enable-dedicated-server
     - make -j`nproc`
