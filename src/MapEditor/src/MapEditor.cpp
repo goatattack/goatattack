@@ -75,7 +75,7 @@ MapEditor::MapEditor(Resources& resources, Subsystem& subsystem, Configuration& 
       draw_tile_props(false), draw_tile_zorder(false), draw_tile_number(false),
       draw_even_only(false), drawing_decoration(false), draw_decoration_on_screen(true),
       draw_lightmap_on_screen(true), draw_map_on_screen(true), draw_objects_on_screen(true),
-      draw_light_sources(true), draw_mode(DrawModeTile),
+      draw_light_sources(true), draw_used_tiles(false), draw_mode(DrawModeTile),
       light_source(resources.get_icon("light_source")), compile_thread(0),
       home_workdir(get_home_directory() + dir_separator + UserDirectory),
       is_drawing_rect(true), is_selecting(false), use_selection(false), tile_selector_page(0)
@@ -523,6 +523,10 @@ void MapEditor::on_input_event(const InputData& input) {
                             case 'e':
                                 draw_even_only = true;
                                 break;
+
+                            case 'u':
+                                draw_used_tiles = true;
+                                break;
                         }
                         break;
                     }
@@ -560,6 +564,10 @@ void MapEditor::on_input_event(const InputData& input) {
 
                             case 'e':
                                 draw_even_only = false;
+                                break;
+
+                            case 'u':
+                                draw_used_tiles = false;
                                 break;
                         }
                         break;
@@ -808,6 +816,10 @@ void MapEditor::draw_decoration() {
                                 subsystem.draw_tilegraphic(tg, cx, cy);
                             }
 
+                            if (draw_used_tiles) {
+                                subsystem.draw_box(cx, cy, tile_width, tile_height);
+                            }
+
                             if (draw_tile_number && drawing_decoration) {
                                 int n = ty * width + tx;
                                 if ((draw_even_only && n % 2 == 0) ||
@@ -960,6 +972,10 @@ void MapEditor::draw_map(bool background) {
                                     const char *p = (tile->is_background() ? "b" : "f");
                                     int cw = f->get_text_width(p);
                                     subsystem.draw_char(f, cx + tile_width / 2 - cw / 2, cy + tile_height / 2 - fh / 2, p);
+                                }
+
+                                if (draw_used_tiles) {
+                                    subsystem.draw_box(cx, cy, tile_width, tile_height);
                                 }
 
                                 if (draw_tile_number && !drawing_decoration) {

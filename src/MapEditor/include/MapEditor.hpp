@@ -98,6 +98,7 @@ private:
     bool draw_map_on_screen;
     bool draw_objects_on_screen;
     bool draw_light_sources;
+    bool draw_used_tiles;
     DrawMode draw_mode;
     Icon *light_source;
     CompileThread *compile_thread;
