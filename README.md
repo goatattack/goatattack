@@ -1,7 +1,7 @@
 # Goat Attack
 
 [![Travis](https://img.shields.io/travis/goatattack/goatattack.svg)](https://travis-ci.org/goatattack/goatattack)
-![license](https://img.shields.io/github/license/goatattack/goatattack.svg)(https://github.com/goatattack/goatattack/blob/next/COPYING)
+[![license](https://img.shields.io/github/license/goatattack/goatattack.svg)](https://github.com/goatattack/goatattack/blob/next/COPYING)
 
 ![alt tag](https://raw.githubusercontent.com/goatattack/goatattack/master/pictures/goatattack1.png)
 
