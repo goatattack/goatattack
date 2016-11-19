@@ -1,12 +1,12 @@
 # Goat Attack
 
-[![Travis](https://img.shields.io/travis/goatattack/goatattack.svg)]()
-[![license](https://img.shields.io/github/license/goatattack/goatattack.svg)]()
+[![Travis](https://img.shields.io/travis/goatattack/goatattack.svg)](https://travis-ci.org/goatattack/goatattack)
+![license](https://img.shields.io/github/license/goatattack/goatattack.svg)(https://github.com/goatattack/goatattack/blob/next/COPYING)
 
 ![alt tag](https://raw.githubusercontent.com/goatattack/goatattack/master/pictures/goatattack1.png)
 
 ## Goat Attack is a fast-paced multiplayer pixel art shooter game.
-Goat Attack is a multiplayer 2D platformer pixel art shooter game for Linux, OS X and Windows. You can play it in a local network or over the Internet. This project is splitted into three subprojects. the game itself, its map editor and a master server. six gameplay modes are supported. deathmatch, team deathmatch, capture the flag, speed race, catch the coin and goat of the hill.
+Goat Attack is a multiplayer 2D platformer pixel art shooter game for Linux, OS X and Windows. You can play it in a local network or over the Internet. This project is splitted into three subprojects. The game itself, its map editor and a master server. Six gameplay modes are supported. deathmatch, team deathmatch, capture the flag, speed race, catch the coin and goat of the hill.
 
 The game and the map editor can be compiled for all three platforms. The master server is for linux only. The master server is a dedicated server responsible for collecting the connection information (IP address and port) of all available game servers and providing that to the users.
 
