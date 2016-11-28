@@ -42,7 +42,7 @@ struct Connection {
     ms_t ping_time;
 };
 
-class QueueMessage;
+struct QueueMessage;
 
 struct SequencerHeap : public Connection {
     typedef std::deque<QueueMessage *> QueuedMessages;
