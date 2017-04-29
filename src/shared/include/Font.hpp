@@ -99,7 +99,7 @@ private:
 
     Data *create_new_page();
     void delete_pages(Data *page);
-    void create_character(const char *s);
+    Character *create_character(const char *s);
 };
 
 #endif

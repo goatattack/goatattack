@@ -214,15 +214,15 @@ const Font::Character *Font::get_character(const char *s) {
             }
             page = data.next;
             if (!page) {
-                create_character(s);
-                break;
+                return create_character(s);
             }
         }
     }
 }
 
-void Font::create_character(const char *s) {
+Font::Character *Font::create_character(const char *s) {
     Data *page = start_page;
+    Character *chr = 0;
     int state = UTF8_ACCEPT;
     uint32_t codepoint = 0;
     int distance = 1;
@@ -278,7 +278,8 @@ void Font::create_character(const char *s) {
                         *dst++ = static_cast<unsigned char>(alpha > 255 ? 255 : alpha);
                     }
                     /* create character */
-                    data.chr = new Character;
+                    chr = new Character;
+                    data.chr = chr;
                     data.chr->glyph_index = glyph_index;
                     data.chr->width = static_cast<int>(bitmap_glyph->bitmap.width);
                     data.chr->rows = static_cast<int>(bitmap_glyph->bitmap.rows);
@@ -357,4 +358,6 @@ void Font::create_character(const char *s) {
         }
         p++;
     }
+
+    return chr;
 }
