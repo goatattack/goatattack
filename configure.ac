@@ -12,6 +12,7 @@ AM_PROG_CC_C_O
 AC_CONFIG_MACRO_DIR([m4])
 
 AC_HEADER_STDC
+AM_SILENT_RULES([yes])
 
 # --- check headers ---
 AC_CHECK_HEADERS([ft2build.h], [], [missing_headers="$missing_headers ft2build.h"])
