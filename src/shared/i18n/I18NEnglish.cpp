@@ -44,7 +44,7 @@ const I18N::Text I18N::all_texts_english[] = {
     { I18N_MODE_IS_DEDICATED, "mode is dedicated server" },
 
     { I18N_MAINMENU_PLAY, "Play" },
-    { I18N_MAINMENU_LAN, "Create Local LAN Server" },
+    { I18N_MAINMENU_LAN, "Create LAN Server" },
     { I18N_MAINMENU_PACKAGES, "List Loaded Packages" },
     { I18N_MAINMENU_OPTIONS, "Options And Settings" },
     { I18N_MAINMENU_CREDITS, "Credits" },
