@@ -902,4 +902,5 @@ void OptionsMenu::change_button_texts() {
         GuiButton *btn = *it;
         btn->set_caption(i18n(static_cast<I18NText>(btn->get_tag())));
     }
+    window->set_title(i18n(I18N_MAINMENU_OPTIONS));
 }

@@ -525,7 +525,7 @@ void Server::event_login(const Connection *c, data_len_t len, void *data) throw 
                 break;
             }
         }
-        if(found) {
+        if (found) {
             player_id++;
         }
     } while (found);

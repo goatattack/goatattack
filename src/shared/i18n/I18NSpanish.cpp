@@ -17,6 +17,8 @@
 
 #include "I18N.hpp"
 
+/* this language file is prepared to be translated. */
+
 const I18N::Text I18N::all_texts_spanish[] = {
     { I18N_BUTTON_YES, "Yes" },
     { I18N_BUTTON_NO, "No" },

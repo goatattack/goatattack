@@ -22,7 +22,7 @@ const char *I18N::Languages[] = {
     "Deutsch",
     "Français",
     "Português",
-    "Español",
+    //"Español",
     0
 };
 
