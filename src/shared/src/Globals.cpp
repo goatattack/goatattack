@@ -17,7 +17,7 @@
 
 #include "Globals.hpp"
 
-const char *GameVersion = "0.4.5-dev";
+const char *GameVersion = "0.4.5";
 const char *UserDirectory = ".goatattack";
 const char *ConfigFilename = "config.conf";
 const bool ProductIsBeta = false;

@@ -1622,6 +1622,8 @@ bool GuiVirtualScroll::can_have_mouse_events() const {
 bool GuiVirtualScroll::mousehweel(int x, int y) {
     x *= -1;
     set_value(current_value + x);
+
+    return true;
 }
 
 void GuiVirtualScroll::recalc() {
@@ -2175,6 +2177,8 @@ bool GuiListbox::mousehweel(int x, int y) {
         }
         set_selected_index(index);
     }
+
+    return true;
 }
 
 void GuiListbox::paint() {
