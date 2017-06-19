@@ -84,6 +84,7 @@ public:
     virtual bool mousedown(int button, int x, int y);
     virtual bool mousemove(int x, int y);
     virtual bool mouseup(int button, int x, int y);
+    virtual bool mousehweel(int x, int y);
     virtual bool keydown(int keycode, bool repeat);
     virtual bool keyup(int keycode);
     virtual bool keypress(InputData& input);
@@ -457,6 +458,8 @@ private:
 /* GuiTab */
 class GuiTab : public GuiObject {
 public:
+    typedef bool (*OnTabClick)(GuiTab *sender, int index, void *data);
+
     GuiTab(Gui& gui, GuiObject *parent);
     GuiTab(Gui& gui, GuiObject *parent, int x, int y, int width, int height);
 
@@ -464,6 +467,7 @@ public:
 
     GuiFrame *create_tab(const std::string& name);
     void select_tab(int index);
+    void set_on_tab_click(OnTabClick on_tab_click, void *on_tab_click_data);
 
 private:
     struct Tab {
@@ -478,6 +482,8 @@ private:
     Tab *current_tab;
     int tab_button_height;
     int current_button_x;
+    OnTabClick on_tab_click;
+    void *on_tab_click_data;
     Tabs tabs;
 
     virtual void paint();
@@ -515,6 +521,8 @@ protected:
     int current_value;
     bool draw_block;
 
+    virtual bool mousehweel(int x, int y);
+
     void recalc();
     static void static_down_button_clicked(GuiVirtualButton *sender, void *data);
     static void static_up_button_clicked(GuiVirtualButton *sender, void *data);
@@ -530,10 +538,6 @@ public:
 
     virtual ~GuiHScroll();
 
-    virtual bool mousedown(int button, int x, int y);
-    virtual bool mousemove(int x, int y);
-    virtual bool mouseup(int button, int x, int y);
-
 private:
     GuiButton *left_button;
     GuiButton *right_button;
@@ -544,6 +548,10 @@ private:
     int origin_x;
 
     virtual void paint();
+
+    virtual bool mousedown(int button, int x, int y);
+    virtual bool mousemove(int x, int y);
+    virtual bool mouseup(int button, int x, int y);
 
     void prepare();
     void calc_blockpos();
@@ -559,10 +567,6 @@ public:
 
     virtual ~GuiVScroll();
 
-    virtual bool mousedown(int button, int x, int y);
-    virtual bool mousemove(int x, int y);
-    virtual bool mouseup(int button, int x, int y);
-
 private:
     GuiButton *up_button;
     GuiButton *down_button;
@@ -573,6 +577,10 @@ private:
     int origin_y;
 
     virtual void paint();
+
+    virtual bool mousedown(int button, int x, int y);
+    virtual bool mousemove(int x, int y);
+    virtual bool mouseup(int button, int x, int y);
 
     void prepare();
     void calc_blockpos();
@@ -663,6 +671,7 @@ public:
     virtual bool mousedown(int button, int x, int y);
     virtual bool mousemove(int x, int y);
     virtual bool mouseup(int button, int x, int y);
+    virtual bool mousehweel(int x, int y);
 
 private:
     typedef std::vector<GuiListboxEntry *> Entries;

@@ -806,6 +806,12 @@ bool SubsystemSDL::get_input(InputData& input) {
                 }
                 break;
 
+            case SDL_MOUSEWHEEL:
+                input.param1 = event.motion.x;
+                input.param2 = event.motion.y;
+                input.data_type = InputData::InputDataTypeMouseWheel;
+                break;
+
             case SDL_WINDOWEVENT:
             {
                 switch (event.window.event) {

@@ -177,6 +177,8 @@ private:
     static void static_on_lan_entry_click(GuiListbox *sender, void *data, int index);
     void on_lan_entry_click(int index);
 
+    static bool static_on_tab_click(GuiTab *sender, int index, void *data);
+
     /* other functions */
     void play_click();
 
@@ -194,7 +196,7 @@ private:
 
     void close_window_click();
 
-    bool create_server_locators() throw (Exception);
+    void create_server_locator(int index);
     void destroy_server_locators();
 
     static void static_lang_change_cb(void *data);

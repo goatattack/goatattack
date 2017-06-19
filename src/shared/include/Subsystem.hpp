@@ -66,6 +66,7 @@ struct InputData {
         InputDataTypeMouseMiddleUp,
         InputDataTypeMouseRightDown,
         InputDataTypeMouseRightUp,
+        InputDataTypeMouseWheel,
         InputDataTypeKeyDown,
         InputDataTypeKeyUp,
         InputDataTypeJoyMotion,

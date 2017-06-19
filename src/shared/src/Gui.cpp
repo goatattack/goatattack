@@ -554,6 +554,12 @@ void Gui::idleloop(int stack_counter) throw (Exception) {
                     }
                     break;
 
+                case InputData::InputDataTypeMouseWheel:
+                    if (!process_mousewheel(input.param1, input.param2)) {
+                        on_input_event(input);
+                    }
+                    break;
+
                 case InputData::InputDataTypeKeyDown:
                 case InputData::InputDataTypeText:
                 {
@@ -719,6 +725,24 @@ bool Gui::process_mouseup(int button) {
     }
     active_object = 0;
     mouse_is_down = false;
+
+    return processed;
+}
+
+bool Gui::process_mousewheel(int x, int y) {
+    bool processed = false;
+
+    if (current_window) {
+        GuiObject *obj = current_window->get_upmost_object(*pmousex, *pmousey);
+        if (obj) {
+            while (obj && !obj->can_have_mouse_events()) {
+                obj = obj->get_parent();
+            }
+            if (obj) {
+                processed = obj->mousehweel(x, y);
+            }
+        }
+    }
 
     return processed;
 }

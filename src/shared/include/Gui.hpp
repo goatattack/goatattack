@@ -205,6 +205,7 @@ private:
     bool process_mousemove();
     bool process_mousedown(int button);
     bool process_mouseup(int button);
+    bool process_mousewheel(int x, int y);
     bool process_keyinput(InputData& input);
     bool process_keydown(InputData& input);
     bool process_keyup(InputData& input);

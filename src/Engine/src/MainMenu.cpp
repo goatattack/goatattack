@@ -271,10 +271,6 @@ void MainMenu::static_play_click(GuiVirtualButton *sender, void *data) {
 }
 
 void MainMenu::play_click() {
-    if (!create_server_locators()) {
-        return;
-    }
-
     Font *f = get_font();
 
     std::string btn_close(i18n(I18N_BUTTON_CLOSE));
@@ -302,8 +298,26 @@ void MainMenu::play_click() {
     create_button(window, wcw / 2 - bw_close / 2, window->get_client_height() - bh - Spc, bw_close, bh, btn_close, static_play_close, this);
 
     GuiTab *tab = create_tab(window, Spc, Spc, wcw - (2 * Spc), wch - bh - (3 * Spc));
+    tab->set_on_tab_click(static_on_tab_click, this);
+    create_server_locator(0);
 
     GuiListboxEntry *title_bar;
+
+    /* LAN */
+    GuiFrame *frlan = tab->create_tab(i18n(I18N_MAINMENU_LAN_TITLE));
+    create_label(frlan, 0, 0, i18n(I18N_MAINMENU_LAN_SERVERS));
+    play_lan_list = create_listbox(frlan, 0, 15, frlan->get_width(), frlan->get_height() + 2 - (15 + bh + Spc), 0, FlagWidth, i18n(I18N_MAINMENU_SERVER_NAME), static_on_lan_entry_click, this);
+    play_lan_list->show_title_bar(true);
+    play_lan_list->set_on_title_clicked(static_play_lan_sort_click, this);
+    create_button(frlan, frlan->get_width() - bw_connect, frlan->get_height() - bh, bw_connect, bh, btn_connect, static_play_connect_lan_click, this);
+    create_button(frlan, 0, frlan->get_height() - bh, bw_refresh, bh, btn_refresh, static_play_refresh_lan_click, this);
+
+    title_bar = play_lan_list->get_title_bar();
+    title_bar->add_column(resources.get_icon("lock"), 9, "", 16);
+    title_bar->add_column(i18n(I18N_MAINMENU_PLAYERS), 50);
+    title_bar->add_column(i18n(I18N_MAINMENU_PING), 40);
+
+    title_bar->get_columns()[0].addon = AscendingArrow;
 
     /* internet */
     GuiFrame *frwan = tab->create_tab(i18n(I18N_MAINMENU_INTERNET));
@@ -316,22 +330,6 @@ void MainMenu::play_click() {
     create_button(frwan, 0, frwan->get_height() - bh, bw_refresh, bh, btn_refresh, static_play_refresh_wan_click, this);
 
     title_bar = play_wan_list->get_title_bar();
-    title_bar->add_column(resources.get_icon("lock"), 9, "", 16);
-    title_bar->add_column(i18n(I18N_MAINMENU_PLAYERS), 50);
-    title_bar->add_column(i18n(I18N_MAINMENU_PING), 40);
-
-    title_bar->get_columns()[0].addon = AscendingArrow;
-
-    /* LAN */
-    GuiFrame *frlan = tab->create_tab(i18n(I18N_MAINMENU_LAN_TITLE));
-    create_label(frlan, 0, 0, i18n(I18N_MAINMENU_LAN_SERVERS));
-    play_lan_list = create_listbox(frlan, 0, 15, frlan->get_width(), frlan->get_height() + 2 - (15 + bh + Spc), 0, FlagWidth, i18n(I18N_MAINMENU_SERVER_NAME), static_on_lan_entry_click, this);
-    play_lan_list->show_title_bar(true);
-    play_lan_list->set_on_title_clicked(static_play_lan_sort_click, this);
-    create_button(frlan, frlan->get_width() - bw_connect, frlan->get_height() - bh, bw_connect, bh, btn_connect, static_play_connect_lan_click, this);
-    create_button(frlan, 0, frlan->get_height() - bh, bw_refresh, bh, btn_refresh, static_play_refresh_lan_click, this);
-
-    title_bar = play_lan_list->get_title_bar();
     title_bar->add_column(resources.get_icon("lock"), 9, "", 16);
     title_bar->add_column(i18n(I18N_MAINMENU_PLAYERS), 50);
     title_bar->add_column(i18n(I18N_MAINMENU_PING), 40);
@@ -355,6 +353,12 @@ void MainMenu::play_click() {
     /* install sort handlers */
     wan_list_selected_entry = 0;
     lan_list_selected_entry = 0;
+}
+
+bool MainMenu::static_on_tab_click(GuiTab *sender, int index, void *data) {
+    (reinterpret_cast<MainMenu *>(data))->create_server_locator(index);
+
+    return true;
 }
 
 void MainMenu::static_on_wan_entry_click(GuiListbox *sender, void *data, int index) {
@@ -1029,26 +1033,24 @@ void MainMenu::close_window_click() {
 /* ************************************************************************** */
 /* Helpers                                                                    */
 /* ************************************************************************** */
-bool MainMenu::create_server_locators() throw (Exception) {
-    destroy_server_locators();
+void MainMenu::create_server_locator(int index) {
     try {
-        lan_broadcaster = new LANBroadcaster(i18n, config.get_int("port"));
+        switch (index) {
+            case 0: // LAN
+                if (!lan_broadcaster) {
+                    lan_broadcaster = new LANBroadcaster(i18n, config.get_int("port"));
+                    get_now(last_lan_info);
+                }
+                break;
+            case 1: // internet
+                if (!master_query) {
+                    master_query = new MasterQuery(i18n, config.get_string("master_server"), config.get_int("master_port"));
+                }
+                break;
+        }
     } catch (const Exception& e) {
-        destroy_server_locators();
         show_messagebox(MessageBoxIconError, i18n(I18N_ERROR_TITLE), e.what());
-        return false;
     }
-
-    try {
-        master_query = new MasterQuery(i18n, config.get_string("master_server"), config.get_int("master_port"));
-    } catch (const Exception& e) {
-        destroy_server_locators();
-        show_messagebox(MessageBoxIconError, i18n(I18N_ERROR_TITLE), e.what());
-        return false;
-    }
-
-    get_now(last_lan_info);
-    return true;
 }
 
 void MainMenu::destroy_server_locators() {

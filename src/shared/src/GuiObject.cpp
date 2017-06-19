@@ -229,6 +229,8 @@ bool GuiObject::mousemove(int x, int y) { return false; }
 
 bool GuiObject::mouseup(int button, int x, int y) { return false; }
 
+bool GuiObject::mousehweel(int x, int y) { return false; }
+
 bool GuiObject::keypress(InputData& input) { return false; }
 
 bool GuiObject::keydown(int keycode, bool repeat) { return false; }
@@ -1462,12 +1464,12 @@ void GuiFrame::paint() { }
 GuiTab::GuiTab(Gui& gui, GuiObject *parent)
     : GuiObject(gui, parent), current_tab(0),
       tab_button_height(gui.get_font()->get_font_height() * 2),
-      current_button_x(0) { }
+      current_button_x(0), on_tab_click(0), on_tab_click_data(0) { }
 
 GuiTab::GuiTab(Gui& gui, GuiObject *parent, int x, int y, int width, int height)
     : GuiObject(gui, parent, x, y, width, height), current_tab(0),
       tab_button_height(gui.get_font()->get_font_height() * 2),
-      current_button_x(0) { }
+      current_button_x(0), on_tab_click(0), on_tab_click_data(0) { }
 
 GuiTab::~GuiTab() {
     for (Tabs::iterator it = tabs.begin(); it != tabs.end(); it++) {
@@ -1503,16 +1505,27 @@ GuiFrame *GuiTab::create_tab(const std::string& name) {
 void GuiTab::select_tab(int index) {
     int sz = static_cast<int>(tabs.size());
     if (index >= 0 && index < sz) {
-        for (Tabs::iterator it = tabs.begin(); it != tabs.end(); it++) {
-            Tab *tab = *it;
-            tab->tab->set_visible(false);
-            tab->button->set_pressed(false);
+        bool process = true;
+        if (on_tab_click) {
+            process = on_tab_click(this, index, on_tab_click_data);
         }
-        Tab *tab = tabs[index];
-        tab->tab->set_visible(true);
-        tab->button->set_pressed(true);
-        tab->tab->set_focus_on_first_child();
+        if (process) {
+            for (Tabs::iterator it = tabs.begin(); it != tabs.end(); it++) {
+                Tab *tab = *it;
+                tab->tab->set_visible(false);
+                tab->button->set_pressed(false);
+            }
+            Tab *tab = tabs[index];
+            tab->tab->set_visible(true);
+            tab->button->set_pressed(true);
+            tab->tab->set_focus_on_first_child();
+        }
     }
+}
+
+void GuiTab::set_on_tab_click(OnTabClick on_tab_click, void *on_tab_click_data) {
+    this->on_tab_click = on_tab_click;
+    this->on_tab_click_data = on_tab_click_data;
 }
 
 void GuiTab::static_tab_clicked(GuiVirtualButton *sender, void *data) {
@@ -1606,6 +1619,11 @@ bool GuiVirtualScroll::can_have_mouse_events() const {
     return true;
 }
 
+bool GuiVirtualScroll::mousehweel(int x, int y) {
+    x *= -1;
+    set_value(current_value + x);
+}
+
 void GuiVirtualScroll::recalc() {
     if (current_value < min_value) {
         current_value = min_value;
@@ -1615,7 +1633,6 @@ void GuiVirtualScroll::recalc() {
         current_value = max_value;
     }
 }
-
 
 void GuiVirtualScroll::static_down_button_clicked(GuiVirtualButton *sender, void *data) {
     GuiVirtualScroll *obj = reinterpret_cast<GuiVirtualScroll *>(data);
@@ -2135,6 +2152,29 @@ bool GuiListbox::mouseup(int button, int x, int y) {
     }
 
     return true;
+}
+
+bool GuiListbox::mousehweel(int x, int y) {
+    int index = selected_index;
+    if (index != -1) {
+        int fh = gui.get_font()->get_font_height();
+        int height = get_height() - 2 - (title_bar_visible ? fh : 0);
+        int visible_entries = height / fh;
+        int max_entries = sb->get_max_value();
+
+        x *= -1;
+        index += x;
+        if (index < 0) {
+            index = 0;
+        }
+        if (index < start_index) {
+            set_top_index(index);
+        }
+        if (index - start_index >= visible_entries) {
+            set_top_index(start_index + x);
+        }
+        set_selected_index(index);
+    }
 }
 
 void GuiListbox::paint() {
