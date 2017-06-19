@@ -1,6 +1,6 @@
 # Goat Attack
 
-[![version](https://img.shields.io/badge/version-0.4.5--dev-lightgrey.svg)](https://github.com/goatattack/goatattack/blob/next/ChangeLog)
+[![version](https://img.shields.io/badge/version-0.4.5-lightgrey.svg)](https://github.com/goatattack/goatattack/blob/next/ChangeLog)
 [![travis](https://img.shields.io/travis/goatattack/goatattack.svg)](https://travis-ci.org/goatattack/goatattack)
 [![hash](https://img.shields.io/badge/base.pak-015526bc5e36c171-orange.svg)](https://github.com/goatattack/goatattack/tree/next/data/free)
 [![license](https://img.shields.io/github/license/goatattack/goatattack.svg)](https://github.com/goatattack/goatattack/blob/next/COPYING)
@@ -27,33 +27,68 @@ Your dedicated server will create detailed log entries depending on each action.
 
 ## Build client
 ### Requires
-* **Debian/Ubuntu** build-essential autoconf libtool git libsdl2-dev libsdl2-mixer-dev libpng12-dev libfreetype6-dev
-* **Archlinux** sdl2 sdl2_mixer libpng freetype2 git
+* **Debian/Ubuntu:** build-essential autoconf libtool git libsdl2-dev libsdl2-mixer-dev libpng12-dev libfreetype6-dev
+* **Archlinux:** sdl2 sdl2_mixer libpng freetype2 git
 
 ### Installation
-1. Clone the repo `git clone https://github.com/goatattack/goatattack`
-2. `cd goatattack`
-2. `autoreconf -i`
-3. `./configure` with map-editor: `./configure --enable-map-editor` (for music, add: `--enable-non-free-pak`)
-4. `make`
-5. `make install`
+Clone the repo and setup build system:
+```
+$ git clone https://github.com/goatattack/goatattack
+$ cd goatattack
+$ autoreconf -i
+```
+Now configure your game. 
+```
+$ ./configure
+```
+You have many options to add to the configure script. If you want to build the map editor too:
+```
+$ ./configure --enable-map-editor
+```
+To enable the non free music pack, add that as well:
+```
+$ ./configure --enable-map-editor --enable-non-free-pak
+```
+To have a look at all configure options:
+```
+$ ./configure --help
+```
+Now build and install the game. Ensure you are root while installing:
+```
+$ make
+# make install
+```
 
 ## Build server
 ### Requires
-* **Debian/Ubuntu** build-essential libpng12-dev libfreetype6-dev
-* **Archlinux** libpng freetype2
+* **Debian/Ubuntu:** build-essential libpng12-dev libfreetype6-dev
+* **Archlinux:** libpng freetype2
 
 ### Installation
-1. Clone the repo `git clone https://github.com/goatattack/goatattack`
-2. `cd goatattack`
-2. `autoreconf -i`
-3. `./configure --enable-dedicated-server`
-4. `make`
-5. `make install`
-
+Clone the repo and setup, build and install:
+```
+$ git clone https://github.com/goatattack/goatattack
+$ cd goatattack
+$ autoreconf -i
+$ ./configure --enable-dedicated-server
+$ make
+# make install
+```
+## Troubleshooting
+### ft2build missing
+If you configure script says, that the freetype include file (ft2build.h) is missing, pass the file location to the configure script:
+```
+$ CPPFLAGS="-I/usr/include/freetype2" ./configure [--OPTIONS]
+```
 ## OSX and Windows submodules
 If you want to checkout these submodules, do this:
-`$ git submodule update --init`
+```
+$ git submodule update --init
+```
+### OSX build
+You will find the Xcode project file in the `osx` folder, open it and build the solution. You will receive a `Goat Attack.app`. At the moment, the map editor will not be built in an OSX environment.
+### Windows build
+In the `windows\GoatAttack` folder, you will find the project solution file. Open it and build the entire solution. You will need all SDL-dlls and the `data` folder. Take these files from the released zip file.
 
 ## Visit the forum
 If you have any question, visit the [Goat Attack forum](http://forum.goatattack.net).
