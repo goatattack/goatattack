@@ -51,12 +51,13 @@ Configuration::Configuration(const std::string& directory,
     cdef("master_port", "25113");
 
     cdef("server_name", "frederic's temple");
-    cdef("server_port", "25111");
+    cdef("port", "25111");
     cdef("game_mode", "0");
-    cdef("max_players", "12");
+    cdef("num_players", "12");
     cdef("duration", "20");
     cdef("warmup", "0");
     cdef("text_fade_speed", "6");
+    cdef("reconnect_kills", "0");
 
     cdef("bind_escape_device", "0");
     cdef("bind_escape_param", "27");
@@ -169,4 +170,8 @@ void Configuration::extract() {
     show_player_name = get_bool("show_player_name");
     player_name = get_string("player_name");
     player_skin = get_string("player_skin");
+}
+
+KeyValue& Configuration::get_key_value() {
+    return settings;
 }

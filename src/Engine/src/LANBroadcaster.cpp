@@ -18,8 +18,8 @@
 #include "LANBroadcaster.hpp"
 #include "Scope.hpp"
 
-LANBroadcaster::LANBroadcaster(hostport_t port) throw (LANBroadcasterException, UDPSocketException)
-    : MessageSequencer(port, 0, "", ""), port(port), running(false)
+LANBroadcaster::LANBroadcaster(I18N& i18n, hostport_t port) throw (LANBroadcasterException, UDPSocketException)
+    : MessageSequencer(i18n, port, 0, "", ""), i18n(i18n), port(port), running(false)
 {
     refresh();
     start();
@@ -34,7 +34,7 @@ void LANBroadcaster::start() throw (LANBroadcasterException) {
     if (!running) {
         running = true;
         if (!thread_start()) {
-            throw LANBroadcasterException("Starting thread failed.");
+            throw LANBroadcasterException(i18n(I18N_THREAD_FAILED));
         }
     }
 }
@@ -87,6 +87,7 @@ void LANBroadcaster::event_status(hostaddr_t host, hostport_t port,
     info->ping_time = ping_time;
     info->secured = secured;
     info->protocol_version = protocol_version;
+    info->last_status = time(0);
 
     sort();
 }
@@ -99,10 +100,30 @@ void LANBroadcaster::cleanup() {
 }
 
 void LANBroadcaster::thread() {
+    int counter = 0;
     while (running) {
         {
             Scope<Mutex> lock(mtx);
             while(cycle());
+        }
+
+        /* remove old servers */
+        counter++;
+        if (counter > 1000) {
+            counter = 0;
+            bool again;
+            time_t now = time(0);
+            do {
+                again = false;
+                for (Hosts::iterator it = hosts.begin(); it != hosts.end(); it++) {
+                    GameserverInformation *info = *it;
+                    if (now - info->last_status >= 5) {
+                        hosts.erase(it);
+                        again = true;
+                        break;
+                    }
+                }
+            } while (again);
         }
         wait_ns(1000000);
     }

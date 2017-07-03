@@ -32,7 +32,9 @@ public:
     TileGraphicGL(int width, int height, bool keep_pictures);
     virtual ~TileGraphicGL();
 
+    virtual void reset();
     virtual void add_tile(int bytes_per_pixel, const void *pic, bool desc, bool linear = false);
+    virtual void replace_tile(int index, int bytes_per_pixel, const void *pic) throw (TileGraphicException);
     virtual void punch_out_tile(PNG& png, int tilex, int tiley, bool desc, bool linear = false);
     virtual bool punch_out_lightmap(PNG& png, int tilex, int tiley);
     virtual size_t get_tile_count();
@@ -57,6 +59,8 @@ private:
     Textures textures;
     Pictures pictures;
     size_t sz;
+
+    void clear();
 };
 
 #endif

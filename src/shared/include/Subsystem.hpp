@@ -22,6 +22,7 @@
 #include "Tile.hpp"
 #include "TextMessageSystem.hpp"
 #include "ZipReader.hpp"
+#include "I18N.hpp"
 
 #include <iostream>
 
@@ -65,6 +66,7 @@ struct InputData {
         InputDataTypeMouseMiddleUp,
         InputDataTypeMouseRightDown,
         InputDataTypeMouseRightUp,
+        InputDataTypeMouseWheel,
         InputDataTypeKeyDown,
         InputDataTypeKeyUp,
         InputDataTypeJoyMotion,
@@ -95,6 +97,8 @@ struct InputData {
         InputKeyTypeButtonY,
         InputKeyTypeStatistics,
         InputKeyTypeChat,
+        InputKeyTypeShift,
+        InputKeyTypeControl,
         _InputKeyTypeMAX
     };
 
@@ -121,7 +125,7 @@ private:
     Subsystem& operator=(const Subsystem&);
 
 public:
-    Subsystem(std::ostream& stream, const std::string& window_title) throw (SubsystemException);
+    Subsystem(std::ostream& stream, I18N& i18n, const std::string& window_title) throw (SubsystemException);
     virtual ~Subsystem();
 
     template<class T> std::ostream& operator<<(const T& what) {
@@ -133,6 +137,7 @@ public:
     void set_keep_pictures(bool state);
     bool get_keep_pictures() const;
     std::ostream& get_stream() const;
+    I18N& get_i18n() const;
 
     virtual void initialize(Resources& resources) = 0;
     virtual const char *get_subsystem_name() const = 0;
@@ -163,14 +168,18 @@ public:
     virtual void draw_tilegraphic(TileGraphic *tilegraphic, int x, int y) = 0;
     virtual void draw_tilegraphic(TileGraphic *tilegraphic, int index, int x, int y) = 0;
     virtual void draw_box(int x, int y, int width, int height) = 0;
-    virtual void draw_text(Font *font, int x, int y, const std::string& text) = 0;
-    virtual int draw_char(Font *font, int x, int y, unsigned char c) = 0;
+    virtual int draw_text(Font *font, int x, int y, const std::string& text) = 0;
+    virtual int draw_clipped_text(Font *font, int x, int y, int width, const std::string& text) = 0;
+    virtual int draw_char(Font *font, int x, int y, const char *s) = 0;
     virtual void draw_icon(Icon *icon, int x, int y) = 0;
+    virtual void enable_cliprect(int x, int y, int width, int height) = 0;
+    virtual void disable_cliprect() = 0;
 
     virtual int play_sound(Sound *sound, int loops) = 0;
     virtual void play_system_sound(Sound *sound) = 0;
     virtual int play_controlled_sound(Sound *sound, int loops) = 0;
     virtual bool is_sound_playing(Sound *sound) = 0;
+    virtual int stop_sound(int channel) = 0;
 
     virtual bool play_music(Music *music) = 0;
     virtual void stop_music() = 0;
@@ -195,6 +204,7 @@ public:
 
 protected:
     std::ostream& stream;
+    I18N& i18n;
     Icon *scanlines;
     bool keep_pictures;
 };

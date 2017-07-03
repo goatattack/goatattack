@@ -48,8 +48,31 @@ private:
         _DrawModeMAX
     };
 
+    struct SelectRect {
+        typedef std::vector<EditableObject> Objects;
+        typedef std::vector<EditableLight> Lights;
+
+        SelectRect();
+        ~SelectRect();
+
+        void reset();
+        void clear();
+        bool add_point(int x, int y);
+
+        int width;
+        int height;
+        short **decoration;
+        short **map;
+        int select_index;
+        int px[2];
+        int py[2];
+        Objects objects;
+        Lights lights;
+    };
+
     Resources& resources;
     Subsystem& subsystem;
+    I18N& i18n;
     Configuration& config;
     bool running;
     int top;
@@ -75,11 +98,17 @@ private:
     bool draw_map_on_screen;
     bool draw_objects_on_screen;
     bool draw_light_sources;
+    bool draw_used_tiles;
     DrawMode draw_mode;
     Icon *light_source;
     CompileThread *compile_thread;
     std::string home_workdir;
+    bool is_drawing_rect;
+    bool is_selecting;
+    bool use_selection;
+    int tile_selector_page;
 
+    SelectRect select_rect;
     int lightmap_w;
     int lightmap_h;
     unsigned char **lightmap;
@@ -88,15 +117,15 @@ private:
     GuiWindow *win_compile;
     GuiLabel *lbl_compile;
 
-    /* implementation of Gui::idle() and Gui::on_input_event() */
+    /* Gui::?() implementations */
     virtual void idle() throw (Exception);
     virtual void on_input_event(const InputData& input);
     virtual void on_leave();
-    void hand_draw(int x, int y);
 
     /* helpers */
+    void hand_draw(int x, int y);
     void create_toolbox();
-    GuiButton *add_close_button(GuiWindow *window, GuiVirtualButton::OnClick on_click = 0);
+    GuiButton *add_close_button(GuiWindow *window, GuiVirtualButton::OnClick on_click = 0, const char *button_text = 0);
     void add_ok_cancel_buttons(GuiWindow *window, GuiVirtualButton::OnClick on_click);
     void add_ok_cancel_buttons(GuiWindow *window, GuiVirtualButton::OnClick on_ok_click,
         GuiVirtualButton::OnClick on_cancel_click);
@@ -112,6 +141,14 @@ private:
     void mouse_move_map(int x, int y);
     void edit_light(int x, int y);
     void light_editor(EditableLight *light);
+    void draw_rect(int x, int y, int w, int h);
+    void copy_selection();
+    void draw_selection(int x, int y, bool decoration);
+    void draw_selection_objects(int x, int y);
+    void draw_selection_lights(int x, int y);
+    void insert_selection(int x, int y, bool decoration);
+    void insert_selection_objects(int x, int y);
+    void insert_selection_lights(int x, int y);
 
     static void static_center_map(GuiVirtualButton *sender, void *data);
     void center_map();

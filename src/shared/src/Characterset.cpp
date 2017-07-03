@@ -19,6 +19,23 @@
 
 #include <cstdlib>
 
+const int Characterset::Width = 32;
+const int Characterset::Height = 32;
+const CollisionBox Characterset::Colbox(9, 0, 14, 18);
+const CollisionBox Characterset::DamageColbox(2, 0, 28, 27);
+const int Characterset::FlagOffsetX = 7;
+const int Characterset::FlagOffsetY = -64;
+const int Characterset::FlagDropOffsetX = 7;
+const int Characterset::FlagDropOffsetY = -41;
+const int Characterset::CoinOffsetX = 0;
+const int Characterset::CoinOffsetY = -64;
+const int Characterset::CoinDropOffsetX = 0;
+const int Characterset::CoinDropOffsetY = -41;
+const int Characterset::ProjectileOffsetY = 5;
+const char *Characterset::JumpSound = "jump";
+
+static const char *FallbackSpawnAnimation = "player_spawn";
+
 Characterset::Characterset(Subsystem& subsystem, const std::string& filename, ZipReader *zip)
     throw (KeyValueException, MovableException)
     : Properties(filename + ".characterset", zip), Movable(subsystem)
@@ -26,20 +43,12 @@ Characterset::Characterset(Subsystem& subsystem, const std::string& filename, Zi
     try {
         read_base_informations(*this);
 
-        flag_offset_x = atoi(get_value("flag_offset_x").c_str());
-        flag_offset_y = atoi(get_value("flag_offset_y").c_str());
-
-        flag_drop_offset_x = atoi(get_value("flag_drop_offset_x").c_str());
-        flag_drop_offset_y = atoi(get_value("flag_drop_offset_y").c_str());
-
-        coin_offset_x = atoi(get_value("coin_offset_x").c_str());
-        coin_offset_y = atoi(get_value("coin_offset_y").c_str());
-
-        coin_drop_offset_x = atoi(get_value("coin_drop_offset_x").c_str());
-        coin_drop_offset_y = atoi(get_value("coin_drop_offset_y").c_str());
-
         suppress_shot_animation = (atoi(get_value("suppress_shot_animation").c_str()) != 0);
-        projectile_y_offset = atoi(get_value("projectile_y_offset").c_str());
+        spawn_animation = get_value("spawn_animation");
+        if (!spawn_animation.length()) {
+            spawn_animation = FallbackSpawnAnimation;
+        }
+        die_animation = get_value("die_animation");
 
         create_character(CharacterAnimationStanding, filename + "_standing.png", get_speed(*this, "standing", 30), get_one_shot(*this, "standing", false), zip);
         create_character(CharacterAnimationRunning, filename + "_running.png", get_speed(*this, "running", 30), get_one_shot(*this, "running", false), zip);
@@ -89,41 +98,14 @@ bool Characterset::get_suppress_shot_animation() const {
     return suppress_shot_animation;
 }
 
-int Characterset::get_projectile_y_offset() const {
-    return projectile_y_offset;
+const std::string& Characterset::get_spawn_animation() const {
+    return spawn_animation;
 }
 
-int Characterset::get_flag_offset_x() const {
-    return flag_offset_x;
+const std::string& Characterset::get_die_animation() const {
+    return die_animation;
 }
 
-int Characterset::get_flag_offset_y() const {
-    return flag_offset_y;
-}
-
-int Characterset::get_flag_drop_offset_x() const {
-    return flag_drop_offset_x;
-}
-
-int Characterset::get_flag_drop_offset_y() const {
-    return flag_drop_offset_y;
-}
-
-int Characterset::get_coin_offset_x() const {
-    return coin_offset_x;
-}
-
-int Characterset::get_coin_offset_y() const {
-    return coin_offset_y;
-}
-
-int Characterset::get_coin_drop_offset_x() const {
-    return coin_drop_offset_x;
-}
-
-int Characterset::get_coin_drop_offset_y() const {
-    return coin_drop_offset_y;
-}
 void Characterset::create_character(CharacterAnimation type,
     const std::string& filename, int animation_speed, bool one_shot, ZipReader *zip) throw (Exception)
 {

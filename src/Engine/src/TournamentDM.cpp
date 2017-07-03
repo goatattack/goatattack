@@ -68,7 +68,7 @@ void TournamentDM::write_stats_in_server_log() {
 
         last_score = current_score;
 
-        logger->log(ServerLogger::LogTypeStatsDM, "player stat", p, 0, &rank, &current_score,
+        logger->log(ServerLogger::LogTypeStatsDM, i18n(I18N_TNMT_STATS_PLAYER), p, 0, &rank, &current_score,
             &p->state.server_state.frags, &p->state.server_state.kills);
     }
 }
@@ -116,20 +116,26 @@ void TournamentDM::draw_statistics() {
 
     /* draw title */
     Font *font_big = resources.get_font("big");
-    std::string txt("DEATHMATCH");
+    std::string txt(i18n(I18N_TNMT_SB_DM_TITLE));
     int tw = font_big->get_text_width(txt);
     subsystem.draw_text(font_big, vw / 2 - tw / 2, y + 18, txt);
+
+    /* draw map name */
+    std::string mapinfo(i18n(I18N_CLIENT_MAP_INFO, map.get_name().c_str()));
+    int miw = font_normal->get_text_width(mapinfo);
+    int mih = font_normal->get_font_height();
+    subsystem.draw_text(font_normal, x + ww - miw - 15, y + wh - mih - 15, mapinfo);
 
     /* draw list */
     subsystem.set_color(1.0f, 1.0f, 0.0f, 1.0f);
     y = 55;
     x = wx + 15;
     subsystem.draw_text(font_normal, x, y, "#");
-    subsystem.draw_text(font_normal, x + 20, y, "PLAYER");
-    subsystem.draw_text(font_normal, x + 140, y, "SCORE");
-    subsystem.draw_text(font_normal, x + 180, y, "FRAGS");
-    subsystem.draw_text(font_normal, x + 220, y, "KILLS");
-    subsystem.draw_text(font_normal, x + 260, y, "PING");
+    subsystem.draw_text(font_normal, x + 20, y, i18n(I18N_TNMT_SB_PLAYER));
+    subsystem.draw_text(font_normal, x + 140, y, i18n(I18N_TNMT_SB_SCORE));
+    subsystem.draw_text(font_normal, x + 180, y, i18n(I18N_TNMT_SB_FRAGS));
+    subsystem.draw_text(font_normal, x + 220, y, i18n(I18N_TNMT_SB_KILLS));
+    subsystem.draw_text(font_normal, x + 260, y, i18n(I18N_TNMT_SB_PING));
     subsystem.reset_color();
 
     y = draw_stats(font_normal, wx + 15, y + 15);
@@ -140,7 +146,7 @@ void TournamentDM::draw_statistics() {
 
     /* done */
     subsystem.set_color(1.0f, 1.0f, 0.0f, 1.0f);
-    subsystem.draw_text(font_normal, wx + 15, y, "SPECTACTORS:");
+    subsystem.draw_text(font_normal, wx + 15, y, i18n(I18N_TNMT_SB_SPECTATORS));
     subsystem.reset_color();
     y += font_normal->get_font_height();
     for (Players::iterator it = players.begin(); it != players.end(); it++) {
@@ -189,7 +195,7 @@ int TournamentDM::draw_stats(Font *f, int x, int y) {
         sprintf(buffer, "%d", rank);
         subsystem.draw_text(f, x, y, buffer);
 
-        subsystem.draw_text(f, x + 20, y, p->get_player_name());
+        subsystem.draw_clipped_text(f, x + 20, y, 110, p->get_player_name());
 
         sprintf(buffer, "%d", current_score);
         subsystem.draw_text(f, x + 140, y, buffer);

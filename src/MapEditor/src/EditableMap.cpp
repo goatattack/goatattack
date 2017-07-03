@@ -224,11 +224,13 @@ void EditableMap::set_decoration(int x, int y, short index) {
     }
 }
 
-void EditableMap::set_object(Object *obj, int x, int y) {
+EditableObject *EditableMap::set_object(Object *obj, int x, int y) {
     bool found = false;
+    EditableObject *edit_obj = 0;
     for (Objects::iterator it = objects.begin(); it != objects.end(); it++) {
         EditableObject *eobj = *it;
         if (eobj->x == x && eobj->y == y) {
+            edit_obj = eobj;
             found = true;
             break;
         }
@@ -236,11 +238,24 @@ void EditableMap::set_object(Object *obj, int x, int y) {
 
     if (!found) {
         EditableObject *eobj = new EditableObject(obj, x, y);
+        edit_obj = eobj;
         eobj->spawn_counter = 30;
         objects.push_back(eobj);
         touch();
     }
 
+    return edit_obj;
+}
+
+EditableObject *EditableMap::get_object(int x, int y) {
+    for (Objects::iterator it = objects.begin(); it != objects.end(); it++) {
+        EditableObject *obj = *it;
+        if (obj->x == x && obj->y == y) {
+            return obj;
+        }
+    }
+
+    return 0;
 }
 
 void EditableMap::set_game_play_type(GamePlayType type) {
@@ -265,21 +280,25 @@ void EditableMap::erase_object(int x, int y) {
     }
 }
 
-void EditableMap::set_light(int x, int y) {
+EditableLight *EditableMap::set_light(int x, int y) {
     bool found = false;
+    EditableLight *edit_light = 0;
     for (Lights::iterator it = lights.begin(); it != lights.end(); it++) {
         EditableLight *elgt = *it;
         if (elgt->x == x && elgt->y == y) {
+            edit_light = elgt;
             found = true;
             break;
         }
     }
 
     if (!found) {
-        lights.push_back(new EditableLight(x, y, 64));
+        edit_light = new EditableLight(x, y, 64);
+        lights.push_back(edit_light);
         touch();
     }
 
+    return edit_light;
 }
 
 void EditableMap::erase_light(int x, int y) {

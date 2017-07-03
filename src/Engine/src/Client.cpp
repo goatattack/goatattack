@@ -18,13 +18,14 @@
 #include "Client.hpp"
 #include "Utils.hpp"
 #include "Scope.hpp"
+#include "UTF8.hpp"
 
 #include <iostream>
 #include <algorithm>
 
-const ns_t CycleS = 1000000000;
-const int BroadcastsPerS = 15;
-const ns_t UpdatePeriod = CycleS / BroadcastsPerS;
+static const ns_t CycleS = 1000000000;
+static const int BroadcastsPerS = 15;
+static const ns_t UpdatePeriod = CycleS / BroadcastsPerS;
 
 template <class T> static bool erase_element(T *elem) {
     if (elem->delete_me) {
@@ -38,14 +39,16 @@ template <class T> static bool erase_element(T *elem) {
 Client::Client(Resources& resources, Subsystem& subsystem, hostaddr_t host,
     hostport_t port, Configuration& config, const std::string& password)
     throw (Exception)
-    : ClientServer(host, port),
+    : ClientServer(subsystem.get_i18n(), host, port),
       Gui(resources, subsystem, resources.get_font("normal")),
       OptionsMenu(*this, resources, subsystem, config, this),
       resources(resources), subsystem(subsystem), player_config(config),
       logged_in(false), me(0), updatecnt(0),
       factory(resources, subsystem, this), my_id(0), login_sent(false),
       throw_exception(false), exception_msg(), force_send(false),
-      fhnd(0), running(true), reload_resources(true)
+      fhnd(0), running(true), reload_resources(true), lagometer(subsystem),
+      show_lagometer(player_config.get_bool("lagometer")),
+      chat_icon(*resources.get_icon("chat"))
 {
     conn = 0;
     get_now(last);
@@ -53,7 +56,7 @@ Client::Client(Resources& resources, Subsystem& subsystem, hostaddr_t host,
 
     /* start data receiver thread */
     if (!thread_start()) {
-        throw ClientException("Starting client thread failed.");
+        throw ClientException(ClientServer::i18n(I18N_THREAD_FAILED));
     }
 
     /* login */
@@ -124,12 +127,6 @@ bool Client::is_spectating() const {
 void Client::spectate() {
     if (tournament) {
         tournament->spectate_request();
-    }
-}
-
-void Client::change_team() {
-    if (tournament) {
-        // tournament->change_team();
     }
 }
 
@@ -213,10 +210,10 @@ void Client::idle() throw (Exception) {
                         std::string msg(reinterpret_cast<const char *>(resp->data), resp->len);
                         add_text_msg(msg);
                     } else {
-                        stacked_send_data(conn, factory.get_tournament_id(), resp->action, 0, resp->len, resp->data);
+                        stacked_send_data(conn, factory.get_tournament_id(), resp->action, NetFlagsReliable, resp->len, resp->data);
                     }
                 }
-                flush_stacked_send_data(conn, 0);
+                flush_stacked_send_data(conn, NetFlagsReliable);
             }
         }
         tournament->delete_responses();
@@ -286,8 +283,22 @@ void Client::idle() throw (Exception) {
             alpha = static_cast<float>((text_message_duration - cmsg->duration) / (text_message_duration - text_message_fade_out_at));
         }
 
-        subsystem.set_color(0.75f, 0.75f, 1.0f, alpha);
-        subsystem.draw_text(font, 5, y, cmsg->text);
+        int x = 5;
+        if (cmsg->icon) {
+            subsystem.set_color(1.0f, 1.0f, 1.0f, alpha);
+            subsystem.draw_icon(cmsg->icon, x, y);
+            x += cmsg->icon_width;
+        }
+        if (cmsg->player.length()) {
+            subsystem.set_color(0.5f, 1.0f, 0.5f, alpha);
+            x = subsystem.draw_text(font, x, y, cmsg->player);
+            subsystem.set_color(0.75f, 0.75f, 1.0f, alpha);
+            x = subsystem.draw_text(font, x, y, ": ");
+            subsystem.set_color(1.0f, 1.0f, 1.0f, alpha);
+        } else {
+            subsystem.set_color(0.75f, 0.75f, 1.0f, alpha);
+        }
+        subsystem.draw_text(font, x, y, cmsg->text);
         alpha *= 0.9f;
         y -= font_height;
     }
@@ -297,9 +308,9 @@ void Client::idle() throw (Exception) {
     if (fhnd) {
         Font *big = resources.get_font("big");
         int percent = 100 - static_cast<int>(100.0f / static_cast<float>(total_xfer_sz) * remaining_xfer_sz);
-        sprintf(buffer, "transferring %s (%d%%)", xfer_filename.c_str(), percent);
-        int tw = big->get_text_width(buffer);
-        subsystem.draw_text(big, subsystem.get_view_width() / 2 - tw / 2, view_height - 30, buffer);
+        std::string txt(ClientServer::i18n(I18N_CLIENT_TRANSFER, xfer_filename.c_str(), percent));
+        int tw = big->get_text_width(txt);
+        subsystem.draw_text(big, subsystem.get_view_width() / 2 - tw / 2, view_height - 30, txt);
     }
 }
 
@@ -322,7 +333,7 @@ void Client::set_key(MappedKey::Device dev, int param) {
                 int vh = subsystem.get_view_height();
                 int ww = 350;
                 int wh = 30;
-                GuiWindow *window = push_window(1, 1, ww, wh, "Enter Message");
+                GuiWindow *window = push_window(1, 1, ww, wh, ClientServer::i18n(I18N_CLIENT_ENTER_MSG));
                 window->set_on_keydown(static_window_keydown, this);
                 window->set_on_joybuttondown(static_window_joybutton_down, this);
                 ww = window->get_client_width();
@@ -457,6 +468,16 @@ void Client::options_closed() {
     }
 
     update_text_fade_speed();
+
+    /* lagometer */
+    bool new_lagometer = player_config.get_bool("lagometer");
+    if (new_lagometer != show_lagometer) {
+        show_lagometer = new_lagometer;
+        lagometer.clear();
+        if (tournament) {
+            tournament->set_lagometer(show_lagometer ? &lagometer : 0);
+        }
+    }
 }
 
 void Client::static_window_close_click(GuiVirtualButton *sender, void *data) {
@@ -519,13 +540,29 @@ void Client::window_close_click() {
 }
 
 void Client::chat_send_message() {
-    chat_textbox->set_text(trim(chat_textbox->get_text()));
-    const std::string& text = chat_textbox->get_text();
-
-    if (text.length() && conn) {
-        {
-            Scope<Mutex> lock(mtx);
-            send_data(conn, factory.get_tournament_id(), GPSChatMessage, NetFlagsReliable, static_cast<data_len_t>(text.length()), text.c_str());
+    std::string text(trim(chat_textbox->get_text()));
+    if (text.length()) {
+        /* find abbreviation */
+        int no_abbr = player_config.get_int("no_tokens");
+        char key[64];
+        for (int i = 0; i < no_abbr; i++) {
+            sprintf(key, "token%d", i);
+            const std::string& abbr = player_config.get_string(key);
+            if (abbr.length()) {
+                if (text == abbr) {
+                    sprintf(key, "token_text%d", i);
+                    text = player_config.get_string(key);
+                    break;
+                }
+            }
+        }
+        text = utf8_validate(trim(text).substr(0, 200).c_str());
+        /* send now */
+        if (text.length() && conn) {
+            {
+                Scope<Mutex> lock(mtx);
+                send_data(conn, factory.get_tournament_id(), GPSChatMessage, NetFlagsReliable, static_cast<data_len_t>(text.length()), text.c_str());
+            }
         }
     }
     window_close_click();
@@ -547,6 +584,9 @@ void Client::update_text_fade_speed() {
     text_message_fade_out_at = text_message_duration - 1500.0f;
 }
 
+/*
+ * the client thread is used, to decouple net cycle from vsync
+ */
 void Client::thread() {
     /* net loop */
     while (running) {

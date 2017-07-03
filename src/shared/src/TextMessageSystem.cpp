@@ -16,6 +16,16 @@
  */
 
 #include "TextMessageSystem.hpp"
+#include "Icon.hpp"
+
+TextMessageSystem::TextMessage::TextMessage(Icon& icon, const std::string& player,
+    const std::string& text)
+    : icon(&icon), icon_width(icon.get_tile()->get_tilegraphic()->get_width()),
+      player(player), text(text), duration(0.0), delete_me(false) { }
+
+TextMessageSystem::TextMessage::TextMessage(Icon& icon, const std::string& text)
+    : icon(&icon), icon_width(icon.get_tile()->get_tilegraphic()->get_width()),
+      text(text), duration(0.0), delete_me(false) { }
 
 TextMessageSystem::TextMessageSystem() { }
 
@@ -27,8 +37,14 @@ TextMessageSystem::~TextMessageSystem() {
     }
 }
 
+void TextMessageSystem::add_text_msg(const std::string& player, const std::string& msg) {
+    text_messages.push_back(new TextMessage(player, msg));
+}
+
+void TextMessageSystem::add_text_msg(Icon& icon, const std::string& player, const std::string& msg) {
+    text_messages.push_back(new TextMessage(icon, player, msg));
+}
+
 void TextMessageSystem::add_text_msg(const std::string& msg) {
-    TextMessage *cmsg = new TextMessage;
-    cmsg->text = msg;
-    text_messages.push_back(cmsg);
+    text_messages.push_back(new TextMessage(msg));
 }

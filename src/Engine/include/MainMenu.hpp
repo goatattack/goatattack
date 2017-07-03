@@ -70,6 +70,7 @@ private:
 
     Resources& resources;
     Subsystem& subsystem;
+    I18N& i18n;
     Configuration& config;
     int x;
     int y;
@@ -90,6 +91,8 @@ private:
     int mw_h;
     Sound *menu_construction;
     Music *title_music;
+    GuiLabel *version_label;
+    GuiPicture *beta;
 
     gametime_t now;
     gametime_t startup;
@@ -117,6 +120,12 @@ private:
     GuiTextbox *custom_port;
     GuiTextbox *custom_password;
     GuiRoundedButton *rb[6];
+    GuiTab *creation_tab;
+    GuiCheckbox *cs_opt_friendly_fire;
+    GuiCheckbox *cs_opt_shooting_explosives;
+    GuiCheckbox *cs_opt_prevent_pick;
+    GuiCheckbox *cs_opt_hold_disconnected_players;
+    GuiTextbox *cs_opt_reconnect_kills;
 
     const void *wan_list_selected_entry;
     const void *lan_list_selected_entry;
@@ -168,6 +177,8 @@ private:
     static void static_on_lan_entry_click(GuiListbox *sender, void *data, int index);
     void on_lan_entry_click(int index);
 
+    static bool static_on_tab_click(GuiTab *sender, int index, void *data);
+
     /* other functions */
     void play_click();
 
@@ -185,8 +196,13 @@ private:
 
     void close_window_click();
 
-    bool create_server_locators() throw (Exception);
+    void create_server_locator(int index);
     void destroy_server_locators();
+
+    static void static_lang_change_cb(void *data);
+    void change_button_captions();
+    void set_version_label();
+    Icon *get_flag_from_name(std::string& name);
 };
 
 #endif

@@ -19,6 +19,7 @@
 
 #include <cstdlib>
 
+/* -------------------------------------------------------------------------- */
 Movable::Movable(Subsystem& subsystem) : subsystem(subsystem) { }
 
 Movable::~Movable() { }
@@ -31,14 +32,6 @@ int Movable::get_height() const {
     return height;
 }
 
-const CollisionBox& Movable::get_colbox() const {
-    return colbox;
-}
-
-const CollisionBox& Movable::get_damage_colbox() const {
-    return damage_colbox;
-}
-
 void Movable::read_base_informations(Properties& props) throw (MovableException) {
     width = atoi(props.get_value("width").c_str());
     height = atoi(props.get_value("height").c_str());
@@ -46,16 +39,6 @@ void Movable::read_base_informations(Properties& props) throw (MovableException)
     if (width != height || width < 16 || width > 64) {
         throw MovableException("Malformed tile size.");
     }
-
-    colbox.x = atoi(props.get_value("colbox_x").c_str());
-    colbox.y = atoi(props.get_value("colbox_y").c_str());
-    colbox.width = atoi(props.get_value("colbox_width").c_str());
-    colbox.height = atoi(props.get_value("colbox_height").c_str());
-
-    damage_colbox.x = atoi(props.get_value("damage_colbox_x").c_str());
-    damage_colbox.y = atoi(props.get_value("damage_colbox_y").c_str());
-    damage_colbox.width = atoi(props.get_value("damage_colbox_width").c_str());
-    damage_colbox.height = atoi(props.get_value("damage_colbox_height").c_str());
 }
 
 Tile *Movable::create_tile(PNG& png, int animation_speed, bool one_shot, bool desc) {
@@ -92,4 +75,29 @@ bool Movable::get_one_shot(Properties& props, const std::string& suffix, bool de
     }
 
     return one_shot;
+}
+
+/* -------------------------------------------------------------------------- */
+MovableColbox::MovableColbox(Subsystem& subsystem) : subsystem(subsystem) { }
+
+MovableColbox::~MovableColbox() { }
+
+const CollisionBox& MovableColbox::get_colbox() const {
+    return colbox;
+}
+
+const CollisionBox& MovableColbox::get_damage_colbox() const {
+    return damage_colbox;
+}
+
+void MovableColbox::read_base_informations(Properties& props) throw (MovableException) {
+    colbox.x = atoi(props.get_value("colbox_x").c_str());
+    colbox.y = atoi(props.get_value("colbox_y").c_str());
+    colbox.width = atoi(props.get_value("colbox_width").c_str());
+    colbox.height = atoi(props.get_value("colbox_height").c_str());
+
+    damage_colbox.x = atoi(props.get_value("damage_colbox_x").c_str());
+    damage_colbox.y = atoi(props.get_value("damage_colbox_y").c_str());
+    damage_colbox.width = atoi(props.get_value("damage_colbox_width").c_str());
+    damage_colbox.height = atoi(props.get_value("damage_colbox_height").c_str());
 }

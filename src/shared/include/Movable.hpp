@@ -42,21 +42,35 @@ public:
 
     int get_width() const;
     int get_height() const;
-    const CollisionBox& get_colbox() const;
-    const CollisionBox& get_damage_colbox() const;
 
 protected:
     Subsystem& subsystem;
 
     int width;
     int height;
-    CollisionBox colbox;
-    CollisionBox damage_colbox;
 
     void read_base_informations(Properties& props) throw (MovableException);
     Tile *create_tile(PNG& png, int animation_speed, bool one_shot, bool desc);
     int get_speed(Properties& props, const std::string& suffix, int default_speed);
     bool get_one_shot(Properties& props, const std::string& suffix, bool default_value);
+};
+
+/* -------------------------------------------------------------------------- */
+class MovableColbox {
+public:
+    MovableColbox(Subsystem& subsystem);
+    virtual ~MovableColbox();
+
+    const CollisionBox& get_colbox() const;
+    const CollisionBox& get_damage_colbox() const;
+
+protected:
+    Subsystem& subsystem;
+
+    CollisionBox colbox;
+    CollisionBox damage_colbox;
+
+    void read_base_informations(Properties& props) throw (MovableException);
 };
 
 #endif

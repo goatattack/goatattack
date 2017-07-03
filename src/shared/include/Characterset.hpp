@@ -42,42 +42,39 @@ private:
     Characterset& operator=(const Characterset&);
 
 public:
+    static const int Width;
+    static const int Height;
+    static const CollisionBox Colbox;
+    static const CollisionBox DamageColbox;
+    static const int FlagOffsetX;
+    static const int FlagOffsetY;
+    static const int FlagDropOffsetX;
+    static const int FlagDropOffsetY;
+    static const int CoinOffsetX;
+    static const int CoinOffsetY;
+    static const int CoinDropOffsetX;
+    static const int CoinDropOffsetY;
+    static const int ProjectileOffsetY;
+    static const char *JumpSound;
+
     Characterset(Subsystem& subsystem, const std::string& filename, ZipReader *zip = 0)
         throw (KeyValueException, MovableException);
     virtual ~Characterset();
-
-    int get_flag_offset_x() const;
-    int get_flag_offset_y() const;
-    int get_flag_drop_offset_x() const;
-    int get_flag_drop_offset_y() const;
-
-    int get_coin_offset_x() const;
-    int get_coin_offset_y() const;
-    int get_coin_drop_offset_x() const;
-    int get_coin_drop_offset_y() const;
 
     Tile *get_tile(Direction direction, CharacterAnimation animation);
     Tile *get_armor_overlay(Direction direction, CharacterAnimation animation);
     Tile *get_rifle_overlay(Direction direction, CharacterAnimation animation);
     bool get_suppress_shot_animation() const;
-    int get_projectile_y_offset() const;
+    const std::string& get_spawn_animation() const;
+    const std::string& get_die_animation() const;
 
 private:
-    int flag_offset_x;
-    int flag_offset_y;
-    int flag_drop_offset_x;
-    int flag_drop_offset_y;
-
-    int coin_offset_x;
-    int coin_offset_y;
-    int coin_drop_offset_x;
-    int coin_drop_offset_y;
-
     Tile *tiles[_DirectionMAX][_CharacterAnimationMAX];
     Tile *armor_overlays[_DirectionMAX][_CharacterAnimationMAX];
     Tile *rifle_overlays[_DirectionMAX][_CharacterAnimationMAX];
     bool suppress_shot_animation;
-    int projectile_y_offset;
+    std::string spawn_animation;
+    std::string die_animation;
 
     void create_character(CharacterAnimation type, const std::string& filename,
         int animation_speed, bool one_shot, ZipReader *zip) throw (Exception);

@@ -43,11 +43,11 @@ public:
     virtual ~KeyValue();
 
     const std::string& get_value(const std::string& key) const;
-    void set_value(const std::string& key, const std::string& value) throw (KeyValueException);
-    void set_value(const std::string& key, const char *value) throw (KeyValueException);
-    void set_value(const std::string& key, int value) throw (KeyValueException);
-    void set_value(const std::string& key, double value) throw (KeyValueException);
-    void set_value(const std::string& key, bool value) throw (KeyValueException);
+    void set_value(const std::string& key, const std::string& value, bool no_touch = false) throw (KeyValueException);
+    void set_value(const std::string& key, const char *value, bool no_touch = false) throw (KeyValueException);
+    void set_value(const std::string& key, int value, bool no_touch = false) throw (KeyValueException);
+    void set_value(const std::string& key, double value, bool no_touch = false) throw (KeyValueException);
+    void set_value(const std::string& key, bool value, bool no_touch = false) throw (KeyValueException);
     void read(const std::string& filename, ZipReader *zip = 0) throw (KeyValueException);
     void save(const std::string& filename) throw (KeyValueException);
     bool is_modified() const;

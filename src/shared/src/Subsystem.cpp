@@ -17,8 +17,8 @@
 
 #include "Subsystem.hpp"
 
-Subsystem::Subsystem(std::ostream& stream, const std::string& window_title) throw (SubsystemException)
-    : stream(stream), scanlines(0), keep_pictures(false) { }
+Subsystem::Subsystem(std::ostream& stream, I18N& i18n, const std::string& window_title) throw (SubsystemException)
+    : stream(stream), i18n(i18n), scanlines(0), keep_pictures(false) { }
 
 Subsystem::~Subsystem() { }
 
@@ -36,4 +36,8 @@ bool Subsystem::get_keep_pictures() const {
 
 std::ostream& Subsystem::get_stream() const {
     return stream;
+}
+
+I18N& Subsystem::get_i18n() const {
+    return i18n;
 }

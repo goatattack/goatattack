@@ -16,15 +16,17 @@
  */
 
 #include "Player.hpp"
+#include "UTF8.hpp"
 
 static const char *CharactersetFallback = "goat";
 
 Player::Player(Resources& resources, const Connection *c, player_id_t player_id,
     const std::string& player_name, const std::string& characterset_name)
-    : resources(resources), c(c), player_id(player_id), player_name(player_name),
+    : resources(resources), c(c), player_id(player_id),
+      player_name(utf8_validate(player_name.c_str())),
       fallback_characterset(get_characterset(CharactersetFallback)),
       characterset(get_characterset(characterset_name)), org_characterset(characterset),
-      check_characterset(true), characterset_name(characterset->get_name()),
+      check_characterset(true), characterset_name(characterset_name),
       animation_counter(0.0f), font(0), player_name_width(0), its_me(false),
       respawning(false), joining(false), force_broadcast(false),
       flag_pick_refused_counter(0), flag_pick_refused(false), client_synced(false),
@@ -41,7 +43,7 @@ const std::string& Player::get_player_name() const {
 }
 
 void Player::set_player_name(const std::string& name) {
-    player_name = name;
+    player_name = utf8_validate(name.c_str());
 }
 
 Characterset *Player::get_characterset() const {
@@ -54,9 +56,13 @@ Characterset *Player::get_characterset() const {
     return characterset;
 }
 
+const std::string& Player::get_characterset_name() const {
+    return characterset_name;
+}
+
 void Player::set_characterset(const std::string& name) throw (ResourcesException) {
     characterset = get_characterset(name);
-    characterset_name = characterset->get_name();
+    characterset_name = name;
 }
 
 const Connection *Player::get_connection() const {
@@ -95,6 +101,10 @@ void Player::clear() {
 
 void Player::zero() {
     clean_states();
+}
+
+void Player::set_to_default_characterset() {
+    set_characterset(fallback_characterset->get_name());
 }
 
 void Player::clean_states() {

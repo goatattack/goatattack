@@ -23,6 +23,7 @@
 #include "Timing.hpp"
 #include "Thread.hpp"
 #include "Mutex.hpp"
+#include "I18N.hpp"
 
 #include <vector>
 
@@ -38,7 +39,7 @@ private:
     MasterQuery& operator=(const MasterQuery&);
 
 public:
-    MasterQuery(const std::string& masterserver, hostport_t masterport)
+    MasterQuery(I18N& i18n, const std::string& masterserver, hostport_t masterport)
         throw (MasterQueryException);
     virtual ~MasterQuery();
 
@@ -51,6 +52,7 @@ public:
     Mutex& get_mutex();
 
 private:
+    I18N& i18n;
     std::string masterserver;
     hostport_t masterport;
     bool running;

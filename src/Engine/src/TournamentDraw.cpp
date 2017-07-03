@@ -294,25 +294,28 @@ void Tournament::draw_hud() {
         draw_lives_armor(p->state.server_state.armor, shield_full, shield_half, shield_empty, 26);
 
         sprintf(buffer, "%d", p->state.server_state.ammo);
-        subsystem.draw_icon(hud_ammo, 590, 10);
-        subsystem.draw_text(fnt, 610, 10, buffer);
+        subsystem.draw_icon(hud_ammo, 585, 10);
+        subsystem.draw_text(fnt, 605, 10, buffer);
 
         sprintf(buffer, "%d", p->state.server_state.grenades);
-        subsystem.draw_icon(hud_grenades, 590, 26);
-        subsystem.draw_text(fnt, 610, 26, buffer);
+        subsystem.draw_icon(hud_grenades, 585, 26);
+        subsystem.draw_text(fnt, 605, 26, buffer);
 
         sprintf(buffer, "%d", p->state.server_state.bombs);
-        subsystem.draw_icon(hud_bombs, 590, 42);
-        subsystem.draw_text(fnt, 610, 42, buffer);
+        subsystem.draw_icon(hud_bombs, 585, 42);
+        subsystem.draw_text(fnt, 605, 42, buffer);
 
         if (has_frogs) {
             sprintf(buffer, "%d", p->state.server_state.frogs);
-            subsystem.draw_icon(hud_frogs, 590, 58);
-            subsystem.draw_text(fnt, 610, 58, buffer);
+            subsystem.draw_icon(hud_frogs, 585, 58);
+            subsystem.draw_text(fnt, 605, 58, buffer);
         }
 
         subsystem.reset_color();
     }
+
+    /* bottom up */
+    int bottom_up_y = view_height;
 
     /* draw tournament icon */
     if (tournament_icon) {
@@ -320,7 +323,20 @@ void Tournament::draw_hud() {
         TileGraphic *tg = tournament_icon->get_tile()->get_tilegraphic();
         int width = tg->get_width();
         int height = tg->get_height();
-        subsystem.draw_icon(tournament_icon, view_width - width - 5, view_height - height - 25);
+        bottom_up_y -= height + 25;
+        subsystem.draw_icon(tournament_icon, view_width - width - 5, bottom_up_y); //view_height - height - 25);
+        subsystem.reset_color();
+    }
+
+
+    /* draw lagometer */
+    if (lagometer) {
+        subsystem.set_color(1.0f, 1.0f, 1.0f, 0.75f);
+        TileGraphic *tg = lagometer->get_tilegraphic();
+        int width = tg->get_width();
+        int height = tg->get_height();
+        bottom_up_y -= height + 5;
+        subsystem.draw_tilegraphic(tg, view_width - width - 5, bottom_up_y);
         subsystem.reset_color();
     }
 
@@ -344,17 +360,17 @@ void Tournament::draw_hud() {
 
     /* spectacting */
     if (p->state.server_state.flags & PlayerServerFlagSpectating) {
-        std::string sptxt("SPECTATING");
+        std::string sptxt(i18n(I18N_TNMT_SPECTATING));
         int tw = fnt->get_text_width(sptxt);
         int x = view_width - time_width - tw - 10;
-        int y = view_height - fnt->get_font_height();
+        int y = view_height - fnt->get_font_height() - 4;
         subsystem.draw_text(fnt, x, y, sptxt);
     }
 
     /* warmup */
     if (warmup) {
-        if (gui && gui->get_blink_on()) {
-            std::string txt("WARM UP");
+        if (gui && gui->get_tick_on()) {
+            std::string txt(i18n(I18N_TNMT_WARMUP));
             int tw = fnt->get_text_width(txt);
             int x = view_width / 2 - tw / 2;
             int y = 50;
@@ -394,6 +410,7 @@ void Tournament::draw_lives_armor(int amount, Icon *full, Icon *half, Icon *empt
 }
 
 void Tournament::draw_players() {
+    subsystem.reset_color();
     for (Players::iterator it = players.begin(); it != players.end(); it++) {
         Player *p = *it;
         if (p->is_alive_and_playing()) {
@@ -406,7 +423,6 @@ void Tournament::draw_players() {
             subsystem.draw_tilegraphic(tg, p->state.client_state.iconindex,
                 static_cast<int>(p->state.client_server_state.x) + left,
                 static_cast<int>(p->state.client_server_state.y) + top - height);
-            subsystem.reset_color();
 
             /* draw armor */
             if (p->state.server_state.armor) {
@@ -449,7 +465,7 @@ void Tournament::draw_players() {
 
             /* draw collision box */
             if (debug) {
-                const CollisionBox& colbox = p->get_characterset()->get_colbox();
+                const CollisionBox& colbox = Characterset::DamageColbox;
                 subsystem.set_color(1.0f, 0.0f, 0.0f, 0.5f);
                 subsystem.draw_box(static_cast<int>(p->state.client_server_state.x) + left + colbox.x,
                     static_cast<int>(p->state.client_server_state.y) + top - colbox.height - colbox.y,
@@ -532,7 +548,7 @@ void Tournament::draw_enemies_on_hud() {
         Player *p = *it;
         if (p != me) {
             if (p->is_alive_and_playing()) {
-                const CollisionBox& colbox = p->get_characterset()->get_damage_colbox();
+                const CollisionBox& colbox = Characterset::DamageColbox;
                 int cbw = colbox.width / 2;
                 int cbh = colbox.height / 2;
                 bool draw = false;

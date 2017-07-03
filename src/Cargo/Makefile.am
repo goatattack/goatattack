@@ -6,7 +6,7 @@ endif
 
 goatattack_cargo_SOURCES = main.cpp
 
-goatattack_cargo_CXXFLAGS = -I./include -I../shared/include -Wno-unused-result -pedantic -Wextra
+goatattack_cargo_CXXFLAGS = -I./include -I../shared/include -pedantic -Wextra -Wno-unused-parameter -Wno-unused-result
 
 goatattack_cargo_LDADD = -L../shared -lshared -lpng
 

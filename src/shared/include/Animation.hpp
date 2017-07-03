@@ -49,6 +49,7 @@ public:
     void set_sound(Sound *sound);
     bool get_physics() const;
     const CollisionBox& get_physics_colbox() const;
+    const CollisionBox& get_damage_colbox() const;
     int get_duration() const;
     double get_springiness() const;
     double get_impact() const;
@@ -57,19 +58,24 @@ public:
     int get_damage() const;
     int get_spread() const;
     int get_spread_count() const;
+    int get_damage_spread() const;
     int get_randomized_index() const;
     double get_recoil() const;
     int get_x_offset() const;
     int get_y_offset() const;
     int get_screen_shaker() const;
+    bool get_can_be_shot() const;
+    bool get_stop_sound_if_shot() const;
 
 private:
     Subsystem& subsystem;
     Tile *tile;
     Sound *sound;
+
     int sound_loops;
     bool physics;
     CollisionBox physics_colbox;
+    CollisionBox damage_colbox;
     int tile_width;
     int tile_height;
     int animation_speed;
@@ -86,6 +92,9 @@ private:
     int y_offset;
     int screen_shaker;
     bool in_background;
+    bool can_be_shot;
+    int damage_spread;
+    bool stop_sound_if_shot;
 
     void create_tile(const std::string& filename, ZipReader *zip) throw (Exception);
     void cleanup();

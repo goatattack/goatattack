@@ -1,3 +1,16 @@
+0.4.5
+- changed to freetype font rendering (latin, greek and cyrillic)
+- I18N support
+- new maps added
+- new tiles added
+- Lagometer added
+- better traffic shaping in netcode
+- new server admin commands 'list' and 'stats' added
+- copy and paste in map editor
+- new opt: grenades and bombs can be shot
+- new opt: prevent pick items, if inventory full
+- mouse scroll wheel support in gui objects
+
 0.4.4
 - changing text fading speed
 - splitting shared from other projects

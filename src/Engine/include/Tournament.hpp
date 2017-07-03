@@ -32,6 +32,8 @@
 #include "Gui.hpp"
 #include "Globals.hpp"
 #include "ServerLogger.hpp"
+#include "I18N.hpp"
+#include "Lagometer.hpp"
 
 #include <vector>
 #include <deque>
@@ -48,22 +50,22 @@ public:
     TournamentException(const std::string& msg) : Exception(msg) { }
 };
 
-const double AnimationMultiplier = 3.0f;
-const double TextAnimationSpeed = 5.0f;
-const double XAccel = 0.055f;
-const double XDecel = 0.01f;
-const double XMaxAccel = 1.75f;
-const double YAccelGravity = 0.075f;
-const double YMaxAccel = 4.5f;
-const double YVeloLanding = 2.25f;
-const double YDecelJumpNormal = 0.075f;
-const double YDecelJump = 0.005f;
+const double AnimationMultiplier = 3.0;
+const double TextAnimationSpeed = 5.0;
+const double XAccel = 0.055;
+const double XDecel = 0.01;
+const double XMaxAccel = 1.75;
+const double YAccelGravity = 0.075;
+const double YMaxAccel = 4.5;
+const double YVeloLanding = 1.5;
+const double YDecelJumpNormal = 0.075;
+const double YDecelJump = 0.005;
 
 struct GameAnimation {
     GameAnimation() : animation(0), animation_counter(0.0f),
         index(0), falling(false),
         last_falling_y_pos(Player::PlayerFallingTestMaxY),
-        delete_me(false) { }
+        sound_channel(-1), delete_me(false) { }
 
     Animation *animation;
     GAnimationState state;
@@ -71,6 +73,7 @@ struct GameAnimation {
     int index;
     bool falling;
     int last_falling_y_pos;
+    int sound_channel;
     bool delete_me;
 };
 
@@ -155,6 +158,13 @@ public:
     typedef std::vector<SpawnableNPC *> SpawnableNPCs;
     typedef std::vector<GameAnimation *> GameAnimations;
 
+    enum Setting {
+        SettingEnableFriendlyFire = 0,
+        SettingEnablePreventPick,
+        SettingEnableShotExplosives,
+        _MAXSettings
+    };
+
     Tournament(Resources& resources, Subsystem& subsystem, Gui *gui, ServerLogger *logger,
         const std::string& game_file, bool server,
         const std::string& map_name, Players& players, int duration, bool warmup)
@@ -174,15 +184,16 @@ public:
     void set_ping_time(ms_t ms);
     void set_player_configuration(Configuration *config);
     void set_ready();
-    void set_team_names(const std::string& team_red, const std::string& team_blue);
     bool is_ready() const;
     bool is_game_over() const;
     void spectate_request();
     void spectate_accepted();
     void show_stats(bool state);
     void update_states(ns_t ns);
+    void set_lagometer(Lagometer *lagometer);
 
     void add_animation(GAnimation *animation);
+    void remove_animation(identifier_t id);
     void add_spawnable_npc(GSpawnNPC *npc);
     void add_npc_remove_animation(SpawnableNPC *npc);
     void remove_marked_npcs();
@@ -198,11 +209,14 @@ public:
     void fire_grenade(Player *p, unsigned char direction);
     void fire_bomb(Player *p, unsigned char direction);
     void fire_frog(Player *p, unsigned char direction);
-    void set_friendly_fire_alarm(bool state);
+    void retrieve_flags();
+    void set_flag(Setting setting, bool value);
 
     void draw();
     void delete_responses();
     identifier_t create_animation_id();
+
+    static char *create_i18n_response(I18NText id, size_t& sz, const char *addon = 0);
 
     virtual const char *tournament_type() = 0;
 
@@ -239,6 +253,7 @@ protected:
 
     Resources& resources;
     Subsystem& subsystem;
+    I18N& i18n;
     Properties& properties;
     Gui *gui;
     bool server;
@@ -300,7 +315,7 @@ protected:
     bool game_over;
     ServerLogger *logger;
     bool gui_is_destroyed;
-    bool do_friendly_fire_alarm;
+    Lagometer *lagometer;
 
     int tilex;
     int tiley;
@@ -311,12 +326,11 @@ protected:
     SpawnPoints spawn_points;
     FrogSpawnPoints frog_spawn_points;
     SpawnableNPCs spawnable_npcs;
+    bool settings[_MAXSettings];
 
     bool has_frogs;
     double frog_respawn_counter;
     int frog_spawn_init;
-    std::string team_red_name;
-    std::string team_blue_name;
 
     enum TestType {
         TestTypeNormal,
@@ -379,7 +393,7 @@ protected:
     void draw_player_names();
     void draw_hud();
 
-    void player_dies(Player *p, const std::string& die_message);
+    void player_dies(Player *p, I18NText id, const char *addon = 0);
     void join_handling();
     void reset_all_players_and_broadcast();
     identifier_t get_free_object_id();
@@ -390,6 +404,10 @@ protected:
     void player_npc_collision(Player *p, SpawnableNPC *npc);
 
     void draw_lives_armor(int amount, Icon *full, Icon *half, Icon *empty, int y);
+
+    void add_i18n_response(I18NText id, const char *addon = 0);
+    void add_i18n_response(I18NText id, const std::string& p);
+    void add_i18n_response(I18NText id, const std::string& p1, const std::string& p2);
 
     virtual void write_stats_in_server_log() = 0;
     virtual void subintegrate(ns_t ns);

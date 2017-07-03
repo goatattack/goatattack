@@ -278,7 +278,7 @@ bool Tournament::render_physics(double period_f, bool projectile, int damage,
             Player *p = *it;
             if (p->state.id != owner) {
                 if (p->is_alive_and_playing()) {
-                    CollisionBox p_colbox = p->get_characterset()->get_damage_colbox();
+                    CollisionBox p_colbox = Characterset::DamageColbox;
                     p_colbox.x += static_cast<int>(p->state.client_server_state.x);
                     p_colbox.y = static_cast<int>(p->state.client_server_state.y) - p_colbox.height - p_colbox.y;
                     if (obj_colbox.intersects(p_colbox)) {
@@ -291,6 +291,33 @@ bool Tournament::render_physics(double period_f, bool projectile, int damage,
                             player_damage(owner, p, 0, damage, weapon);
                         }
                         is_collision = true;
+                    }
+                }
+            }
+        }
+
+        /* test animations */
+        if (server && settings[SettingEnableShotExplosives]) {
+            for (GameAnimations::iterator it = game_animations.begin(); it != game_animations.end(); it++) {
+                GameAnimation *gani = *it;
+                if (gani->animation->get_can_be_shot()) {
+                    if (!gani->animation->is_projectile() && gani->animation->get_physics()) {
+                        TileGraphic *tg = gani->animation->get_tile()->get_tilegraphic();
+                        CollisionBox a_colbox = gani->animation->get_damage_colbox();
+                        a_colbox.x += static_cast<int>(gani->state.x);
+                        a_colbox.y = static_cast<int>(gani->state.y) + tg->get_height() - colbox.height - colbox.y;
+                        if (obj_colbox.intersects(a_colbox)) {
+                            if (gani->animation->get_stop_sound_if_shot()) {
+                                gani->sound_channel = subsystem.stop_sound(gani->sound_channel);
+                            }
+                            gani->state.duration = 0;
+                            gani->animation_counter = static_cast<double>(gani->animation->get_animation_speed());
+                            gani->index = static_cast<int>(tg->get_tile_count());
+                            is_collision = true;
+                            identifier_t *id = new identifier_t;
+                            *id = htons(gani->state.id);
+                            add_state_response(GPCRemoveAnimation, sizeof(id), id);
+                        }
                     }
                 }
             }

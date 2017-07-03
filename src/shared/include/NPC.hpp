@@ -33,7 +33,7 @@ enum NPCAnimation {
     _NPCAnimationMAX
 };
 
-class NPC : public Properties, public Movable {
+class NPC : public Properties, public Movable, public MovableColbox {
 private:
     NPC(const NPC&);
     NPC& operator=(const NPC&);

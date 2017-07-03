@@ -23,6 +23,7 @@
 #include "Subsystem.hpp"
 #include "Tile.hpp"
 #include "ZipReader.hpp"
+#include "FT.hpp"
 
 class FontException : public Exception {
 public:
@@ -30,43 +31,75 @@ public:
     FontException(const std::string& msg) : Exception(msg) { }
 };
 
-static const int FontMin = 32;
-static const int FontMax = 128;
-static const int NumOfChars = FontMax - FontMin;
-
-typedef struct font_char {
-    int32_t origin_x;
-    int32_t origin_y;
-    int32_t width;
-    int32_t height;
-} font_char_t;
-
 class Font : public Properties {
 private:
     Font(const Font&);
     Font& operator=(const Font&);
 
 public:
-    Font(Subsystem& subsystem, const std::string& filename, ZipReader *zip = 0)
+    struct Character {
+        FT_UInt glyph_index;
+        int width;
+        int rows;
+        int left;
+        int top;
+        int y_offset;
+        int advance;
+        int distance;
+        Tile *tile;
+    };
+
+    Font(Subsystem& subsystem, FT_Library& ft, const std::string& filename, ZipReader *zip = 0)
         throw (KeyValueException, FontException);
     virtual ~Font();
 
-    Tile *get_tile(int index);
-    int get_fw(int index);
-    int get_spacing();
-    int get_font_height();
+    const Character *get_character(const char *s);
+    int get_font_height() const;
+    int get_font_total_height() const;
+    int get_text_width(const char *s);
     int get_text_width(const std::string& text);
-    int get_char_width(unsigned char c);
+    int get_char_width(const char *s);
+    int get_y_offset() const;
+    int get_x_kerning(const Character *prev, const Character *cur);
+    void clip_on(int x, int y, int width, int height);
+    void clip_on(int x, int y, int width);
+    void clip_off();
+
 
 private:
-    Subsystem& subsystem;
+    struct Data {
+        Data *next;
+        Character *chr;
+    };
 
-    int offset;
-    Tile *tiles[NumOfChars];
-    int fw[NumOfChars];
-    int fh[NumOfChars];
-    int32_t font_height;
-    int spacing;
+    Subsystem& subsystem;
+    I18N& i18n;
+    FT_Library& ft;
+    Data *start_page;
+    bool kerning;
+    bool outline_monochrome;
+    bool monochrome;
+    double outline_alpha_factor;
+    double alpha_factor;
+    int height_correction;
+    int total_height;
+
+    unsigned int width;
+    unsigned int height;
+    unsigned char red1;
+    unsigned char green1;
+    unsigned char blue1;
+    unsigned char red2;
+    unsigned char green2;
+    unsigned char blue2;
+    int y_offset;
+    FT_Face face;
+    FT_Stroker stroker;
+    FT_Byte *font_buffer;
+
+    Data *create_new_page();
+    void delete_pages(Data *page);
+    Character *create_character(const char *s);
 };
 
 #endif

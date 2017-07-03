@@ -17,16 +17,16 @@
 
 #include "Tile.hpp"
 
-const char *Tile::TypeDescription[] = {
-    "non blocking",
-    "blocking",
-    "falling only blocking",
-    "red base",
-    "blue base",
-    "killing",
-    "jump, no descend",
-    "speed race finish",
-    "hill zone"
+const I18NText Tile::TypeDescription[] = {
+    I18N_TILETYPE01, // "non blocking"
+    I18N_TILETYPE02, // "blocking"
+    I18N_TILETYPE03, // "falling only blocking"
+    I18N_TILETYPE04, // "red base"
+    I18N_TILETYPE05, // "blue base"
+    I18N_TILETYPE06, // "killing"
+    I18N_TILETYPE07, // "jump, no descend"
+    I18N_TILETYPE08, // "speed race finish"
+    I18N_TILETYPE09, // "hill zone"
 };
 
 Tile::Tile(TileGraphic *tilegraphic, bool background, TileType tile_type,

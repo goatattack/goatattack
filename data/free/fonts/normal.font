@@ -1,3 +1,17 @@
 name=normal
 author=Philippe Widmer
 description=Normal font
+font=pxlt.ttf
+outline_monochrome=1
+monochrome=1
+width=16
+height=16
+overridden_height=11
+outline=1
+y_offset=-3
+red1=255
+green1=255
+blue1=255
+red2=255
+green2=255
+blue2=255

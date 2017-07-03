@@ -25,6 +25,10 @@
 
 #include <cstdlib>
 
+static bool to_bool(const std::string& v) {
+    return (atoi(v.c_str()) ? true : false);
+}
+
 TournamentFactory::TournamentFactory(Resources& resources, Subsystem& subsystem, Gui *gui)
     throw (TournamentFactoryException)
     : resources(resources), subsystem(subsystem), gui(gui), tournament_id(0) { }
@@ -72,7 +76,7 @@ Tournament *TournamentFactory::create_tournament(const MapConfiguration& config,
     if (tournament && server) {
         tournament_id++;
         if (logger) {
-            logger->log(ServerLogger::LogTypeNewMap, "new map loaded");
+            logger->log(ServerLogger::LogTypeNewMap, subsystem.get_i18n()(I18N_TNMT_NEW_MAP_LOADED));
         }
     }
 
@@ -89,7 +93,8 @@ void TournamentFactory::set_tournament_id(unsigned char id) {
 
 void TournamentFactory::set_tournament_server_flags(Properties& properties, Tournament *tournament) {
     if (tournament) {
-        bool state = (atoi(properties.get_value("friendly_fire_alarm").c_str()) ? true : false);
-        tournament->set_friendly_fire_alarm(state);
+        tournament->set_flag(Tournament::SettingEnableFriendlyFire, to_bool(properties.get_value("friendly_fire_alarm")));
+        tournament->set_flag(Tournament::SettingEnableShotExplosives, to_bool(properties.get_value("shot_explosives")));
+        tournament->set_flag(Tournament::SettingEnablePreventPick, to_bool(properties.get_value("prevent_pick")));
     }
 }

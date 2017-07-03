@@ -37,14 +37,13 @@ public:
     ServerException(std::string msg) : Exception(msg) { }
 };
 
-class Server : public Properties, public ClientServer, public Thread {
+class Server : public Properties, public ClientServer, private ServerAdmin, public Thread {
 private:
     Server(const Server&);
     Server& operator=(const Server&);
 
 public:
-    Server(Resources& resources, Subsystem& subsystem,
-        hostport_t port, pico_size_t num_players, const std::string& server_name,
+    Server(Resources& resources, Subsystem& subsystem, const KeyValue& kv,
         GamePlayType type, const std::string& map_name, int duration, int warmup)
         throw (Exception);
 
@@ -108,12 +107,10 @@ private:
     int ms_counter;
     UDPSocket master_socket;
     size_t rotation_current_index;
-    std::string team_red_name;
-    std::string team_blue_name;
     std::ofstream *log_file;
     ServerLogger logger;
-    ServerAdmin *server_admin;
     bool reload_map_rotation;
+    bool broadcast_settings;
 
     MapConfigurations map_configs;
     HeldPlayerStats held_player_stats;
@@ -132,7 +129,6 @@ private:
     void process_sync_pak(const Connection *c, Player *p) throw (ServerException);
     ClientPak *get_unsynced_client_pak(PlayerClientPak *pcpak);
     void destroy_paks(Player *p);
-    void check_team_names();
     void load_map_rotation();
 
     std::ostream& create_log_stream();

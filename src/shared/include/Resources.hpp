@@ -113,6 +113,7 @@ public:
     Music *get_music(const std::string& name) throw (ResourcesException);
     Properties *get_game_settings(const std::string& name) throw (ResourcesException);
     Shader *get_shader(const std::string& name) throw (ResourcesException);
+    Icon *get_flag(const std::string& name, bool no_throw = false) throw (ResourcesException);
 
     ResourceObjects& get_tilesets();
     ResourceObjects& get_objects();
@@ -127,14 +128,17 @@ public:
     ResourceObjects& get_musics();
     ResourceObjects& get_game_settings();
     ResourceObjects& get_shaders();
+    ResourceObjects& get_flags();
 
     const LoadedPaks& get_loaded_paks() const;
 
 private:
     Subsystem& subsystem;
+    I18N& i18n;
     std::string resource_directory;
     bool skip_maps;
     bool paks_only;
+    FT_Library ft;
 
     LoadedPaks loaded_paks;
     ResourceObjects tilesets;
@@ -150,6 +154,7 @@ private:
     ResourceObjects musics;
     ResourceObjects game_settings;
     ResourceObjects shaders;
+    ResourceObjects flags;
 
     void read_tilesets(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception);
     void read_objects(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception);
@@ -164,6 +169,7 @@ private:
     void read_musics(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception);
     void read_game_settings(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception);
     void read_shaders(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception);
+    void read_flags(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception);
 
     void load_resources(bool home_paks_only) throw (ResourcesException, ResourcesMissingException);
     void read_all(const std::string& fdir, ZipReader *fzip, bool base_resource) throw (Exception);

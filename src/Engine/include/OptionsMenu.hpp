@@ -25,6 +25,7 @@
 #include "OptionsMenu.hpp"
 #include "KeyBinding.hpp"
 #include "ButtonNavigator.hpp"
+#include "I18N.hpp"
 
 class Client;
 
@@ -45,9 +46,26 @@ public:
     void get_options_window_position(int& x, int& y);
 
 private:
+    struct CharactersetEntry {
+        CharactersetEntry(Characterset *cs) : cs(cs) { }
+
+        Characterset *cs;
+
+        bool operator<(const CharactersetEntry& rhs) const {
+            return (cs->get_description() < rhs.cs->get_description());
+        }
+    };
+
+    typedef std::vector<CharactersetEntry> CharactersetEntries;
+
     Gui& gui;
     Resources& resources;
     Subsystem& subsystem;
+
+protected:
+    I18N& i18n;
+
+private:
     Configuration& config;
     Client *client;
     bool options_visible;
@@ -58,6 +76,7 @@ private:
     GuiCheckbox *show_player_name;
     GuiListbox *player_skin;
     GuiPicture *player_skin_pic;
+    GuiLabel *player_skin_name;
 
     GuiTextbox *ck_up[KeyBinding::MaxBindings];
     GuiTextbox *ck_down[KeyBinding::MaxBindings];
@@ -77,6 +96,9 @@ private:
     GuiTextbox *ck_dz_v;
 
     GuiTextbox *gs_music_path;
+
+    GuiListbox *lang_lb;
+    I18N::Language current_langugage;
 
     GuiTextbox *create_field(GuiWindow *parent, int x, int y,
         const std::string& text, GuiVirtualButton::OnClick on_click, bool erase_pic);
@@ -142,8 +164,12 @@ private:
     static void static_close_window_click(GuiVirtualButton *sender, void *data);
     static void static_toggle_fullscreen_click(GuiCheckbox *sender, void *data, bool state);
     static void static_toggle_scanlines_click(GuiCheckbox *sender, void *data, bool state);
+    static void static_toggle_lagometer_click(GuiCheckbox *sender, void *data, bool state);
 
     static void static_close_capture_window_click(GuiVirtualButton *sender, void *data);
+
+    static void static_language_click(GuiVirtualButton *sender, void *data);
+    static void static_language_ok_click(GuiVirtualButton *sender, void *data);
 
     void ck_erase_horz();
     void ck_erase_vert();
@@ -185,6 +211,14 @@ private:
 
     void toggle_fullscreen_click(bool state);
     void toggle_scanlines_click(bool state);
+    void toggle_lagometer_click(bool state);
+
+    void language_click();
+    void language_ok_click();
+    void add_ok_cancel_buttons(GuiWindow *window, GuiVirtualButton::OnClick on_click);
+
+    static void static_change_button_texts(void *data);
+    void change_button_texts();
 
     virtual void options_closed() { }
 };

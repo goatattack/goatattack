@@ -1,0 +1,6 @@
+name=frog_spawn
+author=Philippe Widmer
+description=Player spawn animation
+width=16
+height=16
+speed=30

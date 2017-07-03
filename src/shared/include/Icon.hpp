@@ -36,7 +36,7 @@ private:
     Icon& operator=(const Icon&);
 
 public:
-    Icon(Subsystem& subsystem, const std::string& filename, ZipReader *zip = 0)
+    Icon(Subsystem& subsystem, const std::string& filename, ZipReader *zip = 0, const std::string& direct = "")
         throw (KeyValueException, IconException);
     virtual ~Icon();
 

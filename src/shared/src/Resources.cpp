@@ -93,7 +93,7 @@ template<class T> static T *find_object(Resources::ResourceObjects& objects, con
 
 template<class T> static bool check_duplicate(Subsystem& subsystem, Resources::ResourceObjects& objects, const std::string& objectgroup, const std::string& name) {
     if (find_object<T>(objects, name)) {
-        subsystem << "WARNING: object '" << name << "' in '" << objectgroup << "' already found, skipping." << std::endl;
+        subsystem << subsystem.get_i18n()(I18N_RES_OBJECT_FOUND_WARNING, name, objectgroup) << std::endl;
         return true;
     }
     return false;
@@ -101,11 +101,16 @@ template<class T> static bool check_duplicate(Subsystem& subsystem, Resources::R
 
 /* class implementation begins here */
 Resources::Resources(Subsystem& subsystem, const std::string& resource_directory, bool skip_maps, bool paks_only) throw (ResourcesException, ResourcesMissingException)
-    : subsystem(subsystem), resource_directory(resource_directory),
-      skip_maps(skip_maps), paks_only(paks_only)
+    : subsystem(subsystem), i18n(subsystem.get_i18n()),
+      resource_directory(resource_directory),
+      skip_maps(skip_maps), paks_only(paks_only), ft(0)
 {
-    subsystem << "initializing resources" << std::endl;
+    subsystem << i18n(I18N_RES_INIT_RESOURCES) << std::endl;
     srand(static_cast<unsigned int>(time(0)));
+
+    if (FT_Init_FreeType(&ft)) {
+        throw ResourcesException(i18n(I18N_FREETYPE_FAILED));
+    }
 
     create_directory(UserDirectory, get_home_directory());
 
@@ -113,8 +118,9 @@ Resources::Resources(Subsystem& subsystem, const std::string& resource_directory
 }
 
 Resources::~Resources() {
-    subsystem << "cleaning resources" << std::endl;
+    subsystem << i18n(I18N_RES_UNINIT_RESOURCES) << std::endl;
     destroy_resources(false);
+    FT_Done_FreeType(ft);
 }
 
 void Resources::reload_resources() throw (ResourcesException) {
@@ -152,79 +158,88 @@ const std::string& Resources::get_resource_directory() const {
 Tileset *Resources::get_tileset(const std::string& name) throw (ResourcesException) {
     Tileset *o = find_object<Tileset>(tilesets, name);
     if (o) return o;
-    throw ResourcesException("tileset " + name + " not found");
+    throw ResourcesException(i18n(I18N_RES_TILESET_NOT_FOUND, name));
 }
 
 Object *Resources::get_object(const std::string& name) throw (ResourcesException) {
     Object *o = find_object<Object>(objects, name);
     if (o) return o;
-    throw ResourcesException("object " + name + " not found");
+    throw ResourcesException(i18n(I18N_RES_OBJECT_NOT_FOUND, name));
 }
 
 Characterset *Resources::get_characterset(const std::string& name) throw (ResourcesException) {
     Characterset *o = find_object<Characterset>(charactersets, name);
     if (o) return o;
-    throw ResourcesException("characterset " + name + " not found");
+    throw ResourcesException(i18n(I18N_RES_CHARACTERSET_NOT_FOUND, name));
 }
 
 NPC *Resources::get_npc(const std::string& name) throw (ResourcesException) {
     NPC *o = find_object<NPC>(npcs, name);
     if (o) return o;
-    throw ResourcesException("npc " + name + " not found");
+    throw ResourcesException(i18n(I18N_RES_NPC_NOT_FOUND, name));
 }
 
 Animation *Resources::get_animation(const std::string& name) throw (ResourcesException) {
     Animation *o = find_object<Animation>(animations, name);
     if (o) return o;
-    throw ResourcesException("animation " + name + " not found");
+    throw ResourcesException(i18n(I18N_RES_ANIMATION_NOT_FOUND, name));
 }
 
 Map *Resources::get_map(const std::string& name) throw (ResourcesException) {
     Map *o = find_object<Map>(maps, name);
     if (o) return o;
-    throw ResourcesException("map " + name + " not found");
+    throw ResourcesException(i18n(I18N_RES_MAP_NOT_FOUND, name));
 }
 
 Background *Resources::get_background(const std::string& name) throw (ResourcesException) {
     Background *o = find_object<Background>(backgrounds, name);
     if (o) return o;
-    throw ResourcesException("background " + name + " not found");
+    throw ResourcesException(i18n(I18N_RES_BACKGROUND_NOT_FOUND, name));
 }
 
 Font *Resources::get_font(const std::string& name) throw (ResourcesException) {
     Font *o = find_object<Font>(fonts, name);
     if (o) return o;
-    throw ResourcesException("font " + name + " not found");
+    throw ResourcesException(i18n(I18N_RES_FONT_NOT_FOUND, name));
 }
 
 Icon *Resources::get_icon(const std::string& name) throw (ResourcesException) {
     Icon *o = find_object<Icon>(icons, name);
     if (o) return o;
-    throw ResourcesException("icon " + name + " not found");
+    throw ResourcesException(i18n(I18N_RES_ICON_NOT_FOUND, name));
 }
 
 Sound *Resources::get_sound(const std::string& name) throw (ResourcesException) {
     Sound *o = find_object<Sound>(sounds, name);
     if (o) return o;
-    throw ResourcesException("sound " + name + " not found");
+    throw ResourcesException(i18n(I18N_RES_SOUND_NOT_FOUND, name));
 }
 
 Music *Resources::get_music(const std::string& name) throw (ResourcesException) {
     Music *o = find_object<Music>(musics, name);
     if (o) return o;
-    throw ResourcesException("music " + name + " not found");
+    throw ResourcesException(i18n(I18N_RES_MUSIC_NOT_FOUND, name));
 }
 
 Properties *Resources::get_game_settings(const std::string& name) throw (ResourcesException) {
     Properties *o = find_object<Properties>(game_settings, name);
     if (o) return o;
-    throw ResourcesException("game settings " + name + " not found");
+    throw ResourcesException(i18n(I18N_RES_GAME_SETTING_NOT_FOUND, name));
 }
 
 Shader *Resources::get_shader(const std::string& name) throw (ResourcesException) {
     Shader *o = find_object<Shader>(shaders, name);
     if (o) return o;
-    throw ResourcesException("shader " + name + " not found");
+    throw ResourcesException(i18n(I18N_RES_SHADER_NOT_FOUND, name));
+}
+
+Icon *Resources::get_flag(const std::string& name, bool no_throw) throw (ResourcesException) {
+    Icon *o = find_object<Icon>(flags, name);
+    if (!o && !no_throw) {
+        throw ResourcesException(i18n(I18N_RES_FLAG_NOT_FOUND, name));
+    }
+
+    return o;
 }
 
 const Resources::LoadedPaks& Resources::get_loaded_paks() const {
@@ -281,6 +296,10 @@ Resources::ResourceObjects& Resources::get_game_settings() {
 
 Resources::ResourceObjects& Resources::get_shaders() {
     return shaders;
+}
+
+Resources::ResourceObjects& Resources::get_flags() {
+    return flags;
 }
 
 void Resources::read_tilesets(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception) {
@@ -424,7 +443,7 @@ void Resources::read_fonts(const std::string& directory, ZipReader *zip, bool ba
         Directory dir(directory, ".font", zip);
         while ((entry = dir.get_entry())) {
             try {
-                AutoPtr<Font> new_object(new Font(subsystem, (zip ? "" : directory + dir_separator) + entry, zip));
+                AutoPtr<Font> new_object(new Font(subsystem, ft, (zip ? "" : directory + dir_separator) + entry, zip));
                 if (!check_duplicate<Font>(subsystem, fonts, "fonts", new_object->get_name())) {
                     fonts.push_back(ResourceObject(new_object.release(), base_resource));
                 }
@@ -519,10 +538,33 @@ void Resources::read_shaders(const std::string& directory, ZipReader *zip, bool 
         Directory dir(directory, ".shader", zip);
         while ((entry = dir.get_entry())) {
             try {
-                //AutoPtr<Shader> new_object(new Shader(subsystem, (zip ? "" : directory + dir_separator) + entry, zip));
                 AutoPtr<Shader> new_object(subsystem.create_shader((zip ? "" : directory + dir_separator) + entry, zip));
                 if (!check_duplicate<Shader>(subsystem, shaders, "shaders", new_object->get_name())) {
                     shaders.push_back(ResourceObject(new_object.release(), base_resource));
+                }
+            } catch (const Exception& e) {
+                subsystem << e.what() << std::endl;
+            }
+        }
+    } catch (const DirectoryException&) {
+        /* chomp */
+    }
+}
+
+void Resources::read_flags(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception) {
+    const char *entry = 0;
+    try {
+        Directory dir(directory, ".png", zip);
+        while ((entry = dir.get_entry())) {
+            try {
+                std::string flag_name(entry);
+                std::string::size_type pos = flag_name.rfind('/', flag_name.length() - 1);
+                if (pos != std::string::npos) {
+                    flag_name = flag_name.substr(pos + 1);
+                }
+                AutoPtr<Icon> new_object(new Icon(subsystem, (zip ? "" : directory + dir_separator) + entry, zip, flag_name));
+                if (!check_duplicate<Icon>(subsystem, flags, "flags", new_object->get_name())) {
+                    flags.push_back(ResourceObject(new_object.release(), base_resource));
                 }
             } catch (const Exception& e) {
                 subsystem << e.what() << std::endl;
@@ -540,13 +582,13 @@ void Resources::load_resources(bool home_paks_only) throw (ResourcesException, R
 
         if (!home_paks_only) {
             /* scan main directories */
-            subsystem << "looking into: " << resource_directory << std::endl;
+            subsystem << i18n(I18N_RES_LOOKING_INTO,  resource_directory) << std::endl;
 
             /* read main paks */
             pak = Resources::NonDownloadableMainPaks;
             while (pak->name) {
                 if (pak->check) {
-                    subsystem << "scanning " << pak->name << std::endl;
+                    subsystem << i18n(I18N_RES_SCANNING, pak->name) << std::endl;
                     try {
                         ZipReader zip(resource_directory + dir_separator + pak->name);
                         read_all("", &zip, true);
@@ -564,7 +606,7 @@ void Resources::load_resources(bool home_paks_only) throw (ResourcesException, R
             const char *entry = 0;
             while ((entry = dir.get_entry())) {
                 if (is_not_a_required_main_pak(entry)) {
-                    subsystem << "scanning " << entry << ".pak" << std::endl;
+                    subsystem << i18n(I18N_RES_SCANNING, std::string(entry) + ".pak") << std::endl;
                     try {
                         ZipReader zip(resource_directory + dir_separator + entry + ".pak");
                         read_all("", &zip, true);
@@ -583,13 +625,13 @@ void Resources::load_resources(bool home_paks_only) throw (ResourcesException, R
 
         /* scan user directories */
         std::string hdir = get_home_directory() + dir_separator + UserDirectory;
-        subsystem << "looking into: " << hdir << std::endl;
+        subsystem << i18n(I18N_RES_LOOKING_INTO,  hdir) << std::endl;
 
         /* read additional paks in home directory */
         Directory dir(hdir, ".pak");
         const char *entry = 0;
         while ((entry = dir.get_entry())) {
-            subsystem << "scanning " << entry << ".pak" << std::endl;
+            subsystem << i18n(I18N_RES_SCANNING, std::string(entry) + ".pak") << std::endl;
             try {
                 ZipReader zip(hdir + dir_separator + entry + ".pak");
                 read_all("", &zip, false);
@@ -609,7 +651,7 @@ void Resources::load_resources(bool home_paks_only) throw (ResourcesException, R
         while (pak->name) {
             if (pak->check) {
                 if (std::find(loaded_paks.begin(), loaded_paks.end(), pak->name) == loaded_paks.end()) {
-                    throw ResourcesMissingException(std::string(pak->name) + " is missing.");
+                    throw ResourcesMissingException(i18n(I18N_RES_PAK_MISSING, pak->name));
                 }
             }
             pak++;
@@ -644,6 +686,7 @@ void Resources::read_all(const std::string& fdir, ZipReader *fzip, bool base_res
     read_musics(fdir + "music", fzip, base_resource);
     read_game_settings(fdir + "game", fzip, base_resource);
     read_shaders(fdir + "shaders", fzip, base_resource);
+    read_flags(fdir + "flags", fzip, base_resource);
 }
 
 void Resources::destroy_resources(bool home_paks_only) {
@@ -660,6 +703,7 @@ void Resources::destroy_resources(bool home_paks_only) {
     erase_resource_objects<Object>(objects, home_paks_only);
     erase_resource_objects<Tileset>(tilesets, home_paks_only);
     erase_resource_objects<Shader>(shaders, home_paks_only);
+    erase_resource_objects<Icon>(flags, home_paks_only);
 
     erase_loaded_pak(loaded_paks, home_paks_only);
 }

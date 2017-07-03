@@ -31,6 +31,7 @@
 
 #include <cstring>
 #include <algorithm>
+#include <clocale>
 #ifdef __unix__
 #include <SDL2/SDL_opengl.h>
 #ifdef __APPLE__
@@ -44,7 +45,7 @@
 #endif
 
 static const int ViewWidth = 640;
-static const int ViewHeight = 340; // 340
+static const int ViewHeight = 340;
 static const int WindowedZoomFactor = 2;
 static const int DefaultOpenGLMajor = 3;
 static const int DefaultOpenGLMinor = 1;
@@ -76,6 +77,7 @@ typedef std::vector<Music *> MusicPlayerMusics;
 Music *music_player_current_music = 0;
 int music_player_current_index = -1;
 TextMessageSystem *music_player_tms = 0;
+I18N *glbi18n = 0;
 MusicPlayerMusics music_player_musics;
 
 struct ExternalMusic {
@@ -94,7 +96,7 @@ int music_player_current_external_index = -1;
 time_t music_player_external_last_played = 0;
 std::string music_player_external_last_song;
 
-static void play_next_song() {
+static void play_next_song(bool print) {
     if (music_player_tms) {
         if (music_player_external) {
             if (music_player_external_music_handle) {
@@ -102,8 +104,7 @@ static void play_next_song() {
                 music_player_external_music_handle = 0;
             }
             if (time(0) - music_player_external_last_played < 2) {
-                std::string msg("ERROR: " + music_player_external_last_song + " played too fast, stopping.");
-                music_player_tms->add_text_msg(msg);
+                music_player_tms->add_text_msg((*glbi18n)(I18N_MUSIC_TOO_FAST, music_player_external_last_song));
             } else {
                 bool ok = false;
                 int count = 0;
@@ -122,7 +123,9 @@ static void play_next_song() {
                         } else {
                             music_player_external_last_played = time(0);
                             music_player_external_last_song = em.shortname;
-                            music_player_tms->add_text_msg("music: " + em.shortname);
+                            if (Mix_VolumeMusic(-1) || print) {
+                                music_player_tms->add_text_msg((*glbi18n)(I18N_MUSIC_INFO, em.shortname));
+                            }
                             ok = true;
                             break;
                         }
@@ -131,8 +134,7 @@ static void play_next_song() {
                     count++;
                 }
                 if (!ok) {
-                    std::string msg("ERROR: no valid music found.");
-                    music_player_tms->add_text_msg(msg);
+                    music_player_tms->add_text_msg((*glbi18n)(I18N_NO_MUSIC_FOUND));
                 }
             }
         } else {
@@ -146,8 +148,9 @@ static void play_next_song() {
                 music = music_player_musics[music_player_current_index];
                 if (music != music_player_current_music) {
                     music_player_current_music = music;
-                    std::string msg("music: " + music->get_description() + " by " + music->get_author());
-                    music_player_tms->add_text_msg(msg);
+                    if (Mix_VolumeMusic(-1) || print) {
+                        music_player_tms->add_text_msg((*glbi18n)(I18N_MUSIC_INFO, music->get_description()));
+                    }
                 }
             }
             if (music_player_current_music) {
@@ -160,10 +163,10 @@ static void play_next_song() {
 
 static void music_finished() {
     if (music_player_external) {
-        play_next_song();
+        play_next_song(false);
     } else {
         if (music_player_current_music) {
-            play_next_song();
+            play_next_song(false);
         }
     }
 }
@@ -181,18 +184,23 @@ static const bool EnableShadingPipeline = false;
 static const bool EnableShadingPipeline = true;
 #endif
 
-SubsystemSDL::SubsystemSDL(std::ostream& stream, const std::string& window_title, bool shading_pipeline) throw (SubsystemException)
-    : Subsystem(stream, window_title), window(0), joyaxis(0), fullscreen(false),
+SubsystemSDL::SubsystemSDL(std::ostream& stream, I18N& i18n, const std::string& window_title, bool shading_pipeline) throw (SubsystemException)
+    : Subsystem(stream, i18n, window_title), window(0), joyaxis(0), fullscreen(false),
       draw_scanlines(false), scanlines_intensity(0.5f),
       deadzone_horizontal(3200), deadzone_vertical(3200), selected_tex(0),
       music_volume(100), vao(0), vbo(0), base_shader(0), blank_tex(0),
       shading_pipeline(shading_pipeline && EnableShadingPipeline),
       draw_quad(this->shading_pipeline ? &SubsystemSDL::draw_vbo : &SubsystemSDL::draw_immediate)
 {
-    stream << "starting SubsystemSDL" << std::endl;
+    stream << i18n(I18N_SSSDL_START) << std::endl;
+
+    /* set locale to system default for proper mbstowcs() */
+#ifndef _WIN32
+    setlocale(LC_ALL, "");
+#endif
 
     /* init SDL */
-    stream << "initializing SDL" << std::endl;
+    stream << i18n(I18N_SSSDL_INIT) << std::endl;
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER)) {
         throw SubsystemException(SDL_GetError());
     }
@@ -205,8 +213,7 @@ SubsystemSDL::SubsystemSDL(std::ostream& stream, const std::string& window_title
     /* get native desktop size */
     SDL_DisplayMode display;
     if (SDL_GetCurrentDisplayMode(0, &display) < 0) {
-        throw SubsystemException("Could not query main desktop size: " +
-            std::string(SDL_GetError()));
+        throw SubsystemException(i18n(I18N_SSSDL_SIZE_QUERY, std::string(SDL_GetError())));
     }
     native_width = display.w;
     native_height = display.h;
@@ -230,7 +237,7 @@ SubsystemSDL::SubsystemSDL(std::ostream& stream, const std::string& window_title
     box_height_factor = 2.0f / static_cast<float>(box_height);
 
     /* create window */
-    stream << "creating SDL window" << std::endl;
+    stream << i18n(I18N_SSSDL_WINDOW) << std::endl;
     window = SDL_CreateWindow(
         window_title.c_str(),
         SDL_WINDOWPOS_UNDEFINED,
@@ -239,8 +246,7 @@ SubsystemSDL::SubsystemSDL(std::ostream& stream, const std::string& window_title
         current_height,
         SDL_WINDOW_OPENGL);
     if (!window) {
-        throw SubsystemException("Could not create window: " +
-            std::string(SDL_GetError()));
+        throw SubsystemException(i18n(I18N_SSSDL_WINDOW_FAILED, std::string(SDL_GetError())));
     }
     SDL_ShowCursor(SDL_DISABLE);
 
@@ -251,7 +257,7 @@ SubsystemSDL::SubsystemSDL(std::ostream& stream, const std::string& window_title
     grab_joysticks();
 
     /* initialize OpenGL */
-    stream << "creating OpenGL context" << std::endl;
+    stream << i18n(I18N_SSSDL_OPENGL) << std::endl;
     glcontext = SDL_GL_CreateContext(window);
     if (SDL_GL_SetSwapInterval(-1) < 0) {
         SDL_GL_SetSwapInterval(1);
@@ -260,21 +266,20 @@ SubsystemSDL::SubsystemSDL(std::ostream& stream, const std::string& window_title
 
     /* init audio */
     if (!(Mix_Init(MIX_INIT_OGG | MIX_INIT_MP3) & MIX_INIT_OGG)) {
-        throw SubsystemException("Could not initialize mixer: " +
-            std::string(Mix_GetError()));
+        throw SubsystemException(i18n(I18N_SSSDL_MIXER_FAILED, std::string(Mix_GetError())));
     }
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) == -1) {
-        throw SubsystemException("Could not open audio: " +
-            std::string(Mix_GetError()));
+        throw SubsystemException(i18n(I18N_SSSDL_AUDIO_FAILED, std::string(Mix_GetError())));
     }
     Mix_ChannelFinished(channel_done);
+    Mix_AllocateChannels(128);
     Mix_ReserveChannels(1);
 
     Mix_HookMusicFinished(music_finished);
 }
 
 SubsystemSDL::~SubsystemSDL() {
-    stream << "cleaning SubsystemSDL" << std::endl;
+    stream << i18n(I18N_SSSDL_UNINIT) << std::endl;
 
 #ifdef __APPLE__
     if (is_fullscreen()) {
@@ -298,7 +303,7 @@ SubsystemSDL::~SubsystemSDL() {
 void SubsystemSDL::initialize(Resources& resources) {
 #ifndef _WIN32
     if (shading_pipeline) {
-        stream << "using shading pipeline" << std::endl;
+        stream << i18n(I18N_SSSDL_SHADING_PIPELINE) << std::endl;
         /* setup dynamic vao and vbo */
         glGenVertexArrays(1, &vao);
         glGenBuffers(1, &vbo);
@@ -348,7 +353,7 @@ int SubsystemSDL::get_zoom_factor() const {
 void SubsystemSDL::toggle_fullscreen() {
     int flag = 0;
 
-    stream << "toggling fullscreen" << std::endl;
+    stream << i18n(I18N_SSSDL_FULLSCREEN) << std::endl;
     fullscreen = !fullscreen;
 
     if (!fullscreen) {
@@ -527,27 +532,57 @@ void SubsystemSDL::draw_box(int x, int y, int width, int height) {
     (this->*draw_quad)(x, y, width, height, true);
 }
 
-void SubsystemSDL::draw_text(Font *font, int x, int y, const std::string& text) {
+int SubsystemSDL::draw_text(Font *font, int x, int y, const std::string& text) {
     size_t sz = text.length();
+    const Font::Character *prev = 0;
 
-    for (size_t i = 0; i < sz; i++) {
-        int c = text[i];
-        if (c >= FontMin && c <= FontMax) {
-            c -= FontMin;
-            TileGraphic *tg = font->get_tile(c)->get_tilegraphic();
-            draw_tilegraphic(tg, x, y);
-            x += font->get_fw(c) + font->get_spacing();
+    if (sz) {
+        int y_offset = font->get_y_offset();
+        const char *p = text.c_str();
+        while (*p) {
+            const Font::Character *chr = font->get_character(p);
+            draw_tilegraphic(chr->tile->get_tilegraphic(), x, y + y_offset + chr->y_offset);
+            x += chr->advance + font->get_x_kerning(prev, chr);
+            p += chr->distance;
+            prev = chr;
         }
     }
+
+    return x;
 }
 
-int SubsystemSDL::draw_char(Font *font, int x, int y, unsigned char c) {
-    if (c >= FontMin && c <= FontMax) {
-        c -= FontMin;
-        TileGraphic *tg = font->get_tile(c)->get_tilegraphic();
-        draw_tilegraphic(tg, x, y);
-        x += font->get_fw(c) + font->get_spacing();
+int SubsystemSDL::draw_clipped_text(Font *font, int x, int y, int width, const std::string& text) {
+    size_t sz = text.length();
+    const Font::Character *prev = 0;
+
+    if (sz) {
+        font->clip_on(x, y, width);
+        int totw = 0;
+        const char *p = text.c_str();
+        int font_y_offset = font->get_y_offset();
+        while (*p) {
+            const Font::Character *chr = font->get_character(p);
+            int advance = chr->advance + font->get_x_kerning(prev, chr);
+            draw_tilegraphic(chr->tile->get_tilegraphic(), x, y + font_y_offset + chr->y_offset);
+            x += advance;
+            totw += advance;
+            if (totw > width) {
+                break;
+            }
+            p += chr->distance;
+            prev = chr;
+        }
+        font->clip_off();
     }
+
+    return x;
+}
+
+int SubsystemSDL::draw_char(Font *font, int x, int y, const char *s) {
+    int y_offset = font->get_y_offset();
+    const Font::Character *chr = font->get_character(s);
+    draw_tilegraphic(chr->tile->get_tilegraphic(), x, y + y_offset + chr->y_offset);
+    x += chr->advance;
 
     return x;
 }
@@ -556,7 +591,23 @@ void SubsystemSDL::draw_icon(Icon *icon, int x, int y) {
     draw_tile(icon->get_tile(), x, y);
 }
 
+
+void SubsystemSDL::enable_cliprect(int x, int y, int width, int height) {
+    glScissor(
+        ((x - x_offset) * current_zoom),
+        (ViewHeight - (y - y_offset)) * current_zoom,
+        width * current_zoom,
+        height * current_zoom
+    );
+    glEnable(GL_SCISSOR_TEST);
+}
+
+void SubsystemSDL::disable_cliprect() {
+    glDisable(GL_SCISSOR_TEST);
+}
+
 int SubsystemSDL::play_sound(Sound *sound, int loops) {
+    int channel = -1;
     if (sound) {
         const AudioSDL *audio = static_cast<const AudioSDL *>(sound->get_audio());
         int c = Mix_GroupAvailable(-1);
@@ -567,10 +618,10 @@ int SubsystemSDL::play_sound(Sound *sound, int loops) {
                 channel_done(c);
             }
         }
-        return Mix_PlayChannel(-1, audio->get_chunk(), loops);
-    } else {
-        return -1;
+        channel = Mix_PlayChannel(-1, audio->get_chunk(), loops);
     }
+
+    return channel;
 }
 
 void SubsystemSDL::play_system_sound(Sound *sound) {
@@ -599,6 +650,14 @@ bool SubsystemSDL::is_sound_playing(Sound *sound) {
     return (std::find(playing_sounds.begin(), playing_sounds.end(), sound) != playing_sounds.end());
 }
 
+int SubsystemSDL::stop_sound(int channel) {
+    if (channel > -1) {
+        Mix_HaltChannel(channel);
+    }
+
+    return -1;
+}
+
 bool SubsystemSDL::play_music(Music *music) {
     music_player_current_music = 0;
     if (music) {
@@ -625,6 +684,7 @@ void SubsystemSDL::stop_music() {
 
 void SubsystemSDL::start_music_player(Resources& resources, TextMessageSystem& tms, const char *directory) {
     music_player_tms = &tms;
+    glbi18n = &i18n;
     bool take_internal_music = true;
 
     /* check if external music files exist */
@@ -670,12 +730,12 @@ void SubsystemSDL::start_music_player(Resources& resources, TextMessageSystem& t
         std::random_shuffle(music_player_musics.begin(), music_player_musics.end());
     }
 
-    play_next_song();
+    play_next_song(false);
 }
 
 void SubsystemSDL::skip_music_player_song() {
     music_player_external_last_played = 0;
-    play_next_song();
+    play_next_song(true);
 }
 
 void SubsystemSDL::stop_music_player() {
@@ -744,6 +804,12 @@ bool SubsystemSDL::get_input(InputData& input) {
                         input.data_type = InputData::InputDataTypeMouseLeftUp;
                         break;
                 }
+                break;
+
+            case SDL_MOUSEWHEEL:
+                input.param1 = event.motion.x;
+                input.param2 = event.motion.y;
+                input.data_type = InputData::InputDataTypeMouseWheel;
                 break;
 
             case SDL_WINDOWEVENT:
@@ -845,6 +911,16 @@ bool SubsystemSDL::get_input(InputData& input) {
                     case SDLK_TAB:
                         input.key_type = InputData::InputKeyTypeStatistics;
                         break;
+
+                    case SDLK_LSHIFT:
+                    case SDLK_RSHIFT:
+                        input.key_type = InputData::InputKeyTypeShift;
+                        break;
+
+                    case SDLK_LCTRL:
+                    case SDLK_RCTRL:
+                        input.key_type = InputData::InputKeyTypeControl;
+                        break;
                 }
                 break;
 
@@ -930,7 +1006,7 @@ int SubsystemSDL::get_view_height() {
 }
 
 void SubsystemSDL::init_gl(int width, int height) {
-    stream << "initializing OpenGL" << std::endl;
+    stream << i18n(I18N_SSSDL_OPENGL_INIT) << std::endl;
     /* init gl scene */
     glViewport(0, 0, width, height);
 

@@ -84,6 +84,7 @@ public:
     virtual bool mousedown(int button, int x, int y);
     virtual bool mousemove(int x, int y);
     virtual bool mouseup(int button, int x, int y);
+    virtual bool mousehweel(int x, int y);
     virtual bool keydown(int keycode, bool repeat);
     virtual bool keyup(int keycode);
     virtual bool keypress(InputData& input);
@@ -109,6 +110,7 @@ private:
     std::string tooltip_text;
 
     void set_parent(GuiObject *obj);
+    virtual void object_removing(GuiObject *object);
     virtual void paint() = 0;
 };
 
@@ -185,6 +187,7 @@ private:
     int window_title_height;
     Icon *screw1, *screw2, *screw3, *screw4;
 
+    virtual void object_removing(GuiObject *obj);
     virtual void paint();
     void prepare();
 };
@@ -221,6 +224,8 @@ public:
     const std::string& get_caption() const;
     void set_color(float bg_r, float bg_g, float bg_b);
     void set_follow_alpha(bool state);
+    int get_clip_width() const;
+    void set_clip_width(int width);
 
 private:
     bool follow_alpha;
@@ -228,6 +233,7 @@ private:
     float bg_g;
     float bg_b;
     std::string caption;
+    int clip_width;
 
     virtual void paint();
 };
@@ -288,6 +294,8 @@ public:
     void show_bolts(bool state);
     void set_color(float r, float g, float b);
     void reset_color();
+    void set_pressed(bool state);
+    bool get_pressed() const;
 
 private:
     bool bolts;
@@ -295,6 +303,7 @@ private:
     float text_r;
     float text_g;
     float text_b;
+    bool pressed;
 
     virtual void paint();
     void prepare();
@@ -376,20 +385,26 @@ private:
 /* GuiTextbox */
 class GuiTextbox : public GuiObject {
 public:
+    enum Type {
+        TypeNormal,
+        TypeHidden,
+        TypeInteger
+    };
+
     GuiTextbox(Gui& gui, GuiObject *parent);
     GuiTextbox(Gui& gui, GuiObject *parent, int x, int y, int width,
         const std::string& text);
 
     virtual ~GuiTextbox();
 
+    void set_type(Type type);
+    Type get_type() const;
     void set_text(const std::string& text);
     const std::string& get_text() const;
     void set_caret_position(int pos);
     int get_caret_position() const;
     void set_locked(bool state);
     bool get_locked() const;
-    void set_hide_characters(bool state);
-    bool get_hide_characters() const;
 
     virtual bool can_have_focus() const;
     virtual bool can_have_mouse_events() const;
@@ -404,7 +419,8 @@ private:
     int caret_position;
     std::string text;
     bool locked;
-    bool hide_characters;
+    Type type;
+    bool mouse_is_down;
 
     void recalc();
     void set_cursor_pos_from_mouse(int x);
@@ -442,6 +458,8 @@ private:
 /* GuiTab */
 class GuiTab : public GuiObject {
 public:
+    typedef bool (*OnTabClick)(GuiTab *sender, int index, void *data);
+
     GuiTab(Gui& gui, GuiObject *parent);
     GuiTab(Gui& gui, GuiObject *parent, int x, int y, int width, int height);
 
@@ -449,6 +467,7 @@ public:
 
     GuiFrame *create_tab(const std::string& name);
     void select_tab(int index);
+    void set_on_tab_click(OnTabClick on_tab_click, void *on_tab_click_data);
 
 private:
     struct Tab {
@@ -463,6 +482,8 @@ private:
     Tab *current_tab;
     int tab_button_height;
     int current_button_x;
+    OnTabClick on_tab_click;
+    void *on_tab_click_data;
     Tabs tabs;
 
     virtual void paint();
@@ -500,6 +521,8 @@ protected:
     int current_value;
     bool draw_block;
 
+    virtual bool mousehweel(int x, int y);
+
     void recalc();
     static void static_down_button_clicked(GuiVirtualButton *sender, void *data);
     static void static_up_button_clicked(GuiVirtualButton *sender, void *data);
@@ -515,10 +538,6 @@ public:
 
     virtual ~GuiHScroll();
 
-    virtual bool mousedown(int button, int x, int y);
-    virtual bool mousemove(int x, int y);
-    virtual bool mouseup(int button, int x, int y);
-
 private:
     GuiButton *left_button;
     GuiButton *right_button;
@@ -529,6 +548,10 @@ private:
     int origin_x;
 
     virtual void paint();
+
+    virtual bool mousedown(int button, int x, int y);
+    virtual bool mousemove(int x, int y);
+    virtual bool mouseup(int button, int x, int y);
 
     void prepare();
     void calc_blockpos();
@@ -544,10 +567,6 @@ public:
 
     virtual ~GuiVScroll();
 
-    virtual bool mousedown(int button, int x, int y);
-    virtual bool mousemove(int x, int y);
-    virtual bool mouseup(int button, int x, int y);
-
 private:
     GuiButton *up_button;
     GuiButton *down_button;
@@ -558,6 +577,10 @@ private:
     int origin_y;
 
     virtual void paint();
+
+    virtual bool mousedown(int button, int x, int y);
+    virtual bool mousemove(int x, int y);
+    virtual bool mouseup(int button, int x, int y);
 
     void prepare();
     void calc_blockpos();
@@ -576,11 +599,15 @@ public:
 
     class Column {
     public:
-        Column(const std::string& text, int width) : text(text), width(width) { }
+        Column(const std::string& text, int width) : icon(0), icon_width(0), text(text), width(width) { }
+        Column(Icon *icon, int icon_width, const std::string& text, int width) : icon(icon), icon_width(icon_width), text(text), width(width) { }
         ~Column() { }
 
+        Icon *icon;
+        int icon_width;
         std::string text;
         int width;
+        std::string addon;
     };
 
     typedef std::vector<Column> Columns;
@@ -588,6 +615,7 @@ public:
     GuiListboxEntry(Gui& gui, GuiObject *parent);
     GuiListboxEntry(Gui& gui, GuiObject *parent, const std::string& text);
     GuiListboxEntry(Gui& gui, GuiObject *parent, const std::string& text, int width);
+    GuiListboxEntry(Gui& gui, GuiObject *parent, Icon *icon, int icon_width, const std::string& text, int width);
     GuiListboxEntry(Gui& gui, GuiObject *parent, const Column& column);
 
     virtual ~GuiListboxEntry();
@@ -595,6 +623,7 @@ public:
     Columns& get_columns();
     void add_column(const Column& column);
     void add_column(const std::string& text, int width);
+    void add_column(Icon *icon, int icon_width, const std::string& text, int width);
 
     void draw(int x, int y, int width, DrawType draw_type);
 
@@ -615,6 +644,9 @@ public:
     GuiListbox(Gui& gui, GuiObject *parent, int x, int y, int width, int height,
         const std::string& title, OnItemSelected on_item_selected,
         void *on_item_selected_data);
+    GuiListbox(Gui& gui, GuiObject *parent, int x, int y, int width, int height,
+        Icon *icon, int icon_width, const std::string& title,
+        OnItemSelected on_item_selected, void *on_item_selected_data);
 
     virtual ~GuiListbox();
 
@@ -626,6 +658,7 @@ public:
     int get_entry_count() const;
     GuiListboxEntry *get_entry(int index);
     GuiListboxEntry *add_entry(const std::string& text);
+    GuiListboxEntry *add_entry(Icon *icon, int icon_width, const std::string& text);
     GuiListboxEntry *add_entry(const std::string& text, int width);
     GuiListboxEntry *add_entry(const GuiListboxEntry::Column& column);
     GuiListboxEntry *get_title_bar();
@@ -638,6 +671,7 @@ public:
     virtual bool mousedown(int button, int x, int y);
     virtual bool mousemove(int x, int y);
     virtual bool mouseup(int button, int x, int y);
+    virtual bool mousehweel(int x, int y);
 
 private:
     typedef std::vector<GuiListboxEntry *> Entries;
@@ -656,7 +690,7 @@ private:
 
     virtual void paint();
     void my_down_mousemove(int x, int y, bool from_mousemove);
-    void setup(const std::string& title);
+    void setup(Icon *icon, int icon_width, const std::string& title);
     void recalc();
     void select_from_mouse(int x, int y, bool from_mousemove);
 

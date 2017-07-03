@@ -25,24 +25,60 @@
 
 #include <iostream>
 
-static const std::string FieldMsg("Please fill in this field.");
-static const std::string UnsavedMsg("There are unsaved changes. Really continue?");
-
 const double AnimationMultiplier = 3.0f;
 static const ns_t ns_fc = 10000000;   /* for 0.01 s */
+static const char *left_arrow = "\xe2\x86\x90";
+static const char *right_arrow = "\xe2\x86\x92";
+
+MapEditor::SelectRect::SelectRect() : width(0), height(0), decoration(0), map(0) {
+    reset();
+}
+
+MapEditor::SelectRect::~SelectRect() {
+    clear();
+}
+
+void MapEditor::SelectRect::reset() {
+    select_index = 0;
+}
+
+void MapEditor::SelectRect::clear() {
+    for (int i = 0; i < height; i++) {
+        delete[] decoration[i];
+        delete[] map[i];
+    }
+    delete[] decoration;
+    delete[] map;
+    decoration = 0;
+    map = 0;
+    objects.clear();
+    lights.clear();
+}
+
+bool MapEditor::SelectRect::add_point(int x, int y) {
+    px[select_index] = x;
+    py[select_index] = y;
+    if (select_index < 1) {
+        select_index++;
+        return false;
+    }
+
+    return true;
+}
 
 MapEditor::MapEditor(Resources& resources, Subsystem& subsystem, Configuration& config)
     : Gui(resources, subsystem, resources.get_font("normal")),
-      resources(resources), subsystem(subsystem), config(config), running(true),
-      top(0), left(0), selected_tile_index(0), selected_object_index(0),
+      resources(resources), subsystem(subsystem), i18n(subsystem.get_i18n()),
+      config(config), running(true), top(0), left(0), selected_tile_index(0), selected_object_index(0),
       mouse_down_mode(0), move_map(false), wmap(new EditableMap(resources, subsystem)),
       center_icon(resources.get_icon("center")), mirrored_drawing(false),
       draw_tile_props(false), draw_tile_zorder(false), draw_tile_number(false),
       draw_even_only(false), drawing_decoration(false), draw_decoration_on_screen(true),
       draw_lightmap_on_screen(true), draw_map_on_screen(true), draw_objects_on_screen(true),
-      draw_light_sources(true), draw_mode(DrawModeTile),
+      draw_light_sources(true), draw_used_tiles(false), draw_mode(DrawModeTile),
       light_source(resources.get_icon("light_source")), compile_thread(0),
-      home_workdir(get_home_directory() + dir_separator + UserDirectory)
+      home_workdir(get_home_directory() + dir_separator + UserDirectory),
+      is_drawing_rect(true), is_selecting(false), use_selection(false), tile_selector_page(0)
 {
     ts_picture = 0;
     os_picture = 0;
@@ -75,25 +111,69 @@ void MapEditor::idle() throw (Exception) {
         os_picture->set_visible(get_blink_on());
     }
 
+    /* get mouse position */
+    bool draw_sel_ok = false;
+    int sx = 0;
+    int sy = 0;
+    if (wmap) {
+        Tileset *ts = wmap->get_tileset_ptr();
+        if (ts) {
+            int w = ts->get_tile_width();
+            int h = ts->get_tile_height();
+            sx = get_mouse_x();
+            sy = get_mouse_y();
+            sx -= left;
+            sy -= top;
+            sx /= w;
+            sy /= h;
+            sx *= w;
+            sy *= h;
+            sx += left;
+            sy += top;
+            draw_sel_ok = true;
+        }
+    }
+
     /* draw stuff */
     draw_background();
     if (draw_decoration_on_screen) {
         draw_decoration();
     }
+
     if (draw_lightmap_on_screen) {
         draw_lightmap();
     }
+
+    if (use_selection && draw_mode == DrawModeTile && drawing_decoration && draw_sel_ok) {
+        draw_selection(sx, sy, true);
+    }
+
     if (draw_map_on_screen) {
         draw_map(true);
     }
+
     if (draw_objects_on_screen) {
         draw_objects();
     }
+
     if (draw_map_on_screen) {
         draw_map(false);
     }
+
     if (draw_light_sources) {
         draw_lights();
+    }
+
+    if (use_selection && draw_mode == DrawModeObject && draw_sel_ok) {
+        draw_selection_objects(sx, sy);
+    }
+
+    if (use_selection && draw_mode == DrawModeLightSources && draw_sel_ok) {
+        draw_selection_lights(sx, sy);
+    }
+
+    if (use_selection && draw_mode == DrawModeTile && !drawing_decoration && draw_sel_ok) {
+        draw_selection(sx, sy, false);
     }
 
     /* draw center cross */
@@ -112,7 +192,7 @@ void MapEditor::idle() throw (Exception) {
 
     /* draw modified marker */
     if (wmap->is_modified()) {
-        std::string txt("modified");
+        std::string txt(i18n(I18N_ME_MODIFIED));
         Font *f = get_font();
         int tw = f->get_text_width(txt);
         subsystem.draw_text(f, subsystem.get_view_width() - tw - 5, 5, txt);
@@ -120,7 +200,7 @@ void MapEditor::idle() throw (Exception) {
 
     /* mirrored drawing */
     if (mirrored_drawing) {
-        std::string txt("mirroring");
+        std::string txt(i18n(I18N_ME_MIRRORING));
         Font *f = get_font();
         int tw = f->get_text_width(txt);
         subsystem.draw_text(f, subsystem.get_view_width() - tw - 5, vh - f->get_font_height() - 5, txt);
@@ -128,7 +208,7 @@ void MapEditor::idle() throw (Exception) {
 
     /* drawing decoration */
     if (drawing_decoration) {
-        std::string txt("decoration");
+        std::string txt(i18n(I18N_ME_DECORATION));
         Font *f = get_font();
         int tw = f->get_text_width(txt);
         subsystem.draw_text(f, subsystem.get_view_width() - tw - 5, vh - 2 * f->get_font_height() - 5, txt);
@@ -136,7 +216,7 @@ void MapEditor::idle() throw (Exception) {
 
     /* decoration indicator */
     if (!draw_decoration_on_screen) {
-        std::string txt("NO DEC");
+        std::string txt(i18n(I18N_ME_NO_DEC));
         Font *f = get_font();
         int tw = f->get_text_width(txt);
         subsystem.draw_text(f, subsystem.get_view_width() - tw - 5, vh - 3 * f->get_font_height() - 5, txt);
@@ -144,7 +224,7 @@ void MapEditor::idle() throw (Exception) {
 
     /* lightmap indicator */
     if (!draw_lightmap_on_screen) {
-        std::string txt("NO LIGHTMAP");
+        std::string txt(i18n(I18N_ME_NO_LGTMP));
         Font *f = get_font();
         int tw = f->get_text_width(txt);
         subsystem.draw_text(f, subsystem.get_view_width() - tw - 5, vh - 4 * f->get_font_height() - 5, txt);
@@ -152,7 +232,7 @@ void MapEditor::idle() throw (Exception) {
 
     /* map indicator */
     if (!draw_map_on_screen) {
-        std::string txt("NO MAP");
+        std::string txt(i18n(I18N_ME_NO_MP));
         Font *f = get_font();
         int tw = f->get_text_width(txt);
         subsystem.draw_text(f, subsystem.get_view_width() - tw - 5, vh - 5 * f->get_font_height() - 5, txt);
@@ -160,7 +240,7 @@ void MapEditor::idle() throw (Exception) {
 
     /* light indicator */
     if (!draw_objects_on_screen) {
-        std::string txt("NO OBJECTS");
+        std::string txt(i18n(I18N_ME_NO_OBJ));
         Font *f = get_font();
         int tw = f->get_text_width(txt);
         subsystem.draw_text(f, subsystem.get_view_width() - tw - 5, vh - 6 * f->get_font_height() - 5, txt);
@@ -168,7 +248,7 @@ void MapEditor::idle() throw (Exception) {
 
     /* light indicator */
     if (!draw_light_sources) {
-        std::string txt("NO LIGHT");
+        std::string txt(i18n(I18N_ME_NO_LGT));
         Font *f = get_font();
         int tw = f->get_text_width(txt);
         subsystem.draw_text(f, subsystem.get_view_width() - tw - 5, vh - 7 * f->get_font_height() - 5, txt);
@@ -178,19 +258,19 @@ void MapEditor::idle() throw (Exception) {
     std::string txt;
     switch (draw_mode) {
         case DrawModeTile:
-            txt = "TILE";
+            txt = i18n(I18N_ME_MODE_TILE);
             break;
 
         case DrawModeObject:
-            txt = "OBJECT";
+            txt = i18n(I18N_ME_MODE_OBJECT);
             break;
 
         case DrawModeLightSources:
-            txt = "LIGHT";
+            txt = i18n(I18N_ME_MODE_LIGHT);
             break;
 
         case DrawModeEditLight:
-            txt = "EDIT LIGHT";
+            txt = i18n(I18N_ME_MODE_EDIT_LIGHT);
             break;
 
         default:
@@ -199,36 +279,68 @@ void MapEditor::idle() throw (Exception) {
     Font *f = get_font();
     subsystem.draw_text(f, 5, subsystem.get_view_height() - f->get_font_height() - 5, txt);
 
+    /* draw "select" */
+    if (is_selecting) {
+        subsystem.draw_text(f, 5, subsystem.get_view_height() - f->get_font_height() * 2 - 5, i18n(I18N_ME_SELECT));
+    }
+
     /* draw object blinking */
-    if (get_blink_on()) {
-        if (wmap) {
-            Tileset *ts = wmap->get_tileset_ptr();
-            if (ts) {
-                x = get_mouse_x();
-                y = get_mouse_y();
-                x -= left;
-                y -= top;
-                x /= ts->get_tile_width();
-                y /= ts->get_tile_height();
-                x *= ts->get_tile_width();
-                y *= ts->get_tile_height();
-                x += left;
-                y += top;
+    if (wmap) {
+        Tileset *ts = wmap->get_tileset_ptr();
+        if (ts) {
+            Object *obj = static_cast<Object *>(resources.get_objects()[selected_object_index].object);
+            int w = ts->get_tile_width();
+            int h = ts->get_tile_height();
+            x = get_mouse_x();
+            y = get_mouse_y();
+            x -= left;
+            y -= top;
+            x /= w;
+            y /= h;
+            x *= w;
+            y *= h;
+            x += left;
+            y += top;
+            if (get_tick_on() && !use_selection) {
                 if (draw_mode == DrawModeObject) {
-                    Object *obj = static_cast<Object *>(resources.get_objects()[selected_object_index].object);
                     subsystem.draw_tilegraphic(obj->get_tile()->get_tilegraphic(), x, y);
                 } else if (draw_mode == DrawModeLightSources) {
                     subsystem.draw_icon(light_source, x, y);
                 }
+            }
+            if (is_drawing_rect) {
+                if (is_selecting && select_rect.select_index) {
+                    x = select_rect.px[0] * w + left;
+                    y = select_rect.py[0] * h + top;
+                    int x2 = get_mouse_x();
+                    int y2 = get_mouse_y();
+                    x2 -= left;
+                    y2 -= top;
+                    x2 /= w;
+                    y2 /= h;
+                    x2 *= w;
+                    y2 *= h;
+                    x2 += left;
+                    y2 += top;
+                    if (x > x2) std::swap(x, x2);
+                    if (y > y2) std::swap(y, y2);
+                    w = x2 - x + w;
+                    h = y2 - y + h;
+                } else if (draw_mode == DrawModeObject) {
+                    w = obj->get_tile()->get_tilegraphic()->get_width();
+                    h = obj->get_tile()->get_tilegraphic()->get_height();
+                }
+                subsystem.set_color(1.0f, 1.0f, 1.0f, 0.85f);
+                draw_rect(x, y, w, h);
+                subsystem.reset_color();
+
             }
         }
     }
 
     /* compile finished? */
     if (compile_thread) {
-        sprintf(buffer, "Please wait... %d%%", compile_thread->get_percentage());
-        txt.assign(buffer);
-        lbl_compile->set_caption(txt);
+        lbl_compile->set_caption(i18n(I18N_ME_COMPILING, compile_thread->get_percentage()));
         if (compile_thread->is_finished()) {
             finalise_lightmap();
         }
@@ -239,18 +351,75 @@ void MapEditor::on_input_event(const InputData& input) {
     if (get_stack_count() == 1) {
         switch (input.data_type) {
             case InputData::InputDataTypeMouseLeftDown:
-                mouse_down_mode = 1;
-                hand_draw(input.param1, input.param2);
+                if (use_selection) {
+                    if (wmap) {
+                        Tileset *ts = wmap->get_tileset_ptr();
+                        if (ts) {
+                            int w = ts->get_tile_width();
+                            int h = ts->get_tile_height();
+                            int x = input.param1 / subsystem.get_zoom_factor();
+                            int y = input.param2 / subsystem.get_zoom_factor();
+                            x -= left;
+                            y -= top;
+                            x /= w;
+                            y /= h;
+                            switch (draw_mode) {
+                                case DrawModeTile:
+                                    insert_selection(x, y, drawing_decoration);
+                                    break;
+
+                                case DrawModeObject:
+                                    insert_selection_objects(x, y);
+                                    break;
+
+                                case DrawModeLightSources:
+                                    insert_selection_lights(x, y);
+                                    break;
+
+                                default:
+                                    /* do nothing */
+                                    break;
+                            }
+                        }
+                    }
+                } else if (is_selecting) {
+                    if (wmap) {
+                        Tileset *ts = wmap->get_tileset_ptr();
+                        if (ts) {
+                            int w = ts->get_tile_width();
+                            int h = ts->get_tile_height();
+                            int x = input.param1 / subsystem.get_zoom_factor();
+                            int y = input.param2 / subsystem.get_zoom_factor();
+                            x -= left;
+                            y -= top;
+                            x /= w;
+                            y /= h;
+                            if (x < 0) x = 0;
+                            if (x >= wmap->get_width()) x = wmap->get_width() - 1;
+                            if (y < 0) y = 0;
+                            if (y >= wmap->get_height()) y = wmap->get_height() - 1;
+                            if (select_rect.add_point(x, y)) {
+                                copy_selection();
+                                is_selecting = false;
+                            }
+                        }
+                    }
+                } else {
+                    mouse_down_mode = 1;
+                    hand_draw(input.param1, input.param2);
+                }
                 break;
 
             case InputData::InputDataTypeMouseRightDown:
-                mouse_down_mode = 2;
-                hand_draw(input.param1, input.param2);
+                if (!is_selecting) {
+                    mouse_down_mode = 2;
+                    hand_draw(input.param1, input.param2);
+                }
                 break;
 
             case InputData::InputDataTypeMouseMiddleDown:
-                move_origin_x = input.param1;
-                move_origin_y = input.param2;
+                move_origin_x = input.param1 / subsystem.get_zoom_factor();
+                move_origin_y = input.param2 / subsystem.get_zoom_factor();
                 move_origin_left = left;
                 move_origin_top = top;
                 set_mousepointer(MousepointerMove);
@@ -266,7 +435,9 @@ void MapEditor::on_input_event(const InputData& input) {
                 if (move_map) {
                     mouse_move_map(input.param1, input.param2);
                 } else if (mouse_down_mode) {
-                    hand_draw(input.param1, input.param2);
+                    if (!is_selecting) {
+                        hand_draw(input.param1, input.param2);
+                    }
                 }
                 break;
 
@@ -276,87 +447,131 @@ void MapEditor::on_input_event(const InputData& input) {
                 break;
 
             case InputData::InputDataTypeKeyDown:
-                switch (input.keycode) {
-                    case 9:
-                        mode_selector_click();
+                switch (input.key_type) {
+                    case InputData::InputKeyTypeShift:
+                    {
+                        is_selecting = true;
+                        select_rect.reset();
                         break;
+                    }
 
-                    case '1':
-                        draw_decoration_on_screen = !draw_decoration_on_screen;
+                    case InputData::InputKeyTypeControl:
+                    {
+                        use_selection = true;
                         break;
+                    }
 
-                    case '2':
-                        draw_lightmap_on_screen = !draw_lightmap_on_screen;
-                        break;
+                    default:
+                    {
+                        switch (input.keycode) {
+                            case 9:
+                                mode_selector_click();
+                                break;
 
-                    case '3':
-                        draw_map_on_screen = !draw_map_on_screen;
-                        break;
+                            case '1':
+                                draw_decoration_on_screen = !draw_decoration_on_screen;
+                                break;
 
-                    case '4':
-                        draw_objects_on_screen = !draw_objects_on_screen;
-                        break;
+                            case '2':
+                                draw_lightmap_on_screen = !draw_lightmap_on_screen;
+                                break;
 
-                    case '5':
-                        draw_light_sources = !draw_light_sources;
-                        break;
+                            case '3':
+                                draw_map_on_screen = !draw_map_on_screen;
+                                break;
 
-                    case 't':
-                        tile_selector_click();
-                        break;
+                            case '4':
+                                draw_objects_on_screen = !draw_objects_on_screen;
+                                break;
 
-                    case 'o':
-                        object_selector_click();
-                        break;
+                            case '5':
+                                draw_light_sources = !draw_light_sources;
+                                break;
 
-                    case 'c':
-                        center_map();
-                        break;
+                            case 't':
+                                tile_selector_click();
+                                break;
 
-                    case 'm':
-                        mirrored_drawing = !mirrored_drawing;
-                        break;
+                            case 'o':
+                                object_selector_click();
+                                break;
 
-                    case 'd':
-                        drawing_decoration = !drawing_decoration;
-                        break;
+                            case 'c':
+                                center_map();
+                                break;
 
-                    case 'p':
-                        draw_tile_props = true;
-                        break;
+                            case 'm':
+                                mirrored_drawing = !mirrored_drawing;
+                                break;
 
-                    case 'z':
-                        draw_tile_zorder = true;
-                        break;
+                            case 'd':
+                                drawing_decoration = !drawing_decoration;
+                                break;
 
-                    case 'n':
-                        draw_tile_number = true;
-                        break;
+                            case 'p':
+                                draw_tile_props = true;
+                                break;
 
-                    case 'e':
-                        draw_even_only = true;
+                            case 'z':
+                                draw_tile_zorder = true;
+                                break;
+
+                            case 'n':
+                                draw_tile_number = true;
+                                break;
+
+                            case 'e':
+                                draw_even_only = true;
+                                break;
+
+                            case 'u':
+                                draw_used_tiles = true;
+                                break;
+                        }
                         break;
+                    }
                 }
                 break;
 
             case InputData::InputDataTypeKeyUp:
-                switch (input.keycode) {
-                    case 'p':
-                        draw_tile_props = false;
+                switch (input.key_type) {
+                    case InputData::InputKeyTypeShift:
+                    {
+                        is_selecting = false;
                         break;
+                    }
 
-                    case 'z':
-                        draw_tile_zorder = false;
+                    case InputData::InputKeyTypeControl:
+                    {
+                        use_selection = false;
                         break;
+                    }
 
-                    case 'n':
-                        draw_tile_number = false;
+                    default:
+                    {
+                        switch (input.keycode) {
+                            case 'p':
+                                draw_tile_props = false;
+                                break;
+
+                            case 'z':
+                                draw_tile_zorder = false;
+                                break;
+
+                            case 'n':
+                                draw_tile_number = false;
+                                break;
+
+                            case 'e':
+                                draw_even_only = false;
+                                break;
+
+                            case 'u':
+                                draw_used_tiles = false;
+                                break;
+                        }
                         break;
-
-                    case 'e':
-                        draw_even_only = false;
-                        break;
-
+                    }
                 }
                 break;
 
@@ -401,83 +616,77 @@ void MapEditor::create_toolbox() {
     GuiButton *btn;
 
     int wh = 262;
-    GuiWindow *window = push_window(5, get_subsystem().get_view_height() / 2 - wh / 2, 26, wh, "Tool");
+    GuiWindow *window = push_window(5, get_subsystem().get_view_height() / 2 - wh / 2, 26, wh, ""); //i18n(I18N_ME_TOOL));
     window->show_screws(false);
 
     btn = create_button(window, 3, ofsy + (bh * l++), w, h, "", static_mode_selector_click, this);
     btn->show_bolts(false);
-    btn->set_tooltip_text("mode selector");
+    btn->set_tooltip_text(i18n(I18N_ME_MODE_SELECTOR));
     create_picture(btn, 1, 1, resources.get_icon("me_select")->get_tile()->get_tilegraphic());
-
-    /*
-    btn = create_button(window, 3, ofsy + (bh * l++), w, h, "", 0, 0);
-    btn->show_bolts(false);
-    create_picture(btn, 1, 1, resources.get_icon("me_move")->get_tile()->get_tilegraphic());
-    */
 
     btn = create_button(window, 3, ofsy + (bh * l++), w, h, "", static_center_map, this);
     btn->show_bolts(false);
-    btn->set_tooltip_text("center map");
+    btn->set_tooltip_text(i18n(I18N_ME_CENTER_MAP));
     create_picture(btn, 1, 1, resources.get_icon("me_center")->get_tile()->get_tilegraphic());
 
     btn = create_button(window, 3, ofsy + (bh * l++), w, h, "", static_map_properties_click, this);
     btn->show_bolts(false);
-    btn->set_tooltip_text("map properties");
+    btn->set_tooltip_text(i18n(I18N_ME_MAP_PROPERTIES));
     create_picture(btn, 1, 1, resources.get_icon("me_properties")->get_tile()->get_tilegraphic());
 
     btn = create_button(window, 3, ofsy + (bh * l++), w, h, "", static_load_map_click, this);
     btn->show_bolts(false);
-    btn->set_tooltip_text("load map");
+    btn->set_tooltip_text(i18n(I18N_ME_LOAD_MAP));
     create_picture(btn, 1, 1, resources.get_icon("me_load")->get_tile()->get_tilegraphic());
 
     btn = create_button(window, 3, ofsy + (bh * l++), w, h, "", static_save_map_click, this);
     btn->show_bolts(false);
-    btn->set_tooltip_text("save map");
+    btn->set_tooltip_text(i18n(I18N_ME_SAVE_MAP));
     create_picture(btn, 1, 1, resources.get_icon("me_save")->get_tile()->get_tilegraphic());
 
     btn = create_button(window, 3, ofsy + (bh * l++), w, h, "", static_tile_selector_click, this);
     btn->show_bolts(false);
-    btn->set_tooltip_text("open tile selector");
+    btn->set_tooltip_text(i18n(I18N_ME_TILE_SELECTOR));
     create_picture(btn, 1, 1, resources.get_icon("me_tile")->get_tile()->get_tilegraphic());
 
     btn = create_button(window, 3, ofsy + (bh * l++), w, h, "", static_object_selector_click, this);
     btn->show_bolts(false);
-    btn->set_tooltip_text("open object selector");
+    btn->set_tooltip_text(i18n(I18N_ME_OBJECT_SELECTOR));
     create_picture(btn, 1, 1, resources.get_icon("me_objects")->get_tile()->get_tilegraphic());
 
     btn = create_button(window, 3, ofsy + (bh * l++), w, h, "", static_hcopy_click, this);
     btn->show_bolts(false);
-    btn->set_tooltip_text("horizontal copy");
+    btn->set_tooltip_text(i18n(I18N_ME_HORZ_COPY));
     create_picture(btn, 1, 1, resources.get_icon("me_hcopy")->get_tile()->get_tilegraphic());
 
     btn = create_button(window, 3, ofsy + (bh * l++), w, h, "", static_calculate_light_click, this);
     btn->show_bolts(false);
-    btn->set_tooltip_text("create quick lightmap");
+    btn->set_tooltip_text(i18n(I18N_ME_QUICK_LIGHTMAP));
     create_picture(btn, 1, 1, resources.get_icon("me_calclight")->get_tile()->get_tilegraphic());
 
     btn = create_button(window, 3, ofsy + (bh * l++), w, h, "", static_calculate_light_pixel_click, this);
     btn->show_bolts(false);
-    btn->set_tooltip_text("create pixel precise lightmap");
+    btn->set_tooltip_text(i18n(I18N_ME_PIXEL_LIGHTMAP));
     create_picture(btn, 1, 1, resources.get_icon("me_calclight_pixel")->get_tile()->get_tilegraphic());
 
     btn = create_button(window, 3, ofsy + (bh * l++), w, h, "", static_pack_click, this);
     btn->show_bolts(false);
-    btn->set_tooltip_text("create map package");
+    btn->set_tooltip_text(i18n(I18N_ME_MAP_PACKAGE));
     create_picture(btn, 1, 1, resources.get_icon("me_pack")->get_tile()->get_tilegraphic());
 
     btn = create_button(window, 3, ofsy + (bh * l++), w, h, "", static_zap_click, this);
     btn->show_bolts(false);
-    btn->set_tooltip_text("zap/clear map");
+    btn->set_tooltip_text(i18n(I18N_ME_ZAP));
     create_picture(btn, 1, 1, resources.get_icon("me_clean")->get_tile()->get_tilegraphic());
 
     btn = create_button(window, 3, ofsy + (bh * l++), w, h, "", static_options_click, this);
     btn->show_bolts(false);
-    btn->set_tooltip_text("map editor options");
+    btn->set_tooltip_text(i18n(I18N_ME_OPTIONS));
     create_picture(btn, 1, 1, resources.get_icon("me_options")->get_tile()->get_tilegraphic());
 
     btn = create_button(window, 3, ofsy + (bh * l++), w, h, "", static_exit_click, this);
     btn->show_bolts(false);
-    btn->set_tooltip_text("quit map editor");
+    btn->set_tooltip_text(i18n(I18N_ME_QUIT));
     create_picture(btn, 1, 1, resources.get_icon("me_exit")->get_tile()->get_tilegraphic());
 }
 
@@ -488,40 +697,49 @@ void MapEditor::static_window_close_click(GuiVirtualButton *sender, void *data) 
     (reinterpret_cast<Gui *>(data))->pop_window();
 }
 
-GuiButton *MapEditor::add_close_button(GuiWindow *window, GuiVirtualButton::OnClick on_click) {
-    std::string caption("Close");
+GuiButton *MapEditor::add_close_button(GuiWindow *window, GuiVirtualButton::OnClick on_click, const char *button_text) {
+    std::string btn_close(button_text ? button_text : i18n(I18N_BUTTON_CLOSE));
+    int bw_close = get_font()->get_text_width(btn_close) + 24;
+
     int width = window->get_client_width();
     int height = window->get_client_height();
-    int bw = get_font()->get_text_width(caption) + 24;
     int bh = 18;
 
     if (!on_click) {
         on_click = static_window_close_click;
     }
 
-    return create_button(window, width / 2 - bw / 2, height - bh - Spc, bw, bh, caption, on_click, this);
+    return create_button(window, width / 2 - bw_close / 2, height - bh - Spc, bw_close, bh, btn_close, on_click, this);
 }
 
 void MapEditor::add_ok_cancel_buttons(GuiWindow *window, GuiVirtualButton::OnClick on_click) {
-    std::string caption("Cancel");
+    std::string btn_cancel(i18n(I18N_BUTTON_CANCEL));
+    int bw_cancel = get_font()->get_text_width(btn_cancel) + 24;
+
+    std::string btn_ok(i18n(I18N_BUTTON_OK));
+    int bw_ok = get_font()->get_text_width(btn_ok) + 24;
+
     int width = window->get_client_width();
     int height = window->get_client_height();
-    int bw = get_font()->get_text_width(caption) + 24;
     int bh = 18;
-    create_button(window, width - bw - Spc, height - bh - Spc, bw, bh, caption, static_window_close_click, this);
-    create_button(window, width - 2 * bw - Spc - 5, height - bh - Spc, bw, bh, "Ok", on_click, this);
+    create_button(window, width - bw_cancel - Spc, height - bh - Spc, bw_cancel, bh, btn_cancel, static_window_close_click, this);
+    create_button(window, width - bw_cancel - Spc - bw_ok - 5, height - bh - Spc, bw_ok, bh, btn_ok, on_click, this);
 }
 
 void MapEditor::add_ok_cancel_buttons(GuiWindow *window, GuiVirtualButton::OnClick on_ok_click,
     GuiVirtualButton::OnClick on_cancel_click)
 {
-    std::string caption("Cancel");
+    std::string btn_cancel(i18n(I18N_BUTTON_CANCEL));
+    int bw_cancel = get_font()->get_text_width(btn_cancel) + 24;
+
+    std::string btn_ok(i18n(I18N_BUTTON_OK));
+    int bw_ok = get_font()->get_text_width(btn_ok) + 24;
+
     int width = window->get_client_width();
     int height = window->get_client_height();
-    int bw = get_font()->get_text_width(caption) + 24;
     int bh = 18;
-    create_button(window, width - bw - Spc, height - bh - Spc, bw, bh, caption, on_cancel_click, this);
-    create_button(window, width - 2 * bw - Spc - 5, height - bh - Spc, bw, bh, "Ok", on_ok_click, this);
+    create_button(window, width - bw_cancel - Spc, height - bh - Spc, bw_cancel, bh, btn_cancel, on_cancel_click, this);
+    create_button(window, width - bw_cancel - Spc - bw_ok - 5, height - bh - Spc, bw_ok, bh, btn_ok, on_ok_click, this);
 }
 
 void MapEditor::draw_background() {
@@ -596,6 +814,10 @@ void MapEditor::draw_decoration() {
                             if (tile) {
                                 TileGraphic *tg = tile->get_tilegraphic();
                                 subsystem.draw_tilegraphic(tg, cx, cy);
+                            }
+
+                            if (draw_used_tiles) {
+                                subsystem.draw_box(cx, cy, tile_width, tile_height);
                             }
 
                             if (draw_tile_number && drawing_decoration) {
@@ -714,42 +936,46 @@ void MapEditor::draw_map(bool background) {
                                 TileGraphic *tg = tile->get_tilegraphic();
                                 subsystem.draw_tilegraphic(tg, cx, cy);
                                 if (draw_tile_props) {
-                                    unsigned char p = '?';
+                                    const char *p = "?";
                                     switch (tile->get_tile_type()) {
                                         case Tile::TileTypeNonblocking:
-                                            p = 'n';
+                                            p = "n";
                                             break;
 
                                         case Tile::TileTypeBlocking:
-                                            p = 'b';
+                                            p = "b";
                                             break;
 
                                         case Tile::TileTypeFallingOnlyBlocking:
-                                            p = 'f';
+                                            p = "f";
                                             break;
 
                                         case Tile::TileTypeBaseRed:
-                                            p = 'r';
+                                            p = "r";
                                             break;
 
                                         case Tile::TileTypeBaseBlue:
-                                            p = 'b';
+                                            p = "b";
                                             break;
 
                                         case Tile::TileTypeKilling:
-                                            p = 'k';
+                                            p = "k";
                                             break;
 
                                         default:
                                             break;
                                     }
-                                    int cw = f->get_char_width(p);
+                                    int cw = f->get_text_width(p);
                                     subsystem.draw_char(f, cx + tile_width / 2 - cw / 2, cy + tile_height / 2 - fh / 2, p);
                                 }
                                 if (draw_tile_zorder) {
-                                    unsigned char p = (tile->is_background() ? 'b' : 'f');
-                                    int cw = f->get_char_width(p);
+                                    const char *p = (tile->is_background() ? "b" : "f");
+                                    int cw = f->get_text_width(p);
                                     subsystem.draw_char(f, cx + tile_width / 2 - cw / 2, cy + tile_height / 2 - fh / 2, p);
+                                }
+
+                                if (draw_used_tiles) {
+                                    subsystem.draw_box(cx, cy, tile_width, tile_height);
                                 }
 
                                 if (draw_tile_number && !drawing_decoration) {
@@ -933,8 +1159,11 @@ void MapEditor::place_light(int x, int y, bool erasing) {
 }
 
 void MapEditor::mouse_move_map(int x, int y) {
-    left = move_origin_left + (x - move_origin_x) / subsystem.get_zoom_factor();
-    top = move_origin_top + (y - move_origin_y) / subsystem.get_zoom_factor();
+    int zoom = subsystem.get_zoom_factor();
+    x /= zoom;
+    y /= zoom;
+    left = move_origin_left + (x - move_origin_x);
+    top = move_origin_top + (y - move_origin_y);
 }
 
 void MapEditor::edit_light(int x, int y) {
@@ -957,6 +1186,150 @@ void MapEditor::edit_light(int x, int y) {
     }
 }
 
+void MapEditor::draw_rect(int x, int y, int w, int h) {
+    subsystem.draw_box(x, y, 4, 1);
+    subsystem.draw_box(x, y + 1, 1, 3);
+    subsystem.draw_box(x + w - 4, y, 4, 1);
+    subsystem.draw_box(x + w - 1, y + 1, 1, 3);
+    subsystem.draw_box(x, y + h - 1, 4, 1);
+    subsystem.draw_box(x, y + h - 4, 1, 3);
+    subsystem.draw_box(x + w - 4, y + h - 1, 4, 1);
+    subsystem.draw_box(x + w - 1, y + h - 4, 1, 3);
+}
+
+void MapEditor::copy_selection() {
+    select_rect.clear();
+    int x1 = select_rect.px[0];
+    int y1 = select_rect.py[0];
+    int x2 = select_rect.px[1];
+    int y2 = select_rect.py[1];
+    if (x1 > x2) std::swap(x1, x2);
+    if (y1 > y2) std::swap(y1, y2);
+    select_rect.width = x2 - x1 + 1;
+    select_rect.height = y2 - y1 + 1;
+    select_rect.decoration = new short *[select_rect.height];
+    select_rect.map = new short *[select_rect.height];
+    for (int y = 0; y < select_rect.height; y++) {
+        select_rect.decoration[y] = new short[select_rect.width];
+        select_rect.map[y] = new short[select_rect.width];
+        for (int x = 0; x < select_rect.width; x++) {
+            select_rect.decoration[y][x] = wmap->get_decoration()[y + y1][x + x1];
+            select_rect.map[y][x] = wmap->get_map()[y + y1][x + x1];
+
+            EditableObject *object = wmap->get_object(x + x1, y + y1);
+            if (object) {
+                EditableObject new_object(*object);
+                new_object.x = x;
+                new_object.y = y;
+                select_rect.objects.push_back(new_object);
+            }
+
+            EditableLight *light = wmap->get_light(x + x1, y + y1);
+            if (light) {
+                EditableLight new_light(*light);
+                new_light.x = x;
+                new_light.y = y;
+                select_rect.lights.push_back(new_light);
+            }
+        }
+    }
+}
+
+void MapEditor::draw_selection(int x, int y, bool decoration) {
+    if (wmap) {
+        Tileset *ts = wmap->get_tileset_ptr();
+        if (ts) {
+            int w = ts->get_tile_width();
+            int h = ts->get_tile_height();
+            int save_x = x;
+            for (int ty = 0; ty < select_rect.height; ty++) {
+                for (int tx = 0; tx < select_rect.width; tx++) {
+                    int index = (decoration ? select_rect.decoration : select_rect.map)[ty][tx];
+                    if (index > -1) {
+                        Tile *tile = ts->get_tile(index);
+                        subsystem.draw_tile(tile, x, y);
+                    }
+                    x += w;
+                }
+                x = save_x;
+                y += h;
+            }
+        }
+    }
+}
+
+void MapEditor::draw_selection_objects(int x, int y) {
+    if (wmap) {
+        Tileset *ts = wmap->get_tileset_ptr();
+        if (ts) {
+            int w = ts->get_tile_width();
+            int h = ts->get_tile_height();
+            for (SelectRect::Objects::iterator it = select_rect.objects.begin(); it != select_rect.objects.end(); it++) {
+                subsystem.draw_tile(it->object->get_tile(), it->x * w + x, it->y * h + y);
+            }
+        }
+    }
+}
+
+void MapEditor::draw_selection_lights(int x, int y) {
+    if (wmap) {
+        Tileset *ts = wmap->get_tileset_ptr();
+        if (ts) {
+            int w = ts->get_tile_width();
+            int h = ts->get_tile_height();
+            for (SelectRect::Lights::iterator it = select_rect.lights.begin(); it != select_rect.lights.end(); it++) {
+                subsystem.draw_icon(light_source, it->x * w + x, it->y * h + y);
+            }
+        }
+    }
+}
+
+void MapEditor::insert_selection(int x, int y, bool decoration) {
+    if (wmap) {
+        short **src = (decoration ? select_rect.decoration : select_rect.map);
+        short **dst = (decoration ? wmap->get_decoration() : wmap->get_map());
+        for (int sy = 0; sy < select_rect.height; sy++) {
+            int dy = y + sy;
+            if (dy < wmap->get_height()) {
+                for (int sx = 0; sx < select_rect.width; sx++) {
+                    int dx = x + sx;
+                    if (dx < wmap->get_width()) {
+                        if (dy >= 0 && dy < wmap->get_height() &&
+                            dx >= 0 && dx < wmap->get_width() &&
+                            src[sy][sx] > -1)
+                        {
+                            dst[dy][dx] = src[sy][sx];
+                        }
+                    }
+                }
+            }
+        }
+        wmap->touch();
+    }
+}
+
+void MapEditor::insert_selection_objects(int x, int y) {
+    if (wmap) {
+        for (SelectRect::Objects::iterator it = select_rect.objects.begin(); it != select_rect.objects.end(); it++) {
+            wmap->erase_object(it->x + x, it->y + y);
+            wmap->set_object(it->object, it->x + x, it->y + y);
+        }
+    }
+}
+
+void MapEditor::insert_selection_lights(int x, int y) {
+    if (wmap) {
+        for (SelectRect::Lights::iterator it = select_rect.lights.begin(); it != select_rect.lights.end(); it++) {
+            wmap->erase_light(it->x + x, it->y + y);
+            EditableLight *light = wmap->set_light(it->x + x, it->y + y);
+            light->radius = it->radius;
+            light->r = it->r;
+            light->g = it->g;
+            light->b = it->b;
+        }
+    }
+}
+
 void MapEditor::static_center_map(GuiVirtualButton *sender, void *data) {
     (reinterpret_cast<MapEditor *>(data))->center_map();
 }
@@ -970,7 +1343,7 @@ void MapEditor::center_map() {
         left = -((mw * tw / 2) - subsystem.get_view_width() / 2);
         top = -((mh * th / 2) - subsystem.get_view_height() / 2);
     } else {
-        show_messagebox(Gui::MessageBoxIconExclamation, "No Tileset", "Please select a tileset in the map properties.");
+        show_messagebox(Gui::MessageBoxIconExclamation, i18n(I18N_ME_NO_TILESET1), i18n(I18N_ME_NO_TILESET2));
     }
 }
 
@@ -982,38 +1355,38 @@ void MapEditor::light_editor(EditableLight *light) {
         lp_light = light;
         int width = get_subsystem().get_view_width();
         int height = get_subsystem().get_view_height();
-        int ww = 190;
+        int ww = 210;
         int wh = 140;
-        int tab = 60;
+        int tab = 80;
         char buffer[256];
 
-        GuiWindow *window = push_window(width / 2 - ww / 2, height / 2 - wh / 2, ww, wh, "Light Properties");
+        GuiWindow *window = push_window(width / 2 - ww / 2, height / 2 - wh / 2, ww, wh, i18n(I18N_ME_LIGHT_PROPERTIES));
 
         int y = Spc;
         int nl = 20;
 
-        create_label(window, Spc, y, "radius:");
+        create_label(window, Spc, y + 1, i18n(I18N_ME_LP_RADIUS));
         sprintf(buffer, "%d", light->radius);
         lp_radius = create_textbox(window, tab, y, 50, buffer);
-        create_label(window, tab + 50 + 10, y, "(1 - 256)");
+        create_label(window, tab + 50 + 10, y + 1, "(1 - 256)");
         y += nl;
 
-        create_label(window, Spc, y, "red:");
+        create_label(window, Spc, y + 1, i18n(I18N_ME_LP_RED));
         sprintf(buffer, "%d", light->r);
         lp_red = create_textbox(window, tab, y, 50, buffer);
-        create_label(window, tab + 50 + 10, y, "(0 - 255)");
+        create_label(window, tab + 50 + 10, y + 1, "(0 - 255)");
         y += nl;
 
-        create_label(window, Spc, y, "green:");
+        create_label(window, Spc, y + 1, i18n(I18N_ME_LP_GREEN));
         sprintf(buffer, "%d", light->g);
         lp_green = create_textbox(window, tab, y, 50, buffer);
-        create_label(window, tab + 50 + 10, y, "(0 - 255)");
+        create_label(window, tab + 50 + 10, y + 1, "(0 - 255)");
         y += nl;
 
-        create_label(window, Spc, y, "blue:");
+        create_label(window, Spc, y + 1, i18n(I18N_ME_LP_BLUE));
         sprintf(buffer, "%d", light->b);
         lp_blue = create_textbox(window, tab, y, 50, buffer);
-        create_label(window, tab + 50 + 10, y, "(0 - 255)");
+        create_label(window, tab + 50 + 10, y + 1, "(0 - 255)");
         y += nl;
 
         lp_radius->set_focus();
@@ -1029,28 +1402,28 @@ void MapEditor::lp_ok_click() {
     int radius = atoi(lp_radius->get_text().c_str());
     if (radius < 1 || radius > 256) {
         lp_radius->set_focus();
-        show_messagebox(Gui::MessageBoxIconExclamation, "Radius", FieldMsg + " (between 1 and 256)");
+        show_messagebox(Gui::MessageBoxIconExclamation, i18n(I18N_ME_RADIUS), i18n(I18N_ENTER_VALID_VALUE, "1-256"));
         return;
     }
 
     int r = atoi(lp_red->get_text().c_str());
     if (r < 0 || r > 255) {
         lp_red->set_focus();
-        show_messagebox(Gui::MessageBoxIconExclamation, "Red", FieldMsg + " (between 0 and 255)");
+        show_messagebox(Gui::MessageBoxIconExclamation, i18n(I18N_ME_RED), i18n(I18N_ENTER_VALID_VALUE, "1-255"));
         return;
     }
 
     int g = atoi(lp_green->get_text().c_str());
     if (g < 0 || g > 255) {
         lp_green->set_focus();
-        show_messagebox(Gui::MessageBoxIconExclamation, "Green", FieldMsg + " (between 0 and 255)");
+        show_messagebox(Gui::MessageBoxIconExclamation, i18n(I18N_ME_GREEN), i18n(I18N_ENTER_VALID_VALUE, "0-255"));
         return;
     }
 
     int b = atoi(lp_blue->get_text().c_str());
     if (b < 0 || b > 255) {
         lp_blue->set_focus();
-        show_messagebox(Gui::MessageBoxIconExclamation, "Blue", FieldMsg + " (between 0 and 255)");
+        show_messagebox(Gui::MessageBoxIconExclamation, i18n(I18N_ME_BLUE), i18n(I18N_ENTER_VALID_VALUE, "0-255"));
         return;
     }
 
@@ -1094,54 +1467,54 @@ void MapEditor::map_properties_click() {
     char buffer[256];
     size_t sz;
 
-    GuiWindow *window = push_window(width / 2 - ww / 2, height / 2 - wh / 2, ww, wh, "Map Properties");
+    GuiWindow *window = push_window(width / 2 - ww / 2, height / 2 - wh / 2, ww, wh, i18n(I18N_ME_MP_TITLE));
 
     ww = window->get_client_width();
     wh = window->get_client_height();
     int lw = ww / 2 - 2 * Spc;
     int hx = ww / 2 + Spc;
 
-    create_label(window, Spc, Spc, "name:");
+    create_label(window, Spc, Spc + 1, i18n(I18N_ME_MP_NAME));
     mp_name = create_textbox(window, tab, Spc, lw - tab + Spc, wmap->get_name());
 
-    create_label(window, hx, Spc, "frog spawn:");
+    create_label(window, hx, Spc + 1, i18n(I18N_ME_MP_FROG_SPAWN));
     sprintf(buffer, "%d", wmap->get_frog_spawn_init());
     mp_frog_spawn_init = create_textbox(window, hx + tab - Spc, Spc, 127, buffer);
 
-    create_label(window, Spc, Spc + 20, "author:");
+    create_label(window, Spc, Spc + 21, i18n(I18N_ME_MP_AUTHOR));
     mp_author = create_textbox(window, tab, Spc + 20, ww - tab - Spc, wmap->get_author());
 
-    create_label(window, Spc, Spc + 40, "description:");
+    create_label(window, Spc, Spc + 41, i18n(I18N_ME_MP_DESCRIPTION));
     mp_description = create_textbox(window, tab, Spc + 40, ww - tab - Spc, wmap->get_description());
 
     sprintf(buffer, "%d", wmap->get_width());
-    create_label(window, Spc, Spc + 60, "width:");
+    create_label(window, Spc, Spc + 61, i18n(I18N_ME_MP_WIDTH));
     mp_width = create_textbox(window, tab, Spc + 60, 40, buffer);
 
     sprintf(buffer, "%d", wmap->get_height());
-    create_label(window, Spc, Spc + 80, "height:");
+    create_label(window, Spc, Spc + 81, i18n(I18N_ME_MP_HEIGHT));
     mp_height = create_textbox(window, tab, Spc + 80, 40, buffer);
 
     sprintf(buffer, "%f", wmap->get_decoration_brightness());
-    create_label(window, hx, Spc + 60, "deco brghtn.:");
+    create_label(window, hx, Spc + 61, i18n(I18N_ME_MP_DECO_BRIGHTNESS));
     mp_deco_brightness = create_textbox(window, hx + tab - Spc, Spc + 60, 127, buffer);
 
     sprintf(buffer, "%f", wmap->get_lightmap_alpha());
-    create_label(window, hx, Spc + 80, "lgtmap alpha:");
+    create_label(window, hx, Spc + 81, i18n(I18N_ME_MP_LIGHTMAP_ALPHA));
     mp_lightmap_alpha = create_textbox(window, hx + tab - Spc, Spc + 80, 127, buffer);
 
     sprintf(buffer, "%d", wmap->get_parallax_shift());
-    create_label(window, hx, Spc + 100, "parallax:");
+    create_label(window, hx, Spc + 101, i18n(I18N_ME_MP_PARALLAX));
     mp_parallax = create_textbox(window, hx + tab - Spc, Spc + 100, 40, buffer);
 
-    create_label(window, Spc, Spc + 100, "type:");
-    mp_cb_dm = create_checkbox(window, tab, Spc + 101, "dm", false, static_mp_dm_click, this);
-    mp_cb_tdm = create_checkbox(window, tab + 38, Spc + 101, "tdm", false, static_mp_tdm_click, this);
-    mp_cb_ctf = create_checkbox(window, tab + 76, Spc + 101, "ctf", false, static_mp_ctf_click, this);
+    create_label(window, Spc, Spc + 102, i18n(I18N_ME_MP_TYPE));
+    mp_cb_dm = create_checkbox(window, tab, Spc + 103, "dm", false, static_mp_dm_click, this);
+    mp_cb_tdm = create_checkbox(window, tab + 38, Spc + 103, "tdm", false, static_mp_tdm_click, this);
+    mp_cb_ctf = create_checkbox(window, tab + 76, Spc + 103, "ctf", false, static_mp_ctf_click, this);
 
-    mp_cb_sr = create_checkbox(window, tab, Spc + 114, "sr", false, static_mp_sr_click, this);
-    mp_cb_ctc = create_checkbox(window, tab + 38, Spc + 114, "ctc", false, static_mp_ctc_click, this);
-    mp_cb_goh = create_checkbox(window, tab + 76, Spc + 114, "goh", false, static_mp_goh_click, this);
+    mp_cb_sr = create_checkbox(window, tab, Spc + 116, "sr", false, static_mp_sr_click, this);
+    mp_cb_ctc = create_checkbox(window, tab + 38, Spc + 116, "ctc", false, static_mp_ctc_click, this);
+    mp_cb_goh = create_checkbox(window, tab + 76, Spc + 116, "goh", false, static_mp_goh_click, this);
 
     switch (wmap->get_game_play_type()) {
         case GamePlayTypeDM:
@@ -1170,8 +1543,8 @@ void MapEditor::map_properties_click() {
     }
 
     /* create listboxes */
-    create_label(window, Spc, Spc + 120, "tileset:");
-    mp_tileset = create_listbox(window, Spc, Spc + 135, lw, 100, "", 0, 0);
+    create_label(window, Spc, Spc + 125, i18n(I18N_ME_MP_TILESET));
+    mp_tileset = create_listbox(window, Spc, Spc + 140, lw, 93, "", 0, 0);
     Resources::ResourceObjects& tilesets = resources.get_tilesets();
     sz = tilesets.size();
     Tileset *mts = wmap->get_tileset_ptr();
@@ -1187,8 +1560,8 @@ void MapEditor::map_properties_click() {
         }
     }
 
-    create_label(window, hx, Spc + 120, "background:");
-    mp_background = create_listbox(window, hx, Spc + 135, lw, 100, "", 0, 0);
+    create_label(window, hx, Spc + 125, i18n(I18N_ME_MP_BACKGROUND));
+    mp_background = create_listbox(window, hx, Spc + 140, lw, 93, "", 0, 0);
     Resources::ResourceObjects& backgrounds = resources.get_backgrounds();
     sz = backgrounds.size();
     Background *mbg = wmap->get_background_ptr();
@@ -1296,14 +1669,14 @@ void MapEditor::mp_ok_click() {
     len = mp_name->get_text().length();
     if (!len || len > 20) {
         mp_name->set_focus();
-        show_messagebox(Gui::MessageBoxIconExclamation, "Name", FieldMsg + " (max. length is 20)");
+        show_messagebox(Gui::MessageBoxIconExclamation, i18n(I18N_ME_NAME), i18n(I18N_ENTER_VALID_VALUE, "n<=20"));
         return;
     }
 
     int frog_spawn_init = atoi(mp_frog_spawn_init->get_text().c_str());
     if (frog_spawn_init < 0 || frog_spawn_init > 10000) {
         mp_frog_spawn_init->set_focus();
-        show_messagebox(Gui::MessageBoxIconExclamation, "Frog Spawn", FieldMsg + " (between 0 and 10000)");
+        show_messagebox(Gui::MessageBoxIconExclamation, i18n(I18N_ME_FROG_SPAWN), i18n(I18N_ENTER_VALID_VALUE, "0>=n<=10000"));
         return;
     }
 
@@ -1311,7 +1684,7 @@ void MapEditor::mp_ok_click() {
     len = mp_author->get_text().length();
     if (!len || len > 60) {
         mp_author->set_focus();
-        show_messagebox(Gui::MessageBoxIconExclamation, "Author", FieldMsg + " (max. length is 60)");
+        show_messagebox(Gui::MessageBoxIconExclamation, i18n(I18N_ME_AUTHOR), i18n(I18N_ENTER_VALID_VALUE, "n<=60"));
         return;
     }
 
@@ -1319,27 +1692,27 @@ void MapEditor::mp_ok_click() {
     len = mp_description->get_text().length();
     if (!len || len > 60) {
         mp_description->set_focus();
-        show_messagebox(Gui::MessageBoxIconExclamation, "Description", FieldMsg + " (max. length is 60)");
+        show_messagebox(Gui::MessageBoxIconExclamation, i18n(I18N_ME_DESCRIPTION), i18n(I18N_ENTER_VALID_VALUE, "n<=60"));
         return;
     }
 
     int width = atoi(mp_width->get_text().c_str());
     if (width < 40) {
         mp_width->set_focus();
-        show_messagebox(Gui::MessageBoxIconExclamation, "Width", FieldMsg + " (min. width is 40)");
+        show_messagebox(Gui::MessageBoxIconExclamation, i18n(I18N_ME_WIDTH), i18n(I18N_ENTER_VALID_VALUE, "n>=40"));
         return;
     }
 
     if (width % 2) {
         mp_width->set_focus();
-        show_messagebox(Gui::MessageBoxIconExclamation, "Width", "The width of the map must be even.");
+        show_messagebox(Gui::MessageBoxIconExclamation, i18n(I18N_ME_WIDTH), i18n(I18N_ME_WIDTH_EVEN));
         return;
     }
 
     int height = atoi(mp_height->get_text().c_str());
     if (height < 22) {
         mp_height->set_focus();
-        show_messagebox(Gui::MessageBoxIconExclamation, "Height", FieldMsg + " (min. height is 22)");
+        show_messagebox(Gui::MessageBoxIconExclamation, i18n(I18N_ME_HEIGHT), i18n(I18N_ENTER_VALID_VALUE, "n>=22"));
         return;
     }
 
@@ -1349,14 +1722,14 @@ void MapEditor::mp_ok_click() {
     int parallax = atoi(mp_parallax->get_text().c_str());
     if (parallax < 1 || parallax > 1000) {
         mp_parallax->set_focus();
-        show_messagebox(Gui::MessageBoxIconExclamation, "Parallax Shift", FieldMsg + " (between 1 and 1000)");
+        show_messagebox(Gui::MessageBoxIconExclamation, i18n(I18N_ME_PARALLAX_SHIFT), i18n(I18N_ENTER_VALID_VALUE, "1<=n>=10000"));
         return;
     }
 
     int tileset_index = mp_tileset->get_selected_index();
     if (tileset_index < 0) {
         mp_tileset->set_focus();
-        show_messagebox(Gui::MessageBoxIconExclamation, "Tileset", "Select a tileset.");
+        show_messagebox(Gui::MessageBoxIconExclamation, i18n(I18N_ME_TILESET), i18n(I18N_ME_TILESET_SELECT));
         return;
     }
     const Tileset *tileset = static_cast<const Tileset *>(mp_tileset->get_entry(tileset_index)->get_ptr_tag());
@@ -1364,7 +1737,7 @@ void MapEditor::mp_ok_click() {
     int background_index = mp_background->get_selected_index();
     if (background_index < 0) {
         mp_background->set_focus();
-        show_messagebox(Gui::MessageBoxIconExclamation, "Background", "Select a background.");
+        show_messagebox(Gui::MessageBoxIconExclamation, i18n(I18N_ME_BACKGROUND), i18n(I18N_ME_BACKGROUND_SELECT));
         return;
     }
     const Background *background = static_cast<const Background *>(mp_background->get_entry(background_index)->get_ptr_tag());
@@ -1399,6 +1772,7 @@ void MapEditor::mp_ok_click() {
         wmap->set_game_play_type(GamePlayTypeGOH);
     }
 
+    tile_selector_page = 0;
     pop_window();
 }
 
@@ -1411,7 +1785,7 @@ void MapEditor::static_load_map_click(GuiVirtualButton *sender, void *data) {
 
 void MapEditor::load_map_click() {
     if (wmap->is_modified()) {
-        if (show_questionbox("Unsaved Map", UnsavedMsg) == MessageBoxResponseNo) {
+        if (show_questionbox(i18n(I18N_ME_UNSAVED_MAP), i18n(I18N_ME_REALLY_CONTINUE)) == MessageBoxResponseNo) {
             return;
         }
     }
@@ -1421,7 +1795,7 @@ void MapEditor::load_map_click() {
     int ww = 260;
     int wh = 180;
 
-    GuiWindow *window = push_window(width / 2 - ww / 2, height / 2 - wh / 2, ww, wh, "Load Map");
+    GuiWindow *window = push_window(width / 2 - ww / 2, height / 2 - wh / 2, ww, wh, i18n(I18N_ME_LOAD_MAP_TITLE));
     ww = window->get_client_width();
     wh = window->get_client_height();
 
@@ -1460,12 +1834,13 @@ void MapEditor::load_map_ok_click() {
         wmap = new_map;
         center_map();
         } catch (const Exception& e) {
-            show_messagebox(Gui::MessageBoxIconError, "Error", e.what());
+            show_messagebox(Gui::MessageBoxIconError, i18n(I18N_ME_ERROR_TITLE), e.what());
         }
         pop_window();
+        tile_selector_page = 0;
 
     } else {
-        show_messagebox(Gui::MessageBoxIconInformation, "No Selection", "Please select a map.");
+        show_messagebox(Gui::MessageBoxIconInformation, i18n(I18N_ME_NO_SELECTION), i18n(I18N_ME_SELECT_MAP));
         lm_maps->set_focus();
     }
 }
@@ -1480,13 +1855,13 @@ void MapEditor::static_save_map_click(GuiVirtualButton *sender, void *data) {
 void MapEditor::save_map_click() {
     if (wmap) {
         if (!wmap->get_name().length()) {
-            show_messagebox(Gui::MessageBoxIconExclamation, "No Map Name", "Please choose a map name in the map properties.");
+            show_messagebox(Gui::MessageBoxIconExclamation, i18n(I18N_ME_SAVE_NO_MAP_NAME), i18n(I18N_ME_SAVE_CHOOSE_NAME));
         } else {
             try {
                 create_directory("maps", home_workdir);
                 wmap->save();
             } catch (const Exception& e) {
-                show_messagebox(Gui::MessageBoxIconError, "Error", e.what());
+                show_messagebox(Gui::MessageBoxIconError, i18n(I18N_ERROR_TITLE), e.what());
             }
         }
     }
@@ -1502,7 +1877,7 @@ void MapEditor::static_tile_selector_click(GuiVirtualButton *sender, void *data)
 void MapEditor::tile_selector_click() {
     Tileset *ts = wmap->get_tileset_ptr();
     if (!ts) {
-        show_messagebox(Gui::MessageBoxIconExclamation, "No Tileset", "Please select a tileset in the map properties.");
+        show_messagebox(Gui::MessageBoxIconExclamation, i18n(I18N_ME_NO_TILESET1), i18n(I18N_ME_NO_TILESET2));
         return;
     }
 
@@ -1512,10 +1887,17 @@ void MapEditor::tile_selector_click() {
     int ww = width - 15;
     int wh = height - 100;
 
-    ts_window = push_window(width / 2 - ww / 2, height / 2 - wh / 2, ww, wh, "Select Tile");
+    ts_window = push_window(width / 2 - ww / 2, height / 2 - wh / 2, ww, wh, i18n(I18N_ME_SELECT_TILE));
     ts_window->set_on_keydown(static_ts_keydown, this);
     add_buttons(true, ts_window, 0);
     ts_buttons_on_page = ts_end_index + 1;
+
+    /* jump to last opened page */
+    int page = tile_selector_page;
+    tile_selector_page = 0;
+    for (int i = 0; i < page; i++) {
+        ts_next_click();
+    }
 }
 
 void MapEditor::add_buttons(bool first, GuiWindow *window, int from_tile_index) {
@@ -1570,14 +1952,17 @@ void MapEditor::add_buttons(bool first, GuiWindow *window, int from_tile_index) 
     }
     add_close_button(window, static_ts_close_click);
 
-    int bw = 40;
+    int bw = 39;
     int bh = 18;
     int bl = Spc;
     int bb = window->get_client_height() - bh - Spc;
-    create_button(window, bl, bb, bw, bh, "<", static_ts_previous_click, this);
+    create_button(window, bl, bb, bw, bh, left_arrow, static_ts_previous_click, this);
     bl += bw + Spc;
-    create_button(window, bl, bb, 80, bh, "Properties", static_ts_properties_click, this);
-    create_button(window, window->get_client_width() - bw - Spc, bb, bw, bh, ">", static_ts_next_click, this);
+
+    std::string btn_prop(i18n(I18N_ME_ST_PROPERTIES));
+    int bw_prop = get_font()->get_text_width(btn_prop) + 28;
+    create_button(window, bl, bb, bw_prop, bh, btn_prop, static_ts_properties_click, this);
+    create_button(window, window->get_client_width() - bw - Spc, bb, bw, bh, right_arrow, static_ts_next_click, this);
 }
 
 void MapEditor::static_ts_previous_click(GuiVirtualButton *sender, void *data) {
@@ -1590,6 +1975,10 @@ void MapEditor::ts_previous_click() {
         new_index = 0;
     }
     add_buttons(false, ts_window, new_index);
+    tile_selector_page--;
+    if (tile_selector_page < 0) {
+        tile_selector_page = 0;
+    }
 }
 
 void MapEditor::static_ts_next_click(GuiVirtualButton *sender, void *data) {
@@ -1602,6 +1991,7 @@ void MapEditor::ts_next_click() {
     int new_index = ts_start_index + ts_buttons_on_page;
     if (new_index < sz) {
         add_buttons(false, ts_window, new_index);
+        tile_selector_page++;
     }
 }
 
@@ -1638,43 +2028,45 @@ void MapEditor::static_ts_properties_click(GuiVirtualButton *sender, void *data)
 
 void MapEditor::ts_properties_click() {
     if (selected_tile_index < 0) {
-        show_messagebox(Gui::MessageBoxIconExclamation, "No Tile", "Please select a tile first.");
+        show_messagebox(Gui::MessageBoxIconExclamation, i18n(I18N_ME_ST_NO_TILE1), i18n(I18N_ME_ST_NO_TILE2));
         return;
     }
 
     int width = get_subsystem().get_view_width();
     int height = get_subsystem().get_view_height();
-    int ww = 260;
-    int wh = 178 + Spc;
+    int ww = 300;
+    int wh = 185 + Spc;
     char buffer[64];
 
-    sprintf(buffer, "Tile Properties (%d)", selected_tile_index);
-    GuiWindow *window = push_window(width / 2 - ww / 2, height / 2 - wh / 2, ww, wh, buffer);
+    GuiWindow *window = push_window(width / 2 - ww / 2, height / 2 - wh / 2, ww, wh, i18n(I18N_ME_TP_TITLE, selected_tile_index));
     ww = window->get_client_width();
     wh = window->get_client_height();
 
     Tile *tile = wmap->get_tileset_ptr()->get_tile(selected_tile_index);
-    tsp_background = create_checkbox(window, Spc, Spc, "tile is in background", tile->is_background(), 0, 0);
-    tsp_light_blocking = create_checkbox(window, Spc, Spc + 15, "tile blocks light", tile->is_light_blocking(), 0, 0);
+    tsp_background = create_checkbox(window, Spc, Spc, i18n(I18N_ME_TP_BACKGROUND), tile->is_background(), 0, 0);
+    tsp_light_blocking = create_checkbox(window, Spc, Spc + 15, i18n(I18N_ME_TP_BLOCKS_LIGHT), tile->is_light_blocking(), 0, 0);
 
-    create_label(window, Spc, 45, "tile type:");
+    create_label(window, Spc, 45, i18n(I18N_ME_TP_TILE_TYPE));
     int fh = get_font()->get_font_height();
     tsp_type = create_listbox(window, 110, 45, ww - 110 - Spc, fh * 4 + 2, "", 0, 0);
     int tiletype = static_cast<int>(tile->get_tile_type());
+    int selected_tile = 0;
     for (int i = 0; i < Tile::_TileTypeMAX; i++) {
-        tsp_type->add_entry(Tile::TypeDescription[i]);
+        tsp_type->add_entry(i18n(Tile::TypeDescription[i]));
         if (tiletype == i) {
-            tsp_type->set_selected_index(i);
+            selected_tile = i;
         }
     }
+    tsp_type->set_selected_index(selected_tile);
+    tsp_type->set_top_index(selected_tile);
 
-    create_label(window, Spc, 100, "animation speed:");
+    create_label(window, Spc, 107, i18n(I18N_ME_TP_ANIMATION_SPEED));
     sprintf(buffer, "%d", tile->get_animation_speed());
-    tsp_speed = create_textbox(window, 110, 100, 80, buffer);
+    tsp_speed = create_textbox(window, 110, 106, 80, buffer);
 
-    create_label(window, Spc, 120, "friction:");
+    create_label(window, Spc, 127, i18n(I18N_ME_TP_FRICTION));
     sprintf(buffer, "%f", tile->get_friction());
-    tsp_friction = create_textbox(window, 110, 120, 80, buffer);
+    tsp_friction = create_textbox(window, 110, 126, 80, buffer);
 
     add_ok_cancel_buttons(window, static_ts_properties_ok_click);
 }
@@ -1693,7 +2085,7 @@ void MapEditor::ts_properties_ok_click() {
         tile->set_friction(atof(tsp_friction->get_text().c_str()));
         save_tileset();
     } catch (const Exception& e) {
-        show_messagebox(Gui::MessageBoxIconError, "Error", e.what());
+        show_messagebox(Gui::MessageBoxIconError, i18n(I18N_ERROR_TITLE), e.what());
     }
 
     pop_window();
@@ -1755,7 +2147,7 @@ void MapEditor::object_selector_click() {
     int ww = width - 260;
     int wh = height - 100;
 
-    os_window = push_window(width / 2 - ww / 2, height / 2 - wh / 2, ww, wh, "Select Object");
+    os_window = push_window(width / 2 - ww / 2, height / 2 - wh / 2, ww, wh, i18n(I18N_ME_SO_TITLE));
     os_window->set_on_keydown(static_os_keydown, this);
 
     ww = os_window->get_client_width();
@@ -1830,11 +2222,11 @@ void MapEditor::static_hcopy_click(GuiVirtualButton *sender, void *data) {
 
 void MapEditor::hcopy_click() {
     if (!wmap || !wmap->get_tileset_ptr()) {
-        show_messagebox(Gui::MessageBoxIconExclamation, "Map Invalid", "Please configure this map first.");
+        show_messagebox(Gui::MessageBoxIconExclamation, i18n(I18N_ME_HC_MAP_INVALID1), i18n(I18N_ME_HC_MAP_INVALID2));
         return;
 
     }
-    if (show_questionbox("Horizontal Copy", "This operation cannot be undone. Continue?")
+    if (show_questionbox(i18n(I18N_ME_HC_TITLE), i18n(I18N_ME_HC_QUESTION))
         == Gui::MessageBoxResponseNo)
     {
         return;
@@ -1843,7 +2235,7 @@ void MapEditor::hcopy_click() {
     int map_width = wmap->get_width();
     int map_height = wmap->get_height();
     if (map_width % 2) {
-        show_messagebox(Gui::MessageBoxIconExclamation, "Map Invalid", "The width of the map must be even.");
+        show_messagebox(Gui::MessageBoxIconExclamation, i18n(I18N_ME_HC_MAP_INVALID1), i18n(I18N_ME_HC_MAP_INVALID3));
         return;
     }
 
@@ -1876,18 +2268,18 @@ void MapEditor::static_pack_click(GuiVirtualButton *sender, void *data) {
 
 void MapEditor::pack_click() {
     if (!wmap || !wmap->is_valid_map()) {
-        show_messagebox(Gui::MessageBoxIconError, "No Map", "Please create or load a map first, before you can create a package.");
+        show_messagebox(Gui::MessageBoxIconError, i18n(I18N_ME_PAK_NO_MAP), i18n(I18N_ME_PAK_CONFIGURE));
         return;
     }
 
     if (wmap->is_modified()) {
-        show_messagebox(Gui::MessageBoxIconError, "Unsaved Map", "Please save your map first.");
+        show_messagebox(Gui::MessageBoxIconError, i18n(I18N_ME_UNSAVED_MAP), i18n(I18N_ME_PAK_SAVE_FIRST));
         return;
     }
 
     std::string pak_name = home_workdir + dir_separator + wmap->get_name() + ".pak";
     if (Cargo::file_exists(pak_name)) {
-        if (show_questionbox("Overwrite?", "Overwrite existing package?") == MessageBoxResponseNo) {
+        if (show_questionbox(i18n(I18N_ME_PAK_OVERWRITE1), i18n(I18N_ME_PAK_OVERWRITE2)) == MessageBoxResponseNo) {
             return;
         }
     }
@@ -1906,9 +2298,9 @@ void MapEditor::pack_click() {
         }
         Cargo cargo(home_workdir.c_str(), pak_name.c_str(), &files);
         cargo.pack();
-        show_messagebox(Gui::MessageBoxIconInformation, "Done", "Your package '" + wmap->get_name() + ".pak" + "' has been created.");
+        show_messagebox(Gui::MessageBoxIconInformation, i18n(I18N_ME_PAK_DONE1), i18n(I18N_ME_PAK_DONE2, wmap->get_name()));
     } catch (const Exception& e) {
-        show_messagebox(Gui::MessageBoxIconError, "Error", e.what());
+        show_messagebox(Gui::MessageBoxIconError, i18n(I18N_ERROR_TITLE), e.what());
     }
 }
 
@@ -1922,7 +2314,7 @@ void MapEditor::static_zap_click(GuiVirtualButton *sender, void *data) {
 void MapEditor::zap_click() {
     if (wmap) {
         if (wmap->is_modified()) {
-            if (show_questionbox("Unsaved Map", UnsavedMsg) == MessageBoxResponseNo) {
+            if (show_questionbox(i18n(I18N_ME_UNSAVED_MAP), i18n(I18N_ME_REALLY_CONTINUE)) == MessageBoxResponseNo) {
                 return;
             }
         }
@@ -1930,6 +2322,7 @@ void MapEditor::zap_click() {
     }
 
     wmap = new EditableMap(resources, subsystem);
+    tile_selector_page = 0;
 }
 
 /* ************************************************************************** */
@@ -1945,17 +2338,17 @@ void MapEditor::options_click() {
     int ww = 249;
     int wh = 110;
 
-    GuiWindow *window = push_window(width / 2 - ww / 2, height / 2 - wh / 2, ww, wh, "Options");
+    GuiWindow *window = push_window(width / 2 - ww / 2, height / 2 - wh / 2, ww, wh, i18n(I18N_ME_OPTIONS1));
     ww = window->get_client_width();
     wh = window->get_client_height();
 
     opt_old_fullscreen = subsystem.is_fullscreen();
     opt_old_scanlines = subsystem.has_scanlines();
 
-    opt_fullscreen = create_checkbox(window, Spc, Spc, "fullscreen graphics mode", opt_old_fullscreen, static_options_fs_clicked, this);
-    opt_scanlines = create_checkbox(window, Spc, Spc + 15, "draw scanlines", opt_old_scanlines, static_options_sl_clicked, this);
+    opt_fullscreen = create_checkbox(window, Spc, Spc, i18n(I18N_OPTIONS_SETTINGS21), opt_old_fullscreen, static_options_fs_clicked, this);
+    opt_scanlines = create_checkbox(window, Spc, Spc + 15, i18n(I18N_OPTIONS_SETTINGS22), opt_old_scanlines, static_options_sl_clicked, this);
 
-    create_label(window, Spc, Spc + 30, "intensity:");
+    create_label(window, Spc, Spc + 30, i18n(I18N_OPTIONS_SETTINGS23));
     sl_intensity_init_value = subsystem.get_scanlines_intensity();
     int v = static_cast<int>(sl_intensity_init_value * 100);
     opt_intensity = create_hscroll(window, Spc + 80, Spc + 31, 143, 25, 100, v, static_options_value_changed, this);
@@ -2021,7 +2414,7 @@ void MapEditor::static_exit_click(GuiVirtualButton *sender, void *data) {
 
 void MapEditor::exit_click() {
     if (wmap->is_modified()) {
-        if (show_questionbox("Leave Map Editor", UnsavedMsg) == Gui::MessageBoxResponseNo) {
+        if (show_questionbox(i18n(I18N_ME_UNSAVED_MAP), i18n(I18N_ME_REALLY_CONTINUE)) == Gui::MessageBoxResponseNo) {
             return;
         }
     }

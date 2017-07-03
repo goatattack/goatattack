@@ -19,8 +19,8 @@
 
 #include <algorithm>
 
-static double YInitialJumpImpulse = 3.8f;
-static double YVeloJumpToLanding = 2.0f;
+static double YInitialJumpImpulse = 3.8;
+static double YVeloJumpToLanding = 2.0;
 static ns_t IntegrateMaxTimeStep = 10000000;
 
 void Tournament::update_states(ns_t ns) {
@@ -63,9 +63,9 @@ void Tournament::integrate(ns_t ns) {
                     if (!warmup) {
                         add_state_response(GPCGameOver, 0, 0);
                         if (logger) {
-                            logger->log(ServerLogger::LogTypeGameOver, "game over");
+                            logger->log(ServerLogger::LogTypeGameOver, i18n(I18N_TNMT_STATS_OVER));
                             write_stats_in_server_log();
-                            logger->log(ServerLogger::LogTypeEndOfStats, "end of stats");
+                            logger->log(ServerLogger::LogTypeEndOfStats, i18n(I18N_TNMT_STATS_END));
                         }
                     }
                 }
@@ -157,6 +157,9 @@ void Tournament::integrate(ns_t ns) {
         if (finished) {
             gani->delete_me = true;
             if (server) {
+                identifier_t *id = new identifier_t;
+                *id = htons(gani->state.id);
+                add_state_response(GPCRemoveAnimation, sizeof(id), id);
                 const std::string& finished_animation = gani->animation->get_value("finished_animation");
                 if (finished_animation.length()) {
                     Animation *ani = resources.get_animation(finished_animation);
@@ -282,7 +285,7 @@ void Tournament::integrate(ns_t ns) {
         Player *p = *it;
 
         if (p->is_alive_and_playing()) {
-            const CollisionBox& colbox = p->get_characterset()->get_colbox();
+            const CollisionBox& colbox = Characterset::Colbox;
 
             /* check player name width */
             if (!p->font) {
@@ -364,10 +367,7 @@ void Tournament::integrate(ns_t ns) {
                         p->state.client_server_state.jump_accel_y = -YInitialJumpImpulse;
                         if (!server) {
                             p->force_broadcast = true;
-                            const std::string& jump_sound = p->get_characterset()->get_value("jump_sound");
-                            if (jump_sound.length()) {
-                                subsystem.play_sound(resources.get_sound(jump_sound), 0);
-                            }
+                            subsystem.play_sound(resources.get_sound(Characterset::JumpSound), 0);
                         }
                     }
                 }
@@ -650,10 +650,9 @@ void Tournament::integrate(ns_t ns) {
             /* fell off the screen */
             if (server) {
                 if (newy - 100 > map_height * tile_height) {
-                    std::string msg(p->get_player_name() + " fell off the stage");
-                    player_dies(p, msg);
+                    player_dies(p, I18N_TNMT_PLAYER_FELL_OFF, p->get_player_name().c_str());
                     if (logger) {
-                        logger->log(ServerLogger::LogTypeKill, msg, p, p, "void");
+                        logger->log(ServerLogger::LogTypeKill, i18n(I18N_TNMT_PLAYER_FELL_OFF, p->get_player_name().c_str()), p, p, "void");
                     }
                 }
             }
@@ -798,7 +797,7 @@ void Tournament::integrate(ns_t ns) {
 
     /* set top/left */
     if (following_player) {
-        const CollisionBox& colbox = following_player->get_characterset()->get_colbox();
+        const CollisionBox& colbox = Characterset::Colbox;
         spectator_x = following_player->state.client_server_state.x + colbox.x + colbox.width / 2;
         spectator_y = following_player->state.client_server_state.y;
     }
@@ -878,10 +877,9 @@ bool Tournament::tile_collision(TestType type, Player *p,
             if (killing) *killing = true;
             if (server && p && p->is_alive_and_playing()) {
                 p->state.server_state.score--;
-                std::string msg(p->get_player_name() + " committed suicide");
-                player_dies(p, msg);
+                player_dies(p, I18N_TNMT_PLAYER_SUICIDE, p->get_player_name().c_str());
                 if (logger) {
-                    logger->log(ServerLogger::LogTypeKill, msg, p, p, "tile");
+                    logger->log(ServerLogger::LogTypeKill, i18n(I18N_TNMT_PLAYER_SUICIDE, p->get_player_name().c_str()), p, p, "tile");
                 }
             }
             break;

@@ -19,6 +19,13 @@
 #define _TILEGRAPHIC_HPP_
 
 #include "PNG.hpp"
+#include "Exception.hpp"
+
+class TileGraphicException : public Exception {
+public:
+    TileGraphicException(const char *msg) : Exception(msg) { }
+    TileGraphicException(std::string msg) : Exception(msg) { }
+};
 
 class TileGraphic {
 private:
@@ -32,7 +39,9 @@ public:
     int get_width();
     int get_height();
 
+    virtual void reset() = 0;
     virtual void add_tile(int bytes_per_pixel, const void *pic, bool desc, bool linear = false) = 0;
+    virtual void replace_tile(int index, int bytes_per_pixel, const void *pic) throw (TileGraphicException) = 0;
     virtual void punch_out_tile(PNG& png, int tilex, int tiley, bool desc, bool linear = false) = 0;
     virtual bool punch_out_lightmap(PNG& png, int tilex, int tiley) = 0;
     virtual size_t get_tile_count() = 0;

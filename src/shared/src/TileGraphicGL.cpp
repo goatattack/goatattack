@@ -24,15 +24,7 @@ TileGraphicGL::TileGraphicGL(int width, int height, bool keep_pictures)
     : TileGraphic(width, height, keep_pictures), sz(0) { }
 
 TileGraphicGL::~TileGraphicGL() {
-    for (Textures::iterator it = textures.begin(); it != textures.end(); it++) {
-        GLuint tex = *it;
-        glDeleteTextures(1, &tex);
-    }
-
-    for (Pictures::iterator it = pictures.begin(); it != pictures.end(); it++) {
-        const PictureData& pd = *it;
-        delete[] pd.pic;
-    }
+    clear();
 }
 
 GLuint TileGraphicGL::get_texture() {
@@ -53,6 +45,11 @@ int TileGraphicGL::get_bytes_per_pixel(int index) {
     const PictureData& pd = pictures[index];
 
     return pd.bytes_per_pixel;
+}
+
+void TileGraphicGL::reset() {
+    current_index = 0;
+    clear();
 }
 
 void TileGraphicGL::add_tile(int bytes_per_pixel, const void *pic, bool desc, bool linear) {
@@ -79,8 +76,17 @@ void TileGraphicGL::add_tile(int bytes_per_pixel, const void *pic, bool desc, bo
     sz = textures.size();
 }
 
+void TileGraphicGL::replace_tile(int index, int bytes_per_pixel, const void *pic) throw (TileGraphicException) {
+    if (index < 0 || index >= static_cast<int>(sz)) {
+        throw TileGraphicException("Index out of bounds");
+    }
+
+    glBindTexture(GL_TEXTURE_2D, textures[index]);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, (bytes_per_pixel == 4 ? GL_RGBA : GL_RGB), GL_UNSIGNED_BYTE, pic);
+}
+
 void TileGraphicGL::punch_out_tile(PNG& png, int tilex, int tiley, bool desc, bool linear) {
-    int bytes_per_pixel = (png.ColorFormatRGBA ? 4 : 3);
+    int bytes_per_pixel = (png.get_color_format() == png.ColorFormatRGBA ? 4 : 3);
     int row_len = png.get_width() * bytes_per_pixel;
 
     /* copy rect into a new 'temporary' picture array */
@@ -111,7 +117,7 @@ void TileGraphicGL::punch_out_tile(PNG& png, int tilex, int tiley, bool desc, bo
 }
 
 bool TileGraphicGL::punch_out_lightmap(PNG& png, int tilex, int tiley) {
-    int bytes_per_pixel = (png.ColorFormatRGBA ? 4 : 3);
+    int bytes_per_pixel = (png.get_color_format() == png.ColorFormatRGBA ? 4 : 3);
     int row_len = png.get_width() * bytes_per_pixel;
 
     /* copy rect into a new temporary picture array */
@@ -141,6 +147,18 @@ bool TileGraphicGL::punch_out_lightmap(PNG& png, int tilex, int tiley) {
 
 size_t TileGraphicGL::get_tile_count() {
     return sz;
+}
+
+void TileGraphicGL::clear() {
+    for (Textures::iterator it = textures.begin(); it != textures.end(); it++) {
+        GLuint tex = *it;
+        glDeleteTextures(1, &tex);
+    }
+
+    for (Pictures::iterator it = pictures.begin(); it != pictures.end(); it++) {
+        const PictureData& pd = *it;
+        delete[] pd.pic;
+    }
 }
 
 #endif

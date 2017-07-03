@@ -33,6 +33,7 @@ Animation::Animation(Subsystem& subsystem, const std::string& filename, ZipReade
         springiness = atof(get_value("springiness").c_str());
         impact = atof(get_value("impact").c_str());
         spread = atoi(get_value("spread").c_str());
+        damage_spread = atoi(get_value("damage_spread").c_str());
 
         x_offset = atoi(get_value("x_offset").c_str());
         y_offset = atoi(get_value("y_offset").c_str());
@@ -45,8 +46,9 @@ Animation::Animation(Subsystem& subsystem, const std::string& filename, ZipReade
         screen_shaker = atoi(get_value("screen_shaker").c_str());
 
         in_background = (atoi(get_value("background").c_str()) ? true : false);
-
+        can_be_shot = (atoi(get_value("can_be_shot").c_str()) ? true : false);
         projectile = (atoi(get_value("projectile").c_str()) ? true : false);
+        stop_sound_if_shot = (atoi(get_value("stop_sound_if_shot").c_str()) ? true : false);
         damage = atoi(get_value("damage").c_str());
         randomized_index = atoi(get_value("randomized_index").c_str());
 
@@ -57,6 +59,11 @@ Animation::Animation(Subsystem& subsystem, const std::string& filename, ZipReade
         physics_colbox.y = atoi(get_value("physics_colbox_y").c_str());
         physics_colbox.width = atoi(get_value("physics_colbox_width").c_str());
         physics_colbox.height = atoi(get_value("physics_colbox_height").c_str());
+
+        damage_colbox.x = atoi(get_value("damage_colbox_x").c_str());
+        damage_colbox.y = atoi(get_value("damage_colbox_y").c_str());
+        damage_colbox.width = atoi(get_value("damage_colbox_width").c_str());
+        damage_colbox.height = atoi(get_value("damage_colbox_height").c_str());
 
         if (tile_width != tile_height || tile_width < 16 || tile_width > 64) {
             throw AnimationException("Malformed tile size: " + filename);
@@ -101,6 +108,10 @@ const CollisionBox& Animation::get_physics_colbox() const {
     return physics_colbox;
 }
 
+const CollisionBox& Animation::get_damage_colbox() const {
+    return damage_colbox;
+}
+
 int Animation::get_duration() const {
     return duration;
 }
@@ -133,6 +144,14 @@ int Animation::get_spread_count() const {
     return spread_count;
 }
 
+int Animation::get_damage_spread() const {
+    return damage_spread;
+}
+
+bool Animation::get_stop_sound_if_shot() const {
+    return stop_sound_if_shot;
+}
+
 int Animation::get_randomized_index() const {
     if (randomized_index) {
         return rand() % randomized_index;
@@ -155,6 +174,10 @@ int Animation::get_y_offset() const {
 
 int Animation::get_screen_shaker() const {
     return screen_shaker;
+}
+
+bool Animation::get_can_be_shot() const {
+    return can_be_shot;
 }
 
 void Animation::create_tile(const std::string& filename, ZipReader *zip) throw (Exception) {

@@ -21,9 +21,9 @@
 
 #include <cstdlib>
 
-MasterQuery::MasterQuery(const std::string& masterserver, hostport_t masterport)
+MasterQuery::MasterQuery(I18N& i18n, const std::string& masterserver, hostport_t masterport)
     throw (MasterQueryException)
-    : masterserver(masterserver), masterport(masterport), running(false)
+    : i18n(i18n), masterserver(masterserver), masterport(masterport), running(false)
 {
     refresh();
     start();
@@ -38,7 +38,7 @@ void MasterQuery::start() throw (MasterQueryException) {
     if (!running) {
         running = true;
         if (!thread_start()) {
-            throw MasterQueryException("Starting thread failed.");
+            throw MasterQueryException(i18n(I18N_THREAD_FAILED));
         }
     }
 }
@@ -97,7 +97,7 @@ void MasterQuery::refresh() throw (MasterQueryException) {
         if (pos != std::string::npos) {
             hostaddr_t host = ntohl(inet_addr(entry.substr(0, pos).c_str()));
             hostport_t port = atoi(entry.substr(pos + 1).c_str());
-            MasterQueryClient *mqc = new MasterQueryClient(*this, host, port);
+            MasterQueryClient *mqc = new MasterQueryClient(i18n, *this, host, port);
             hosts.push_back(mqc);
         }
     }

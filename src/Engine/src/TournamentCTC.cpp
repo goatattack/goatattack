@@ -35,7 +35,7 @@ TournamentCTC::TournamentCTC(Resources& resources, Subsystem& subsystem, Gui *gu
     /* create spawn points */
     create_spawn_points();
     if (!spawn_points.size()) {
-        throw TournamentException("No spawn points found in this map");
+        throw TournamentException(i18n(I18N_MISSING_SPAWN_POINTS));
     }
 
     /* find coin in this map */
@@ -46,14 +46,14 @@ TournamentCTC::TournamentCTC(Resources& resources, Subsystem& subsystem, Gui *gu
         Object::ObjectType type = obj->object->get_type();
         if (type == Object::ObjectTypeCoin) {
             if (coin) {
-                throw TournamentException("Multiple coins not allowed");
+                throw TournamentException(i18n(I18N_MULTIPLE_COINS));
             }
             coin = obj;
         }
     }
 
     if (!coin) {
-        throw TournamentException("Coin is missing in this map");
+        throw TournamentException(i18n(I18N_COIN_MISSING));
     }
 
     /* add all players into list */
@@ -90,7 +90,7 @@ void TournamentCTC::write_stats_in_server_log() {
             last_total = total;
             total_minutes = total / 60;
             total -= total_minutes * 60;
-            logger->log(ServerLogger::LogTypeStatsCTC, "player stat", top.player, 0,
+            logger->log(ServerLogger::LogTypeStatsCTC, i18n(I18N_TNMT_STATS_PLAYER), top.player, 0,
                 &rank, &total_minutes, &total);
         }
     }
@@ -138,8 +138,7 @@ void TournamentCTC::check_coin_validity(double period_f) {
         /* check if coin is in valid map range */
         if (!coin->picked) {
             return_coin(PlaceObjectWithSpawnSound);
-            std::string msg("the coin returned to its base");
-            add_msg_response(msg.c_str());
+            add_i18n_response(I18N_TNMT_COIN_RETURNED);
         }
     } else if (coin_not_at_origin()) {
         /* check if coin is counting down (if dropped) */
@@ -150,8 +149,7 @@ void TournamentCTC::check_coin_validity(double period_f) {
             }
             if (coin->spawn_counter <= 0.0f) {
                 return_coin(PlaceObjectWithSpawnSound);
-                std::string msg("the coin returned to its base");
-                add_msg_response(msg.c_str());
+                add_i18n_response(I18N_TNMT_COIN_RETURNED);
             }
         }
     }
@@ -235,10 +233,9 @@ void TournamentCTC::player_died(Player *p) {
 bool TournamentCTC::pick_item(Player *p, GameObject *obj) {
     if (obj->object->get_type() == Object::ObjectTypeCoin) {
         p->state.server_state.flags |= PlayerServerFlagHasCoin;
-        std::string msg(p->get_player_name() + " catched the coin");
-        add_msg_response(msg.c_str());
+        add_i18n_response(I18N_TNMT_COIN_CATCHED, p->get_player_name().c_str());
         if (logger) {
-            logger->log(ServerLogger::LogTypeCoinPicked, msg, p);
+            logger->log(ServerLogger::LogTypeCoinPicked, i18n(I18N_TNMT_COIN_CATCHED, p->get_player_name().c_str()), p);
         }
         TimesOfPlayer *top = get_times_of_player(p);
         if (top) {
@@ -276,11 +273,9 @@ void TournamentCTC::draw_player_addons() {
         Player *p = *it;
         if (p->is_alive_and_playing()) {
             if (p->state.server_state.flags & PlayerServerFlagHasCoin) {
-                int fx = p->get_characterset()->get_coin_offset_x();
-                int fy = p->get_characterset()->get_coin_offset_y();
                 subsystem.draw_tile(coin->object->get_tile(),
-                    static_cast<int>(p->state.client_server_state.x) + left + fx,
-                    static_cast<int>(p->state.client_server_state.y) + top + fy);
+                    static_cast<int>(p->state.client_server_state.x) + left + Characterset::CoinOffsetX,
+                    static_cast<int>(p->state.client_server_state.y) + top + Characterset::CoinOffsetY);
             }
         }
     }
@@ -298,7 +293,7 @@ void TournamentCTC::draw_enemies_on_hud() {
         Player *p = *it;
         if (p != me) {
             if (p->is_alive_and_playing()) {
-                const CollisionBox& colbox = p->get_characterset()->get_damage_colbox();
+                const CollisionBox& colbox = Characterset::DamageColbox;
                 int cbw = colbox.width / 2;
                 int cbh = colbox.height / 2;
                 bool draw = false;
@@ -382,18 +377,24 @@ void TournamentCTC::draw_statistics() {
 
     /* draw title */
     Font *font_big = resources.get_font("big");
-    std::string txt("CATCH THE COIN");
+    std::string txt(i18n(I18N_TNMT_SB_CTC_TITLE));
     int tw = font_big->get_text_width(txt);
     subsystem.draw_text(font_big, vw / 2 - tw / 2, y + 18, txt);
+
+    /* draw map name */
+    std::string mapinfo(i18n(I18N_CLIENT_MAP_INFO, map.get_name().c_str()));
+    int miw = font_normal->get_text_width(mapinfo);
+    int mih = font_normal->get_font_height();
+    subsystem.draw_text(font_normal, x + ww - miw - 15, y + wh - mih - 15, mapinfo);
 
     /* draw list */
     subsystem.set_color(1.0f, 1.0f, 0.0f, 1.0f);
     y = 55;
     x = wx + 15;
     subsystem.draw_text(font_normal, x, y, "#");
-    subsystem.draw_text(font_normal, x + 20, y, "PLAYER");
-    subsystem.draw_text(font_normal, x + 140, y, "TOTAL");
-    subsystem.draw_text(font_normal, x + 220, y, "PING");
+    subsystem.draw_text(font_normal, x + 20, y, i18n(I18N_TNMT_SB_PLAYER));
+    subsystem.draw_text(font_normal, x + 140, y, i18n(I18N_TNMT_SB_TOTAL));
+    subsystem.draw_text(font_normal, x + 220, y, i18n(I18N_TNMT_SB_PING));
     subsystem.reset_color();
 
     y = draw_stats(font_normal, wx + 15, y + 15);
@@ -404,7 +405,7 @@ void TournamentCTC::draw_statistics() {
 
     /* done */
     subsystem.set_color(1.0f, 1.0f, 0.0f, 1.0f);
-    subsystem.draw_text(font_normal, wx + 15, y, "SPECTACTORS:");
+    subsystem.draw_text(font_normal, wx + 15, y, i18n(I18N_TNMT_SB_SPECTATORS));
     subsystem.reset_color();
     y += font_normal->get_font_height();
     for (Players::iterator it = players.begin(); it != players.end(); it++) {
@@ -529,9 +530,6 @@ bool TournamentCTC::test_and_drop_coin(Player *p) {
             coin->spawn_counter = static_cast<double>(CoinDropInitialValue);
             send_coin_remaining();
 
-            int fx = p->get_characterset()->get_coin_drop_offset_x();
-            int fy = p->get_characterset()->get_coin_drop_offset_y();
-
             coin->state.accel_x = p->state.client_server_state.accel_x;
             coin->state.accel_y = p->state.client_server_state.accel_y + p->state.client_server_state.jump_accel_y;
 
@@ -539,20 +537,19 @@ bool TournamentCTC::test_and_drop_coin(Player *p) {
             memset(gpo, 0, sizeof(GPlaceObject));
             gpo->id = coin->state.id;
             gpo->flags = PlaceObjectWithDropSound;
-            gpo->x = static_cast<pos_t>(p->state.client_server_state.x) + fx;
-            gpo->y = static_cast<pos_t>(p->state.client_server_state.y) + fy;
+            gpo->x = static_cast<pos_t>(p->state.client_server_state.x) + Characterset::CoinDropOffsetX;
+            gpo->y = static_cast<pos_t>(p->state.client_server_state.y) + Characterset::CoinDropOffsetY;
             add_place_object(gpo);
             gpo->to_net();
             add_state_response(GPCPlaceObject, sizeof(GPlaceObject), gpo);
 
             /* add message */
-            std::string msg("the coin dropped");
-            add_msg_response(msg.c_str());
+            add_i18n_response(I18N_TNMT_COIN_DROPPED);
             dropped = true;
 
             /* log */
             if (logger) {
-                logger->log(ServerLogger::LogTypeCoinDropped, msg, p);
+                logger->log(ServerLogger::LogTypeCoinDropped, i18n(I18N_TNMT_COIN_DROPPED), p);
             }
         }
     }
@@ -619,7 +616,7 @@ int TournamentCTC::draw_stats(Font *f, int x, int y) {
             sprintf(buffer, "%d", rank);
             subsystem.draw_text(f, x, y, buffer);
 
-            subsystem.draw_text(f, x + 20, y, top.player->get_player_name());
+            subsystem.draw_clipped_text(f, x + 20, y, 110, top.player->get_player_name());
 
             sprintf(buffer, "%d:%02d", total_minutes, total);
             subsystem.draw_text(f, x + 140, y, buffer);

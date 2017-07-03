@@ -1,4 +1,15 @@
 name=big
-author=Philippe Widmer
+author=Canonical Ltd.
 description=Big font
-spacing=-2
+font=ubuntu-bold.ttf
+width=15
+height=15
+outline=1.25
+y_offset=-4
+red1=255
+green1=255
+blue1=255
+red2=255
+green2=255
+blue2=127
+cp_84_x_shift=2

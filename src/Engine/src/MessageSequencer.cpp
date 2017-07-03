@@ -21,16 +21,20 @@
 #include <cstdlib>
 #include <cstdio>
 
-/* to simulate crappy net links:
+/*
+ * to simulate crappy net links:
  *
  * # tc qdisc add dev lo root netem delay 150ms 10ms 25%
  * # tc qdisc del dev lo root
  */
 
 /* some consts to tweak */
-static const int PingTimeout = 5000; /* 5 seconds */
-static const int PingInterval = 500; /* 500 ms    */
-static const int MaxResends = 7;     /* 6250 ms   */
+static const int PingTimeout = 5000;            /* 5 seconds                    */
+static const int PingInterval = 500;            /* 500 ms                       */
+static const int ShapingEnd = 4;                /* 4 * 25 ms                    */
+static const int MaxResends = 13 + ShapingEnd;  /* 2000 ms + ShapingEnd * 25 ms */
+static const int MaxThrottle = 200;             /* 200 ms                       */
+static const int StartResendIn = 25;            /* 25 ms                        */
 
 /* protocol v4 changed status request structure */
 static const int NewStatusProtocolVersion = 4;
@@ -39,26 +43,44 @@ static const int NewStatusProtocolVersion = 4;
 static const int MsgHeaderLength = sizeof(NetMessage) - 1 + sizeof(NetMessageData) - 1;
 static const int ServerStatusLength = sizeof(ServerStatusMsg) - 1;
 
-ScopeHeapMarker::ScopeHeapMarker(SequencerHeap& heap) : heap(heap) {
-    heap.processing = true;
-}
+/* we start to resend after 25ms, retry 4 times with a delay of 25 ms, */
+/* then doubling the interval each resend.                             */
+struct QueueMessage {
+    QueueMessage() { }
+    QueueMessage(sequence_no_t seq_no, flags_t flags, command_t cmd, data_len_t len, data_t *data)
+        : resends(0), last_resend_ms(StartResendIn), seq_no(seq_no), flags(flags),
+          cmd(cmd), len(len), data(data)
+    {
+        touch.tv_nsec = 0;
+        touch.tv_sec = 0;
+    }
 
-ScopeHeapMarker::~ScopeHeapMarker() {
-    heap.processing = false;
-}
+    ~QueueMessage() {
+        delete[] data;
+    }
 
-MessageSequencer::MessageSequencer(hostport_t port, pico_size_t max_heaps,
+    gametime_t touch;
+    pico_size_t resends;
+    int last_resend_ms;
+    sequence_no_t seq_no;
+    flags_t flags;
+    command_t cmd;
+    data_len_t len;
+    data_t *data;
+};
+
+MessageSequencer::MessageSequencer(I18N& i18n, hostport_t port, pico_size_t max_heaps,
     const std::string& name, const std::string& password) throw (Exception)
-    : max_heaps(max_heaps), is_client(false), name(name), password(password), socket(port),
+    : i18n(i18n), max_heaps(max_heaps), is_client(false), name(name), password(password), socket(port),
       pmsg(reinterpret_cast<NetMessage *>(buffer)),
       pdata(reinterpret_cast<NetMessageData *>(pmsg->data))
 {
     memset(buffer, 0, sizeof buffer);
 }
 
-MessageSequencer::MessageSequencer(hostaddr_t server_host, hostport_t server_port)
+MessageSequencer::MessageSequencer(I18N& i18n, hostaddr_t server_host, hostport_t server_port)
     throw (Exception)
-    : max_heaps(1), is_client(true), name(), password(), socket(),
+    : i18n(i18n), max_heaps(1), is_client(true), name(), password(), socket(),
       pmsg(reinterpret_cast<NetMessage *>(buffer)),
       pdata(reinterpret_cast<NetMessageData *>(pmsg->data))
 {
@@ -82,18 +104,20 @@ void MessageSequencer::request_server_info(hostaddr_t host, hostport_t port) thr
 }
 
 void MessageSequencer::login(const std::string& password, data_len_t len, const void *data) throw (Exception) {
-    int sz = sizeof(NetLogin) + len;
-    AutoPtr<char []> tmp(new char[sz]);
-    NetLogin *login = reinterpret_cast<NetLogin *>(&tmp[0]);
-    memset(login, 0, sizeof(NetLogin));
-    login->protocol_version = ProtocolVersion;
-    strncpy(login->pwd, password.c_str(), NetLoginPasswordLen - 1);
-    login->len = len;
-    if (len) {
-        memcpy(login->data, data, len);
+    if (is_client) {
+        int sz = sizeof(NetLogin) + len;
+        AutoPtr<char []> tmp(new char[sz]);
+        NetLogin *login = reinterpret_cast<NetLogin *>(&tmp[0]);
+        memset(login, 0, sizeof(NetLogin));
+        login->protocol_version = ProtocolVersion;
+        strncpy(login->pwd, password.c_str(), NetLoginPasswordLen - 1);
+        login->len = len;
+        if (len) {
+            memcpy(login->data, data, len);
+        }
+        login->to_net();
+        push(NetFlagsReliable, NetCommandLogin, sz, login);
     }
-    login->to_net();
-    push(NetFlagsReliable, NetCommandLogin, sz, login);
 }
 
 void MessageSequencer::login(data_len_t len, const void *data) throw (Exception) {
@@ -101,7 +125,9 @@ void MessageSequencer::login(data_len_t len, const void *data) throw (Exception)
 }
 
 void MessageSequencer::logout() throw (Exception) {
-    push(NetFlagsReliable, NetCommandLogout, 0, 0);
+    if (is_client) {
+        push(NetFlagsReliable, NetCommandLogout, 0, 0);
+    }
 }
 
 void MessageSequencer::broadcast(flags_t flags, data_len_t len, const void *data) throw (Exception) {
@@ -152,6 +178,24 @@ void MessageSequencer::push(const Connection *c, command_t cmd, flags_t flags,
     }
 }
 
+size_t MessageSequencer::get_outq_sz(const Connection *c) {
+    SequencerHeap *h = find_heap(c);
+    if (h) {
+        return h->out_queue.size();
+    }
+
+    return 0;
+}
+
+size_t MessageSequencer::get_inq_sz(const Connection *c) {
+    SequencerHeap *h = find_heap(c);
+    if (h) {
+        return h->in_queue.size();
+    }
+
+    return 0;
+}
+
 bool MessageSequencer::cycle() throw (Exception) {
     hostaddr_t host;
     hostport_t port;
@@ -190,7 +234,8 @@ bool MessageSequencer::cycle() throw (Exception) {
                 stat->from_net();
                 ms_t ping_time = diff_ms(stat->ping, touch);
                 bool secured = ((stat->flags & ServerStatusFlagNeedPassword) != 0);
-                const char *payload = "---[ server too old ]---";
+                std::string too_old(i18n(I18N_SERVER_TOO_OLD));
+                const char *payload = too_old.c_str();
                 if (stat->protocol_version >= NewStatusProtocolVersion) {
                     stat->name[stat->len] = 0;
                     payload = reinterpret_cast<const char *>(stat->name);
@@ -213,9 +258,10 @@ bool MessageSequencer::cycle() throw (Exception) {
                 delete_all_heaps();
             }
         } else {
-            /* login attempt, create new heap */
+            /* find valid heap */
             SequencerHeap *h = 0;
             if (pmsg->cmd == NetCommandLogin) {
+                /* or create new heap, if attempt to login */
                 if (!is_client && !find_heap(host, port)) {
                     NetLogin *login = reinterpret_cast<NetLogin *>(pdata->data);
                     login->from_net();
@@ -240,6 +286,7 @@ bool MessageSequencer::cycle() throw (Exception) {
                 if (pmsg->flags & NetFlagsReliable) {
                     /* queueing */
                     if (pmsg->seq_no > h->last_recv_rel_seq_no) {
+                        /* sorted insert message */
                         data_t *alloc_data = 0;
                         if (pdata->len) {
                             alloc_data = new data_t[pdata->len];
@@ -249,6 +296,7 @@ bool MessageSequencer::cycle() throw (Exception) {
                             pmsg->cmd, pdata->len, alloc_data);
                         sorted_insert(h->in_queue, m);
                     } else {
+                        /* simply acknowledge message */
                         ack(h, pmsg->seq_no);
                     }
                 } else {
@@ -267,10 +315,18 @@ bool MessageSequencer::cycle() throw (Exception) {
         for (SequencerHeaps::iterator it = heaps.begin(); it != heaps.end(); it++) {
             SequencerHeap *h = *it;
 
+            /* kill marker? */
+            if (h->deferred_kill) {
+                kill_heap_with_logout(h, LogoutReasonApplicationQuit);
+                recycle = true;
+                break;
+            }
+
             /* inspect incoming queue */
             if (h->in_queue.size()) {
                 QueueMessage *tmp_smsg = h->in_queue[0];
                 if (tmp_smsg->seq_no == h->last_recv_rel_seq_no + 1) {
+                    h->in_queue.pop_front();
                     h->last_recv_rel_seq_no = tmp_smsg->seq_no;
                     pmsg->seq_no = tmp_smsg->seq_no;
                     pmsg->flags = tmp_smsg->flags;
@@ -278,15 +334,10 @@ bool MessageSequencer::cycle() throw (Exception) {
                     pdata->len = tmp_smsg->len;
                     memcpy(pdata->data, tmp_smsg->data, tmp_smsg->len);
                     process_incoming(h, pmsg);
-                    h->in_queue.pop_front();
                     ack(h, tmp_smsg->seq_no);
                     command_t tmp_cmd = tmp_smsg->cmd;
                     delete tmp_smsg;
-                    if (h->deferred_kill) {
-                        kill_heap_with_logout(h, LogoutReasonApplicationQuit);
-                        recycle = true;
-                        break;
-                    } else if (tmp_cmd == NetCommandLogout) {
+                    if (tmp_cmd == NetCommandLogout) {
                         delete_heap(h);
                         recycle = true;
                         break;
@@ -302,7 +353,15 @@ bool MessageSequencer::cycle() throw (Exception) {
                     again = true;
                     tmp_smsg->touch = touch;
                     tmp_smsg->resends++;
-                    tmp_smsg->last_resend_ms *= 2;
+                    /* throttle resend/traffic shaping */
+                    if (tmp_smsg->resends > ShapingEnd) {
+                        if (tmp_smsg->last_resend_ms < MaxThrottle) {
+                            tmp_smsg->last_resend_ms *= 2;
+                            if (tmp_smsg->last_resend_ms > MaxThrottle) {
+                                tmp_smsg->last_resend_ms = MaxThrottle;
+                            }
+                        }
+                    }
                     if (tmp_smsg->resends > MaxResends) {
                         /* disconnect after too many resends */
                         kill_heap_with_logout(h, LogoutReasonTooManyResends);
@@ -322,8 +381,9 @@ bool MessageSequencer::cycle() throw (Exception) {
                 push(h, NetCommandPing, 0, sizeof(gametime_t), &h->last_ping);
                 h->sent_pings++;
             }
+
+            /* after x seconds of absolutely silence, disconnect client */
             if (h->sent_pings > PingTimeout / PingInterval) {
-                /* after x seconds of absolutely silence, disconnect client */
                 kill_heap_with_logout(h, LogoutReasonPingTimeout);
                 recycle = true;
                 break;
@@ -336,11 +396,9 @@ bool MessageSequencer::cycle() throw (Exception) {
 }
 
 void MessageSequencer::kill(const Connection *c) throw (Exception) {
-    SequencerHeap *h = static_cast<SequencerHeap *>(const_cast<Connection *>(c));
-    if (h->processing) {
+    SequencerHeap *h = find_heap(c);
+    if (h) {
         h->deferred_kill = true;
-    } else {
-        kill_heap_with_logout(h, LogoutReasonApplicationQuit);
     }
 }
 
@@ -348,15 +406,22 @@ void MessageSequencer::new_settings(hostport_t port, pico_size_t num_heaps,
     const std::string& name, const std::string& password) throw (Exception)
 {
     int current = static_cast<int>(heaps.size());
-    if (current >= num_heaps) {
-        char temp_buffer[256];
-        sprintf(temp_buffer, "Cannot set num_heaps to %d, %d are logged in", num_heaps, current);
-        throw MessageSequencerException(temp_buffer);
+    if (current > num_heaps) {
+        throw MessageSequencerException(i18n(I18N_HEAP_CHANGE_ERROR, num_heaps, current));
     }
     this->name = name;
     this->password = password;
     this->max_heaps = num_heaps;
     socket.set_port(port);
+}
+
+const SequencerHeap *MessageSequencer::get_heap(const Connection *c) const {
+    for (SequencerHeaps::const_iterator it = heaps.begin(); it != heaps.end(); it++) {
+        if (*it == c) {
+            return *it;
+        }
+    }
+    return 0;
 }
 
 void MessageSequencer::ack(SequencerHeap *heap, sequence_no_t seq_no) throw (Exception) {
@@ -366,8 +431,6 @@ void MessageSequencer::ack(SequencerHeap *heap, sequence_no_t seq_no) throw (Exc
 }
 
 void MessageSequencer::process_incoming(SequencerHeap *heap, NetMessage *msg) throw (Exception) {
-    ScopeHeapMarker heap_marker(*heap);
-
     NetMessageData *data = reinterpret_cast<NetMessageData *>(msg->data);
 
     switch (msg->cmd) {
@@ -378,11 +441,11 @@ void MessageSequencer::process_incoming(SequencerHeap *heap, NetMessage *msg) th
                 sequence_no_t seq_no = ntohl(*pseq_no);
                 QueueMessage *tmp_smsg = heap->out_queue[0];
                 if (tmp_smsg->seq_no == seq_no) {
+                    heap->out_queue.pop_front();
                     if (tmp_smsg->cmd == NetCommandLogin) {
                         event_login(heap, tmp_smsg->len, tmp_smsg->data);
                     }
                     delete tmp_smsg;
-                    heap->out_queue.pop_front();
                 }
             }
             break;
@@ -458,7 +521,7 @@ SequencerHeap *MessageSequencer::find_heap(hostaddr_t host, hostport_t port) {
 SequencerHeap *MessageSequencer::find_heap(const Connection *c) {
     for (SequencerHeaps::iterator it = heaps.begin(); it != heaps.end(); it++) {
         if (*it == c) {
-            return static_cast<SequencerHeap *>(const_cast<Connection *>(c));
+            return *it;
         }
     }
 

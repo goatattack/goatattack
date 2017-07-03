@@ -25,6 +25,7 @@
 #include "GameProtocol.hpp"
 #include "TournamentFactory.hpp"
 #include "MapConfiguration.hpp"
+#include "I18N.hpp"
 
 #include <string>
 
@@ -36,9 +37,9 @@ private:
     ClientServer& operator=(const ClientServer&);
 
 public:
-    ClientServer(hostport_t port, pico_size_t num_players,
+    ClientServer(I18N& i18n, hostport_t port, pico_size_t num_players,
         const std::string& server_name, const std::string& password);
-    ClientServer(hostaddr_t host, hostport_t port);
+    ClientServer(I18N& i18n, hostaddr_t host, hostport_t port);
     virtual ~ClientServer();
 
     Tournament *get_tournament() const;
@@ -87,6 +88,11 @@ public:
         const std::string& server_name, const std::string& password) throw (Exception);
 
     hostport_t get_port() const;
+
+protected:
+    char *create_text(const std::string& txt, size_t& sz);
+    I18NText get_logout_text_id(LogoutReason reason);
+    I18NText get_logout_text_id_client(LogoutReason reason);
 
 private:
     char buffer[1024];

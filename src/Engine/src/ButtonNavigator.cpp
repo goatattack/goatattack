@@ -50,7 +50,7 @@ void ButtonNavigator::clear() {
 }
 
 void ButtonNavigator::set_button_focus() {
-    for (NavigatorButtons::iterator it = navigator_buttons.begin();
+    for (Buttons::iterator it = navigator_buttons.begin();
         it != navigator_buttons.end(); it++)
     {
         (*it)->reset_color();
@@ -58,6 +58,10 @@ void ButtonNavigator::set_button_focus() {
     if (current_index >= 0 && current_index < static_cast<int>(navigator_buttons.size())) {
         navigator_buttons[current_index]->set_color(1.0f, 0.5f, 0.5f);
     }
+}
+
+const ButtonNavigator::Buttons& ButtonNavigator::get_buttons() const {
+    return navigator_buttons;
 }
 
 bool ButtonNavigator::static_window_keydown(GuiWindow *sender, void *data, int keycode, bool repeat) {

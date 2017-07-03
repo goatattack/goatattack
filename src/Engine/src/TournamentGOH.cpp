@@ -109,21 +109,17 @@ void TournamentGOH::subintegrate(ns_t ns) {
 
                     if (first_player_on_hill->state.server_state.flags & PlayerServerFlagTeamRed) {
                         score.score_red++;
-                        std::string team_name = uppercase(team_red_name);
-                        add_team_score_animation(first_player_on_hill, team_name + " SCORES");
-                        std::string msg(team_red_name + " scores");
-                        add_msg_response(msg.c_str());
+                        add_team_score_animation(first_player_on_hill, I18N_TNMT_TEAM_RED_SCORED2);
+                        add_i18n_response(I18N_TNMT_TEAM_RED_SCORED1);
                         if (logger) {
-                            logger->log(ServerLogger::LogTypeTeamRedScored, msg, first_player_on_hill);
+                            logger->log(ServerLogger::LogTypeTeamRedScored, i18n(I18N_TNMT_TEAM_RED_SCORED1), first_player_on_hill);
                         }
                     } else {
                         score.score_blue++;
-                        std::string team_name = uppercase(team_blue_name);
-                        add_team_score_animation(first_player_on_hill, team_name + " SCORES");
-                        std::string msg(team_blue_name + " scores");
-                        add_msg_response(msg.c_str());
+                        add_team_score_animation(first_player_on_hill, I18N_TNMT_TEAM_BLUE_SCORED2);
+                        add_i18n_response(I18N_TNMT_TEAM_BLUE_SCORED1);
                         if (logger) {
-                            logger->log(ServerLogger::LogTypeTeamBlueScored, msg, first_player_on_hill);
+                            logger->log(ServerLogger::LogTypeTeamBlueScored, i18n(I18N_TNMT_TEAM_BLUE_SCORED1), first_player_on_hill);
                         }
                     }
                     add_sound_response(scored_sound.c_str());
@@ -148,9 +144,8 @@ void TournamentGOH::draw_player_addons() {
     if (addon_player) {
         int x = static_cast<int>(addon_player->state.client_server_state.x);
         int y = static_cast<int>(addon_player->state.client_server_state.y) - 22;
-        TileGraphic *tg = addon_player->get_characterset()->get_tile(DirectionLeft, CharacterAnimationStanding)->get_tilegraphic();
-        y -= tg->get_height();
-        int w = tg->get_width();
+        y -= Characterset::Height;
+        int w = Characterset::Width;
         subsystem.set_color(0.0f, 0.0f, 0.0f, 1.0f);
         subsystem.draw_box(x + left, y + top, w, 5);
         subsystem.set_color(1.0f, 1.0f, 1.0f, 1.0f);
@@ -185,7 +180,7 @@ bool TournamentGOH::player_is_in_hill_zone(Player *p) {
     static int tilex;
     static int tiley;
 
-    CollisionBox colbox = p->get_characterset()->get_colbox();
+    CollisionBox colbox = Characterset::Colbox;
     colbox.x += static_cast<int>(p->state.client_server_state.x);
     colbox.y = static_cast<int>(p->state.client_server_state.y) - colbox.height - colbox.y;
     int width = colbox.width - 1;

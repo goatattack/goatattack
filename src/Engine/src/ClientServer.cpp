@@ -20,14 +20,15 @@
 
 #include <cassert>
 
-ClientServer::ClientServer(hostport_t port, pico_size_t num_players,
+ClientServer::ClientServer(I18N& i18n, hostport_t port, pico_size_t num_players,
     const std::string& server_name, const std::string& password)
-    : MessageSequencer(port, num_players, server_name, password), server(0), tournament(0),
+    : MessageSequencer(i18n, port, num_players, server_name, password),
+      server(0), tournament(0),
       gtrans(reinterpret_cast<GTransport *>(buffer)),
       pb(gtrans), packet_len(0), port(port), has_temp_map_config(false) { }
 
-ClientServer::ClientServer(hostaddr_t host, hostport_t port)
-    : MessageSequencer(host, port), server(0), tournament(0),
+ClientServer::ClientServer(I18N& i18n, hostaddr_t host, hostport_t port)
+    : MessageSequencer(i18n, host, port), server(0), tournament(0),
       gtrans(reinterpret_cast<GTransport *>(buffer)),
       pb(gtrans), packet_len(0), port(port), has_temp_map_config(false) { }
 
@@ -35,6 +36,7 @@ ClientServer::~ClientServer() {
     if (tournament) {
         tournament->set_gui_is_destroyed(true);
         delete tournament;
+        tournament = 0;
     }
 }
 
@@ -177,6 +179,59 @@ hostport_t ClientServer::get_port() const {
     return port;
 }
 
+char *ClientServer::create_text(const std::string& txt, size_t& sz) {
+    sz = txt.length() + 1;
+    char *p = new char[sz];
+    memcpy(p, txt.c_str(), sz);
+    return p;
+}
+
+I18NText ClientServer::get_logout_text_id(LogoutReason reason) {
+    I18NText id = I18N_CLIENT_LOGGED_OUT;
+    switch (reason) {
+        case LogoutReasonRegular:
+            id = I18N_CLIENT_LOGGED_OUT;
+            break;
+
+        case LogoutReasonPingTimeout:
+            id = I18N_CLIENT_PING_TIMEOUT;
+            break;
+
+        case LogoutReasonTooManyResends:
+            id = I18N_CLIENT_TOO_MANY_RESENDS;
+            break;
+
+        case LogoutReasonApplicationQuit:
+            id = I18N_CLIENT_APPLICATION_LAYER;
+            break;
+    }
+
+    return id;
+}
+
+I18NText ClientServer::get_logout_text_id_client(LogoutReason reason) {
+    I18NText id = I18N_CLIENT_LOGGED_OUT_RPL;
+    switch (reason) {
+        case LogoutReasonRegular:
+            id = I18N_CLIENT_LOGGED_OUT_RPL;
+            break;
+
+        case LogoutReasonPingTimeout:
+            id = I18N_CLIENT_PING_TIMEOUT_RPL;
+            break;
+
+        case LogoutReasonTooManyResends:
+            id = I18N_CLIENT_TOO_MANY_RESENDS_RPL;
+            break;
+
+        case LogoutReasonApplicationQuit:
+            id = I18N_CLIENT_APPLICATION_LAYER_RPL;
+            break;
+    }
+
+    return id;
+}
+
 void ClientServer::set_server(Server *server) {
     this->server = server;
 }
@@ -185,7 +240,7 @@ void ClientServer::reload_config(hostport_t port, pico_size_t num_players,
     const std::string& server_name, const std::string& password) throw (Exception)
 {
     if (!server) {
-        throw Exception("No server, reloading settings failed");
+        throw Exception("No server, reloading settings failed.");
     }
     MessageSequencer::new_settings(port, num_players, server_name, password);
     this->port = port;

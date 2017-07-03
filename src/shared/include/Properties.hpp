@@ -28,6 +28,7 @@
 class Properties : public KeyValue {
 public:
     Properties();
+    Properties(const KeyValue& kv) throw (KeyValueException);
     Properties(const std::string& filename, ZipReader *zip = 0) throw (KeyValueException);
     virtual ~Properties();
 
@@ -35,9 +36,9 @@ public:
     const std::string& get_author() const;
     const std::string& get_description() const;
 
-    void set_name(const std::string& name) throw (KeyValueException);
-    void set_author(const std::string& author) throw (KeyValueException);
-    void set_description(const std::string& description) throw (KeyValueException);
+    void set_name(const std::string& name, bool no_touch = false) throw (KeyValueException);
+    void set_author(const std::string& author, bool no_touch = false) throw (KeyValueException);
+    void set_description(const std::string& description, bool no_touch = false) throw (KeyValueException);
     void reload_configuration() throw (KeyValueException);
     void save_configuration() throw (KeyValueException);
 

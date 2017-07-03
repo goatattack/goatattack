@@ -37,7 +37,6 @@ public:
     virtual ~TournamentCTF();
 
     virtual const char *tournament_type();
-    virtual void write_stats_in_server_log();
     virtual void update_wearable_remaining(GTimeRemaining *remain);
 
 private:
@@ -59,7 +58,7 @@ private:
 
     bool test_and_drop_flag(Player *p);
     void return_flag(GameObject *flag, int flags);
-    void check_flag_validity(double period_f, const std::string& name, GameObject *flag);
+    void check_flag_validity(double period_f, I18NText id, GameObject *flag);
     bool flag_not_at_origin(GameObject *flag);
     void send_flag_remaining(GameObject *flag);
 

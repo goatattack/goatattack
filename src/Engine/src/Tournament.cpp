@@ -21,11 +21,20 @@
 #include <cmath>
 #include <cstdlib>
 
+#include <iostream>
+
+static const int MaxBombs = 100;
+static const int MaxFrogs = 100;
+static const int MaxArmor = 100;
+static const int MaxGrenades = 100;
+static const int MaxHealth = 100;
+static const int MaxAmmo = 100;
+
 Tournament::Tournament(Resources& resources, Subsystem& subsystem, Gui *gui, ServerLogger *logger,
     const std::string& game_file, bool server, const std::string& map_name,
     Players& players, int duration, bool warmup)
     throw (TournamentException, ResourcesException)
-      : resources(resources), subsystem(subsystem),
+    : resources(resources), subsystem(subsystem), i18n(subsystem.get_i18n()),
       properties(*resources.get_game_settings(game_file)),
       gui(gui), server(server),
       map(*resources.get_map(map_name)),
@@ -57,7 +66,7 @@ Tournament::Tournament(Resources& resources, Subsystem& subsystem, Gui *gui, Ser
       hud_frogs(resources.get_icon("frog")),
       enemy_indicator(resources.get_icon("enemy_indicator_neutral")),
       game_over(false), logger(logger), gui_is_destroyed(false),
-      do_friendly_fire_alarm(true)
+      lagometer(0)
 {
     /* init */
     char kvb[128];
@@ -118,6 +127,9 @@ Tournament::Tournament(Resources& resources, Subsystem& subsystem, Gui *gui, Ser
     if (logger) {
         logger->set_map(&map);
     }
+
+    /* clear settings */
+    memset(settings, 0, sizeof(settings));
 }
 
 Tournament::~Tournament() {
@@ -148,11 +160,9 @@ Tournament::~Tournament() {
     }
 
     if (logger) {
-        logger->log(ServerLogger::LogTypeMapClosed, "current map closed");
+        logger->log(ServerLogger::LogTypeMapClosed, i18n(I18N_TNMT_STATS_MAP_CLOSED));
         logger->set_map(0);
     }
-
-    //subsystem.stop_music();
 }
 
 void Tournament::set_gui_is_destroyed(bool state) {
@@ -267,12 +277,27 @@ void Tournament::add_animation(GAnimation *animation) {
         }
         if (!server) {
             if (strlen(animation->sound_name)) {
-                subsystem.play_sound(resources.get_sound(animation->sound_name), 0);
+                gani->sound_channel = subsystem.play_sound(resources.get_sound(animation->sound_name), 0);
             }
         }
     } catch (const ResourcesException& e) {
         if (gani) delete gani;
-        subsystem << "creating animation failed: " << e.what() << std::endl;
+        subsystem << i18n(I18N_ANIMATION_FAILED, e.what()) << std::endl;
+    }
+}
+
+void Tournament::remove_animation(identifier_t id) {
+    if (id) {
+        for (GameAnimations::iterator it = game_animations.begin(); it != game_animations.end(); it++) {
+            GameAnimation *gani = *it;
+            if (gani->state.id == id) {
+                gani->delete_me = true;
+                if (gani->animation->get_stop_sound_if_shot()) {
+                    gani->sound_channel = subsystem.stop_sound(gani->sound_channel);
+                }
+                break;
+            }
+        }
     }
 }
 
@@ -295,11 +320,11 @@ void Tournament::add_animation(const std::string& name, identifier_t id,
         gani->state.accel_y = accel_y;
         game_animations.push_back(gani);
         if (!server) {
-            subsystem.play_sound(ani->get_sound(), ani->get_sound_loops());
+            gani->sound_channel = subsystem.play_sound(ani->get_sound(), ani->get_sound_loops());
         }
     } catch (const ResourcesException& e) {
         if (gani) delete gani;
-        subsystem << "creating animation failed: " << e.what() << std::endl;
+        subsystem << i18n(I18N_ANIMATION_FAILED, e.what()) << std::endl;
     }
 }
 
@@ -308,14 +333,20 @@ void Tournament::add_text_animation(GTextAnimation *animation) {
     try {
         gani = new GameTextAnimation;
         gani->font = resources.get_font(animation->font_name);
-        gani->text = animation->display_text;
-        gani->x = static_cast<int>(animation->x);
+        gani->text = i18n(static_cast<I18NText>(animation->i18n_id));
+        int tw = gani->font->get_text_width(gani->text);
+        gani->x = static_cast<int>(animation->x) - tw / 2;
+        if (gani->x < 0) {
+            gani->x = 0;
+        } else if (gani->x + tw > map_width * tile_width) {
+            gani->x = map_width * tile_width - tw;
+        }
         gani->y = static_cast<int>(animation->y);
         gani->max_rise_counter = animation->max_counter;
         game_text_animations.push_back(gani);
     } catch (const ResourcesException& e) {
         if (gani) delete gani;
-        subsystem << "creating point animation failed: " << e.what() << std::endl;
+        subsystem << i18n(I18N_ANIMATION_FAILED, e.what()) << std::endl;
     }
 }
 
@@ -445,15 +476,12 @@ void Tournament::spawn_object(Object *obj, identifier_t id, int x, int y, flags_
 }
 
 void Tournament::add_player_spawn_animation(Player *p) {
-    const std::string& spawn_animation = p->get_characterset()->get_value("spawn_animation");
-    if (spawn_animation.length()) {
-        Animation *ani = resources.get_animation(spawn_animation);
-        TileGraphic *tg = ani->get_tile()->get_tilegraphic();
-        int x = static_cast<int>(p->state.client_server_state.x);
-        int y = static_cast<int>(p->state.client_server_state.y) - p->get_characterset()->get_height();
-        add_animation(spawn_animation, 0, 0, 0, x, y, 0.0f, 0.0f, tg->get_width(), tg->get_height());
-        subsystem.play_sound(resources.get_sound("respawn"), 0);
-    }
+    Animation *ani = resources.get_animation(p->get_characterset()->get_spawn_animation());
+    TileGraphic *tg = ani->get_tile()->get_tilegraphic();
+    int x = static_cast<int>(p->state.client_server_state.x);
+    int y = static_cast<int>(p->state.client_server_state.y) - Characterset::Height;
+    add_animation(p->get_characterset()->get_spawn_animation(), 0, 0, 0, x, y, 0.0f, 0.0f, tg->get_width(), tg->get_height());
+    subsystem.play_sound(resources.get_sound("respawn"), 0);
 }
 
 void Tournament::add_state_response(int action, data_len_t len, const void *data) {
@@ -505,7 +533,7 @@ void Tournament::delete_responses() {
     for (size_t i = 0; i < sz; i++) {
         StateResponse *resp = state_responses[i];
         if (resp->data) {
-            if (resp->action == GPCTextMessage) {
+            if (resp->action == GPCI18NText || resp->action == GPCTextMessage) {
                 delete[] resp->data;
             } else {
                 delete resp->data;
@@ -525,7 +553,7 @@ void Tournament::create_spawn_points() throw (TournamentException) {
         }
     }
     if (!spawn_points.size()) {
-        throw TournamentException("Missing spawn points in this map.");
+        throw TournamentException(i18n(I18N_MISSING_SPAWN_POINTS));
     }
 }
 
@@ -549,7 +577,6 @@ void Tournament::spawn_player(Player *p) {
 void Tournament::spawn_player_base(Player *p, SpawnPoints& spawn_points) {
     // TODO: better selection of spawn points, maybe order by last spawn point usage
     GameObject *obj = spawn_points[rand() % spawn_points.size()];
-    const CollisionBox& colbox = p->get_characterset()->get_colbox();
     TileGraphic *tg = obj->object->get_tile()->get_tilegraphic();
     int w = tg->get_width();
     int h = tg->get_height();
@@ -558,7 +585,7 @@ void Tournament::spawn_player_base(Player *p, SpawnPoints& spawn_points) {
     int y = static_cast<int>(obj->state.y);
     x += w / 2;
     y += h;
-    x = x - colbox.width / 2 - colbox.x;
+    x = x - Characterset::Colbox.width / 2 - Characterset::Colbox.x;
     p->spawn(x, y);
 }
 
@@ -594,17 +621,25 @@ bool Tournament::pick_item(Player *p, GameObject *obj) {
     switch (obj->object->get_type()) {
         case Object::ObjectTypeBomb:
             /* pick bomb */
-            p->state.server_state.bombs++;
-            if (p->state.server_state.bombs > 100) {
-                p->state.server_state.bombs = 100;
+            if (!settings[SettingEnablePreventPick] || p->state.server_state.bombs < MaxBombs) {
+                p->state.server_state.bombs++;
+                if (p->state.server_state.bombs > MaxBombs) {
+                    p->state.server_state.bombs = MaxBombs;
+                }
+            } else {
+                return false;
             }
             break;
 
         case Object::ObjectTypeFrog:
-            reset_frog_spawn_counter();
-            p->state.server_state.frogs++;
-            if (p->state.server_state.frogs > 100) {
-                p->state.server_state.frogs = 100;
+            if (!settings[SettingEnablePreventPick] || p->state.server_state.frogs < MaxFrogs) {
+                reset_frog_spawn_counter();
+                p->state.server_state.frogs++;
+                if (p->state.server_state.frogs > MaxFrogs) {
+                    p->state.server_state.frogs = MaxFrogs;
+                }
+            } else {
+                return false;
             }
             break;
 
@@ -615,9 +650,13 @@ bool Tournament::pick_item(Player *p, GameObject *obj) {
 
         case Object::ObjectTypeArmor:
             /* pick armor */
-            p->state.server_state.armor += 25;
-            if (p->state.server_state.armor > 100) {
-                p->state.server_state.armor = 100;
+            if (!settings[SettingEnablePreventPick] || p->state.server_state.armor < MaxArmor) {
+                p->state.server_state.armor += 25;
+                if (p->state.server_state.armor > MaxArmor) {
+                    p->state.server_state.armor = MaxArmor;
+                }
+            } else {
+                return false;
             }
             break;
 
@@ -627,25 +666,37 @@ bool Tournament::pick_item(Player *p, GameObject *obj) {
 
         case Object::ObjectTypeGrenade:
             /* pick grenade */
-            p->state.server_state.grenades += 5;
-            if (p->state.server_state.grenades > 100) {
-                p->state.server_state.grenades = 100;
+            if (!settings[SettingEnablePreventPick] || p->state.server_state.grenades < MaxGrenades) {
+                p->state.server_state.grenades += 5;
+                if (p->state.server_state.grenades > MaxGrenades) {
+                    p->state.server_state.grenades = MaxGrenades;
+                }
+            } else {
+                return false;
             }
             break;
 
         case Object::ObjectTypeMedikitBig:
             /* pick big medikit */
-            p->state.server_state.health += 100;
-            if (p->state.server_state.health > 100) {
-                p->state.server_state.health = 100;
+            if (!settings[SettingEnablePreventPick] || p->state.server_state.health < MaxHealth) {
+                p->state.server_state.health += MaxHealth;
+                if (p->state.server_state.health > MaxHealth) {
+                    p->state.server_state.health = MaxHealth;
+                }
+            } else {
+                return false;
             }
             break;
 
         case Object::ObjectTypeMedikitSmall:
             /* pick small medikit */
-            p->state.server_state.health += 25;
-            if (p->state.server_state.health > 100) {
-                p->state.server_state.health = 100;
+            if (!settings[SettingEnablePreventPick] || p->state.server_state.health < MaxHealth) {
+                p->state.server_state.health += 25;
+                if (p->state.server_state.health > MaxHealth) {
+                    p->state.server_state.health = MaxHealth;
+                }
+            } else {
+                return false;
             }
             break;
 
@@ -661,9 +712,13 @@ bool Tournament::pick_item(Player *p, GameObject *obj) {
         case Object::ObjectTypeAmmo:
             /* pick ammo */
             if (p->state.server_state.flags & PlayerServerFlagHasShotgunBelt) {
-                p->state.server_state.ammo += 10;
-                if (p->state.server_state.ammo > 100) {
-                    p->state.server_state.ammo = 100;
+                if (!settings[SettingEnablePreventPick] || p->state.server_state.ammo < MaxAmmo) {
+                    p->state.server_state.ammo += 10;
+                    if (p->state.server_state.ammo > MaxAmmo) {
+                        p->state.server_state.ammo = MaxAmmo;
+                    }
+                } else {
+                    return false;
                 }
             } else {
                 return false;
@@ -673,9 +728,13 @@ bool Tournament::pick_item(Player *p, GameObject *obj) {
         case Object::ObjectTypeAmmobox:
             /* pick ammo */
             if (p->state.server_state.flags & PlayerServerFlagHasShotgunBelt) {
-                p->state.server_state.ammo += 40;
-                if (p->state.server_state.ammo > 100) {
-                    p->state.server_state.ammo = 100;
+                if (!settings[SettingEnablePreventPick] || p->state.server_state.ammo < MaxAmmo) {
+                    p->state.server_state.ammo += 40;
+                    if (p->state.server_state.ammo > MaxAmmo) {
+                        p->state.server_state.ammo = MaxAmmo;
+                    }
+                } else {
+                    return false;
                 }
             } else {
                 return false;
@@ -706,47 +765,40 @@ void Tournament::player_damage(identifier_t owner, Player *p, NPC *npc, int dama
     if (damage) {
         check_friendly_fire(owner, p);
 
-        /* get damage levels */
-        int damage2 = damage / (p->state.server_state.armor ? 2 : 1);
-
         /* reduce armor */
-        if (damage >= p->state.server_state.armor) {
-            p->state.server_state.armor = 0;
+        unsigned char& armor = p->state.server_state.armor;
+        if (damage >= armor) {
+            damage = damage - armor + armor / 2;
+            armor = 0;
         } else {
-            p->state.server_state.armor -= damage;
+            armor -= damage;
+            damage /= 2;
         }
 
         /* reduce health */
-        if (damage2 >= p->state.server_state.health) {
+        if (damage >= p->state.server_state.health) {
             /* player dies */
-            player_dies(p, "");
+            player_dies(p, I18N_NONE);
 
             /* increment owner's frag counter */
-            std::string verb("killed");
-            if (npc) {
-                const std::string& die_verb = npc->get_value("die_verb");
-                if (die_verb.length()) {
-                    verb = die_verb;
-                }
-            }
+            I18NText frag_both = (npc ? I18N_TNMT_FROGGED1 : I18N_TNMT_KILLED1);
+            I18NText frag_himself = (npc ? I18N_TNMT_FROGGED2 : I18N_TNMT_KILLED2);
             for (Players::iterator it = players.begin(); it != players.end(); it++) {
                 Player *fp = *it;
                 if (fp->state.id == owner) {
                     if (fp != p) {
                         fp->state.server_state.frags++;
                         frag_point(fp, p);
-                        std::string msg(fp->get_player_name() + " " + verb + " " + p->get_player_name());
-                        add_msg_response(msg.c_str());
+                        add_i18n_response(frag_both, fp->get_player_name(), p->get_player_name());
                         if (logger) {
-                            logger->log(ServerLogger::LogTypeFrag, msg, fp, p,
+                            logger->log(ServerLogger::LogTypeFrag, i18n(frag_both, fp->get_player_name(), p->get_player_name()), fp, p,
                                 (npc ? npc->get_name().c_str() : weapon.c_str()));
                         }
                     } else {
                         fp->state.server_state.score -= 1;
-                        std::string msg(fp->get_player_name() + " " + verb + " himself");
-                        add_msg_response(msg.c_str());
+                        add_i18n_response(frag_himself, fp->get_player_name());
                         if (logger) {
-                            logger->log(ServerLogger::LogTypeKill, msg, fp, p,
+                            logger->log(ServerLogger::LogTypeKill, i18n(frag_himself, fp->get_player_name()), fp, p,
                                 (npc ? npc->get_name().c_str() : weapon.c_str()));
                         }
                     }
@@ -755,33 +807,38 @@ void Tournament::player_damage(identifier_t owner, Player *p, NPC *npc, int dama
             }
         } else {
             add_state_response(GPCPlayerHurt, 0, 0);
-            p->state.server_state.health -= damage2;
+            p->state.server_state.health -= damage;
         }
     }
 }
 
-void Tournament::player_dies(Player *p, const std::string& die_message) {
+void Tournament::player_dies(Player *p, I18NText id, const char *addon) {
     player_died(p);
     p->state.server_state.health = 0;
     p->state.server_state.flags |= PlayerServerFlagDead;
     p->state.server_state.kills++;
-    if (die_message.length()) {
-        add_msg_response(die_message.c_str());
+    if (id != I18N_NONE) {
+        add_i18n_response(id, addon);
     }
-
     try {
-        Animation *tempani = resources.get_animation(properties.get_value("die_animation"));
+        const char *die_animation = 0;
+        const std::string& p_die_animation = p->get_characterset()->get_die_animation();
+        if (p_die_animation.length()) {
+            die_animation = p_die_animation.c_str();
+        } else {
+            die_animation = properties.get_value("die_animation").c_str();
+        }
+        Animation *tempani = resources.get_animation(die_animation);
 
         GAnimation *ani = new GAnimation;
         memset(ani, 0, sizeof(GAnimation));
         strncpy(ani->animation_name, tempani->get_name().c_str(), NameLength - 1);
         strncpy(ani->sound_name, properties.get_value("die_sound").c_str(), NameLength - 1);
 
-        TileGraphic *tg = p->get_characterset()->get_tile(DirectionLeft, CharacterAnimationStanding)->get_tilegraphic();
         TileGraphic *tga = tempani->get_tile()->get_tilegraphic();
 
-        int x = static_cast<int>(p->state.client_server_state.x) + tg->get_width() / 2 - tga->get_width() / 2;
-        int y = static_cast<int>(p->state.client_server_state.y) - tg->get_height() / 2 - tga->get_height() / 2;
+        int x = static_cast<int>(p->state.client_server_state.x) + Characterset::Width / 2 - tga->get_width() / 2;
+        int y = static_cast<int>(p->state.client_server_state.y) - Characterset::Height / 2 - tga->get_height() / 2;
 
         ani->id = ++animation_id;
         ani->x = x;
@@ -807,10 +864,9 @@ void Tournament::player_join_request(Player *p) {
 }
 
 bool Tournament::player_joins(Player *p, playerflags_t flags) {
-    std::string msg(p->get_player_name() + " joins the game");
-    add_msg_response(msg.c_str());
+    add_i18n_response(I18N_TNMT_PLAYER_JOINS, p->get_player_name());
     if (logger) {
-        logger->log(ServerLogger::LogTypeJoin, msg, p);
+        logger->log(ServerLogger::LogTypeJoin, i18n(I18N_TNMT_PLAYER_JOINS, p->get_player_name()), p);
     }
 
     return true;
@@ -840,11 +896,6 @@ bool Tournament::friendly_fire_alarm(GFriendyFireAlarm *alarm) {
     return false;
 }
 
-void Tournament::set_team_names(const std::string& team_red, const std::string& team_blue) {
-    team_red_name = team_red;
-    team_blue_name = team_blue;
-}
-
 void Tournament::destroy_generic_data_list(GenericData *data) {
     GenericData *s = data;
     GenericData *next = 0;
@@ -864,6 +915,51 @@ void Tournament::destroy_generic_data(void *data) { }
 
 void Tournament::generic_data_delivery(void *data) { }
 
-void Tournament::set_friendly_fire_alarm(bool state) {
-    do_friendly_fire_alarm = state;
+char *Tournament::create_i18n_response(I18NText id, size_t& sz, const char *addon) {
+    sz = (addon ? strlen(addon) : 0);
+    char *p = new char[GI18NTextLen + sz];
+    GI18NText *t = reinterpret_cast<GI18NText *>(p);
+    t->id = static_cast<identifier_t>(id);
+    t->len = sz;
+    if (sz) {
+        memcpy(t->data, addon, sz);
+    }
+    t->to_net();
+
+    sz += GI18NTextLen;
+
+    return p;
+}
+
+void Tournament::add_i18n_response(I18NText id, const char *addon) {
+    size_t sz;
+    char *t = create_i18n_response(id, sz, addon);
+    add_state_response(GPCI18NText, static_cast<data_len_t>(sz), t);
+}
+
+void Tournament::add_i18n_response(I18NText id, const std::string& p) {
+    add_i18n_response(id, p.c_str());
+}
+
+void Tournament::add_i18n_response(I18NText id, const std::string& p1, const std::string& p2) {
+    add_i18n_response(id, (p1 + "\t" + p2).c_str());
+}
+
+void Tournament::set_lagometer(Lagometer *lagometer) {
+    this->lagometer = lagometer;
+}
+
+void Tournament::retrieve_flags() {
+    for (int i = 0; i < static_cast<int>(_MAXSettings); i++) {
+        GTournamentSetting *ts = new GTournamentSetting;
+        ts->setting_id = static_cast<unsigned char>(i);
+        ts->flag = (settings[i] ? 1 : 0);
+        add_state_response(GPCTournamentSetting, sizeof(GTournamentSetting), ts);
+    }
+}
+
+void Tournament::set_flag(Setting setting, bool value) {
+    if (setting >= 0 && setting < _MAXSettings) {
+        settings[setting] = value;
+    }
 }

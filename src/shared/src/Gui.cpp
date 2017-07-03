@@ -17,18 +17,21 @@
 
 #include "Gui.hpp"
 
-static float WindowAlphaActive = 0.8f;
-static float WindowAlphaInactive = 0.55f;
+static const float WindowAlphaActive = 0.8f;
+static const float WindowAlphaInactive = 0.55f;
+static const ms_t CaretBlinkInterval = 500;
+static const ms_t TickInterval = 500;
 
 Gui::Gui(Resources& resources, Subsystem& subsystem, Font *font)
     throw (GuiException, ResourcesException)
-    : resources(resources), subsystem(subsystem), font(font), current_window(0),
-      active_object(0), blink_on(true), running(false), mouse_is_down(false),
-      mouse_is_visible(true), local_mousex(0), local_mousey(0), pmousex(&local_mousex),
-      pmousey(&local_mousey), tooltip(0), tooltip_object(0), tooltip_x(0), tooltip_y(0)
+    : resources(resources), subsystem(subsystem), i18n(subsystem.get_i18n()),
+      font(font), current_window(0), active_object(0), blink_on(true), tick_on(true),
+      running(false), mouse_is_down(false), mouse_is_visible(true), local_mousex(0),
+      local_mousey(0), pmousex(&local_mousex), pmousey(&local_mousey), tooltip(0),
+      tooltip_object(0), tooltip_x(0), tooltip_y(0)
 {
     if (!font) {
-        throw GuiException("no valid font declared");
+        throw GuiException(i18n(I18N_NO_FONT));
     }
 
     *pmousex = subsystem.get_view_width() / 2;
@@ -36,6 +39,7 @@ Gui::Gui(Resources& resources, Subsystem& subsystem, Font *font)
     load_resources();
 
     get_now(last);
+    get_now(last_tick);
     now = last;
 }
 
@@ -247,6 +251,15 @@ GuiListbox *Gui::create_listbox(GuiObject *parent, int x, int y, int width,
         on_item_selected, on_item_selected_data);
 }
 
+GuiListbox *Gui::create_listbox(GuiObject *parent, int x, int y, int width,
+    int height, Icon *icon, int icon_width, const std::string& title,
+    GuiListbox::OnItemSelected on_item_selected, void *on_item_selected_data) throw (GuiException)
+{
+    check_parent(parent);
+    return new GuiListbox(*this, parent, x, y, width, height, icon, icon_width, title,
+        on_item_selected, on_item_selected_data);
+}
+
 GuiWindow *Gui::get_current_window() const {
     return current_window;
 }
@@ -290,6 +303,10 @@ bool Gui::has_focus(GuiObject *object) const {
 
 bool Gui::get_blink_on() const {
     return blink_on;
+}
+
+bool Gui::get_tick_on() const {
+    return tick_on;
 }
 
 void Gui::set_mousepointer(Mousepointer mouse) {
@@ -339,7 +356,8 @@ Gui::MessageBoxResponse Gui::show_messagebox(MessageBoxIcon icon, const std::str
     int tiw = font->get_text_width(title) + 30;
     int tew = icw + ics + font->get_text_width(text) + 30;
     int max_tw = (tew > tiw ? tew : tiw);
-    int bw = 55;
+    std::string caption_ok(i18n(I18N_BUTTON_OK));
+    int bw = get_font()->get_text_width(caption_ok) + 24;
     int bh = 18;
     int width = (max_tw > bw ? max_tw : bw );
     int height = 80;
@@ -351,7 +369,7 @@ Gui::MessageBoxResponse Gui::show_messagebox(MessageBoxIcon icon, const std::str
         create_picture(window, 15, 13, msg_icon->get_tile()->get_tilegraphic());
     }
     create_label(window, 15 + icw + ics, 15, text);
-    create_button(window, width / 2- bw / 2, height - bh - 26, bw, bh, "Ok", static_ok_click, this);
+    create_button(window, width / 2- bw / 2, height - bh - 26, bw, bh, caption_ok, static_ok_click, this);
 
     idleloop(static_cast<int>(windows.size()) - 1);
 
@@ -381,12 +399,12 @@ Gui::MessageBoxResponse Gui::show_questionbox(const std::string& title, const st
 
     /* place buttons */
     bh = 18;
-    std::string caption_no("No");
+    std::string caption_no(i18n(I18N_BUTTON_NO));
     width = window->get_client_width();
     height = window->get_client_height();
     bw = get_font()->get_text_width(caption_no) + 24;
 
-    std::string caption_yes = "Yes";
+    std::string caption_yes(i18n(I18N_BUTTON_YES));
     int bw2 = get_font()->get_text_width(caption_yes) + 24;
     if (bw2 > bw) {
         bw = bw2;
@@ -410,18 +428,18 @@ Gui::MessageBoxResponse Gui::show_inputbox(const std::string& title, std::string
     width = window->get_client_width();
     input_box = create_textbox(window, Spc, Spc, width - 2 * Spc, text);
     input_box->set_focus();
-    input_box->set_hide_characters(password);
+    input_box->set_type(password ? GuiTextbox::TypeHidden : GuiTextbox::TypeNormal);
     height = window->get_height() - window->get_client_height();
     window->set_height(height + 3 * Spc + input_box->get_height() + 18);
 
     /* place buttons */
     int bh = 18;
-    std::string caption_no("Cancel");
+    std::string caption_no(i18n(I18N_BUTTON_CANCEL));
     width = window->get_client_width();
     height = window->get_client_height();
     int bw = get_font()->get_text_width(caption_no) + 24;
 
-    std::string caption_yes("Ok");
+    std::string caption_yes(i18n(I18N_BUTTON_OK));
     int bw2 = get_font()->get_text_width(caption_yes) + 24;
     if (bw2 > bw) {
         bw = bw2;
@@ -440,9 +458,15 @@ void Gui::idleloop(int stack_counter) throw (Exception) {
     while (running && static_cast<int>(windows.size()) > stack_counter) {
         /* update caret blinker */
         get_now(now);
-        if (diff_ms(last, now) > 500) {
+        if (diff_ms(last, now) > CaretBlinkInterval) {
             blink_on = !blink_on;
             last = now;
+        }
+
+        /* update independent blinker */
+        if (diff_ms(last_tick, now) > TickInterval) {
+            tick_on = !tick_on;
+            last_tick = now;
         }
 
         /* go */
@@ -530,6 +554,12 @@ void Gui::idleloop(int stack_counter) throw (Exception) {
                     }
                     break;
 
+                case InputData::InputDataTypeMouseWheel:
+                    if (!process_mousewheel(input.param1, input.param2)) {
+                        on_input_event(input);
+                    }
+                    break;
+
                 case InputData::InputDataTypeKeyDown:
                 case InputData::InputDataTypeText:
                 {
@@ -612,7 +642,7 @@ void Gui::set_current_window() {
 
 void Gui::check_parent(GuiObject *parent) throw (GuiException) {
     if (!parent) {
-        throw GuiException("no parent specified");
+        throw GuiException(i18n(I18N_NO_PARENT));
     }
 }
 
@@ -695,6 +725,24 @@ bool Gui::process_mouseup(int button) {
     }
     active_object = 0;
     mouse_is_down = false;
+
+    return processed;
+}
+
+bool Gui::process_mousewheel(int x, int y) {
+    bool processed = false;
+
+    if (current_window) {
+        GuiObject *obj = current_window->get_upmost_object(*pmousex, *pmousey);
+        if (obj) {
+            while (obj && !obj->can_have_mouse_events()) {
+                obj = obj->get_parent();
+            }
+            if (obj) {
+                processed = obj->mousehweel(x, y);
+            }
+        }
+    }
 
     return processed;
 }
@@ -888,7 +936,7 @@ void Gui::idle_tooltip() {
                 int mrg = 2;
                 int tw = f->get_text_width(tooltip_text);
                 int th = f->get_font_height();
-                int ww = tw + 2 * mrg;
+                int ww = tw + 3 * mrg;
                 int wh = th + 2 * mrg;
                 tooltip = new GuiBox(*this, 0, tooltip_x, tooltip_y, ww, wh);
                 tooltip->set_filled(true);

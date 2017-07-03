@@ -17,6 +17,7 @@
 
 #include "GuiObject.hpp"
 #include "Gui.hpp"
+#include "UTF8.hpp"
 
 #include <cstdlib>
 
@@ -44,6 +45,7 @@ GuiObject::~GuiObject() {
 void GuiObject::remove_all_objects() {
     for (Children::iterator it = children.begin(); it != children.end(); it++) {
         GuiObject *obj = *it;
+        object_removing(obj);
         delete obj;
     }
     children.clear();
@@ -53,6 +55,7 @@ void GuiObject::remove_object(GuiObject *object) {
     for (Children::iterator it = children.begin(); it != children.end(); it++) {
         GuiObject *obj = *it;
         if (obj == object) {
+            object_removing(obj);
             delete obj;
             children.erase(it);
             break;
@@ -226,6 +229,8 @@ bool GuiObject::mousemove(int x, int y) { return false; }
 
 bool GuiObject::mouseup(int button, int x, int y) { return false; }
 
+bool GuiObject::mousehweel(int x, int y) { return false; }
+
 bool GuiObject::keypress(InputData& input) { return false; }
 
 bool GuiObject::keydown(int keycode, bool repeat) { return false; }
@@ -244,6 +249,8 @@ void GuiObject::set_parent(GuiObject *obj) {
         obj->children.push_back(this);
     }
 }
+
+void GuiObject::object_removing(GuiObject *obj) { }
 
 /* ****************************************************** */
 /* GuiWindow                                              */
@@ -428,6 +435,13 @@ int GuiWindow::get_client_y() const {
     return GuiObject::get_y() + window_title_height;
 }
 
+
+void GuiWindow::object_removing(GuiObject *object) {
+    if (object == focused_object) {
+        focused_object = 0;
+    }
+}
+
 void GuiWindow::paint() {
     if (!invisible) {
         Subsystem& s = gui.get_subsystem();
@@ -546,12 +560,13 @@ void GuiBox::paint() {
 /* ****************************************************** */
 GuiLabel::GuiLabel(Gui& gui, GuiObject *parent)
     : GuiObject(gui, parent), follow_alpha(true),
-      bg_r(1.0f), bg_g(1.0f), bg_b(1.0f) { }
+      bg_r(1.0f), bg_g(1.0f), bg_b(1.0f), clip_width(0) { }
 
 GuiLabel::GuiLabel(Gui& gui, GuiObject *parent, int x, int y,
     int width, int height, const std::string& caption)
     : GuiObject(gui, parent, x, y, width, height),
-      follow_alpha(true), bg_r(1.0f), bg_g(1.0f), bg_b(1.0f), caption(caption) { }
+      follow_alpha(true), bg_r(1.0f), bg_g(1.0f), bg_b(1.0f),
+      caption(caption), clip_width(0) { }
 
 GuiLabel::~GuiLabel() { }
 
@@ -573,13 +588,27 @@ void GuiLabel::set_color(float bg_r, float bg_g, float bg_b) {
     this->bg_b = bg_b;
 }
 
+int GuiLabel::get_clip_width() const {
+    return clip_width;
+}
+
+void GuiLabel::set_clip_width(int width) {
+    if (width >= 0) {
+        clip_width = width;
+    }
+}
+
 void GuiLabel::paint() {
     int x = get_client_x();
     int y = get_client_y();
     Subsystem& s = gui.get_subsystem();
 
     s.set_color(bg_r, bg_g, bg_b, (follow_alpha ? gui.get_alpha(this) : 1.0f));
-    s.draw_text(gui.get_font(), x, y, caption);
+    if (clip_width) {
+        s.draw_clipped_text(gui.get_font(), x, y, clip_width, caption);
+    } else {
+        s.draw_text(gui.get_font(), x, y, caption);
+    }
     s.reset_color();
 }
 
@@ -685,7 +714,7 @@ int GuiVirtualButton::get_client_y() const {
 /* ****************************************************** */
 GuiButton::GuiButton(Gui& gui, GuiObject *parent)
     : GuiVirtualButton(gui, parent), bolts(true),
-      text_r(1.0f), text_g(1.0f), text_b(1.0f)
+      text_r(1.0f), text_g(1.0f), text_b(1.0f), pressed(false)
 {
     prepare();
 }
@@ -694,7 +723,7 @@ GuiButton::GuiButton(Gui& gui, GuiObject *parent, int x, int y,
     int width, int height, const std::string& caption,
     GuiVirtualButton::OnClick on_click, void *on_click_data)
     : GuiVirtualButton(gui, parent, x, y, width, height, caption, on_click, on_click_data),
-      bolts(true), text_r(1.0f), text_g(1.0f), text_b(1.0f)
+      bolts(true), text_r(1.0f), text_g(1.0f), text_b(1.0f), pressed(false)
 {
     prepare();
 }
@@ -715,6 +744,14 @@ void GuiButton::reset_color() {
     text_r = text_g = text_b = 1.0f;
 }
 
+void GuiButton::set_pressed(bool state) {
+    pressed = state;
+}
+
+bool GuiButton::get_pressed() const {
+    return pressed;
+}
+
 void GuiButton::paint() {
     Subsystem& s = gui.get_subsystem();
     Font *f = gui.get_font();
@@ -722,6 +759,7 @@ void GuiButton::paint() {
     int y = GuiObject::get_client_y();
     int width = get_width();
     int height = get_height();
+    bool draw_pressed = (mouse_is_down && mouse_is_in_button) || pressed;
 
     /* set alpha */
     float alpha = gui.get_alpha(this);
@@ -730,7 +768,7 @@ void GuiButton::paint() {
     s.set_color(0.5f, 0.5f, 1.0f, alpha);
     s.draw_box(x, y, width, height);
 
-    if (mouse_is_down && mouse_is_in_button) {
+    if (draw_pressed) {
         s.set_color(0.1f, 0.1f, 0.2f, alpha);
     } else {
         s.set_color(0.2f, 0.2f, 0.6f, alpha);
@@ -738,11 +776,11 @@ void GuiButton::paint() {
     s.draw_box(x + 1, y + 1, width - 2, height - 2);
 
     /* pressed offset */
-    int ofs = (mouse_is_down && mouse_is_in_button ? 1 : 0) + 1;
+    int ofs = (draw_pressed ? 1 : 0) + 1;
 
     /* draw bolts */
     if (bolts) {
-        if (mouse_is_down && mouse_is_in_button) {
+        if (draw_pressed) {
             s.set_color(0.75f, 0.75f, 0.75f, alpha);
         } else {
             s.set_color(1.0f, 1.0f, 1.0f, alpha);
@@ -755,6 +793,7 @@ void GuiButton::paint() {
 
     /* draw caption */
     width -= 2;
+    height -= 2;
     int tw = f->get_text_width(caption);
     int th = f->get_font_height() + 2;
     s.set_color(text_r, text_b, text_b, alpha);
@@ -1057,22 +1096,30 @@ void GuiCheckbox::load_icons() {
 /* ****************************************************** */
 GuiTextbox::GuiTextbox(Gui& gui, GuiObject *parent)
     : GuiObject(gui, parent), start_position(0), caret_position(0),
-      text(), locked(false), hide_characters(false) { }
+      text(), locked(false), type(TypeNormal), mouse_is_down(false) { }
 
 GuiTextbox::GuiTextbox(Gui& gui, GuiObject *parent, int x, int y,
     int width, const std::string& text)
     : GuiObject(gui, parent, x, y, width, gui.get_font()->get_font_height() + 2),
-      start_position(0), caret_position(text.length()),
-      text(text), locked(false), hide_characters(false)
+      start_position(0), caret_position(utf8_strlen(text.c_str())),
+      text(text), locked(false), type(TypeNormal), mouse_is_down(false)
 {
     recalc();
 }
 
 GuiTextbox::~GuiTextbox() { }
 
+void GuiTextbox::set_type(Type type) {
+    this->type = type;
+}
+
+GuiTextbox::Type GuiTextbox::get_type() const {
+    return type;
+}
+
 void GuiTextbox::set_text(const std::string& text) {
     this->text = text;
-    caret_position = text.length();
+    caret_position = utf8_strlen(text.c_str());
 }
 
 const std::string& GuiTextbox::get_text() const {
@@ -1080,8 +1127,7 @@ const std::string& GuiTextbox::get_text() const {
 }
 
 void GuiTextbox::set_caret_position(int pos) {
-    int sz = static_cast<int>(text.length());
-
+    int sz = static_cast<int>(utf8_strlen(text.c_str()));
     caret_position = pos;
     if (caret_position > sz) {
         caret_position = sz;
@@ -1101,14 +1147,6 @@ bool GuiTextbox::get_locked() const {
     return locked;
 }
 
-void GuiTextbox::set_hide_characters(bool state) {
-    hide_characters = state;
-}
-
-bool GuiTextbox::get_hide_characters() const {
-    return hide_characters;
-}
-
 bool GuiTextbox::can_have_focus() const {
     return true;
 }
@@ -1119,6 +1157,7 @@ bool GuiTextbox::can_have_mouse_events() const {
 
 bool GuiTextbox::mousedown(int button, int x, int y) {
     if (button == 0) {
+        mouse_is_down = true;
         set_cursor_pos_from_mouse(x);
     }
 
@@ -1132,6 +1171,10 @@ bool GuiTextbox::mousemove(int x, int y) {
 }
 
 bool GuiTextbox::mouseup(int button, int x, int y) {
+    if (button == 0) {
+        mouse_is_down = false;
+    }
+
     return true;
 }
 
@@ -1154,7 +1197,7 @@ bool GuiTextbox::keypress(InputData& input) {
 
                     case InputData::InputKeyTypeEnd:
                     {
-                        caret_position = static_cast<int>(text.length());
+                        caret_position = static_cast<int>(utf8_strlen(text.c_str()));
                         recalc();
                         break;
                     }
@@ -1170,7 +1213,7 @@ bool GuiTextbox::keypress(InputData& input) {
 
                     case InputData::InputKeyTypeRight:
                     {
-                        if (caret_position < static_cast<int>(text.length())) {
+                        if (caret_position < static_cast<int>(utf8_strlen(text.c_str()))) {
                             caret_position++;
                             recalc();
                         }
@@ -1179,8 +1222,11 @@ bool GuiTextbox::keypress(InputData& input) {
 
                     case InputData::InputKeyTypeDelete:
                     {
-                        if (static_cast<int>(text.length()) > caret_position) {
-                            text.erase(caret_position, 1);
+                        const char *tptr = text.c_str();
+                        if (static_cast<int>(utf8_strlen(tptr)) > caret_position) {
+                            int pos = static_cast<int>(utf8_real_char_pos(tptr, caret_position));
+                            int seqlen = static_cast<int>(utf8_sequence_len(&tptr[pos]));
+                            text.erase(pos, seqlen);
                             recalc();
                         }
                         break;
@@ -1190,9 +1236,12 @@ bool GuiTextbox::keypress(InputData& input) {
                     {
                         if (caret_position) {
                             caret_position--;
-                            text.erase(caret_position, 1);
-                            recalc();
+                            const char *tptr = text.c_str();
+                            int pos = static_cast<int>(utf8_real_char_pos(tptr, caret_position));
+                            int seqlen = static_cast<int>(utf8_sequence_len(&tptr[pos]));
+                            text.erase(pos, seqlen);
                         }
+                        break;
                     }
 
                     default:
@@ -1203,14 +1252,21 @@ bool GuiTextbox::keypress(InputData& input) {
 
             case InputData::InputDataTypeText:
             {
-                const unsigned char *p = input.text;
-                while (*p) {
-                    if (*p >= FontMin && *p <= FontMax) {
-                        text.insert(caret_position, 1, *p);
-                        caret_position++;
+                bool ok = true;
+                const char *p = reinterpret_cast<const char *>(input.text);
+                if (p) {
+                    if (type == TypeInteger) {
+                        if (strlen(p) != 1 || *p < '0' || *p > '9') {
+                            ok = false;
+                        }
+                    }
+
+                    if (ok) {
+                        int pos = static_cast<int>(utf8_real_char_pos(text.c_str(), caret_position));
+                        text.insert(pos, p);
+                        caret_position += utf8_strlen(p);
                         recalc();
                     }
-                    p++;
                 }
                 break;
             }
@@ -1228,24 +1284,28 @@ void GuiTextbox::recalc() {
         start_position = caret_position;
     }
 
+    const char *s = text.c_str();
+
     if (caret_position > start_position) {
         Font *f = gui.get_font();
+        const char *tptr = text.c_str();
         int cw = 0;
         int pos = start_position;
         while (pos < caret_position) {
-            cw += f->get_char_width(text[pos]);
+            const Font::Character *chr = f->get_character(utf8_real_char_ptr(tptr, pos));
+            cw += chr->advance;
             pos++;
         }
 
         int w = get_width() - 2 - 2;
 
-        if (cw > w) {
+        if (cw >= w) {
             int pos = caret_position;
             cw = 0;
             while (pos) {
                 pos--;
-                cw += f->get_char_width(text[pos]);
-                if (cw > w) {
+                cw += f->get_char_width(utf8_real_char_ptr(tptr, pos));
+                if (cw >= w) {
                     start_position = pos + 2;
                     break;
                 }
@@ -1255,7 +1315,42 @@ void GuiTextbox::recalc() {
 }
 
 void GuiTextbox::set_cursor_pos_from_mouse(int x) {
-    // TODO -> next release
+    if (mouse_is_down) {
+        Font *f = gui.get_font();
+        int cx = get_client_x();
+        int rp = cx + get_width() - 2 - 2;
+        int pos = start_position;
+        int caret = caret_position;
+        const char *tptr = text.c_str();
+        int sz = utf8_strlen(tptr);
+        int curx = cx + 2;
+        while (pos < sz + 1 && curx <= rp) {
+            bool ok = false;
+            int advance = 0;
+            if (pos < sz) {
+                const char *str = utf8_real_char_ptr(tptr, pos);
+                const Font::Character *chr = f->get_character(str);
+                advance = chr->advance;
+                if (x >= curx && x < curx + chr->advance) {
+                    ok = true;
+                }
+            } else {
+                if (x >= curx) {
+                    ok = true;
+                }
+            }
+            if (ok) {
+                if (caret_position != pos) {
+                    caret_position = pos;
+                    gui.reset_blinker();
+                }
+                break;
+            }
+            curx += advance;
+            pos++;
+        }
+        recalc();
+    }
 }
 
 void GuiTextbox::paint() {
@@ -1267,7 +1362,6 @@ void GuiTextbox::paint() {
     int y = get_client_y();
     int w = get_width();
     int h = get_height();
-    int cw = 0;
     int rp = x + w - 2;
 
     /* draw box */
@@ -1280,35 +1374,40 @@ void GuiTextbox::paint() {
     /* draw text */
     int pos = start_position;
     int caret = caret_position;
-
-    int sz = static_cast<int>(text.length());
+    const char *tptr = text.c_str();
+    int sz = utf8_strlen(tptr);
     y++;
     x += 2;
     int cp = x;
     bool caret_drawn = false;
     int caretx = cp;
+    const char *p = text.c_str();
+    bool last_char = false;
+    f->clip_on(x, y, w - 4);
     while (pos < sz) {
-        unsigned char c = text[pos];
-        if (hide_characters) {
-            c = '*';
+        const char *str = (type == TypeHidden ? "*" : utf8_real_char_ptr(tptr, pos));
+        const Font::Character *chr = f->get_character(str);
+        if (cp + chr->advance >= rp) {
+            last_char = true;
+        } else {
+            if (pos == caret && !caret_drawn) {
+                caret_drawn = true;
+                caretx = cp;
+            }
         }
-        cw = f->get_char_width(c);
-        if (cp + cw > rp) {
+        cp = s.draw_char(f, cp, y, str);
+        if (last_char) {
             break;
         }
-        if (pos == caret && !caret_drawn) {
-            caret_drawn = true;
+        if (!caret_drawn) {
             caretx = cp;
         }
-        cp = s.draw_char(f, cp, y, c);
         pos++;
     }
-    if (!caret_drawn) {
-        caretx = cp;
-    }
+    f->clip_off();
     if (gui.has_focus(this) && !locked) {
         if (gui.get_blink_on()) {
-            s.draw_box(caretx, y, 1, fh);
+            s.draw_box(caretx, y + 1, 1, fh - 2);
         }
     }
 
@@ -1365,12 +1464,12 @@ void GuiFrame::paint() { }
 GuiTab::GuiTab(Gui& gui, GuiObject *parent)
     : GuiObject(gui, parent), current_tab(0),
       tab_button_height(gui.get_font()->get_font_height() * 2),
-      current_button_x(0) { }
+      current_button_x(0), on_tab_click(0), on_tab_click_data(0) { }
 
 GuiTab::GuiTab(Gui& gui, GuiObject *parent, int x, int y, int width, int height)
     : GuiObject(gui, parent, x, y, width, height), current_tab(0),
       tab_button_height(gui.get_font()->get_font_height() * 2),
-      current_button_x(0) { }
+      current_button_x(0), on_tab_click(0), on_tab_click_data(0) { }
 
 GuiTab::~GuiTab() {
     for (Tabs::iterator it = tabs.begin(); it != tabs.end(); it++) {
@@ -1382,7 +1481,7 @@ GuiFrame *GuiTab::create_tab(const std::string& name) {
     Font *f = gui.get_font();
     int x = current_button_x;
     int y = 0;
-    int width = f->get_text_width(name) + 24; //16;
+    int width = f->get_text_width(name) + 24;
     Tab *tab = new Tab;
     tab->owner = this;
     tab->tab_number = static_cast<int>(tabs.size());
@@ -1394,6 +1493,7 @@ GuiFrame *GuiTab::create_tab(const std::string& name) {
     if (!current_tab) {
         current_tab = tab;
         tab->tab->set_visible(true);
+        tab->button->set_pressed(true);
         tab->tab->set_focus_on_first_child();
     }
 
@@ -1405,14 +1505,27 @@ GuiFrame *GuiTab::create_tab(const std::string& name) {
 void GuiTab::select_tab(int index) {
     int sz = static_cast<int>(tabs.size());
     if (index >= 0 && index < sz) {
-        for (Tabs::iterator it = tabs.begin(); it != tabs.end(); it++) {
-            Tab *tab = *it;
-            tab->tab->set_visible(false);
+        bool process = true;
+        if (on_tab_click) {
+            process = on_tab_click(this, index, on_tab_click_data);
         }
-        Tab *tab = tabs[index];
-        tab->tab->set_visible(true);
-        tab->tab->set_focus_on_first_child();
+        if (process) {
+            for (Tabs::iterator it = tabs.begin(); it != tabs.end(); it++) {
+                Tab *tab = *it;
+                tab->tab->set_visible(false);
+                tab->button->set_pressed(false);
+            }
+            Tab *tab = tabs[index];
+            tab->tab->set_visible(true);
+            tab->button->set_pressed(true);
+            tab->tab->set_focus_on_first_child();
+        }
     }
+}
+
+void GuiTab::set_on_tab_click(OnTabClick on_tab_click, void *on_tab_click_data) {
+    this->on_tab_click = on_tab_click;
+    this->on_tab_click_data = on_tab_click_data;
 }
 
 void GuiTab::static_tab_clicked(GuiVirtualButton *sender, void *data) {
@@ -1506,6 +1619,13 @@ bool GuiVirtualScroll::can_have_mouse_events() const {
     return true;
 }
 
+bool GuiVirtualScroll::mousehweel(int x, int y) {
+    x *= -1;
+    set_value(current_value + x);
+
+    return true;
+}
+
 void GuiVirtualScroll::recalc() {
     if (current_value < min_value) {
         current_value = min_value;
@@ -1515,7 +1635,6 @@ void GuiVirtualScroll::recalc() {
         current_value = max_value;
     }
 }
-
 
 void GuiVirtualScroll::static_down_button_clicked(GuiVirtualButton *sender, void *data) {
     GuiVirtualScroll *obj = reinterpret_cast<GuiVirtualScroll *>(data);
@@ -1786,6 +1905,13 @@ GuiListboxEntry::GuiListboxEntry(Gui& gui, GuiObject *parent,
 }
 
 GuiListboxEntry::GuiListboxEntry(Gui& gui, GuiObject *parent,
+    Icon *icon, int icon_width, const std::string& text, int width)
+    : GuiObject(gui, parent, 0, 0, 0, 0)
+{
+    add_column(icon, icon_width, text, width);
+}
+
+GuiListboxEntry::GuiListboxEntry(Gui& gui, GuiObject *parent,
     const GuiListboxEntry::Column& column)
     : GuiObject(gui, parent, 0, 0, 0, 0)
 {
@@ -1804,6 +1930,10 @@ void GuiListboxEntry::add_column(const Column& column) {
 
 void GuiListboxEntry::add_column(const std::string& text, int width) {
     add_column(Column(text, width));
+}
+
+void GuiListboxEntry::add_column(Icon *icon, int icon_width, const std::string& text, int width) {
+    add_column(Column(icon, icon_width, text, width));
 }
 
 void GuiListboxEntry::draw(int x, int y, int width, DrawType draw_type) {
@@ -1844,21 +1974,17 @@ void GuiListboxEntry::draw(int x, int y, int width, DrawType draw_type) {
 void GuiListboxEntry::paint() { }
 
 void GuiListboxEntry::draw_column(const Column& column, int x, int y, int max_width) {
-    Font *f = gui.get_font();
     Subsystem& s = gui.get_subsystem();
-    const char *c = column.text.c_str();
-
-    int totw = 0;
-    while (*c) {
-        int tw = f->get_char_width(*c);
-        totw += tw;
-        if (totw > max_width) {
-            break;
-        }
-        s.draw_char(f, x, y, *c);
-        x += tw;
-        c++;
+    if (column.icon) {
+        Font *f = gui.get_font();
+        int th = f->get_font_height();
+        TileGraphic *tg = column.icon->get_tile()->get_tilegraphic();
+        int gh = tg->get_height();
+        int gw = tg->get_width();
+        s.draw_icon(column.icon, x + (column.icon_width - gw) / 2, y + (th - gh) / 2);
     }
+    x += column.icon_width;
+    s.draw_clipped_text(gui.get_font(), x, y, max_width, column.text + column.addon);
 }
 
 /* ****************************************************** */
@@ -1868,7 +1994,7 @@ GuiListbox::GuiListbox(Gui& gui, GuiObject *parent)
     : GuiObject(gui, parent), on_item_selected(0), on_item_selected_data(0),
       on_title_clicked(0), on_title_clicked_data(0)
 {
-    setup("");
+    setup(0, 0, "");
 }
 
 GuiListbox::GuiListbox(Gui& gui, GuiObject *parent, int x, int y, int width,
@@ -1879,7 +2005,18 @@ GuiListbox::GuiListbox(Gui& gui, GuiObject *parent, int x, int y, int width,
       on_item_selected_data(on_item_selected_data),
       on_title_clicked(0), on_title_clicked_data(0)
 {
-    setup(title);
+    setup(0, 0, title);
+}
+
+GuiListbox::GuiListbox(Gui& gui, GuiObject *parent, int x, int y, int width,
+    int height, Icon *icon, int icon_width, const std::string& title,
+    OnItemSelected on_item_selected, void *on_item_selected_data)
+    : GuiObject(gui, parent, x, y, width, height),
+      on_item_selected(on_item_selected),
+      on_item_selected_data(on_item_selected_data),
+      on_title_clicked(0), on_title_clicked_data(0)
+{
+    setup(icon, icon_width, title);
 }
 
 GuiListbox::~GuiListbox() { }
@@ -1946,6 +2083,10 @@ GuiListboxEntry *GuiListbox::add_entry(const std::string& text) {
     return add_entry(GuiListboxEntry::Column(text, 0));
 }
 
+GuiListboxEntry *GuiListbox::add_entry(Icon *icon, int icon_width, const std::string& text) {
+    return add_entry(GuiListboxEntry::Column(icon, icon_width, text, 0));
+}
+
 GuiListboxEntry *GuiListbox::add_entry(const std::string& text, int width) {
     return add_entry(GuiListboxEntry::Column(text, width));
 }
@@ -1980,6 +2121,8 @@ void GuiListbox::clear() {
         remove_object(entries[i]);
     }
     entries.clear();
+    start_index = 0;
+    selected_index = -1;
 }
 
 bool GuiListbox::can_have_focus() const {
@@ -2008,6 +2151,31 @@ bool GuiListbox::mousemove(int x, int y) {
 bool GuiListbox::mouseup(int button, int x, int y) {
     if (button == 0) {
         mouse_is_down = false;
+    }
+
+    return true;
+}
+
+bool GuiListbox::mousehweel(int x, int y) {
+    int index = selected_index;
+    if (index != -1) {
+        int fh = gui.get_font()->get_font_height();
+        int height = get_height() - 2 - (title_bar_visible ? fh : 0);
+        int visible_entries = height / fh;
+        int max_entries = sb->get_max_value();
+
+        x *= -1;
+        index += x;
+        if (index < 0) {
+            index = 0;
+        }
+        if (index < start_index) {
+            set_top_index(index);
+        }
+        if (index - start_index >= visible_entries) {
+            set_top_index(start_index + x);
+        }
+        set_selected_index(index);
     }
 
     return true;
@@ -2062,11 +2230,15 @@ void GuiListbox::my_down_mousemove(int x, int y, bool from_mousemove) {
     }
 }
 
-void GuiListbox::setup(const std::string& title) {
+void GuiListbox::setup(Icon *icon, int icon_width, const std::string& title) {
     sb = gui.create_vscroll(this, get_width() - GuiVirtualScroll::Size, 0, get_height(),
         0, 0, 0, static_scroll_changed, this);
 
-    title_bar = new GuiListboxEntry(gui, this, title);
+    if (icon || icon_width) {
+        title_bar = new GuiListboxEntry(gui, this, icon, icon_width, title, 0);
+    } else {
+        title_bar = new GuiListboxEntry(gui, this, title);
+    }
     title_bar_visible = false;
 
     start_index = 0;
@@ -2095,27 +2267,29 @@ void GuiListbox::select_from_mouse(int x, int y, bool from_mousemove) {
     int visible_entries = height / fh;
 
     /* title bar column click? */
-    if (title_bar_visible && y >= -fh && y < 0 && !from_mousemove) {
-        GuiListboxEntry::Columns& columns = title_bar->get_columns();
-        int width = get_width() - 2 - sb->get_width() + 1;
-        int index = columns.size() - 1;
-        int col_right = width + (get_client_x() + 1);
-        for (GuiListboxEntry::Columns::reverse_iterator it = columns.rbegin();
-            it != columns.rend(); it++)
-        {
-            GuiListboxEntry::Column& column = *it;
-            if (x >= col_right - column.width && x <= (col_right + GuiListboxEntry::Spc)) {
-                if (on_title_clicked) {
-                    on_title_clicked(this, on_title_clicked_data, index);
+    if (title_bar_visible && y >= -fh && y < 0) {
+        if (!from_mousemove) {
+            GuiListboxEntry::Columns& columns = title_bar->get_columns();
+            int width = get_width() - 2 - sb->get_width() + 1;
+            int index = columns.size() - 1;
+            int col_right = width + (get_client_x() + 1);
+            for (GuiListboxEntry::Columns::reverse_iterator it = columns.rbegin();
+                it != columns.rend(); it++)
+            {
+                GuiListboxEntry::Column& column = *it;
+                if (x >= col_right - column.width && x <= (col_right + GuiListboxEntry::Spc)) {
+                    if (on_title_clicked) {
+                        on_title_clicked(this, on_title_clicked_data, index);
+                    }
+                    return;
                 }
-                return;
+                col_right -= (column.width + GuiListboxEntry::Spc);
+                index--;
             }
-            col_right -= (column.width + GuiListboxEntry::Spc);
-            index--;
-        }
-        index = 0;
-        if (on_title_clicked) {
-            on_title_clicked(this, on_title_clicked_data, index);
+            index = 0;
+            if (on_title_clicked) {
+                on_title_clicked(this, on_title_clicked_data, index);
+            }
         }
         return;
     }

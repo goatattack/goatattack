@@ -30,6 +30,7 @@ typedef int16_t joyvalue_t;
 typedef int16_t scounter_t;
 typedef int16_t identifier_t;
 typedef unsigned char transflag_t;
+typedef unsigned char nano_size_t;
 typedef uint16_t score_t;
 typedef int16_t sscore_t;
 typedef uint16_t playerflags_t;
@@ -96,13 +97,15 @@ enum GPC {
     GPCPlayerChanged,
     GPCPlaySound,
     GPCScoreTransportRaw,
-    GPCClanNames,
+    GPCRemoveAnimation,
     GPCXferHeader,
     GPCXferDataChunk,
     GPCGenericData,
     GPCPakHash,
     GPCServerQuit,
-    GPCSpectate
+    GPCSpectate,
+    GPCI18NText,
+    GPCTournamentSetting
 };
 
 /* game protocol client to server */
@@ -170,6 +173,14 @@ struct GTournament {
 
 // OK
 #pragma pack(1)
+struct GTournamentSetting {
+    unsigned char setting_id;       // 1
+    flags_t flag;                   // 1
+};
+#pragma pack()
+
+// OK
+#pragma pack(1)
 struct GGameState {
     GGameState() : seconds_remaining(0) { }
     GGameState(scounter_t seconds_remaining)
@@ -227,6 +238,7 @@ struct GPlayerServerState {
     sscore_t score;              // 2
     score_t frags;               // 2
     score_t kills;               // 2
+    nano_size_t outq_sz;         // 1
     playerflags_t flags;         // 1
     unsigned char health;        // 1
     unsigned char ammo;          // 1
@@ -427,22 +439,24 @@ const int GTextAnimationFlagCenterScreen = 1;
 #pragma pack(1)
 struct GTextAnimation {
     char font_name[NameLength];
-    char display_text[TextLength];
     double x;                           // 8
     double y;                           // 8
     scounter_t max_counter;             // 2
+    identifier_t i18n_id;               // 2
     flags_t flags;                      // 1
 
     inline void from_net() {
         byte_swap<double>(x);
         byte_swap<double>(y);
         max_counter = ntohs(max_counter);
+        i18n_id = ntohs(i18n_id);
     }
 
     inline void to_net() {
         byte_swap<double>(x);
         byte_swap<double>(y);
         max_counter = htons(max_counter);
+        i18n_id = htons(i18n_id);
     }
 };
 #pragma pack()
@@ -839,9 +853,48 @@ struct GPakHash {
 };
 #pragma pack()
 
+// OK
+#pragma pack(1)
+struct GI18NText {
+    identifier_t id;                // 2
+    data_len_t len;                 // 2
+    data_t data[1];                 // 1
+
+    inline void from_net() {
+        id = ntohs(id);
+        len = ntohs(len);
+    }
+
+    inline void to_net() {
+        id = htons(id);
+        len = htons(len);
+    }
+};
+#pragma pack()
+
+// OK
+#pragma pack(1)
+struct GChatMessage {
+    player_id_t id;                 // 2
+    data_len_t len;                 // 2
+    data_t data[1];
+
+    inline void from_net() {
+        id = ntohs(id);
+        len = ntohs(len);
+    }
+
+    inline void to_net() {
+        id = htons(id);
+        len = htons(len);
+    }
+};
+#pragma pack()
+
 const int GTransportLen = sizeof(GTransport) - 1;
 const int GPlayerInfoLen = sizeof(GPlayerInfo);
 const int GTournamentLen = sizeof(GTournament);
+const int GTournamentSettingLen = sizeof(GTournamentSetting);
 const int GPlayerStateLen = sizeof(GPlayerState);
 const int GPTAllStatesLen = sizeof(GPTAllStates);
 const int GPlayerClientStateLen = sizeof(GPlayerClientState);
@@ -869,5 +922,7 @@ const int GXferHeaderLen = sizeof(GXferHeader);
 const int GXferDataChunkLen = sizeof(GXferDataChunk) - 1;
 const int GHillCounterLen = sizeof(GHillCounter);
 const int GPakHashLen = sizeof(GPakHash);
+const int GI18NTextLen = sizeof(GI18NText) - 1;
+const int GChatMessageLen = sizeof(GChatMessage) - 1;
 
 #endif

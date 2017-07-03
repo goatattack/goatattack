@@ -75,7 +75,7 @@ protected:
     void send_team_score();
     int draw_team_stats(Font* f, int x, int y, playerflags_t flags);
     void draw_team_score(int x, int y, bool rightalign, score_t score);
-    void add_team_score_animation(Player *p, const std::string& text);
+    void add_team_score_animation(Player *p, I18NText id);
 
     static void static_red_team_click(GuiVirtualButton *sender, void *data);
     static void static_blue_team_click(GuiVirtualButton *sender, void *data);

@@ -50,46 +50,66 @@ const std::string& KeyValue::get_value(const std::string& key) const {
     return it->second;
 }
 
-void KeyValue::set_value(const std::string& key, const std::string& value) throw (KeyValueException) {
-    modify_zip_file_test();
+void KeyValue::set_value(const std::string& key, const std::string& value, bool no_touch) throw (KeyValueException) {
+    if (!no_touch) {
+        modify_zip_file_test();
+    }
     if (!value.length()) {
         entries.erase(key);
     } else {
         entries[key] = value;
-        modified = true;
+        if (!no_touch) {
+            modified = true;
+        }
     }
 }
 
-void KeyValue::set_value(const std::string& key, const char *value) throw (KeyValueException) {
-    modify_zip_file_test();
+void KeyValue::set_value(const std::string& key, const char *value, bool no_touch) throw (KeyValueException) {
+    if (!no_touch) {
+        modify_zip_file_test();
+    }
     if (!strlen(value)) {
         entries.erase(key);
     } else {
         entries[key] = value;
+        if (!no_touch) {
+            modified = true;
+        }
+    }
+}
+
+void KeyValue::set_value(const std::string& key, int value, bool no_touch) throw (KeyValueException) {
+    if (!no_touch) {
+        modify_zip_file_test();
+    }
+    char buffer[64];
+    sprintf(buffer, "%d", value);
+    entries[key] = buffer;
+    if (!no_touch) {
         modified = true;
     }
 }
 
-void KeyValue::set_value(const std::string& key, int value) throw (KeyValueException) {
-    modify_zip_file_test();
-    char buffer[64];
-    sprintf(buffer, "%d", value);
-    entries[key] = buffer;
-    modified = true;
-}
-
-void KeyValue::set_value(const std::string& key, double value) throw (KeyValueException) {
-    modify_zip_file_test();
+void KeyValue::set_value(const std::string& key, double value, bool no_touch) throw (KeyValueException) {
+    if (!no_touch) {
+        modify_zip_file_test();
+    }
     char buffer[64];
     sprintf(buffer, "%f", value);
     entries[key] = buffer;
-    modified = true;
+    if (!no_touch) {
+        modified = true;
+    }
 }
 
-void KeyValue::set_value(const std::string& key, bool value) throw (KeyValueException) {
-    modify_zip_file_test();
+void KeyValue::set_value(const std::string& key, bool value, bool no_touch) throw (KeyValueException) {
+    if (!no_touch) {
+        modify_zip_file_test();
+    }
     entries[key] = (value ? "1" : "0");
-    modified = true;
+    if (!no_touch) {
+        modified = true;
+    }
 }
 
 void KeyValue::read(const std::string& filename, ZipReader *zip) throw (KeyValueException) {

@@ -24,7 +24,7 @@ class Resources;
 
 class SubsystemNull : public Subsystem {
 public:
-    SubsystemNull(std::ostream& stream, const std::string& window_title) throw (SubsystemException);
+    SubsystemNull(std::ostream& stream, I18N& i18n, const std::string& window_title) throw (SubsystemException);
     virtual ~SubsystemNull();
 
     virtual void initialize(Resources& resources);
@@ -56,14 +56,18 @@ public:
     virtual void draw_tilegraphic(TileGraphic *tilegraphic, int x, int y);
     virtual void draw_tilegraphic(TileGraphic *tilegraphic, int index, int x, int y);
     virtual void draw_box(int x, int y, int width, int height);
-    virtual void draw_text(Font *font, int x, int y, const std::string& text);
-    virtual int draw_char(Font *font, int x, int y, unsigned char c);
+    virtual int draw_text(Font *font, int x, int y, const std::string& text);
+    virtual int draw_clipped_text(Font *font, int x, int y, int width, const std::string& text);
+    virtual int draw_char(Font *font, int x, int y, const char *s);
     virtual void draw_icon(Icon *icon, int x, int y);
+    virtual void enable_cliprect(int x, int y, int width, int height);
+    virtual void disable_cliprect();
 
     virtual int play_sound(Sound *sound, int loops);
     virtual void play_system_sound(Sound *sound);
     virtual int play_controlled_sound(Sound *sound, int loops);
     virtual bool is_sound_playing(Sound *sound);
+    virtual int stop_sound(int channel);
 
     virtual bool play_music(Music *music);
     virtual void stop_music();
@@ -85,6 +89,9 @@ public:
     virtual int get_arena_height();
     virtual int get_view_width();
     virtual int get_view_height();
+
+private:
+    I18N& i18n;
 };
 
 #endif

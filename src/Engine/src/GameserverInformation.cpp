@@ -73,24 +73,25 @@ const Hosts& ServerList::get_hosts() const {
     return hosts;
 }
 
-void ServerList::sort(int index, ServerSort dir) {
+ServerSort ServerList::sort(int index, ServerSort dir) {
     sort_index = index;
     sort_dir = dir;
     server_sorter = get_server_sorter();
     std::sort(hosts.begin(), hosts.end(), server_sorter);
+    return sort_dir;
 }
 
-void ServerList::sort(int index) {
+ServerSort ServerList::sort(int index) {
     if (index != sort_index) {
-        sort(index, Ascending);
-    } else {
-        ServerSort new_dir = (sort_dir == Ascending ? Descending : Ascending);
-        sort(index, new_dir);
+        return sort(index, Ascending);
     }
+
+    ServerSort new_dir = (sort_dir == Ascending ? Descending : Ascending);
+    return sort(index, new_dir);
 }
 
-void ServerList::sort() {
-    sort(sort_index, sort_dir);
+ServerSort ServerList::sort() {
+    return sort(sort_index, sort_dir);
 }
 
 ServerList::ServerSorter ServerList::get_server_sorter() {

@@ -20,21 +20,20 @@
 #include "SubsystemSDL.hpp"
 #include "MapEditor.hpp"
 #include "Configuration.hpp"
+#include "I18N.hpp"
 
 int main(int argc, char *argv[]) {
+    std::ostream& stream = std::cout;
+    stream << "Goat Attack Map Editor " << GameVersion << std::endl;
+
     try {
-        std::ostream& stream = std::cout;
-
-        stream << "welcome to goat attack map editor ";
-        stream << GameVersion;
-        stream << "...\n" << std::endl;
-
         init_hpet();
 
         Configuration config(UserDirectory, ConfigFilename);
+        I18N i18n(stream, static_cast<I18N::Language>(config.get_int("language")));
 
         /* load SDL subsystem */
-        SubsystemSDL subsystem(stream, "Goat Attack Map Editor", config.get_bool("shading_pipeline"));
+        SubsystemSDL subsystem(stream, i18n, i18n(I18N_WINTITLE_EDITOR), config.get_bool("shading_pipeline"));
         subsystem.set_keep_pictures(true);
         Resources resources(subsystem, STRINGIZE_VALUE_OF(DATA_DIRECTORY), true);
 
@@ -50,8 +49,10 @@ int main(int argc, char *argv[]) {
         MapEditor editor(resources, subsystem, config);
         editor.run();
     } catch (const Exception& e) {
-        std::cout << e.what() << std::endl;
+        stream << e.what() << std::endl;
     }
+
+    stream << "\nbye bye... :)" << std::endl;
 
     return 0;
 }

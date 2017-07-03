@@ -20,14 +20,14 @@
 #include "AudioNull.hpp"
 #include "ShaderNull.hpp"
 
-SubsystemNull::SubsystemNull(std::ostream& stream, const std::string& window_title) throw (SubsystemException)
-    : Subsystem(stream, window_title)
+SubsystemNull::SubsystemNull(std::ostream& stream, I18N& i18n, const std::string& window_title) throw (SubsystemException)
+    : Subsystem(stream, i18n, window_title), i18n(i18n)
 {
-    stream << "starting SubsystemNull" << std::endl;
+    stream << i18n(I18N_SSNULL_START) << std::endl;
 }
 
 SubsystemNull::~SubsystemNull() {
-    stream << "cleaning SubsystemNull" << std::endl;
+    stream << i18n(I18N_SSNULL_UNINIT) << std::endl;
 }
 
 void SubsystemNull::initialize(Resources& resources) { }
@@ -100,13 +100,23 @@ void SubsystemNull::draw_tilegraphic(TileGraphic *tilegraphic, int index, int x,
 
 void SubsystemNull::draw_box(int x, int y, int width, int height) { }
 
-void SubsystemNull::draw_text(Font *font, int x, int y, const std::string& text) { }
+int SubsystemNull::draw_text(Font *font, int x, int y, const std::string& text) {
+    return 0;
+}
 
-int SubsystemNull::draw_char(Font *font, int x, int y, unsigned char c) {
+int SubsystemNull::draw_clipped_text(Font *font, int x, int y, int width, const std::string& text) {
+    return 0;
+}
+
+int SubsystemNull::draw_char(Font *font, int x, int y, const char *s) {
     return x;
 }
 
 void SubsystemNull::draw_icon(Icon *icon, int x, int y) { }
+
+void SubsystemNull::enable_cliprect(int x, int y, int width, int height) { }
+
+void SubsystemNull::disable_cliprect() { }
 
 int SubsystemNull::play_sound(Sound *sound, int loops) {
     return 0;
@@ -122,6 +132,10 @@ int SubsystemNull::play_controlled_sound(Sound *sound, int loops) {
 
 bool SubsystemNull::is_sound_playing(Sound *sound) {
     return false;
+}
+
+int SubsystemNull::stop_sound(int channel) {
+    return 0;
 }
 
 bool SubsystemNull::play_music(Music *music) {

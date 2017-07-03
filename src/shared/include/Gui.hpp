@@ -139,13 +139,19 @@ public:
         int height, const std::string& title, GuiListbox::OnItemSelected on_item_selected,
         void *on_item_selected_data) throw (GuiException);
 
+    GuiListbox *create_listbox(GuiObject *parent, int x, int y, int width,
+        int height, Icon *icon, int icon_width, const std::string& title,
+        GuiListbox::OnItemSelected on_item_selected, void *on_item_selected_data) throw (GuiException);
+
     GuiWindow *get_current_window() const;
     bool is_active(GuiObject *object) const;
     float get_alpha(GuiObject *object) const;
     void set_focus(GuiObject *object);
     bool has_focus(GuiObject *object) const;
     bool get_blink_on() const;
+    bool get_tick_on() const;
     void set_mousepointer(Mousepointer mouse);
+    void reset_blinker();
 
     MessageBoxResponse show_messagebox(MessageBoxIcon icon, const std::string& title, const std::string& text);
     MessageBoxResponse show_questionbox(const std::string& title, const std::string& text);
@@ -156,10 +162,12 @@ private:
 
     Resources& resources;
     Subsystem& subsystem;
+    I18N& i18n;
     Font *font;
     GuiWindow *current_window;
     GuiObject *active_object;
     bool blink_on;
+    bool tick_on;
     bool running;
     bool mouse_is_down;
     bool mouse_is_visible;
@@ -184,6 +192,7 @@ private:
     Icon *msg_error;
     gametime_t now;
     gametime_t last;
+    gametime_t last_tick;
     gametime_t tooltip_init;
     MessageBoxResponse last_response;
     GuiTextbox *input_box;
@@ -196,13 +205,13 @@ private:
     bool process_mousemove();
     bool process_mousedown(int button);
     bool process_mouseup(int button);
+    bool process_mousewheel(int x, int y);
     bool process_keyinput(InputData& input);
     bool process_keydown(InputData& input);
     bool process_keyup(InputData& input);
     bool process_joymotion(InputData& input);
     bool process_joybuttondown(InputData& input);
     bool process_joybuttonup(InputData& input);
-    void reset_blinker();
     void destroy_tooltip();
     void set_tooltip(GuiObject *object);
     void idle_tooltip();
