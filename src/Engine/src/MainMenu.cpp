@@ -35,6 +35,27 @@ static const int FlagWidth = 18;
 static const char *AscendingArrow = "\xe2\x86\x91";
 static const char *DescendingArrow = "\xe2\x86\x93";
 
+class BroadcasterGuard {
+private:
+    BroadcasterGuard(const BroadcasterGuard&);
+    BroadcasterGuard& operator=(const BroadcasterGuard&);
+
+public:
+    BroadcasterGuard(LANBroadcaster *lb, MasterQuery *mq) : lb(lb), mq(mq) {
+        if (lb) lb->stop();
+        if (mq) mq->stop();
+    }
+
+    ~BroadcasterGuard() {
+        if (lb) lb->start();
+        if (mq) mq->start();
+    }
+
+public:
+    LANBroadcaster *lb;
+    MasterQuery *mq;
+};
+
 MainMenu::MainMenu(Resources& resources, Subsystem& subsystem, Configuration& config)
     : Gui(resources, subsystem, resources.get_font("normal")),
       OptionsMenu(*this, resources, subsystem, config, 0),
@@ -445,8 +466,7 @@ void MainMenu::play_connect_lan_click() {
         if (info->protocol_version != ProtocolVersion) {
             show_messagebox(Gui::MessageBoxIconError, i18n(I18N_VERSION_MISMATCH_TITLE), i18n(I18N_VERSION_MISMATCH_MESSAGE));
         } else {
-            lan_broadcaster->stop();
-            master_query->stop();
+            BroadcasterGuard bg(lan_broadcaster, master_query);
             try {
                 ScopeMusicStopper stop_music(subsystem, title_music);
                 Client client(resources, subsystem, host, port, config, pwd);
@@ -455,8 +475,6 @@ void MainMenu::play_connect_lan_click() {
             } catch (const Exception& e) {
                 show_messagebox(Gui::MessageBoxIconError, i18n(I18N_ERROR_TITLE), e.what());
             }
-            lan_broadcaster->start();
-            master_query->start();
         }
     } else {
         show_messagebox(Gui::MessageBoxIconExclamation, i18n(I18N_SERVER_TITLE), i18n(I18N_SELECT_SERVER));
@@ -509,8 +527,7 @@ void MainMenu::play_connect_wan_click() {
         if (info->protocol_version != ProtocolVersion) {
             show_messagebox(Gui::MessageBoxIconError, i18n(I18N_VERSION_MISMATCH_TITLE), i18n(I18N_VERSION_MISMATCH_MESSAGE));
         } else {
-            lan_broadcaster->stop();
-            master_query->stop();
+            BroadcasterGuard bg(lan_broadcaster, master_query);
             try {
                 ScopeMusicStopper stop_music(subsystem, title_music);
                 Client client(resources, subsystem, host, port, config, pwd);
@@ -519,8 +536,6 @@ void MainMenu::play_connect_wan_click() {
             } catch (const Exception& e) {
                 show_messagebox(Gui::MessageBoxIconError, i18n(I18N_ERROR_TITLE), e.what());
             }
-            lan_broadcaster->start();
-            master_query->start();
         }
     } else {
         show_messagebox(Gui::MessageBoxIconExclamation, i18n(I18N_SERVER_TITLE), i18n(I18N_SELECT_SERVER));
