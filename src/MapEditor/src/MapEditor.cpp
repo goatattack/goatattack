@@ -400,7 +400,7 @@ void MapEditor::on_input_event(const InputData& input) {
                             if (y >= wmap->get_height()) y = wmap->get_height() - 1;
                             if (select_rect.add_point(x, y)) {
                                 copy_selection();
-                                is_selecting = false;
+                                select_rect.reset();
                             }
                         }
                     }
@@ -450,8 +450,10 @@ void MapEditor::on_input_event(const InputData& input) {
                 switch (input.key_type) {
                     case InputData::InputKeyTypeShift:
                     {
-                        is_selecting = true;
-                        select_rect.reset();
+                        if (!is_selecting) {
+                            is_selecting = true;
+                            select_rect.reset();
+                        }
                         break;
                     }
 
