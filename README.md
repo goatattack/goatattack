@@ -75,8 +75,8 @@ $ make
 # make install
 ```
 ## Troubleshooting
-### ft2build missing
-If you configure script says, that the freetype include file (ft2build.h) is missing, pass the file location to the configure script:
+### ft2build.h missing
+If your configure script says, that the freetype include file (ft2build.h) is missing, pass the file location to the configure script:
 ```
 $ CPPFLAGS="-I/usr/include/freetype2" ./configure [--OPTIONS]
 ```
@@ -91,4 +91,4 @@ You will find the Xcode project file in the `osx` folder, open it and build the 
 In the `windows\GoatAttack` folder, you will find the project solution file. Open it and build the entire solution. You will need all SDL-dlls and the `data` folder. Take these files from the released zip file.
 
 ## Visit the forum
-If you have any question, visit the [Goat Attack forum](http://forum.goatattack.net).
+If you have any questions, visit the [Goat Attack forum](http://forum.goatattack.net).
