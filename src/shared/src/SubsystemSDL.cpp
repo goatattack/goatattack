@@ -594,7 +594,7 @@ void SubsystemSDL::draw_icon(Icon *icon, int x, int y) {
 
 void SubsystemSDL::enable_cliprect(int x, int y, int width, int height) {
     glScissor(
-        ((x - x_offset) * current_zoom),
+        ((x + x_offset) * current_zoom),
         (ViewHeight - (y - y_offset)) * current_zoom,
         width * current_zoom,
         height * current_zoom

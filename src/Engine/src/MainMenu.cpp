@@ -30,7 +30,6 @@
 #include <algorithm>
 
 static const char *TitleMusic = "norway";
-static const int SecuredWidth = 8;
 static const int FlagWidth = 18;
 static const char *AscendingArrow = "\xe2\x86\x91";
 static const char *DescendingArrow = "\xe2\x86\x93";

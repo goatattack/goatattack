@@ -1283,9 +1283,7 @@ void GuiTextbox::recalc() {
     if (caret_position < start_position) {
         start_position = caret_position;
     }
-
-    const char *s = text.c_str();
-
+    
     if (caret_position > start_position) {
         Font *f = gui.get_font();
         const char *tptr = text.c_str();
@@ -1320,7 +1318,6 @@ void GuiTextbox::set_cursor_pos_from_mouse(int x) {
         int cx = get_client_x();
         int rp = cx + get_width() - 2 - 2;
         int pos = start_position;
-        int caret = caret_position;
         const char *tptr = text.c_str();
         int sz = utf8_strlen(tptr);
         int curx = cx + 2;
@@ -1381,7 +1378,6 @@ void GuiTextbox::paint() {
     int cp = x;
     bool caret_drawn = false;
     int caretx = cp;
-    const char *p = text.c_str();
     bool last_char = false;
     f->clip_on(x, y, w - 4);
     while (pos < sz) {
@@ -2162,8 +2158,6 @@ bool GuiListbox::mousehweel(int x, int y) {
         int fh = gui.get_font()->get_font_height();
         int height = get_height() - 2 - (title_bar_visible ? fh : 0);
         int visible_entries = height / fh;
-        int max_entries = sb->get_max_value();
-
         x *= -1;
         index += x;
         if (index < 0) {

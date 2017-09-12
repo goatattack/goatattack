@@ -2,7 +2,7 @@
 #define _FT_HPP_
 
 #ifdef __APPLE__
-#include <FreeType/ft2build.h>
+#include "ft2build.h"
 #else
 #include <ft2build.h>
 #endif
