@@ -50,7 +50,7 @@ const char *name_syllables[] = {
     0
 };
 
-void create_directory(const std::string& directory, const std::string& in) throw (UtilsException) {
+void create_directory(const std::string& directory, const std::string& in) {
     std::string dir;
 
     dir = in + dir_separator + directory;
@@ -74,7 +74,7 @@ bool is_directory(const std::string& path) {
 #endif
 }
 
-std::string get_home_directory() throw (UtilsException) {
+std::string get_home_directory() {
 #ifdef __unix__
     struct passwd *pw;
     pw = getpwuid(geteuid());

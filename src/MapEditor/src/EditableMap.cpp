@@ -21,7 +21,7 @@
 
 #include <cstdlib>
 
-EditableMap::EditableMap(Resources& resources, Subsystem& subsystem) throw (Exception)
+EditableMap::EditableMap(Resources& resources, Subsystem& subsystem)
     : Map(subsystem), resources(resources), subsystem(subsystem), ptileset(0), pbackground(0)
 {
     set_decoration_brightness(0.9);
@@ -31,7 +31,7 @@ EditableMap::EditableMap(Resources& resources, Subsystem& subsystem) throw (Exce
 }
 
 EditableMap::EditableMap(Resources& resources, Subsystem& subsystem,
-    const std::string& filename) throw (Exception)
+    const std::string& filename)
     : Map(subsystem, filename), resources(resources), subsystem(subsystem)
 {
     char buffer[256];
@@ -325,7 +325,7 @@ EditableLight *EditableMap::get_light(int x, int y) {
 }
 
 
-void EditableMap::save() throw (Exception) {
+void EditableMap::save() {
     char buffer[256];
 
     /* drop header informations */

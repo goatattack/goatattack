@@ -27,7 +27,6 @@ const int CoinInitialSendCounter = 15;
 TournamentCTC::TournamentCTC(Resources& resources, Subsystem& subsystem, Gui *gui,
     ServerLogger *logger, const std::string& game_file, bool server,
     const std::string& map_name, Players& players, int duration, bool warmup)
-    throw (TournamentException, ResourcesException)
     : Tournament(resources, subsystem, gui, logger, game_file, server, map_name, players,
       duration, warmup), coin(0),
       enemy_indicator_coin(resources.get_icon("enemy_indicator_coin"))

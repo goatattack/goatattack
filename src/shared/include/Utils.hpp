@@ -40,9 +40,9 @@ public:
 
 typedef std::vector<std::string> StringTokens;
 
-void create_directory(const std::string& directory, const std::string& in) throw (UtilsException);
+void create_directory(const std::string& directory, const std::string& in);
 bool is_directory(const std::string& path);
-std::string get_home_directory() throw (UtilsException);
+std::string get_home_directory();
 bool file_exists(const std::string& filename);
 std::string ltrim(const std::string& s);
 std::string rtrim(const std::string& s);

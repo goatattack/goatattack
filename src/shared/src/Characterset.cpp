@@ -37,7 +37,6 @@ const char *Characterset::JumpSound = "jump";
 static const char *FallbackSpawnAnimation = "player_spawn";
 
 Characterset::Characterset(Subsystem& subsystem, const std::string& filename, ZipReader *zip)
-    throw (KeyValueException, MovableException)
     : Properties(filename + ".characterset", zip), Movable(subsystem)
 {
     try {
@@ -107,7 +106,7 @@ const std::string& Characterset::get_die_animation() const {
 }
 
 void Characterset::create_character(CharacterAnimation type,
-    const std::string& filename, int animation_speed, bool one_shot, ZipReader *zip) throw (Exception)
+    const std::string& filename, int animation_speed, bool one_shot, ZipReader *zip)
 {
     PNG png(filename, zip);
     tiles[DirectionRight][type] = create_tile(png, animation_speed, one_shot, false);
@@ -116,7 +115,7 @@ void Characterset::create_character(CharacterAnimation type,
 }
 
 void Characterset::create_armor_overlay(CharacterAnimation type,
-    const std::string& filename, int animation_speed, bool one_shot, ZipReader *zip) throw (Exception)
+    const std::string& filename, int animation_speed, bool one_shot, ZipReader *zip)
 {
     PNG png(filename, zip);
     armor_overlays[DirectionRight][type] = create_tile(png, animation_speed, one_shot, false);
@@ -125,7 +124,7 @@ void Characterset::create_armor_overlay(CharacterAnimation type,
 }
 
 void Characterset::create_rifle_overlay(CharacterAnimation type,
-    const std::string& filename, int animation_speed, bool one_shot, ZipReader *zip) throw (Exception)
+    const std::string& filename, int animation_speed, bool one_shot, ZipReader *zip)
 {
     PNG png(filename, zip);
     rifle_overlays[DirectionRight][type] = create_tile(png, animation_speed, one_shot, false);

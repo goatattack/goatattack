@@ -49,8 +49,7 @@ public:
         Tile *tile;
     };
 
-    Font(Subsystem& subsystem, FT_Library& ft, const std::string& filename, ZipReader *zip = 0)
-        throw (KeyValueException, FontException);
+    Font(Subsystem& subsystem, FT_Library& ft, const std::string& filename, ZipReader *zip = 0);
     virtual ~Font();
 
     const Character *get_character(const char *s);

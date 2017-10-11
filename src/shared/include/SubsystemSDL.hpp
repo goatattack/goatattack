@@ -35,7 +35,7 @@ class Resources;
 
 class SubsystemSDL : public Subsystem {
 public:
-    SubsystemSDL(std::ostream& stream, I18N& i18n, const std::string& window_title, bool shading_pipeline) throw (SubsystemException);
+    SubsystemSDL(std::ostream& stream, I18N& i18n, const std::string& window_title, bool shading_pipeline);
     virtual ~SubsystemSDL();
 
     virtual void initialize(Resources& resources);

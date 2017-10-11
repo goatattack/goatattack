@@ -40,7 +40,7 @@ private:
     Directory& operator=(const Directory&);
 
 public:
-    Directory(const std::string& directory, const std::string& suffix, ZipReader *zip = 0) throw (DirectoryException);
+    Directory(const std::string& directory, const std::string& suffix, ZipReader *zip = 0);
     virtual ~Directory();
 
     const char *get_entry();

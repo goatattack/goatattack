@@ -21,8 +21,7 @@
 #include <cstdlib>
 #include <cstdio>
 
-Configuration::Configuration(const std::string& directory,
-    const std::string& filename) throw (ConfigurationException)
+Configuration::Configuration(const std::string& directory, const std::string& filename)
     : save_at_exit(true)
 {
     if (!filename.length()) {

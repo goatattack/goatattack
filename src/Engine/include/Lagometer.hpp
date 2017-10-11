@@ -38,8 +38,8 @@ private:
      Lagometer& operator=(const Lagometer&);
 
 public:
-    Lagometer(Subsystem& subsystem) throw (LagometerException);
-    Lagometer(Subsystem& subsystem, int width, int height) throw (LagometerException);
+    Lagometer(Subsystem& subsystem);
+    Lagometer(Subsystem& subsystem, int width, int height);
     ~Lagometer();
 
     void update(ms_t ping, int server_outq_sz, int client_outq_sz);
@@ -74,7 +74,7 @@ private:
 
     Pings pings;
 
-    void create(Subsystem& subsystem) throw (LagometerException);
+    void create(Subsystem& subsystem);
 };
 
 #endif

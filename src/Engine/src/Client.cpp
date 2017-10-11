@@ -38,7 +38,6 @@ template <class T> static bool erase_element(T *elem) {
 
 Client::Client(Resources& resources, Subsystem& subsystem, hostaddr_t host,
     hostport_t port, Configuration& config, const std::string& password)
-    throw (Exception)
     : ClientServer(subsystem.get_i18n(), host, port),
       Gui(resources, subsystem, resources.get_font("normal")),
       OptionsMenu(*this, resources, subsystem, config, this),
@@ -130,7 +129,7 @@ void Client::spectate() {
     }
 }
 
-void Client::idle() throw (Exception) {
+void Client::idle() {
     /* process net io */
     bool queue_empty = true;
     do {

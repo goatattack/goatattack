@@ -57,8 +57,7 @@ public:
     static const int ProjectileOffsetY;
     static const char *JumpSound;
 
-    Characterset(Subsystem& subsystem, const std::string& filename, ZipReader *zip = 0)
-        throw (KeyValueException, MovableException);
+    Characterset(Subsystem& subsystem, const std::string& filename, ZipReader *zip = 0);
     virtual ~Characterset();
 
     Tile *get_tile(Direction direction, CharacterAnimation animation);
@@ -77,13 +76,13 @@ private:
     std::string die_animation;
 
     void create_character(CharacterAnimation type, const std::string& filename,
-        int animation_speed, bool one_shot, ZipReader *zip) throw (Exception);
+        int animation_speed, bool one_shot, ZipReader *zip);
 
     void create_armor_overlay(CharacterAnimation type, const std::string& filename,
-        int animation_speed, bool one_shot, ZipReader *zip) throw (Exception);
+        int animation_speed, bool one_shot, ZipReader *zip);
 
     void create_rifle_overlay(CharacterAnimation type, const std::string& filename,
-        int animation_speed, bool one_shot, ZipReader *zip) throw (Exception);
+        int animation_speed, bool one_shot, ZipReader *zip);
 
     void cleanup();
 };

@@ -18,7 +18,6 @@
 #include "Shader.hpp"
 
 Shader::Shader(const std::string& filename, ZipReader *zip)
-    throw (KeyValueException, ShaderException)
     : Properties(filename + ".shader", zip) { }
 
 Shader::~Shader() { }

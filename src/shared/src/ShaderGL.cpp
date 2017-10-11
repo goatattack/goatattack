@@ -25,7 +25,6 @@
 static const int ErrorBuffer = 1024;
 
 ShaderGL::ShaderGL(Subsystem& subsystem, const std::string& filename, ZipReader *zip)
-    throw (KeyValueException, ShaderException)
     : Shader(filename, zip), subsystem(subsystem), program_id(0),
       vert_id(0), frag_id(0)
 {
@@ -59,7 +58,7 @@ ShaderGL::~ShaderGL() {
     cleanup();
 }
 
-Shader::ID ShaderGL::get_location(const char *name) throw (ShaderException) {
+Shader::ID ShaderGL::get_location(const char *name) {
     ID id = glGetUniformLocation(program_id, name);
     if (id < 0) {
         subsystem << "*** WARNING ***: " << ": uniform location '" << name << "' not found." << std::endl;
@@ -68,7 +67,7 @@ Shader::ID ShaderGL::get_location(const char *name) throw (ShaderException) {
     return id;
 }
 
-Shader::ID ShaderGL::get_attrib_location(const char *name) throw (ShaderException) {
+Shader::ID ShaderGL::get_attrib_location(const char *name) {
     ID id = glGetAttribLocation(program_id, name);
     if (id < 0) {
         subsystem << "*** WARNING ***: " << ": attrib location '" << name << "' not found." << std::endl;
@@ -116,7 +115,7 @@ void ShaderGL::deactivate() {
     glUseProgram(0);
 }
 
-void ShaderGL::compile(GLuint id, const char *program) throw (ShaderException) {
+void ShaderGL::compile(GLuint id, const char *program) {
     char error[ErrorBuffer];
 
     memset(error, 0, sizeof(error));

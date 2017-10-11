@@ -92,7 +92,7 @@ MapEditor::~MapEditor() {
     }
 }
 
-void MapEditor::idle() throw (Exception) {
+void MapEditor::idle() {
     char buffer[64];
 
     /* update tiles for animation */
@@ -2093,7 +2093,7 @@ void MapEditor::ts_properties_ok_click() {
     pop_window();
 }
 
-void MapEditor::save_tileset() throw (Exception) {
+void MapEditor::save_tileset() {
     char buffer[128];
     Tileset *ts = wmap->get_tileset_ptr();
 

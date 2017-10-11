@@ -33,7 +33,6 @@ static const int MaxAmmo = 100;
 Tournament::Tournament(Resources& resources, Subsystem& subsystem, Gui *gui, ServerLogger *logger,
     const std::string& game_file, bool server, const std::string& map_name,
     Players& players, int duration, bool warmup)
-    throw (TournamentException, ResourcesException)
     : resources(resources), subsystem(subsystem), i18n(subsystem.get_i18n()),
       properties(*resources.get_game_settings(game_file)),
       gui(gui), server(server),
@@ -544,7 +543,7 @@ void Tournament::delete_responses() {
     state_responses.clear();
 }
 
-void Tournament::create_spawn_points() throw (TournamentException) {
+void Tournament::create_spawn_points() {
     for (GameObjects::iterator it = game_objects.begin(); it != game_objects.end(); it++) {
         GameObject *obj = *it;
         Object::ObjectType type = obj->object->get_type();

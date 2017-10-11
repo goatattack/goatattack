@@ -34,11 +34,11 @@ private:
 public:
     typedef GLint ID;
 
-    ShaderGL(Subsystem& subsystem, const std::string& filename, ZipReader *zip) throw (KeyValueException, ShaderException);
+    ShaderGL(Subsystem& subsystem, const std::string& filename, ZipReader *zip);
     virtual ~ShaderGL();
 
-    virtual ID get_location(const char *name) throw (ShaderException);
-    virtual ID get_attrib_location(const char *name) throw (ShaderException);
+    virtual ID get_location(const char *name);
+    virtual ID get_attrib_location(const char *name);
     virtual void set_value(ID location, int value);
     virtual void set_value(ID location, float value);
     virtual void set_value(ID location, float v1, float v2);
@@ -56,7 +56,7 @@ private:
     GLuint vert_id;
     GLuint frag_id;
 
-    void compile(GLuint id, const char *program) throw (ShaderException);
+    void compile(GLuint id, const char *program);
     void cleanup();
 };
 

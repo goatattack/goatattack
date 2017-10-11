@@ -41,7 +41,7 @@ public:
     void set_player_name(const std::string& name);
     Characterset *get_characterset() const;
     const std::string& get_characterset_name() const;
-    void set_characterset(const std::string& name) throw (ResourcesException);
+    void set_characterset(const std::string& name);
     const Connection *get_connection() const;
     void mark_as_me();
     bool marked_as_me() const;

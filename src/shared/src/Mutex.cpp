@@ -19,7 +19,7 @@
 
 #include <algorithm>
 
-Mutex::Mutex() throw (MutexException) {
+Mutex::Mutex() {
     try {
         mutex = new mutex_t;
     } catch (const std::exception& e) {

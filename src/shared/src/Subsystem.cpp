@@ -17,7 +17,7 @@
 
 #include "Subsystem.hpp"
 
-Subsystem::Subsystem(std::ostream& stream, I18N& i18n, const std::string& window_title) throw (SubsystemException)
+Subsystem::Subsystem(std::ostream& stream, I18N& i18n, const std::string& window_title)
     : stream(stream), i18n(i18n), scanlines(0), keep_pictures(false) { }
 
 Subsystem::~Subsystem() { }

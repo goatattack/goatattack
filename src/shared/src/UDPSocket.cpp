@@ -25,11 +25,11 @@
 #include <fcntl.h>
 #endif
 
-UDPSocket::UDPSocket() throw (UDPSocketException) : port(0) {
+UDPSocket::UDPSocket() : port(0) {
     create_socket(0);
 }
 
-UDPSocket::UDPSocket(unsigned short port) throw (UDPSocketException) : port(port) {
+UDPSocket::UDPSocket(unsigned short port) : port(port) {
     create_socket(port);
 }
 
@@ -37,7 +37,7 @@ UDPSocket::~UDPSocket() {
     closesocket(socket);
 }
 
-ssize_t UDPSocket::send(uint32_t host, uint16_t port, void *buffer, size_t length) throw (UDPSocketException) {
+ssize_t UDPSocket::send(uint32_t host, uint16_t port, void *buffer, size_t length) {
     addr.sin_addr.s_addr = htonl(host);
     addr.sin_port = htons(port);
 
@@ -55,7 +55,7 @@ ssize_t UDPSocket::send(uint32_t host, uint16_t port, void *buffer, size_t lengt
     return sz;
 }
 
-ssize_t UDPSocket::recv(char *buffer, size_t length, uint32_t *host, uint16_t *port) throw (UDPSocketException) {
+ssize_t UDPSocket::recv(char *buffer, size_t length, uint32_t *host, uint16_t *port) {
     struct sockaddr_in ao;
     socklen_t ao_len = sizeof(ao);
 
@@ -79,7 +79,7 @@ ssize_t UDPSocket::recv(char *buffer, size_t length, uint32_t *host, uint16_t *p
     return sz;
 }
 
-void UDPSocket::set_port(unsigned short port) throw (UDPSocketException) {
+void UDPSocket::set_port(unsigned short port) {
     if (!this->port && port != this->port) {
         throw UDPSocketException("Cannot change port of a client socket");
     }
@@ -93,7 +93,7 @@ unsigned short UDPSocket::get_port() const {
     return port;
 }
 
-void UDPSocket::create_socket(unsigned short port) throw (UDPSocketException) {
+void UDPSocket::create_socket(unsigned short port) {
     socket = ::socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     if (socket < 0) {
         throw UDPSocketException("Creating socket failed: " + std::string(strerror(errno)));

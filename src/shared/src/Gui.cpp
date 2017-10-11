@@ -23,7 +23,6 @@ static const ms_t CaretBlinkInterval = 500;
 static const ms_t TickInterval = 500;
 
 Gui::Gui(Resources& resources, Subsystem& subsystem, Font *font)
-    throw (GuiException, ResourcesException)
     : resources(resources), subsystem(subsystem), i18n(subsystem.get_i18n()),
       font(font), current_window(0), active_object(0), blink_on(true), tick_on(true),
       running(false), mouse_is_down(false), mouse_is_visible(true), local_mousex(0),
@@ -155,23 +154,19 @@ void Gui::pop_window() {
     }
 }
 
-GuiBox *Gui::create_box(GuiObject *parent, int x, int y, int width,
-    int height) throw (GuiException)
-{
+GuiBox *Gui::create_box(GuiObject *parent, int x, int y, int width, int height) {
     check_parent(parent);
     return new GuiBox(*this, parent, x, y, width, height);
 }
 
-GuiLabel *Gui::create_label(GuiObject *parent, int x, int y,
-    const std::string& caption) throw (GuiException)
-{
+GuiLabel *Gui::create_label(GuiObject *parent, int x, int y, const std::string& caption) {
     check_parent(parent);
     return new GuiLabel(*this, parent, x, y, 0, 0, caption);
 }
 
 GuiButton *Gui::create_button(GuiObject *parent, int x, int y, int width,
     int height, const std::string& caption, GuiVirtualButton::OnClick on_click,
-    void *on_click_data) throw (GuiException)
+    void *on_click_data)
 {
     check_parent(parent);
     return new GuiButton(*this, parent, x, y, width, height, caption, on_click, on_click_data);
@@ -179,7 +174,7 @@ GuiButton *Gui::create_button(GuiObject *parent, int x, int y, int width,
 
 GuiRoundedButton *Gui::create_rounded_button(GuiObject *parent, int x, int y, int width,
     int height, const std::string& caption, GuiVirtualButton::OnClick on_click,
-    void *on_click_data) throw (GuiException)
+    void *on_click_data)
 {
     check_parent(parent);
     return new GuiRoundedButton(*this, parent, x, y, width, height, caption,
@@ -188,36 +183,30 @@ GuiRoundedButton *Gui::create_rounded_button(GuiObject *parent, int x, int y, in
 
 GuiCheckbox *Gui::create_checkbox(GuiObject *parent, int x, int y,
     const std::string& caption, bool state, GuiCheckbox::OnClick on_click,
-    void *on_click_data) throw (GuiException)
+    void *on_click_data)
 {
     check_parent(parent);
     return new GuiCheckbox(*this, parent, x, y, caption, state, on_click, on_click_data);
 }
 
 GuiTextbox *Gui::create_textbox(GuiObject *parent, int x, int y, int width,
-    const std::string& text) throw (GuiException)
+    const std::string& text)
 {
     check_parent(parent);
     return new GuiTextbox(*this, parent, x, y, width, text);
 }
 
-GuiPicture *Gui::create_picture(GuiObject *parent, int x, int y,
-    TileGraphic *graphic) throw (GuiException)
-{
+GuiPicture *Gui::create_picture(GuiObject *parent, int x, int y, TileGraphic *graphic) {
     check_parent(parent);
     return new GuiPicture(*this, parent, x, y, graphic);
 }
 
-GuiFrame *Gui::create_frame(GuiObject *parent, int x, int y, int width,
-    int height) throw (GuiException)
-{
+GuiFrame *Gui::create_frame(GuiObject *parent, int x, int y, int width, int height) {
     check_parent(parent);
     return new GuiFrame(*this, parent, x, y, width, height);
 }
 
-GuiTab *Gui::create_tab(GuiObject *parent, int x, int y, int width,
-    int height) throw (GuiException)
-{
+GuiTab *Gui::create_tab(GuiObject *parent, int x, int y, int width, int height) {
     check_parent(parent);
     return new GuiTab(*this, parent, x, y, width, height);
 }
@@ -225,7 +214,6 @@ GuiTab *Gui::create_tab(GuiObject *parent, int x, int y, int width,
 GuiHScroll *Gui::create_hscroll(GuiObject *parent, int x, int y, int width,
     int min_value, int max_value, int initial_value,
     GuiVirtualScroll::ValueChanged on_value_changed, void *on_value_changed_data)
-    throw (GuiException)
 {
     check_parent(parent);
     return new GuiHScroll(*this, parent, x, y, width, min_value, max_value,
@@ -235,7 +223,6 @@ GuiHScroll *Gui::create_hscroll(GuiObject *parent, int x, int y, int width,
 GuiVScroll *Gui::create_vscroll(GuiObject *parent, int x, int y, int height,
     int min_value, int max_value, int initial_value,
     GuiVirtualScroll::ValueChanged on_value_changed, void *on_value_changed_data)
-    throw (GuiException)
 {
     check_parent(parent);
     return new GuiVScroll(*this, parent, x, y, height, min_value, max_value,
@@ -244,7 +231,7 @@ GuiVScroll *Gui::create_vscroll(GuiObject *parent, int x, int y, int height,
 
 GuiListbox *Gui::create_listbox(GuiObject *parent, int x, int y, int width,
     int height, const std::string& title, GuiListbox::OnItemSelected on_item_selected,
-    void *on_item_selected_data) throw (GuiException)
+    void *on_item_selected_data)
 {
     check_parent(parent);
     return new GuiListbox(*this, parent, x, y, width, height, title,
@@ -253,7 +240,7 @@ GuiListbox *Gui::create_listbox(GuiObject *parent, int x, int y, int width,
 
 GuiListbox *Gui::create_listbox(GuiObject *parent, int x, int y, int width,
     int height, Icon *icon, int icon_width, const std::string& title,
-    GuiListbox::OnItemSelected on_item_selected, void *on_item_selected_data) throw (GuiException)
+    GuiListbox::OnItemSelected on_item_selected, void *on_item_selected_data)
 {
     check_parent(parent);
     return new GuiListbox(*this, parent, x, y, width, height, icon, icon_width, title,
@@ -454,7 +441,7 @@ Gui::MessageBoxResponse Gui::show_inputbox(const std::string& title, std::string
     return last_response;
 }
 
-void Gui::idleloop(int stack_counter) throw (Exception) {
+void Gui::idleloop(int stack_counter) {
     while (running && static_cast<int>(windows.size()) > stack_counter) {
         /* update caret blinker */
         get_now(now);
@@ -640,7 +627,7 @@ void Gui::set_current_window() {
     }
 }
 
-void Gui::check_parent(GuiObject *parent) throw (GuiException) {
+void Gui::check_parent(GuiObject *parent) {
     if (!parent) {
         throw GuiException(i18n(I18N_NO_PARENT));
     }

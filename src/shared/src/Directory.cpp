@@ -21,8 +21,7 @@
 #include <cstring>
 #include <cerrno>
 
-Directory::Directory(const std::string& directory, const std::string& suffix,
-    ZipReader *zip) throw (DirectoryException)
+Directory::Directory(const std::string& directory, const std::string& suffix, ZipReader *zip)
     : directory(directory), suffix(suffix), finished(false), zip(zip)
 {
     if (zip) {

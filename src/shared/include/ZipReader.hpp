@@ -36,19 +36,19 @@ private:
     ZipReader& operator=(const ZipReader&);
 
 public:
-    ZipReader(const std::string& filename) throw (ZipReaderException);
+    ZipReader(const std::string& filename);
     virtual ~ZipReader();
 
     const Files& get_files() const;
     bool file_exists(std::string filename);
     bool equals_directory(const File& file, const std::string& directory);
-    const char *extract(std::string filename, size_t *out_sz = 0) throw (ZipReaderException);
+    const char *extract(std::string filename, size_t *out_sz = 0);
     static void destroy(const char *data);
 
 private:
-    void throw_corrupt_file(const std::string& filename) throw (ZipReaderException);
-    void throw_inflate_failed(z_stream *z, const char *data, const std::string& msg) throw (ZipReaderException);
-    const File& get_file(const std::string& filename) throw (ZipReaderException);
+    void throw_corrupt_file(const std::string& filename);
+    void throw_inflate_failed(z_stream *z, const char *data, const std::string& msg);
+    const File& get_file(const std::string& filename);
 };
 
 #endif

@@ -36,8 +36,7 @@ private:
     Sound& operator=(const Sound&);
 
 public:
-    Sound(Subsystem& subsystem, const std::string& filename, ZipReader *zip = 0)
-        throw (KeyValueException, SoundException);
+    Sound(Subsystem& subsystem, const std::string& filename, ZipReader *zip = 0);
     virtual ~Sound();
 
     const Audio *get_audio() const;

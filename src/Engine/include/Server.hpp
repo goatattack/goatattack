@@ -44,17 +44,16 @@ private:
 
 public:
     Server(Resources& resources, Subsystem& subsystem, const KeyValue& kv,
-        GamePlayType type, const std::string& map_name, int duration, int warmup)
-        throw (Exception);
+        GamePlayType type, const std::string& map_name, int duration, int warmup);
 
     Server(Resources& resources, Subsystem& subsystem,
-        const std::string& server_config_file) throw (Exception);
+        const std::string& server_config_file);
 
     virtual ~Server();
 
-    void start() throw (ServerException);
+    void start();
     void stop();
-    void reload_config() throw (ServerException);
+    void reload_config();
 
 private:
     struct ClientPak {
@@ -126,14 +125,14 @@ private:
     void sync_client(const Connection *c, Player *p);
 
     PlayerClientPak *get_player_client_pak(Player *p);
-    void process_sync_pak(const Connection *c, Player *p) throw (ServerException);
+    void process_sync_pak(const Connection *c, Player *p);
     ClientPak *get_unsynced_client_pak(PlayerClientPak *pcpak);
     void destroy_paks(Player *p);
     void load_map_rotation();
 
     std::ostream& create_log_stream();
 
-    void parse_command(const Connection *c, Player *p, data_len_t len, void *data) throw (ServerAdminException);
+    void parse_command(const Connection *c, Player *p, data_len_t len, void *data);
 
     void setup_loaded_paks();
 
@@ -141,9 +140,9 @@ private:
     virtual void thread();
 
     /* implements MessageSequencer */
-    virtual void event_login(const Connection *c, data_len_t len, void *data) throw (Exception);
-    virtual void event_data(const Connection *c, data_len_t len, void *data) throw (Exception);
-    virtual void event_logout(const Connection *c, LogoutReason reason) throw (Exception);
+    virtual void event_login(const Connection *c, data_len_t len, void *data);
+    virtual void event_data(const Connection *c, data_len_t len, void *data);
+    virtual void event_logout(const Connection *c, LogoutReason reason);
 };
 
 class ScopeServer {

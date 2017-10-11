@@ -30,7 +30,7 @@ private:
     MasterQueryClient& operator=(const MasterQueryClient&);
 
 public:
-    MasterQueryClient(I18N& i18n, MasterQuery& master_query, hostaddr_t host, hostport_t port) throw (Exception);
+    MasterQueryClient(I18N& i18n, MasterQuery& master_query, hostaddr_t host, hostport_t port);
     virtual ~MasterQueryClient();
 
 public:
@@ -45,7 +45,7 @@ public:
 
     virtual void event_status(hostaddr_t host, hostport_t port, const std::string& name,
         int max_clients, int cur_clients, ms_t ping_time, bool secured,
-        int protocol_version) throw (Exception);
+        int protocol_version);
 };
 
 #endif

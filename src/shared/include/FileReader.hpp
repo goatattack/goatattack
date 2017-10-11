@@ -34,10 +34,10 @@ private:
     FileReader& operator=(const FileReader&);
 
 public:
-    FileReader(const char *filename) throw (FileReaderException);
+    FileReader(const char *filename);
     ~FileReader();
 
-    size_t read(void *buffer, size_t len) throw (FileReaderException);
+    size_t read(void *buffer, size_t len);
     bool eof() const;
 
 private:

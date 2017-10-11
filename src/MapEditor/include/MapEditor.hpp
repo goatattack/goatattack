@@ -118,7 +118,7 @@ private:
     GuiLabel *lbl_compile;
 
     /* Gui::?() implementations */
-    virtual void idle() throw (Exception);
+    virtual void idle();
     virtual void on_input_event(const InputData& input);
     virtual void on_leave();
 
@@ -230,7 +230,7 @@ private:
     GuiListbox *tsp_type;
     GuiTextbox *tsp_speed;
     GuiTextbox *tsp_friction;
-    void save_tileset() throw (Exception);
+    void save_tileset();
 
     /* object selector */
     static void static_object_selector_click(GuiVirtualButton *sender, void *data);

@@ -30,13 +30,12 @@ static bool to_bool(const std::string& v) {
 }
 
 TournamentFactory::TournamentFactory(Resources& resources, Subsystem& subsystem, Gui *gui)
-    throw (TournamentFactoryException)
     : resources(resources), subsystem(subsystem), gui(gui), tournament_id(0) { }
 
 TournamentFactory::~TournamentFactory() { }
 
 Tournament *TournamentFactory::create_tournament(const MapConfiguration& config,
-    bool server, bool warmup, Players& players, ServerLogger *logger) throw (Exception)
+    bool server, bool warmup, Players& players, ServerLogger *logger)
 {
     int duration = (warmup ? config.warmup_in_seconds : config.duration * 60);
     Tournament *tournament = 0;

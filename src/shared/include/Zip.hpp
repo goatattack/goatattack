@@ -46,13 +46,13 @@ public:
 
     typedef std::vector<File> Files;
 
-    Zip(const std::string& filename) throw (ZipException);
+    Zip(const std::string& filename);
     virtual ~Zip();
 
     const std::string& get_zip_filename() const;
     const std::string& get_zip_short_filename() const;
-    const std::string& get_hash() throw (ZipException);
-    void rehash() throw (ZipException);
+    const std::string& get_hash();
+    void rehash();
 
 protected:
     std::string filename;

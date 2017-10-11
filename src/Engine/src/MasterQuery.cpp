@@ -22,7 +22,6 @@
 #include <cstdlib>
 
 MasterQuery::MasterQuery(I18N& i18n, const std::string& masterserver, hostport_t masterport)
-    throw (MasterQueryException)
     : i18n(i18n), masterserver(masterserver), masterport(masterport), running(false)
 {
     refresh();
@@ -34,7 +33,7 @@ MasterQuery::~MasterQuery() {
     cleanup();
 }
 
-void MasterQuery::start() throw (MasterQueryException) {
+void MasterQuery::start() {
     if (!running) {
         running = true;
         if (!thread_start()) {
@@ -60,7 +59,7 @@ void MasterQuery::cycle(gametime_t *now) {
     }
 }
 
-void MasterQuery::refresh() throw (MasterQueryException) {
+void MasterQuery::refresh() {
     TCPSocket query;
     char buffer[1024];
     std::string pending;

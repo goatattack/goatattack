@@ -30,8 +30,7 @@ class TournamentTDM : public TournamentTeam {
 public:
     TournamentTDM(Resources& resources, Subsystem& subsystem, Gui *gui, ServerLogger *logger,
         const std::string& game_file, bool server,
-        const std::string& map_name, Players& players, int duration, bool warmup)
-        throw (TournamentException, ResourcesException);
+        const std::string& map_name, Players& players, int duration, bool warmup);
     virtual ~TournamentTDM();
 
     virtual const char *tournament_type();

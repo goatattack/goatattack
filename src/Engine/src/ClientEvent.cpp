@@ -23,7 +23,7 @@
 
 void Client::event_status(hostaddr_t host, hostport_t port, const std::string& name,
     int max_clients, int cur_clients, ms_t ping_time, bool secured,
-    int protocol_version) throw (Exception)
+    int protocol_version)
 {
     if (protocol_version != ProtocolVersion) {
         size_t sz;
@@ -41,7 +41,7 @@ void Client::event_status(hostaddr_t host, hostport_t port, const std::string& n
     }
 }
 
-void Client::event_access_denied(MessageSequencer::RefusalReason reason) throw (Exception) {
+void Client::event_access_denied(MessageSequencer::RefusalReason reason) {
     const char *msg = 0;
     std::string str;
     switch (reason) {
@@ -67,7 +67,7 @@ void Client::event_access_denied(MessageSequencer::RefusalReason reason) throw (
     }
 }
 
-void Client::event_login(const Connection *c, data_len_t len, void *data) throw (Exception) {
+void Client::event_login(const Connection *c, data_len_t len, void *data) {
     logged_in = true;
     conn = c;
     size_t sz;
@@ -75,7 +75,7 @@ void Client::event_login(const Connection *c, data_len_t len, void *data) throw 
     server_events.push(ServerEvent(EventTypeLogin, c, p, sz));
 }
 
-void Client::event_data(const Connection *c, data_len_t len, void *data) throw (Exception) {
+void Client::event_data(const Connection *c, data_len_t len, void *data) {
     if (len) {
         char *p = new char[len];
         memcpy(p, data, len);
@@ -83,7 +83,7 @@ void Client::event_data(const Connection *c, data_len_t len, void *data) throw (
     }
 }
 
-void Client::event_logout(const Connection *c, LogoutReason reason) throw (Exception) {
+void Client::event_logout(const Connection *c, LogoutReason reason) {
     size_t sz;
     char *p = create_text(ClientServer::i18n(get_logout_text_id(reason)), sz);
     server_events.push(ServerEvent(EventTypeLogout, c, p, sz));

@@ -24,7 +24,6 @@ const int HillCounterMax = 750;
 TournamentGOH::TournamentGOH(Resources& resources, Subsystem& subsystem, Gui *gui,
     ServerLogger *logger, const std::string& game_file, bool server,
     const std::string& map_name, Players& players, int duration, bool warmup)
-    throw (TournamentException, ResourcesException)
     : TournamentTeam(resources, subsystem, gui, logger, game_file, server, map_name,
       players, duration, warmup),
       first_player_on_hill(0), addon_player(0), hill_counter(0),

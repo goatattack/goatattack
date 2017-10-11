@@ -47,7 +47,7 @@ static void user_data_read(png_structp png_ptr, png_bytep data, png_size_t len) 
     zs->ptr += my_len;
 }
 
-PNG::PNG(const std::string& filename, ZipReader *zip) throw (PNGException) {
+PNG::PNG(const std::string& filename, ZipReader *zip) {
     if (zip) {
         read_png_from_zip(filename, zip);
     } else {
@@ -143,7 +143,7 @@ unsigned char *PNG::get_pic() const {
     return pic;
 }
 
-void PNG::read_png_from_file(const std::string& filename) throw (PNGException) {
+void PNG::read_png_from_file(const std::string& filename) {
     FILE *f;
     png_structp png_ptr;
     png_infop info_ptr;
@@ -238,7 +238,7 @@ void PNG::read_png_from_file(const std::string& filename) throw (PNGException) {
     fclose(f);
 }
 
-void PNG::read_png_from_zip(const std::string& filename, ZipReader *zip) throw (PNGException) {
+void PNG::read_png_from_zip(const std::string& filename, ZipReader *zip) {
     PNGZipStream zs(zip);
 
     try {

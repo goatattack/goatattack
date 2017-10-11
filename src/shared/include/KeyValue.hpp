@@ -39,17 +39,17 @@ public:
     typedef std::map<std::string, std::string> Entries;
 
     KeyValue();
-    KeyValue(const std::string& filename, ZipReader *zip = 0) throw (KeyValueException);
+    KeyValue(const std::string& filename, ZipReader *zip = 0);
     virtual ~KeyValue();
 
     const std::string& get_value(const std::string& key) const;
-    void set_value(const std::string& key, const std::string& value, bool no_touch = false) throw (KeyValueException);
-    void set_value(const std::string& key, const char *value, bool no_touch = false) throw (KeyValueException);
-    void set_value(const std::string& key, int value, bool no_touch = false) throw (KeyValueException);
-    void set_value(const std::string& key, double value, bool no_touch = false) throw (KeyValueException);
-    void set_value(const std::string& key, bool value, bool no_touch = false) throw (KeyValueException);
-    void read(const std::string& filename, ZipReader *zip = 0) throw (KeyValueException);
-    void save(const std::string& filename) throw (KeyValueException);
+    void set_value(const std::string& key, const std::string& value, bool no_touch = false);
+    void set_value(const std::string& key, const char *value, bool no_touch = false);
+    void set_value(const std::string& key, int value, bool no_touch = false);
+    void set_value(const std::string& key, double value, bool no_touch = false);
+    void set_value(const std::string& key, bool value, bool no_touch = false);
+    void read(const std::string& filename, ZipReader *zip = 0);
+    void save(const std::string& filename);
     bool is_modified() const;
     void touch();
     void untouch();
@@ -71,8 +71,8 @@ private:
     std::string zip_filename;
     std::string zip_file_hash;
 
-    void modify_zip_file_test() throw (KeyValueException);
-    void process_line(std::string line, const std::string& filename, ZipReader *zip) throw (KeyValueException);
+    void modify_zip_file_test();
+    void process_line(std::string line, const std::string& filename, ZipReader *zip);
 };
 
 #endif

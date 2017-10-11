@@ -36,11 +36,10 @@ private:
     Music& operator=(const Music&);
 
 public:
-    Music(Subsystem& subsystem, const std::string& filename, ZipReader *zip = 0)
-        throw (KeyValueException, MusicException);
+    Music(Subsystem& subsystem, const std::string& filename, ZipReader *zip = 0);
     virtual ~Music();
 
-    const Audio *get_audio() const throw (MusicException);
+    const Audio *get_audio() const;
     bool get_do_not_play_in_music_player() const;
 
 private:
@@ -49,6 +48,8 @@ private:
     bool do_not_play_in_music_player;
     std::string audio_filename;
 };
+
+/* -------------------------------------------------------------------------- */
 
 class ScopeMusicStopper {
 private:

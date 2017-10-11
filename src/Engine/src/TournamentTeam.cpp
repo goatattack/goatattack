@@ -25,7 +25,6 @@ const int CheckUnbalancedInitialValue = 10000;
 TournamentTeam::TournamentTeam(Resources& resources, Subsystem& subsystem, Gui *gui,
     ServerLogger *logger, const std::string& game_file, bool server,
     const std::string& map_name, Players& players, int duration, bool warmup)
-    throw (TournamentException, ResourcesException)
     : Tournament(resources, subsystem, gui, logger, game_file, server, map_name,
       players, duration, warmup),
       team_badge_red(resources.get_icon("team_badge_red")),
@@ -52,7 +51,7 @@ TournamentTeam::~TournamentTeam() {
     }
 }
 
-void TournamentTeam::create_spawn_points() throw (TournamentException) {
+void TournamentTeam::create_spawn_points() {
     for (GameObjects::iterator it = game_objects.begin(); it != game_objects.end(); it++) {
         GameObject *obj = *it;
         Object::ObjectType type = obj->object->get_type();

@@ -110,7 +110,7 @@ static void throw_deflate_failed(z_stream *z) throw (CargoException) {
     throw CargoException("Deflate failed.");
 }
 
-Cargo::Cargo(const char *directory, const char *pak_file, const SelectedFiles *files) throw (CargoException)
+Cargo::Cargo(const char *directory, const char *pak_file, const SelectedFiles *files)
     : f(pak_file, std::ios::in | std::ios::out | std::ios::binary | std::ios::trunc),
       has_selected_files(false), valid(true), finished(false), directory(directory),
       pak_file(pak_file)
@@ -184,7 +184,7 @@ std::string Cargo::get_hash() const {
     return crc64.get_hash();
 }
 
-void Cargo::pack_directory(const char *subdir, bool is_rootdir) throw (CargoException) {
+void Cargo::pack_directory(const char *subdir, bool is_rootdir) {
     try {
         if (has_selected_files) {
             /* pack only specified files */
@@ -233,7 +233,7 @@ void Cargo::pack_directory(const char *subdir, bool is_rootdir) throw (CargoExce
     }
 }
 
-void Cargo::pack_file(const DirectoryEntry& entry) throw (CargoException) {
+void Cargo::pack_file(const DirectoryEntry& entry) {
     if (!has_selected_files) {
         std::cout << "." << std::flush;
     }
@@ -327,7 +327,7 @@ void Cargo::pack_file(const DirectoryEntry& entry) throw (CargoException) {
         rel_pos, crc32sum, file_time, file_date, method));
 }
 
-void Cargo::throw_write_error(const char *err) throw (CargoException) {
+void Cargo::throw_write_error(const char *err) {
     valid = false;
     std::string text(err ? err : strerror(errno));
     throw CargoException("Writing to file failed: " + text);
@@ -343,7 +343,7 @@ std::string Cargo::append_dir(const char *directory, const char *subdir) {
     return new_dir;
 }
 
-void Cargo::add_central_directory() throw (CargoException) {
+void Cargo::add_central_directory() {
     long int cd_offset = f.tellp();
     size_t cd_sz = 0;
 
@@ -384,7 +384,7 @@ void Cargo::add_central_directory() throw (CargoException) {
     calc_crc64(cd_offset, f.tellp());
 }
 
-size_t Cargo::write_string(const void *s, size_t len) throw (CargoException) {
+size_t Cargo::write_string(const void *s, size_t len) {
     if (len) {
         try {
             f.write(static_cast<const char*>(s), len);
@@ -396,7 +396,7 @@ size_t Cargo::write_string(const void *s, size_t len) throw (CargoException) {
     return len;
 }
 
-size_t Cargo::write_uint16(uint16_t n) throw (CargoException) {
+size_t Cargo::write_uint16(uint16_t n) {
     static const int Len = 2;
     unsigned char data[Len];
     data[0] = (n & 0x00ff);
@@ -410,7 +410,7 @@ size_t Cargo::write_uint16(uint16_t n) throw (CargoException) {
     return Len;
 }
 
-size_t Cargo::write_uint32(uint32_t n) throw (CargoException) {
+size_t Cargo::write_uint32(uint32_t n) {
     static const int Len = 4;
     unsigned char data[Len];
     data[0] = ((n      ) & 0xff);
@@ -426,7 +426,7 @@ size_t Cargo::write_uint32(uint32_t n) throw (CargoException) {
     return Len;
 }
 
-void Cargo::calc_crc64(size_t start_pos, size_t end_pos) throw (CargoException) {
+void Cargo::calc_crc64(size_t start_pos, size_t end_pos) {
     unsigned char hash_buf[ChunkSize];
     size_t remain = end_pos - start_pos;
     size_t get_pos = f.tellg();

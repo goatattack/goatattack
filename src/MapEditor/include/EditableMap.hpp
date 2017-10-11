@@ -30,8 +30,8 @@ public:
     typedef std::vector<EditableObject *> Objects;
     typedef std::vector<EditableLight *> Lights;
 
-    EditableMap(Resources& resources, Subsystem& subsystem) throw (Exception);
-    EditableMap(Resources& resources, Subsystem& subsystem, const std::string& filename) throw (Exception);
+    EditableMap(Resources& resources, Subsystem& subsystem);
+    EditableMap(Resources& resources, Subsystem& subsystem, const std::string& filename);
     virtual ~EditableMap();
 
     bool is_valid_map() const;
@@ -57,7 +57,7 @@ public:
     EditableLight *set_light(int x, int y);
     void erase_light(int x, int y);
     EditableLight *get_light(int x, int y);
-    void save() throw (Exception);
+    void save();
 
 private:
     Resources& resources;

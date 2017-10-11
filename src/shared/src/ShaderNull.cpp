@@ -17,15 +17,13 @@
 
 #include "ShaderNull.hpp"
 
-ShaderNull::ShaderNull(const std::string& filename, ZipReader *zip)
-    throw (KeyValueException, ShaderException)
-    : Shader(filename, zip) { }
+ShaderNull::ShaderNull(const std::string& filename, ZipReader *zip) : Shader(filename, zip) { }
 
 ShaderNull::~ShaderNull() { }
 
-Shader::ID ShaderNull::get_location(const char *name) throw (ShaderException) { return 0; }
+Shader::ID ShaderNull::get_location(const char *name) { return 0; }
 
-Shader::ID ShaderNull::get_attrib_location(const char *name) throw (ShaderException) { return 0; }
+Shader::ID ShaderNull::get_attrib_location(const char *name) { return 0; }
 
 void ShaderNull::set_value(ID location, int value) { }
 

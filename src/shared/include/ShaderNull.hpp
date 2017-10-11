@@ -22,11 +22,11 @@
 
 class ShaderNull : public Shader {
 public:
-    ShaderNull(const std::string& filename, ZipReader *zip) throw (KeyValueException, ShaderException);
+    ShaderNull(const std::string& filename, ZipReader *zip);
     virtual ~ShaderNull();
 
-    virtual ID get_location(const char *name) throw (ShaderException);
-    virtual ID get_attrib_location(const char *name) throw (ShaderException);
+    virtual ID get_location(const char *name);
+    virtual ID get_attrib_location(const char *name);
     virtual void set_value(ID location, int value);
     virtual void set_value(ID location, float value);
     virtual void set_value(ID location, float v1, float v2);

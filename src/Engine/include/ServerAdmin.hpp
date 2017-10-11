@@ -43,7 +43,7 @@ public:
 
     virtual ~ServerAdmin();
 
-    void execute(const Connection *c, Player *p, std::string cmd, std::string params) throw (ServerAdminException);
+    void execute(const Connection *c, Player *p, std::string cmd, std::string params);
     void set_admin_server_is_on_client(bool state);
     bool get_admin_server_is_on_client() const;
 
@@ -63,30 +63,30 @@ private:
 
     static ServerCommand server_commands[];
 
-    void update_configuration(const Connection *c) throw (Exception);
-    void send_i18n_msg(const Connection *c, I18NText id, const char *addon = 0) throw (ServerAdminException);
-    void send_i18n_msg(const Connection *c, I18NText id, const std::string& p1, const std::string& p2) throw (ServerAdminException);
+    void update_configuration(const Connection *c);
+    void send_i18n_msg(const Connection *c, I18NText id, const char *addon = 0);
+    void send_i18n_msg(const Connection *c, I18NText id, const std::string& p1, const std::string& p2);
 
-    void sc_op(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);
-    void sc_deop(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);
-    void sc_list(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);
-    void sc_kick(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);
-    void sc_ban(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);
-    void sc_unban(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);
-    void sc_next(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);
-    void sc_map(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);
-    void sc_reload(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);
-    void sc_save(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);
-    void sc_get(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);
-    void sc_set(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);
-    void sc_reset(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);
-    void sc_vote(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);
-    void sc_stats(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException);
+    void sc_op(const Connection *c, Player *p, const std::string& params);
+    void sc_deop(const Connection *c, Player *p, const std::string& params);
+    void sc_list(const Connection *c, Player *p, const std::string& params);
+    void sc_kick(const Connection *c, Player *p, const std::string& params);
+    void sc_ban(const Connection *c, Player *p, const std::string& params);
+    void sc_unban(const Connection *c, Player *p, const std::string& params);
+    void sc_next(const Connection *c, Player *p, const std::string& params);
+    void sc_map(const Connection *c, Player *p, const std::string& params);
+    void sc_reload(const Connection *c, Player *p, const std::string& params);
+    void sc_save(const Connection *c, Player *p, const std::string& params);
+    void sc_get(const Connection *c, Player *p, const std::string& params);
+    void sc_set(const Connection *c, Player *p, const std::string& params);
+    void sc_reset(const Connection *c, Player *p, const std::string& params);
+    void sc_vote(const Connection *c, Player *p, const std::string& params);
+    void sc_stats(const Connection *c, Player *p, const std::string& params);
 
-    bool check_if_authorized(const Connection *c, Player *p) throw (ServerAdminException);
-    bool check_if_params(const Connection *c, const std::string& params) throw (ServerAdminException);
-    bool check_if_no_params(const Connection *c, const std::string& params) throw (ServerAdminException);
-    bool check_if_is_server(const Connection *c) throw (ServerAdminException);
+    bool check_if_authorized(const Connection *c, Player *p);
+    bool check_if_params(const Connection *c, const std::string& params);
+    bool check_if_no_params(const Connection *c, const std::string& params);
+    bool check_if_is_server(const Connection *c);
 };
 
 #endif

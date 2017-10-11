@@ -39,14 +39,13 @@ private:
     MasterQuery& operator=(const MasterQuery&);
 
 public:
-    MasterQuery(I18N& i18n, const std::string& masterserver, hostport_t masterport)
-        throw (MasterQueryException);
+    MasterQuery(I18N& i18n, const std::string& masterserver, hostport_t masterport);
     virtual ~MasterQuery();
 
-    void start() throw (MasterQueryException);
+    void start();
     void stop();
     void cycle(gametime_t *now);
-    void refresh() throw (MasterQueryException);
+    void refresh();
     void locked_sort();
 
     Mutex& get_mutex();

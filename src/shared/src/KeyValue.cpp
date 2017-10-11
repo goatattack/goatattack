@@ -26,7 +26,7 @@
 
 KeyValue::KeyValue() : modified(false), depth_counter(0), hash_value(0), zip_file(false) { }
 
-KeyValue::KeyValue(const std::string& filename, ZipReader *zip) throw (KeyValueException)
+KeyValue::KeyValue(const std::string& filename, ZipReader *zip)
     : modified(false), depth_counter(0), hash_value(0), zip_file(zip ? true : false)
 {
     if (filename.length()) {
@@ -50,7 +50,7 @@ const std::string& KeyValue::get_value(const std::string& key) const {
     return it->second;
 }
 
-void KeyValue::set_value(const std::string& key, const std::string& value, bool no_touch) throw (KeyValueException) {
+void KeyValue::set_value(const std::string& key, const std::string& value, bool no_touch) {
     if (!no_touch) {
         modify_zip_file_test();
     }
@@ -64,7 +64,7 @@ void KeyValue::set_value(const std::string& key, const std::string& value, bool 
     }
 }
 
-void KeyValue::set_value(const std::string& key, const char *value, bool no_touch) throw (KeyValueException) {
+void KeyValue::set_value(const std::string& key, const char *value, bool no_touch) {
     if (!no_touch) {
         modify_zip_file_test();
     }
@@ -78,7 +78,7 @@ void KeyValue::set_value(const std::string& key, const char *value, bool no_touc
     }
 }
 
-void KeyValue::set_value(const std::string& key, int value, bool no_touch) throw (KeyValueException) {
+void KeyValue::set_value(const std::string& key, int value, bool no_touch) {
     if (!no_touch) {
         modify_zip_file_test();
     }
@@ -90,7 +90,7 @@ void KeyValue::set_value(const std::string& key, int value, bool no_touch) throw
     }
 }
 
-void KeyValue::set_value(const std::string& key, double value, bool no_touch) throw (KeyValueException) {
+void KeyValue::set_value(const std::string& key, double value, bool no_touch) {
     if (!no_touch) {
         modify_zip_file_test();
     }
@@ -102,7 +102,7 @@ void KeyValue::set_value(const std::string& key, double value, bool no_touch) th
     }
 }
 
-void KeyValue::set_value(const std::string& key, bool value, bool no_touch) throw (KeyValueException) {
+void KeyValue::set_value(const std::string& key, bool value, bool no_touch) {
     if (!no_touch) {
         modify_zip_file_test();
     }
@@ -112,7 +112,7 @@ void KeyValue::set_value(const std::string& key, bool value, bool no_touch) thro
     }
 }
 
-void KeyValue::read(const std::string& filename, ZipReader *zip) throw (KeyValueException) {
+void KeyValue::read(const std::string& filename, ZipReader *zip) {
     depth_counter++;
     if (depth_counter > 128) {
         throw KeyValueException("Too many nested includes: " + filename);
@@ -156,7 +156,7 @@ void KeyValue::read(const std::string& filename, ZipReader *zip) throw (KeyValue
     depth_counter--;
 }
 
-void KeyValue::save(const std::string& filename) throw (KeyValueException) {
+void KeyValue::save(const std::string& filename) {
     modify_zip_file_test();
     std::ofstream f(filename.c_str());
 
@@ -207,15 +207,13 @@ const std::string& KeyValue::get_zip_file_hash() const {
     return zip_file_hash;
 }
 
-void KeyValue::modify_zip_file_test() throw (KeyValueException) {
+void KeyValue::modify_zip_file_test() {
     if (is_zip_file()) {
         throw KeyValueException("A packaged file can't be modified.");
     }
 }
 
-void KeyValue::process_line(std::string line, const std::string& filename,
-    ZipReader *zip) throw (KeyValueException)
-{
+void KeyValue::process_line(std::string line, const std::string& filename, ZipReader *zip) {
     hash_value += get_hash_of_string(line.c_str());
     line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
     if (line.length()) {

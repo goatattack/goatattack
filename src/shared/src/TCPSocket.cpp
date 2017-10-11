@@ -44,7 +44,7 @@ TCPSocket::~TCPSocket() {
     }
 }
 
-void TCPSocket::connect(const char *ip_address, unsigned short port) throw (TCPSocketException) {
+void TCPSocket::connect(const char *ip_address, unsigned short port) {
     unsigned long address;
     struct sockaddr_in server;
     struct hostent *host_info;
@@ -145,7 +145,7 @@ void TCPSocket::connect(const char *ip_address, unsigned short port) throw (TCPS
 #endif
 }
 
-bool TCPSocket::activity(time_t sec, long usec) throw (TCPSocketException) {
+bool TCPSocket::activity(time_t sec, long usec) {
     fd_set fds;
     FD_ZERO(&fds);
     FD_SET(socket, &fds);
@@ -187,7 +187,7 @@ bool TCPSocket::activity(time_t sec, long usec) throw (TCPSocketException) {
     return false;
 }
 
-void TCPSocket::listen(const char *address, unsigned short port, int backlog) throw (TCPSocketException) {
+void TCPSocket::listen(const char *address, unsigned short port, int backlog) {
     struct sockaddr_in server;
     int rv;
 
@@ -230,19 +230,19 @@ void TCPSocket::listen(const char *address, unsigned short port, int backlog) th
     }
 }
 
-void TCPSocket::listen(const char *address, unsigned short port) throw (TCPSocketException) {
+void TCPSocket::listen(const char *address, unsigned short port) {
     listen(address, port, DefaultBacklog);
 }
 
-void TCPSocket::listen(unsigned short port, int backlog) throw (TCPSocketException) {
+void TCPSocket::listen(unsigned short port, int backlog) {
     listen(0, port, backlog);
 }
 
-void TCPSocket::listen(unsigned short port) throw (TCPSocketException) {
+void TCPSocket::listen(unsigned short port) {
     listen(0, port, DefaultBacklog);
 }
 
-void TCPSocket::accept(const TCPSocket& socket) throw (TCPSocketException) {
+void TCPSocket::accept(const TCPSocket& socket) {
     struct sockaddr_in client;
     socklen_t client_len;
 
@@ -284,7 +284,7 @@ void TCPSocket::close() {
     }
 }
 
-size_t TCPSocket::send(const char *buffer, size_t size) throw (TCPSocketException) {
+size_t TCPSocket::send(const char *buffer, size_t size) {
     if (error || !connected) {
         throw TCPSocketException("Send failed, socket is closed.");
     }
@@ -297,11 +297,11 @@ size_t TCPSocket::send(const char *buffer, size_t size) throw (TCPSocketExceptio
     return static_cast<size_t>(rv);
 }
 
-size_t TCPSocket::send(const std::string& buffer) throw (TCPSocketException) {
+size_t TCPSocket::send(const std::string& buffer) {
     return send(buffer.c_str(), buffer.length());
 }
 
-size_t TCPSocket::receive(void *buffer, size_t size) throw (TCPSocketException) {
+size_t TCPSocket::receive(void *buffer, size_t size) {
     if (error || !connected) {
         throw TCPSocketException("Receive failed, socket is closed.");
     }
@@ -326,7 +326,7 @@ bool TCPSocket::is_connected() const {
     return connected;
 }
 
-unsigned short TCPSocket::get_port() throw (TCPSocketException) {
+unsigned short TCPSocket::get_port() {
     struct sockaddr_in sin;
     socklen_t len = sizeof(sin);
     if (getsockname(socket, reinterpret_cast<struct sockaddr *>(&sin), &len) == -1) {
@@ -336,7 +336,7 @@ unsigned short TCPSocket::get_port() throw (TCPSocketException) {
     return ntohs(sin.sin_port);
 }
 
-unsigned long TCPSocket::get_address() throw (TCPSocketException) {
+unsigned long TCPSocket::get_address() {
     struct sockaddr_in sin;
     socklen_t len = sizeof(sin);
     if (getsockname(socket, reinterpret_cast<struct sockaddr *>(&sin), &len) == -1) {
@@ -346,7 +346,7 @@ unsigned long TCPSocket::get_address() throw (TCPSocketException) {
     return sin.sin_addr.s_addr;
 }
 
-void TCPSocket::check_states() throw (TCPSocketException) {
+void TCPSocket::check_states() {
     /* already connected? */
     if (connected) {
         throw TCPSocketException("TCPSocket already in use.");

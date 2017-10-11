@@ -184,7 +184,7 @@ static const bool EnableShadingPipeline = false;
 static const bool EnableShadingPipeline = true;
 #endif
 
-SubsystemSDL::SubsystemSDL(std::ostream& stream, I18N& i18n, const std::string& window_title, bool shading_pipeline) throw (SubsystemException)
+SubsystemSDL::SubsystemSDL(std::ostream& stream, I18N& i18n, const std::string& window_title, bool shading_pipeline)
     : Subsystem(stream, i18n, window_title), window(0), joyaxis(0), fullscreen(false),
       draw_scanlines(false), scanlines_intensity(0.5f),
       deadzone_horizontal(3200), deadzone_vertical(3200), selected_tex(0),

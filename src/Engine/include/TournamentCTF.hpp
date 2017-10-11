@@ -32,8 +32,7 @@ class TournamentCTF : public TournamentTeam {
 public:
     TournamentCTF(Resources& resources, Subsystem& subsystem, Gui *gui, ServerLogger *logger,
         const std::string& game_file, bool server,
-        const std::string& map_name, Players& players, int duration, bool warmup)
-        throw (TournamentException, ResourcesException);
+        const std::string& map_name, Players& players, int duration, bool warmup);
     virtual ~TournamentCTF();
 
     virtual const char *tournament_type();

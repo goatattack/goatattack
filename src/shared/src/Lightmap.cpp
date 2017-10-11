@@ -21,7 +21,6 @@
 #include <cstdlib>
 
 Lightmap::Lightmap(Subsystem& subsystem, const std::string& filename, ZipReader *zip)
-    throw (LightmapException)
     : subsystem(subsystem), tile(0), width(0), height(0), alpha(0.85f)
 {
     try {
@@ -53,7 +52,7 @@ float Lightmap::get_alpha() const {
     return alpha;
 }
 
-void Lightmap::create_tile(const std::string& filename, ZipReader *zip) throw (Exception) {
+void Lightmap::create_tile(const std::string& filename, ZipReader *zip) {
     if ((zip ? zip->file_exists(filename) : file_exists(filename))) {
         try {
             PNG png(filename, zip);

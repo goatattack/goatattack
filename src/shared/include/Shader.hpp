@@ -38,11 +38,11 @@ private:
 public:
     typedef int ID;
 
-    Shader(const std::string& filename, ZipReader *zip) throw (KeyValueException, ShaderException);
+    Shader(const std::string& filename, ZipReader *zip);
     virtual ~Shader();
 
-    virtual ID get_location(const char *name) throw (ShaderException) = 0;
-    virtual ID get_attrib_location(const char *name) throw (ShaderException) = 0;
+    virtual ID get_location(const char *name) = 0;
+    virtual ID get_attrib_location(const char *name) = 0;
     virtual void set_value(ID location, int value) = 0;
     virtual void set_value(ID location, float value) = 0;
     virtual void set_value(ID location, float v1, float v2) = 0;

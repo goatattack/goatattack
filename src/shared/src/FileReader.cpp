@@ -21,7 +21,7 @@
 #include <cerrno>
 #include <cstring>
 
-FileReader::FileReader(const char *filename) throw (FileReaderException) {
+FileReader::FileReader(const char *filename) {
     f = fopen(filename, "rb");
     if (!f) {
         throw FileReaderException(std::string("Opening file failed: ") + filename + " (" + strerror(errno) + ")");
@@ -32,7 +32,7 @@ FileReader::~FileReader() {
     fclose(f);
 }
 
-size_t FileReader::read(void *buffer, size_t len) throw (FileReaderException) {
+size_t FileReader::read(void *buffer, size_t len) {
     return fread(buffer, 1, len, f);
 }
 

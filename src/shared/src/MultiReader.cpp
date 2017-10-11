@@ -20,7 +20,7 @@
 #include <cerrno>
 #include <cstring>
 
-MultiReader::MultiReader(const std::string& filename, ZipReader *zip) throw (MultiReaderException)
+MultiReader::MultiReader(const std::string& filename, ZipReader *zip)
     : filename(filename), f(0), zip(zip), data(0), ptr(0), size(0)
 {
     if (zip) {

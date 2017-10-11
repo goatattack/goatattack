@@ -42,7 +42,7 @@ public:
         ColorFormatRGBA
     };
 
-    PNG(const std::string& filename, ZipReader *zip = 0) throw (PNGException);
+    PNG(const std::string& filename, ZipReader *zip = 0);
     virtual ~PNG();
 
     void flip_h();
@@ -61,8 +61,8 @@ private:
     ColorFormat color_format;
     unsigned char *pic;
 
-    void read_png_from_file(const std::string& filename) throw (PNGException);
-    void read_png_from_zip(const std::string& filename, ZipReader *zip) throw (PNGException);
+    void read_png_from_file(const std::string& filename);
+    void read_png_from_zip(const std::string& filename, ZipReader *zip);
 };
 
 #endif

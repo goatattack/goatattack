@@ -25,7 +25,6 @@
 #include <cmath>
 
 Tileset::Tileset(Subsystem& subsystem, const std::string& filename, ZipReader *zip)
-    throw (KeyValueException, TilesetException)
     : Properties(filename + ".tileset", zip), subsystem(subsystem)
 {
     try {
@@ -71,7 +70,7 @@ bool Tileset::is_hidden_in_mapeditor() const {
     return hidden_in_mapeditor;
 }
 
-void Tileset::create_tile(const std::string& filename, ZipReader *zip) throw (Exception) {
+void Tileset::create_tile(const std::string& filename, ZipReader *zip) {
     try {
         PNG png(filename, zip);
 

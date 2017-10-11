@@ -39,7 +39,7 @@ AudioSDL::~AudioSDL() {
     }
 }
 
-void AudioSDL::generate_audio(const std::string& filename, ZipReader *zip) throw (AudioException) {
+void AudioSDL::generate_audio(const std::string& filename, ZipReader *zip) {
     if (zip) {
         try {
             size_t sz;
@@ -59,7 +59,7 @@ void AudioSDL::generate_audio(const std::string& filename, ZipReader *zip) throw
     }
 }
 
-void AudioSDL::generate_music(const std::string& filename, ZipReader *zip) throw (AudioException) {
+void AudioSDL::generate_music(const std::string& filename, ZipReader *zip) {
     if (zip) {
         try {
             size_t sz;

@@ -43,8 +43,7 @@ private:
     Tileset& operator=(const Tileset&);
 
 public:
-    Tileset(Subsystem& subsystem, const std::string& filename, ZipReader *zip = 0)
-        throw (KeyValueException, TilesetException);
+    Tileset(Subsystem& subsystem, const std::string& filename, ZipReader *zip = 0);
     virtual ~Tileset();
 
     int get_tile_width();
@@ -64,7 +63,7 @@ private:
     Tiles tiles;
     int sz;
 
-    void create_tile(const std::string& filename, ZipReader *zip) throw (Exception);
+    void create_tile(const std::string& filename, ZipReader *zip);
     void cleanup();
 };
 

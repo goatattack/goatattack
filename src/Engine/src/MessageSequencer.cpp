@@ -70,7 +70,7 @@ struct QueueMessage {
 };
 
 MessageSequencer::MessageSequencer(I18N& i18n, hostport_t port, pico_size_t max_heaps,
-    const std::string& name, const std::string& password) throw (Exception)
+    const std::string& name, const std::string& password)
     : i18n(i18n), max_heaps(max_heaps), is_client(false), name(name), password(password), socket(port),
       pmsg(reinterpret_cast<NetMessage *>(buffer)),
       pdata(reinterpret_cast<NetMessageData *>(pmsg->data))
@@ -79,7 +79,6 @@ MessageSequencer::MessageSequencer(I18N& i18n, hostport_t port, pico_size_t max_
 }
 
 MessageSequencer::MessageSequencer(I18N& i18n, hostaddr_t server_host, hostport_t server_port)
-    throw (Exception)
     : i18n(i18n), max_heaps(1), is_client(true), name(), password(), socket(),
       pmsg(reinterpret_cast<NetMessage *>(buffer)),
       pdata(reinterpret_cast<NetMessageData *>(pmsg->data))
@@ -96,14 +95,14 @@ MessageSequencer::~MessageSequencer() {
     delete_all_heaps();
 }
 
-void MessageSequencer::request_server_info(hostaddr_t host, hostport_t port) throw (Exception) {
+void MessageSequencer::request_server_info(hostaddr_t host, hostport_t port) {
     ServerStatusMsg stat;
     memset(&stat, 0, sizeof(stat));
     get_now(stat.ping);
     slack_send(host, port, 0, 0, NetCommandStatReq, ServerStatusLength, &stat);
 }
 
-void MessageSequencer::login(const std::string& password, data_len_t len, const void *data) throw (Exception) {
+void MessageSequencer::login(const std::string& password, data_len_t len, const void *data) {
     if (is_client) {
         int sz = sizeof(NetLogin) + len;
         AutoPtr<char []> tmp(new char[sz]);
@@ -120,45 +119,41 @@ void MessageSequencer::login(const std::string& password, data_len_t len, const 
     }
 }
 
-void MessageSequencer::login(data_len_t len, const void *data) throw (Exception) {
+void MessageSequencer::login(data_len_t len, const void *data) {
     login("", len, data);
 }
 
-void MessageSequencer::logout() throw (Exception) {
+void MessageSequencer::logout() {
     if (is_client) {
         push(NetFlagsReliable, NetCommandLogout, 0, 0);
     }
 }
 
-void MessageSequencer::broadcast(flags_t flags, data_len_t len, const void *data) throw (Exception) {
+void MessageSequencer::broadcast(flags_t flags, data_len_t len, const void *data) {
     for (SequencerHeaps::iterator it = heaps.begin(); it != heaps.end(); it++) {
         SequencerHeap *heap = *it;
         push(heap, flags, len, data);
     }
 }
 
-void MessageSequencer::push(flags_t flags, data_len_t len, const void *data) throw (Exception) {
+void MessageSequencer::push(flags_t flags, data_len_t len, const void *data) {
     if (heaps.size()) {
         push(heaps[0], flags, len, data);
     }
 }
 
-void MessageSequencer::push(flags_t flags, command_t cmd, data_len_t len,
-    const void *data) throw (Exception)
-{
+void MessageSequencer::push(flags_t flags, command_t cmd, data_len_t len, const void *data) {
     if (heaps.size()) {
         push(heaps[0], cmd, flags, len, data);
     }
 }
 
-void MessageSequencer::push(const Connection *c, flags_t flags, data_len_t len,
-    const void *data) throw (Exception)
-{
+void MessageSequencer::push(const Connection *c, flags_t flags, data_len_t len, const void *data) {
     push(c, NetCommandData, flags, len, data);
 }
 
 void MessageSequencer::push(const Connection *c, command_t cmd, flags_t flags,
-    data_len_t len, const void *data) throw (Exception)
+    data_len_t len, const void *data)
 {
     SequencerHeap *h = find_heap(c);
     if (h && h->active) {
@@ -196,7 +191,7 @@ size_t MessageSequencer::get_inq_sz(const Connection *c) {
     return 0;
 }
 
-bool MessageSequencer::cycle() throw (Exception) {
+bool MessageSequencer::cycle() {
     hostaddr_t host;
     hostport_t port;
     bool recycle;
@@ -395,7 +390,7 @@ bool MessageSequencer::cycle() throw (Exception) {
     return again;
 }
 
-void MessageSequencer::kill(const Connection *c) throw (Exception) {
+void MessageSequencer::kill(const Connection *c) {
     SequencerHeap *h = find_heap(c);
     if (h) {
         h->deferred_kill = true;
@@ -403,7 +398,7 @@ void MessageSequencer::kill(const Connection *c) throw (Exception) {
 }
 
 void MessageSequencer::new_settings(hostport_t port, pico_size_t num_heaps,
-    const std::string& name, const std::string& password) throw (Exception)
+    const std::string& name, const std::string& password)
 {
     int current = static_cast<int>(heaps.size());
     if (current > num_heaps) {
@@ -424,13 +419,13 @@ const SequencerHeap *MessageSequencer::get_heap(const Connection *c) const {
     return 0;
 }
 
-void MessageSequencer::ack(SequencerHeap *heap, sequence_no_t seq_no) throw (Exception) {
+void MessageSequencer::ack(SequencerHeap *heap, sequence_no_t seq_no) {
     sequence_no_t net_seq_no = htonl(seq_no);
     slack_send(heap->host, heap->port, ++heap->last_send_unrel_seq_no,
         0, NetCommandAcknowledge, sizeof(sequence_no_t), &net_seq_no);
 }
 
-void MessageSequencer::process_incoming(SequencerHeap *heap, NetMessage *msg) throw (Exception) {
+void MessageSequencer::process_incoming(SequencerHeap *heap, NetMessage *msg) {
     NetMessageData *data = reinterpret_cast<NetMessageData *>(msg->data);
 
     switch (msg->cmd) {
@@ -564,7 +559,7 @@ void MessageSequencer::flush_queues(SequencerHeap *heap) {
 
 void MessageSequencer::slack_send(hostaddr_t host, hostport_t port,
     sequence_no_t seq_no, flags_t flags, command_t cmd, data_len_t len,
-    const void *data) throw (Exception)
+    const void *data)
 {
     pmsg->seq_no = seq_no;
     pmsg->flags = flags;

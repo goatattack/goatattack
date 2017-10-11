@@ -20,7 +20,6 @@
 #include <cstdlib>
 
 Icon::Icon(Subsystem& subsystem, const std::string& filename, ZipReader *zip, const std::string& direct)
-    throw (KeyValueException, IconException)
     : Properties(direct.length() ? "" : filename + ".icon", zip), subsystem(subsystem), tile(0),
       hotspot_x(0), hotspot_y(0)
 {
@@ -55,7 +54,7 @@ int Icon::get_hotspot_y() const {
     return hotspot_y;
 }
 
-void Icon::create_tile(const std::string& filename, ZipReader *zip) throw (Exception) {
+void Icon::create_tile(const std::string& filename, ZipReader *zip) {
     try {
         PNG png(filename, zip);
         TileGraphic *tg = subsystem.create_tilegraphic(png.get_width(), png.get_height());

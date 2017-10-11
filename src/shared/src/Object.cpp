@@ -20,7 +20,6 @@
 #include <cstdlib>
 
 Object::Object(Subsystem& subsystem, const std::string& filename, ZipReader *zip)
-    throw (KeyValueException, ObjectException)
     : Properties(filename + ".object", zip), subsystem(subsystem), tile(0),
         animation_counter(0.0f), index(0)
 {
@@ -100,7 +99,7 @@ bool Object::is_spawnable() const {
     return spawnable;
 }
 
-void Object::create_tile(const std::string& filename, ZipReader *zip) throw (Exception) {
+void Object::create_tile(const std::string& filename, ZipReader *zip) {
     try {
         bool background = (atoi(get_value("background").c_str()) == 0 ? false : true);
         bool one_shot = (atoi(get_value("one_shot").c_str()) != 0 ? true : false);

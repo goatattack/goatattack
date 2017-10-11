@@ -31,7 +31,7 @@ public:
 
 class Configuration {
 public:
-    Configuration(const std::string& directory, const std::string& filename) throw (ConfigurationException);
+    Configuration(const std::string& directory, const std::string& filename);
     virtual ~Configuration();
 
     bool do_save_at_exit() const;

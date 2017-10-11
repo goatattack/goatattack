@@ -53,7 +53,7 @@ private:
     Cargo& operator=(const Cargo&);
 
 public:
-    Cargo(const char *directory, const char *pak_file, const SelectedFiles *files = 0) throw (CargoException);
+    Cargo(const char *directory, const char *pak_file, const SelectedFiles *files = 0);
     ~Cargo();
 
     static bool file_exists(const std::string& filename);
@@ -117,15 +117,15 @@ private:
     PakEntries pak_entries;
     CRC64 crc64;
 
-    void pack_directory(const char *subdir, bool is_rootdir = false) throw (CargoException);
-    void pack_file(const DirectoryEntry& entry) throw (CargoException);
-    void throw_write_error(const char *err = 0) throw (CargoException);
+    void pack_directory(const char *subdir, bool is_rootdir = false);
+    void pack_file(const DirectoryEntry& entry);
+    void throw_write_error(const char *err = 0);
     std::string append_dir(const char *directory, const char *subdir);
-    void add_central_directory() throw (CargoException);
-    size_t write_string(const void *s, size_t len) throw (CargoException);
-    size_t write_uint16(uint16_t n) throw (CargoException);
-    size_t write_uint32(uint32_t n) throw (CargoException);
-    void calc_crc64(size_t start_pos, size_t end_pos) throw (CargoException);
+    void add_central_directory();
+    size_t write_string(const void *s, size_t len);
+    size_t write_uint16(uint16_t n);
+    size_t write_uint32(uint32_t n);
+    void calc_crc64(size_t start_pos, size_t end_pos);
 };
 
 #endif

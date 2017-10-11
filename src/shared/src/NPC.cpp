@@ -21,7 +21,6 @@
 #include <cstdlib>
 
 NPC::NPC(Subsystem& subsystem, const std::string& filename, ZipReader *zip)
-    throw (KeyValueException, MovableException)
     : Properties(filename + ".npc", zip), Movable(subsystem), MovableColbox(subsystem)
 {
     try {
@@ -140,7 +139,7 @@ double NPC::get_ignore_owner_counter() const {
 }
 
 void NPC::create_npc(NPCAnimation type, const std::string& filename,
-    int animation_speed, bool one_shot, ZipReader *zip) throw (Exception)
+    int animation_speed, bool one_shot, ZipReader *zip)
 {
     PNG png(filename, zip);
     tiles[DirectionRight][type] = create_tile(png, animation_speed, one_shot, false);

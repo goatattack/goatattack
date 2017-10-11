@@ -42,7 +42,7 @@ static const size_t MaxServerMsgLength = PacketMaxSize - 100;
 
 /* ingame server constructor */
 Server::Server(Resources& resources, Subsystem& subsystem, const KeyValue& kv, GamePlayType type,
-    const std::string& map_name, int duration, int warmup) throw (Exception)
+    const std::string& map_name, int duration, int warmup)
     : Properties(kv),
       ClientServer(subsystem.get_i18n(), atoi(get_value("port").c_str()), atoi(get_value("num_players").c_str()), get_value("server_name"), ""),
       ServerAdmin(resources, *this, *this),
@@ -65,7 +65,7 @@ Server::Server(Resources& resources, Subsystem& subsystem, const KeyValue& kv, G
 
 /* dedicated server constructor */
 Server::Server(Resources& resources, Subsystem& subsystem,
-    const std::string& server_config_file) throw (Exception)
+    const std::string& server_config_file)
     : Properties(server_config_file),
       ClientServer(subsystem.get_i18n(), atoi(get_value("port").c_str()), atoi(get_value("num_players").c_str()), get_value("server_name"), get_value("server_password")),
       ServerAdmin(resources, *this, *this),
@@ -107,7 +107,7 @@ Server::~Server() {
     }
 }
 
-void Server::start() throw (ServerException) {
+void Server::start() {
 #ifdef DEDICATED_SERVER
     running = true;
     thread();
@@ -129,7 +129,7 @@ void Server::stop() {
     }
 }
 
-void Server::reload_config() throw (ServerException) {
+void Server::reload_config() {
     /* this is currently a dirty hack. in future i'll change passing the
      * Properties& through all levels and call an update() from derived class */
     hold_disconnected_players = (atoi(get_value("hold_disconnected_player").c_str()) != 0 ? true : false);
@@ -507,7 +507,7 @@ void Server::thread() {
     }
 }
 
-void Server::event_login(const Connection *c, data_len_t len, void *data) throw (Exception) {
+void Server::event_login(const Connection *c, data_len_t len, void *data) {
     GPlayerDescription *desc = reinterpret_cast<GPlayerDescription *>(data);
     desc->player_name[NameLength - 1] = 0;
     desc->characterset_name[NameLength - 1] = 0;
@@ -604,7 +604,7 @@ void Server::event_login(const Connection *c, data_len_t len, void *data) throw 
     }
 }
 
-void Server::event_data(const Connection *c, data_len_t len, void *data) throw (Exception) {
+void Server::event_data(const Connection *c, data_len_t len, void *data) {
     /* find player */
     size_t sz = players.size();
     Player *p = 0;
@@ -879,7 +879,7 @@ void Server::event_data(const Connection *c, data_len_t len, void *data) throw (
     }
 }
 
-void Server::event_logout(const Connection *c, LogoutReason reason) throw (Exception) {
+void Server::event_logout(const Connection *c, LogoutReason reason) {
     for (Players::iterator it = players.begin(); it != players.end(); it++) {
         Player *p = *it;
         if (p->get_connection() == c) {
@@ -1179,7 +1179,7 @@ Server::PlayerClientPak *Server::get_player_client_pak(Player *p) {
     return 0;
 }
 
-void Server::process_sync_pak(const Connection *c, Player *p) throw (ServerException) {
+void Server::process_sync_pak(const Connection *c, Player *p) {
     bool synced = false;
     PlayerClientPak *pcpak = get_player_client_pak(p);
     if (pcpak) {
@@ -1312,7 +1312,7 @@ std::ostream& Server::create_log_stream() {
     return subsystem.get_stream();
 }
 
-void Server::parse_command(const Connection *c, Player *p, data_len_t len, void *data) throw (ServerAdminException) {
+void Server::parse_command(const Connection *c, Player *p, data_len_t len, void *data) {
     char *pcmd = static_cast<char *>(data);
     std::string command(&pcmd[1], len - 1);
     std::string param;

@@ -36,7 +36,7 @@ private:
     MultiReader& operator=(const MultiReader&);
 
 public:
-    MultiReader(const std::string& filename, ZipReader *zip) throw (MultiReaderException);
+    MultiReader(const std::string& filename, ZipReader *zip);
     ~MultiReader();
 
     const std::string& get_filename() const;

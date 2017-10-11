@@ -17,7 +17,7 @@
 
 #include "ZipWriter.hpp"
 
-ZipWriter::ZipWriter(const std::string& filename) throw (ZipWriterException)
+ZipWriter::ZipWriter(const std::string& filename)
     : Zip(filename)
 { 
     throw ZipWriterException("not implemented yet."); 
@@ -25,8 +25,6 @@ ZipWriter::ZipWriter(const std::string& filename) throw (ZipWriterException)
 
 ZipWriter::~ZipWriter() { }
 
-void ZipWriter::add_file(const std::string& filename) throw (ZipWriterException) {
-}
+void ZipWriter::add_file(const std::string& filename) { }
 
-void ZipWriter::remove_file(const std::string& filename) throw (ZipWriterException) {
-}
+void ZipWriter::remove_file(const std::string& filename) { }

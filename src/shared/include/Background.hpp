@@ -36,8 +36,7 @@ private:
     Background& operator=(const Background&);
 
 public:
-    Background(Subsystem& subsystem, const std::string& filename, ZipReader *zip)
-        throw (KeyValueException, BackgroundException);
+    Background(Subsystem& subsystem, const std::string& filename, ZipReader *zip);
     virtual ~Background();
 
     TileGraphic *get_tilegraphic(int index);
@@ -50,7 +49,6 @@ private:
     float alpha;
     int layers;
 
-    void create_tile(const std::string& filename) throw (Exception);
     void cleanup();
 };
 

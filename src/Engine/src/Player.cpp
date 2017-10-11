@@ -60,7 +60,7 @@ const std::string& Player::get_characterset_name() const {
     return characterset_name;
 }
 
-void Player::set_characterset(const std::string& name) throw (ResourcesException) {
+void Player::set_characterset(const std::string& name) {
     characterset = get_characterset(name);
     characterset_name = name;
 }

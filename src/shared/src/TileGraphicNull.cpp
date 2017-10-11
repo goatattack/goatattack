@@ -30,7 +30,7 @@ void TileGraphicNull::add_tile(int bytes_per_pixel, const void *pic, bool desc, 
     sz++;
 }
 
-void TileGraphicNull::replace_tile(int index, int bytes_per_pixel, const void *pic) throw (TileGraphicException) { }
+void TileGraphicNull::replace_tile(int index, int bytes_per_pixel, const void *pic) { }
 
 void TileGraphicNull::punch_out_tile(PNG& png, int tilex, int tiley, bool desc, bool linear) {
     add_tile(0, 0, false, linear);

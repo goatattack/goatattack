@@ -42,8 +42,8 @@ public:
     Audio();
     virtual ~Audio();
 
-    virtual void generate_audio(const std::string& filename, ZipReader *zip = 0) throw (AudioException) = 0;
-    virtual void generate_music(const std::string& filename, ZipReader *zip = 0) throw (AudioException) = 0;
+    virtual void generate_audio(const std::string& filename, ZipReader *zip = 0) = 0;
+    virtual void generate_music(const std::string& filename, ZipReader *zip = 0) = 0;
 };
 
 #endif

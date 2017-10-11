@@ -39,13 +39,13 @@ private:
     UDPSocket& operator=(const UDPSocket&);
 
 public:
-    UDPSocket() throw (UDPSocketException);
-    UDPSocket(unsigned short port) throw (UDPSocketException);
+    UDPSocket();
+    UDPSocket(unsigned short port);
     virtual ~UDPSocket();
 
-    ssize_t send(uint32_t host, uint16_t port, void *buffer, size_t length) throw (UDPSocketException);
-    ssize_t recv(char *buffer, size_t length, uint32_t *host, uint16_t *port) throw (UDPSocketException);
-    void set_port(unsigned short port) throw (UDPSocketException);
+    ssize_t send(uint32_t host, uint16_t port, void *buffer, size_t length);
+    ssize_t recv(char *buffer, size_t length, uint32_t *host, uint16_t *port);
+    void set_port(unsigned short port);
     unsigned short get_port() const;
 
 protected:
@@ -57,7 +57,7 @@ protected:
     unsigned short port;
     struct sockaddr_in addr;
 
-    void create_socket(unsigned short port) throw (UDPSocketException);
+    void create_socket(unsigned short port);
 };
 
 #endif

@@ -36,7 +36,7 @@
 
 static const int ChunkSize = 1024;
 
-static void create_directory(const char *root, const char *dir) throw (CargoException) {
+static void create_directory(const char *root, const char *dir) {
     const char *separator = dir;
     while (true) {
         /* find separator */

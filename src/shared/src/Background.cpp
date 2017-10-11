@@ -24,7 +24,6 @@
 #endif
 
 Background::Background(Subsystem& subsystem, const std::string& filename, ZipReader *zip)
-    throw (KeyValueException, BackgroundException)
     : Properties(filename + ".background", zip), subsystem(subsystem), tilegraphics(0)
 {
     char buffer[PATH_MAX];

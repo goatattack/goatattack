@@ -31,8 +31,7 @@ class TournamentDM : public Tournament {
 public:
     TournamentDM(Resources& resources, Subsystem& subsystem, Gui *gui, ServerLogger *logger,
         const std::string& game_file, bool server,
-        const std::string& map_name, Players& players, int duration, bool warmup)
-        throw (TournamentException, ResourcesException);
+        const std::string& map_name, Players& players, int duration, bool warmup);
     virtual ~TournamentDM();
 
     virtual const char *tournament_type();

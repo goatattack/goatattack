@@ -68,7 +68,7 @@ MapConfiguration& ClientServer::get_temporary_map_config() {
 }
 
 void ClientServer::stacked_send_data(const Connection *c, unsigned char tournament_id, command_t cmd,
-    flags_t flags, data_len_t len, const void *data) throw (Exception)
+    flags_t flags, data_len_t len, const void *data)
 {
     int sz = packet_len + GTransportLen + len;
     if (sz > PacketMaxSize) {
@@ -78,7 +78,7 @@ void ClientServer::stacked_send_data(const Connection *c, unsigned char tourname
 }
 
 void ClientServer::stacked_broadcast_data(unsigned char tournament_id, command_t cmd, flags_t flags,
-    data_len_t len, const void *data) throw (Exception)
+    data_len_t len, const void *data)
 {
     int sz = packet_len + GTransportLen + len;
     if (sz > PacketMaxSize) {
@@ -88,7 +88,7 @@ void ClientServer::stacked_broadcast_data(unsigned char tournament_id, command_t
 }
 
 void ClientServer::stacked_broadcast_data_synced(unsigned char tournament_id, command_t cmd, flags_t flags,
-    data_len_t len, const void *data) throw (Exception)
+    data_len_t len, const void *data)
 {
     int sz = packet_len + GTransportLen + len;
     if (sz > PacketMaxSize) {
@@ -97,7 +97,7 @@ void ClientServer::stacked_broadcast_data_synced(unsigned char tournament_id, co
     stack_data(tournament_id, cmd, len, data);
 }
 
-void ClientServer::flush_stacked_send_data(const Connection *c, flags_t flags) throw (Exception) {
+void ClientServer::flush_stacked_send_data(const Connection *c, flags_t flags) {
     if (packet_len) {
         push(c, flags, packet_len, gtrans);
         pb = gtrans;
@@ -105,7 +105,7 @@ void ClientServer::flush_stacked_send_data(const Connection *c, flags_t flags) t
     }
 }
 
-void ClientServer::flush_stacked_broadcast_data(flags_t flags) throw (Exception) {
+void ClientServer::flush_stacked_broadcast_data(flags_t flags) {
     if (packet_len) {
         broadcast(flags, packet_len, gtrans);
         pb = gtrans;
@@ -113,7 +113,7 @@ void ClientServer::flush_stacked_broadcast_data(flags_t flags) throw (Exception)
     }
 }
 
-void ClientServer::flush_stacked_broadcast_data_synced(flags_t flags) throw (Exception) {
+void ClientServer::flush_stacked_broadcast_data_synced(flags_t flags) {
     if (packet_len) {
         for (Players::iterator it = players.begin(); it != players.end(); it++) {
             Player *p = *it;
@@ -127,7 +127,7 @@ void ClientServer::flush_stacked_broadcast_data_synced(flags_t flags) throw (Exc
 }
 
 void ClientServer::send_data(const Connection *c, unsigned char tournament_id,
-    command_t cmd, flags_t flags, data_len_t len, const void *data) throw (Exception)
+    command_t cmd, flags_t flags, data_len_t len, const void *data)
 {
     if (c) {
         gtrans->cmd = cmd;
@@ -143,7 +143,7 @@ void ClientServer::send_data(const Connection *c, unsigned char tournament_id,
 }
 
 void ClientServer::broadcast_data(unsigned char tournament_id, command_t cmd,
-    flags_t flags, data_len_t len, const void *data) throw (Exception)
+    flags_t flags, data_len_t len, const void *data)
 {
     gtrans->cmd = cmd;
     gtrans->tournament_id = tournament_id;
@@ -157,7 +157,7 @@ void ClientServer::broadcast_data(unsigned char tournament_id, command_t cmd,
 }
 
 void ClientServer::broadcast_data_synced(unsigned char tournament_id, command_t cmd,
-    flags_t flags, data_len_t len, const void *data) throw (Exception)
+    flags_t flags, data_len_t len, const void *data)
 {
     gtrans->cmd = cmd;
     gtrans->tournament_id = tournament_id;
@@ -237,7 +237,7 @@ void ClientServer::set_server(Server *server) {
 }
 
 void ClientServer::reload_config(hostport_t port, pico_size_t num_players,
-    const std::string& server_name, const std::string& password) throw (Exception)
+    const std::string& server_name, const std::string& password)
 {
     if (!server) {
         throw Exception("No server, reloading settings failed.");

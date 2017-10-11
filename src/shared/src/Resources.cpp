@@ -100,7 +100,7 @@ template<class T> static bool check_duplicate(Subsystem& subsystem, Resources::R
 }
 
 /* class implementation begins here */
-Resources::Resources(Subsystem& subsystem, const std::string& resource_directory, bool skip_maps, bool paks_only) throw (ResourcesException, ResourcesMissingException)
+Resources::Resources(Subsystem& subsystem, const std::string& resource_directory, bool skip_maps, bool paks_only)
     : subsystem(subsystem), i18n(subsystem.get_i18n()),
       resource_directory(resource_directory),
       skip_maps(skip_maps), paks_only(paks_only), ft(0)
@@ -123,7 +123,7 @@ Resources::~Resources() {
     FT_Done_FreeType(ft);
 }
 
-void Resources::reload_resources() throw (ResourcesException) {
+void Resources::reload_resources() {
     destroy_resources(true);
     load_resources(true);
 }
@@ -155,85 +155,85 @@ const std::string& Resources::get_resource_directory() const {
     return resource_directory;
 }
 
-Tileset *Resources::get_tileset(const std::string& name) throw (ResourcesException) {
+Tileset *Resources::get_tileset(const std::string& name) {
     Tileset *o = find_object<Tileset>(tilesets, name);
     if (o) return o;
     throw ResourcesException(i18n(I18N_RES_TILESET_NOT_FOUND, name));
 }
 
-Object *Resources::get_object(const std::string& name) throw (ResourcesException) {
+Object *Resources::get_object(const std::string& name) {
     Object *o = find_object<Object>(objects, name);
     if (o) return o;
     throw ResourcesException(i18n(I18N_RES_OBJECT_NOT_FOUND, name));
 }
 
-Characterset *Resources::get_characterset(const std::string& name) throw (ResourcesException) {
+Characterset *Resources::get_characterset(const std::string& name) {
     Characterset *o = find_object<Characterset>(charactersets, name);
     if (o) return o;
     throw ResourcesException(i18n(I18N_RES_CHARACTERSET_NOT_FOUND, name));
 }
 
-NPC *Resources::get_npc(const std::string& name) throw (ResourcesException) {
+NPC *Resources::get_npc(const std::string& name) {
     NPC *o = find_object<NPC>(npcs, name);
     if (o) return o;
     throw ResourcesException(i18n(I18N_RES_NPC_NOT_FOUND, name));
 }
 
-Animation *Resources::get_animation(const std::string& name) throw (ResourcesException) {
+Animation *Resources::get_animation(const std::string& name) {
     Animation *o = find_object<Animation>(animations, name);
     if (o) return o;
     throw ResourcesException(i18n(I18N_RES_ANIMATION_NOT_FOUND, name));
 }
 
-Map *Resources::get_map(const std::string& name) throw (ResourcesException) {
+Map *Resources::get_map(const std::string& name) {
     Map *o = find_object<Map>(maps, name);
     if (o) return o;
     throw ResourcesException(i18n(I18N_RES_MAP_NOT_FOUND, name));
 }
 
-Background *Resources::get_background(const std::string& name) throw (ResourcesException) {
+Background *Resources::get_background(const std::string& name) {
     Background *o = find_object<Background>(backgrounds, name);
     if (o) return o;
     throw ResourcesException(i18n(I18N_RES_BACKGROUND_NOT_FOUND, name));
 }
 
-Font *Resources::get_font(const std::string& name) throw (ResourcesException) {
+Font *Resources::get_font(const std::string& name) {
     Font *o = find_object<Font>(fonts, name);
     if (o) return o;
     throw ResourcesException(i18n(I18N_RES_FONT_NOT_FOUND, name));
 }
 
-Icon *Resources::get_icon(const std::string& name) throw (ResourcesException) {
+Icon *Resources::get_icon(const std::string& name) {
     Icon *o = find_object<Icon>(icons, name);
     if (o) return o;
     throw ResourcesException(i18n(I18N_RES_ICON_NOT_FOUND, name));
 }
 
-Sound *Resources::get_sound(const std::string& name) throw (ResourcesException) {
+Sound *Resources::get_sound(const std::string& name) {
     Sound *o = find_object<Sound>(sounds, name);
     if (o) return o;
     throw ResourcesException(i18n(I18N_RES_SOUND_NOT_FOUND, name));
 }
 
-Music *Resources::get_music(const std::string& name) throw (ResourcesException) {
+Music *Resources::get_music(const std::string& name) {
     Music *o = find_object<Music>(musics, name);
     if (o) return o;
     throw ResourcesException(i18n(I18N_RES_MUSIC_NOT_FOUND, name));
 }
 
-Properties *Resources::get_game_settings(const std::string& name) throw (ResourcesException) {
+Properties *Resources::get_game_settings(const std::string& name) {
     Properties *o = find_object<Properties>(game_settings, name);
     if (o) return o;
     throw ResourcesException(i18n(I18N_RES_GAME_SETTING_NOT_FOUND, name));
 }
 
-Shader *Resources::get_shader(const std::string& name) throw (ResourcesException) {
+Shader *Resources::get_shader(const std::string& name) {
     Shader *o = find_object<Shader>(shaders, name);
     if (o) return o;
     throw ResourcesException(i18n(I18N_RES_SHADER_NOT_FOUND, name));
 }
 
-Icon *Resources::get_flag(const std::string& name, bool no_throw) throw (ResourcesException) {
+Icon *Resources::get_flag(const std::string& name, bool no_throw) {
     Icon *o = find_object<Icon>(flags, name);
     if (!o && !no_throw) {
         throw ResourcesException(i18n(I18N_RES_FLAG_NOT_FOUND, name));
@@ -302,7 +302,7 @@ Resources::ResourceObjects& Resources::get_flags() {
     return flags;
 }
 
-void Resources::read_tilesets(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception) {
+void Resources::read_tilesets(const std::string& directory, ZipReader *zip, bool base_resource) {
     const char *entry = 0;
     try {
         Directory dir(directory, ".tileset", zip);
@@ -321,7 +321,7 @@ void Resources::read_tilesets(const std::string& directory, ZipReader *zip, bool
     }
 }
 
-void Resources::read_objects(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception) {
+void Resources::read_objects(const std::string& directory, ZipReader *zip, bool base_resource) {
     const char *entry = 0;
     try {
         Directory dir(directory, ".object", zip);
@@ -340,7 +340,7 @@ void Resources::read_objects(const std::string& directory, ZipReader *zip, bool 
     }
 }
 
-void Resources::read_charactersets(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception) {
+void Resources::read_charactersets(const std::string& directory, ZipReader *zip, bool base_resource) {
     const char *entry = 0;
     try {
         Directory dir(directory, ".characterset", zip);
@@ -359,7 +359,7 @@ void Resources::read_charactersets(const std::string& directory, ZipReader *zip,
     }
 }
 
-void Resources::read_npcs(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception) {
+void Resources::read_npcs(const std::string& directory, ZipReader *zip, bool base_resource) {
     const char *entry = 0;
     try {
         Directory dir(directory, ".npc", zip);
@@ -378,7 +378,7 @@ void Resources::read_npcs(const std::string& directory, ZipReader *zip, bool bas
     }
 }
 
-void Resources::read_animations(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception) {
+void Resources::read_animations(const std::string& directory, ZipReader *zip, bool base_resource) {
     const char *entry = 0;
     try {
         Directory dir(directory, ".animation", zip);
@@ -397,7 +397,7 @@ void Resources::read_animations(const std::string& directory, ZipReader *zip, bo
     }
 }
 
-void Resources::read_maps(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception) {
+void Resources::read_maps(const std::string& directory, ZipReader *zip, bool base_resource) {
     if (!skip_maps) {
         const char *entry = 0;
         try {
@@ -418,7 +418,7 @@ void Resources::read_maps(const std::string& directory, ZipReader *zip, bool bas
     }
 }
 
-void Resources::read_backgrounds(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception) {
+void Resources::read_backgrounds(const std::string& directory, ZipReader *zip, bool base_resource) {
     const char *entry = 0;
     try {
         Directory dir(directory, ".background", zip);
@@ -437,7 +437,7 @@ void Resources::read_backgrounds(const std::string& directory, ZipReader *zip, b
     }
 }
 
-void Resources::read_fonts(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception) {
+void Resources::read_fonts(const std::string& directory, ZipReader *zip, bool base_resource) {
     const char *entry = 0;
     try {
         Directory dir(directory, ".font", zip);
@@ -456,7 +456,7 @@ void Resources::read_fonts(const std::string& directory, ZipReader *zip, bool ba
     }
 }
 
-void Resources::read_icons(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception) {
+void Resources::read_icons(const std::string& directory, ZipReader *zip, bool base_resource) {
     const char *entry = 0;
     try {
         Directory dir(directory, ".icon", zip);
@@ -475,7 +475,7 @@ void Resources::read_icons(const std::string& directory, ZipReader *zip, bool ba
     }
 }
 
-void Resources::read_sounds(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception) {
+void Resources::read_sounds(const std::string& directory, ZipReader *zip, bool base_resource) {
     const char *entry = 0;
     try {
         Directory dir(directory, ".sound", zip);
@@ -494,7 +494,7 @@ void Resources::read_sounds(const std::string& directory, ZipReader *zip, bool b
     }
 }
 
-void Resources::read_musics(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception) {
+void Resources::read_musics(const std::string& directory, ZipReader *zip, bool base_resource) {
     const char *entry = 0;
     try {
         Directory dir(directory, ".music", zip);
@@ -513,7 +513,7 @@ void Resources::read_musics(const std::string& directory, ZipReader *zip, bool b
     }
 }
 
-void Resources::read_game_settings(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception) {
+void Resources::read_game_settings(const std::string& directory, ZipReader *zip, bool base_resource) {
     const char *entry = 0;
     try {
         Directory dir(directory, ".game", zip);
@@ -532,7 +532,7 @@ void Resources::read_game_settings(const std::string& directory, ZipReader *zip,
     }
 }
 
-void Resources::read_shaders(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception) {
+void Resources::read_shaders(const std::string& directory, ZipReader *zip, bool base_resource) {
     const char *entry = 0;
     try {
         Directory dir(directory, ".shader", zip);
@@ -551,7 +551,7 @@ void Resources::read_shaders(const std::string& directory, ZipReader *zip, bool 
     }
 }
 
-void Resources::read_flags(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception) {
+void Resources::read_flags(const std::string& directory, ZipReader *zip, bool base_resource) {
     const char *entry = 0;
     try {
         Directory dir(directory, ".png", zip);
@@ -575,7 +575,7 @@ void Resources::read_flags(const std::string& directory, ZipReader *zip, bool ba
     }
 }
 
-void Resources::load_resources(bool home_paks_only) throw (ResourcesException, ResourcesMissingException) {
+void Resources::load_resources(bool home_paks_only) {
     try {
         //const char **pak = 0;
         const Resources::NonDownloadableMainPak *pak = 0;
@@ -672,7 +672,7 @@ void Resources::load_resources(bool home_paks_only) throw (ResourcesException, R
     }
 }
 
-void Resources::read_all(const std::string& fdir, ZipReader *fzip, bool base_resource) throw (Exception) {
+void Resources::read_all(const std::string& fdir, ZipReader *fzip, bool base_resource) {
     read_tilesets(fdir + "tilesets", fzip, base_resource);
     read_objects(fdir + "objects", fzip, base_resource);
     read_charactersets(fdir + "charactersets", fzip, base_resource);
@@ -708,7 +708,7 @@ void Resources::destroy_resources(bool home_paks_only) {
     erase_loaded_pak(loaded_paks, home_paks_only);
 }
 
-void Resources::prepare_resources() throw (ResourcesException) {
+void Resources::prepare_resources() {
     /* load animation sounds */
     for (ResourceObjects::iterator it = animations.begin(); it != animations.end(); it++) {
         ResourceObject& ro = *it;

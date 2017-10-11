@@ -20,7 +20,6 @@
 #include <cstdlib>
 
 Animation::Animation(Subsystem& subsystem, const std::string& filename, ZipReader *zip)
-    throw (KeyValueException, AnimationException)
     : Properties(filename + ".animation", zip), subsystem(subsystem),
       tile(0), sound(0)
 {
@@ -180,7 +179,7 @@ bool Animation::get_can_be_shot() const {
     return can_be_shot;
 }
 
-void Animation::create_tile(const std::string& filename, ZipReader *zip) throw (Exception) {
+void Animation::create_tile(const std::string& filename, ZipReader *zip) {
     try {
         int tile_type_val = atoi(get_value("tile_type").c_str());
         Tile::TileType tile_type = static_cast<Tile::TileType>(tile_type_val);

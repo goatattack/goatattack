@@ -167,8 +167,7 @@ public:
 
     Tournament(Resources& resources, Subsystem& subsystem, Gui *gui, ServerLogger *logger,
         const std::string& game_file, bool server,
-        const std::string& map_name, Players& players, int duration, bool warmup)
-        throw (TournamentException, ResourcesException);
+        const std::string& map_name, Players& players, int duration, bool warmup);
     virtual ~Tournament();
 
     Map& get_map();
@@ -220,7 +219,7 @@ public:
 
     virtual const char *tournament_type() = 0;
 
-    virtual void create_spawn_points() throw (TournamentException);
+    virtual void create_spawn_points();
     virtual void player_added(Player *p);
     virtual void player_removed(Player *p);
     virtual void spawn_player(Player *p);

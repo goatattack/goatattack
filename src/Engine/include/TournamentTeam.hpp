@@ -33,8 +33,7 @@ class TournamentTeam : public Tournament {
 public:
     TournamentTeam(Resources& resources, Subsystem& subsystem, Gui *gui, ServerLogger *logger,
         const std::string& game_file, bool server,
-        const std::string& map_name, Players& players, int duration, bool warmup)
-        throw (TournamentException, ResourcesException);
+        const std::string& map_name, Players& players, int duration, bool warmup);
     virtual ~TournamentTeam();
 
 protected:
@@ -58,7 +57,7 @@ protected:
     SpawnPoints spawn_points_blue;
 
     virtual void subintegrate(ns_t ns);
-    virtual void create_spawn_points() throw (TournamentException);
+    virtual void create_spawn_points();
     virtual void draw_team_colours();
     virtual void draw_statistics();
     virtual void spawn_player(Player *p);

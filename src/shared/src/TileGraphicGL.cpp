@@ -76,7 +76,7 @@ void TileGraphicGL::add_tile(int bytes_per_pixel, const void *pic, bool desc, bo
     sz = textures.size();
 }
 
-void TileGraphicGL::replace_tile(int index, int bytes_per_pixel, const void *pic) throw (TileGraphicException) {
+void TileGraphicGL::replace_tile(int index, int bytes_per_pixel, const void *pic) {
     if (index < 0 || index >= static_cast<int>(sz)) {
         throw TileGraphicException("Index out of bounds");
     }

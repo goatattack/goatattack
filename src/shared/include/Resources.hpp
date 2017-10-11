@@ -93,27 +93,27 @@ public:
 
     typedef std::vector<ResourceObject> ResourceObjects;
 
-    Resources(Subsystem& subystem, const std::string& resource_directory, bool skip_maps = false, bool paks_only = false) throw (ResourcesException, ResourcesMissingException);
+    Resources(Subsystem& subystem, const std::string& resource_directory, bool skip_maps = false, bool paks_only = false);
     virtual ~Resources();
 
-    void reload_resources() throw (ResourcesException);
+    void reload_resources();
     void update_tile_index(double diff, Tileset *tileset);
     const std::string& get_resource_directory() const;
 
-    Tileset *get_tileset(const std::string& name) throw (ResourcesException);
-    Object *get_object(const std::string& name) throw (ResourcesException);
-    Characterset *get_characterset(const std::string& name) throw (ResourcesException);
-    NPC *get_npc(const std::string& name) throw (ResourcesException);
-    Animation *get_animation(const std::string& name) throw (ResourcesException);
-    Map *get_map(const std::string& name) throw (ResourcesException);
-    Background *get_background(const std::string& name) throw (ResourcesException);
-    Font *get_font(const std::string& name) throw (ResourcesException);
-    Icon *get_icon(const std::string& name) throw (ResourcesException);
-    Sound *get_sound(const std::string& name) throw (ResourcesException);
-    Music *get_music(const std::string& name) throw (ResourcesException);
-    Properties *get_game_settings(const std::string& name) throw (ResourcesException);
-    Shader *get_shader(const std::string& name) throw (ResourcesException);
-    Icon *get_flag(const std::string& name, bool no_throw = false) throw (ResourcesException);
+    Tileset *get_tileset(const std::string& name);
+    Object *get_object(const std::string& name);
+    Characterset *get_characterset(const std::string& name);
+    NPC *get_npc(const std::string& name);
+    Animation *get_animation(const std::string& name);
+    Map *get_map(const std::string& name);
+    Background *get_background(const std::string& name);
+    Font *get_font(const std::string& name);
+    Icon *get_icon(const std::string& name);
+    Sound *get_sound(const std::string& name);
+    Music *get_music(const std::string& name);
+    Properties *get_game_settings(const std::string& name);
+    Shader *get_shader(const std::string& name);
+    Icon *get_flag(const std::string& name, bool no_throw = false);
 
     ResourceObjects& get_tilesets();
     ResourceObjects& get_objects();
@@ -156,25 +156,25 @@ private:
     ResourceObjects shaders;
     ResourceObjects flags;
 
-    void read_tilesets(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception);
-    void read_objects(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception);
-    void read_charactersets(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception);
-    void read_npcs(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception);
-    void read_animations(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception);
-    void read_maps(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception);
-    void read_backgrounds(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception);
-    void read_fonts(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception);
-    void read_icons(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception);
-    void read_sounds(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception);
-    void read_musics(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception);
-    void read_game_settings(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception);
-    void read_shaders(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception);
-    void read_flags(const std::string& directory, ZipReader *zip, bool base_resource) throw (Exception);
+    void read_tilesets(const std::string& directory, ZipReader *zip, bool base_resource);
+    void read_objects(const std::string& directory, ZipReader *zip, bool base_resource);
+    void read_charactersets(const std::string& directory, ZipReader *zip, bool base_resource);
+    void read_npcs(const std::string& directory, ZipReader *zip, bool base_resource);
+    void read_animations(const std::string& directory, ZipReader *zip, bool base_resource);
+    void read_maps(const std::string& directory, ZipReader *zip, bool base_resource);
+    void read_backgrounds(const std::string& directory, ZipReader *zip, bool base_resource);
+    void read_fonts(const std::string& directory, ZipReader *zip, bool base_resource);
+    void read_icons(const std::string& directory, ZipReader *zip, bool base_resource);
+    void read_sounds(const std::string& directory, ZipReader *zip, bool base_resource);
+    void read_musics(const std::string& directory, ZipReader *zip, bool base_resource);
+    void read_game_settings(const std::string& directory, ZipReader *zip, bool base_resource);
+    void read_shaders(const std::string& directory, ZipReader *zip, bool base_resource);
+    void read_flags(const std::string& directory, ZipReader *zip, bool base_resource);
 
-    void load_resources(bool home_paks_only) throw (ResourcesException, ResourcesMissingException);
-    void read_all(const std::string& fdir, ZipReader *fzip, bool base_resource) throw (Exception);
+    void load_resources(bool home_paks_only);
+    void read_all(const std::string& fdir, ZipReader *fzip, bool base_resource);
     void destroy_resources(bool home_paks_only);
-    void prepare_resources() throw (ResourcesException);
+    void prepare_resources();
 };
 
 #endif

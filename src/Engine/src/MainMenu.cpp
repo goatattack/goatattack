@@ -97,7 +97,7 @@ MainMenu::~MainMenu() {
     }
 }
 
-void MainMenu::idle() throw (Exception) {
+void MainMenu::idle() {
     static char buffer[64];
     get_now(now);
 

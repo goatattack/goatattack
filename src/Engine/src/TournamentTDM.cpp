@@ -22,7 +22,6 @@
 TournamentTDM::TournamentTDM(Resources& resources, Subsystem& subsystem, Gui *gui,
     ServerLogger *logger, const std::string& game_file, bool server,
     const std::string& map_name, Players& players, int duration, bool warmup)
-    throw (TournamentException, ResourcesException)
     : TournamentTeam(resources, subsystem, gui, logger, game_file, server, map_name,
       players, duration, warmup)
 {

@@ -65,13 +65,13 @@ public:
         MousepointerMove
     };
 
-    Gui(Resources& resources, Subsystem& subsystem, Font *font) throw (GuiException, ResourcesException);
+    Gui(Resources& resources, Subsystem& subsystem, Font *font);
     virtual ~Gui();
 
     void run() throw (Exception);
     void leave();
 
-    virtual void idle() throw (Exception) = 0;
+    virtual void idle() = 0;
     virtual void on_input_event(const InputData& input) = 0;
     virtual void on_leave() = 0;
 
@@ -95,53 +95,45 @@ public:
     GuiWindow *push_window(int x, int y, int width, int height, const std::string& title);
     void pop_window();
 
-    GuiBox *create_box(GuiObject *parent, int x, int y, int width,
-        int height) throw (GuiException);
-
-    GuiLabel *create_label(GuiObject *parent, int x, int y,
-        const std::string& caption) throw (GuiException);
+    GuiBox *create_box(GuiObject *parent, int x, int y, int width, int height);
+    GuiLabel *create_label(GuiObject *parent, int x, int y, const std::string& caption);
 
     GuiButton *create_button(GuiObject *parent, int x, int y, int width, int height,
         const std::string& caption, GuiVirtualButton::OnClick on_click,
-        void *on_click_data) throw (GuiException);
+        void *on_click_data);
 
     GuiRoundedButton *create_rounded_button(GuiObject *parent, int x, int y, int width,
         int height, const std::string& caption, GuiVirtualButton::OnClick on_click,
-        void *on_click_data) throw (GuiException);
+        void *on_click_data);
 
     GuiCheckbox *create_checkbox(GuiObject *parent, int x, int y,
         const std::string& caption, bool state, GuiCheckbox::OnClick on_click,
-        void *on_click_data) throw (GuiException);
+        void *on_click_data);
 
     GuiTextbox *create_textbox(GuiObject *parent, int x, int y, int width,
-        const std::string& text) throw (GuiException);
+        const std::string& text);
 
     GuiPicture *create_picture(GuiObject *parent, int x, int y,
-        TileGraphic *graphic) throw (GuiException);
+        TileGraphic *graphic);
 
-    GuiFrame *create_frame(GuiObject *parent, int x, int y, int width,
-        int height) throw (GuiException);
-
-    GuiTab *create_tab(GuiObject *parent, int x, int y, int width, int height)
-        throw (GuiException);
+    GuiFrame *create_frame(GuiObject *parent, int x, int y, int width, int height);
+    GuiTab *create_tab(GuiObject *parent, int x, int y, int width, int height);
 
     GuiHScroll *create_hscroll(GuiObject *parent, int x, int y, int width,
         int min_value, int max_value, int initial_value,
-        GuiVirtualScroll::ValueChanged on_value_changed, void *on_value_changed_data)
-        throw (GuiException);
+        GuiVirtualScroll::ValueChanged on_value_changed, void *on_value_changed_data);
 
     GuiVScroll *create_vscroll(GuiObject *parent, int x, int y, int height,
         int min_value, int max_value, int initial_value,
-        GuiVirtualScroll::ValueChanged on_value_changed, void *on_value_changed_data)
-        throw (GuiException);
+        GuiVirtualScroll::ValueChanged on_value_changed, void *on_value_changed_data);
 
     GuiListbox *create_listbox(GuiObject *parent, int x, int y, int width,
         int height, const std::string& title, GuiListbox::OnItemSelected on_item_selected,
-        void *on_item_selected_data) throw (GuiException);
+        void *on_item_selected_data);
 
     GuiListbox *create_listbox(GuiObject *parent, int x, int y, int width,
         int height, Icon *icon, int icon_width, const std::string& title,
-        GuiListbox::OnItemSelected on_item_selected, void *on_item_selected_data) throw (GuiException);
+        GuiListbox::OnItemSelected on_item_selected, void *on_item_selected_data);
 
     GuiWindow *get_current_window() const;
     bool is_active(GuiObject *object) const;
@@ -198,9 +190,9 @@ private:
     GuiTextbox *input_box;
     std::string last_entered;
 
-    void idleloop(int stack_counter) throw (Exception);
+    void idleloop(int stack_counter);
     void set_current_window();
-    void check_parent(GuiObject *parent) throw (GuiException);
+    void check_parent(GuiObject *parent);
     GuiWindow *get_window_of_object(GuiObject *object) const;
     bool process_mousemove();
     bool process_mousedown(int button);

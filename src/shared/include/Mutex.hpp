@@ -46,7 +46,7 @@ private:
     } mutex_t;
 
 public:
-    Mutex() throw (MutexException);
+    Mutex();
     virtual ~Mutex();
 
     void lock();

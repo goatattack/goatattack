@@ -34,7 +34,6 @@ Map::Map(Subsystem& subsystem) : subsystem(subsystem) {
 }
 
 Map::Map(Subsystem& subsystem, const std::string& filename, ZipReader *zip)
-    throw (KeyValueException, MapException)
     : Properties(filename + ".map", zip), subsystem(subsystem), filename(filename),
       tileset(get_value("tileset")),
       background(get_value("background"))

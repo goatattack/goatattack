@@ -36,9 +36,7 @@ public:
     ButtonNavigator(Gui& gui, Configuration& config);
     virtual ~ButtonNavigator();
 
-    void install_handlers(GuiWindow *window,
-        OnCancel on_cancel, void *on_cancel_data);
-
+    void install_handlers(GuiWindow *window, OnCancel on_cancel, void *on_cancel_data);
     GuiButton *add_button(GuiButton *btn);
     void clear();
     void set_button_focus();

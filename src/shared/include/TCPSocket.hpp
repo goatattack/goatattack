@@ -39,22 +39,22 @@ public:
     TCPSocket();
     virtual ~TCPSocket();
 
-    void connect(const char *ip_address, unsigned short port) throw (TCPSocketException);
-    bool activity(time_t sec, long usec) throw (TCPSocketException);
-    void listen(const char *address, unsigned short port, int backlog) throw (TCPSocketException);
-    void listen(const char *address, unsigned short port) throw (TCPSocketException);
-    void listen(unsigned short port, int backlog) throw (TCPSocketException);
-    void listen(unsigned short port) throw (TCPSocketException);
-    void accept(const TCPSocket& socket) throw (TCPSocketException);
+    void connect(const char *ip_address, unsigned short port);
+    bool activity(time_t sec, long usec);
+    void listen(const char *address, unsigned short port, int backlog);
+    void listen(const char *address, unsigned short port);
+    void listen(unsigned short port, int backlog);
+    void listen(unsigned short port);
+    void accept(const TCPSocket& socket);
     void close();
 
-    size_t send(const char *buffer, size_t size) throw (TCPSocketException);
-    size_t send(const std::string& buffer) throw (TCPSocketException);
-    size_t receive(void *buffer, size_t size) throw (TCPSocketException);
+    size_t send(const char *buffer, size_t size);
+    size_t send(const std::string& buffer);
+    size_t receive(void *buffer, size_t size);
     bool get_error() const;
     bool is_connected() const;
-    unsigned short get_port() throw (TCPSocketException);
-    unsigned long get_address() throw (TCPSocketException);
+    unsigned short get_port();
+    unsigned long get_address();
 
 private:
     static const int DefaultBacklog;
@@ -66,7 +66,7 @@ private:
     bool tls;
     bool disconnecting;
 
-    void check_states() throw (TCPSocketException);
+    void check_states();
 };
 
 #endif

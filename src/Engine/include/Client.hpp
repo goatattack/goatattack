@@ -53,8 +53,7 @@ private:
 
 public:
     Client(Resources& resources, Subsystem& subsystem, hostaddr_t host,
-        hostport_t port, Configuration& config, const std::string& password)
-        throw (Exception);
+        hostport_t port, Configuration& config, const std::string& password);
     virtual ~Client();
 
     bool is_game_over() const;
@@ -62,7 +61,7 @@ public:
     void spectate();
 
     // Gui
-    virtual void idle() throw (Exception);
+    virtual void idle();
     virtual void on_input_event(const InputData& input);
 
 protected:
@@ -135,11 +134,11 @@ private:
     /* implements MessageSequencer */
     virtual void event_status(hostaddr_t host, hostport_t port, const std::string& name,
         int max_clients, int cur_clients, ms_t ping_time, bool secured,
-        int protocol_version) throw (Exception);
-    virtual void event_access_denied(MessageSequencer::RefusalReason reason) throw (Exception);
-    virtual void event_login(const Connection *c, data_len_t len, void *data) throw (Exception);
-    virtual void event_data(const Connection *c, data_len_t len, void *data) throw (Exception);
-    virtual void event_logout(const Connection *c, LogoutReason reason) throw (Exception);
+        int protocol_version);
+    virtual void event_access_denied(MessageSequencer::RefusalReason reason);
+    virtual void event_login(const Connection *c, data_len_t len, void *data);
+    virtual void event_data(const Connection *c, data_len_t len, void *data);
+    virtual void event_logout(const Connection *c, LogoutReason reason);
 
     /* implements OptionsMenu */
     virtual void options_closed();

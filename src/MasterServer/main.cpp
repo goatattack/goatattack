@@ -18,6 +18,7 @@
 #include "MasterServer.hpp"
 
 #include <cstdlib>
+#include <iostream>
 
 int main(int argc, char *argv[]) {
     const char *filename = "";
@@ -33,8 +34,13 @@ int main(int argc, char *argv[]) {
             refresh = 30;
         }
     }
-    MasterServer master(25112, 25113, filename, refresh);
-    master.run();
+
+    try {
+        MasterServer master(25112, 25113, filename, refresh);
+        master.run();
+    } catch (const std::exception& e) {
+        std::cout << "ERROR: " << e.what() << std::endl;
+    }
 
     return 0;
 }

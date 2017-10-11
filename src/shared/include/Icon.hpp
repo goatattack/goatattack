@@ -36,8 +36,7 @@ private:
     Icon& operator=(const Icon&);
 
 public:
-    Icon(Subsystem& subsystem, const std::string& filename, ZipReader *zip = 0, const std::string& direct = "")
-        throw (KeyValueException, IconException);
+    Icon(Subsystem& subsystem, const std::string& filename, ZipReader *zip = 0, const std::string& direct = "");
     virtual ~Icon();
 
     Tile *get_tile();
@@ -50,7 +49,7 @@ private:
     int hotspot_x;
     int hotspot_y;
 
-    void create_tile(const std::string& filename, ZipReader *zip) throw (Exception);
+    void create_tile(const std::string& filename, ZipReader *zip);
     void cleanup();
 };
 

@@ -18,7 +18,6 @@
 #include "Sound.hpp"
 
 Sound::Sound(Subsystem& subsystem, const std::string& filename, ZipReader *zip)
-    throw (KeyValueException, SoundException)
     : Properties(filename + ".sound", zip), subsystem(subsystem), audio(0),
     playing_channel(-1)
 {

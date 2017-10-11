@@ -19,10 +19,9 @@
 
 Properties::Properties() { }
 
-Properties::Properties(const KeyValue& kv) throw (KeyValueException)
-    : KeyValue(kv) { }
+Properties::Properties(const KeyValue& kv) : KeyValue(kv) { }
 
-Properties::Properties(const std::string& filename, ZipReader *zip) throw (KeyValueException)
+Properties::Properties(const std::string& filename, ZipReader *zip)
     : KeyValue(filename, zip), filename(filename)
 {
     fetch();
@@ -45,7 +44,7 @@ const std::string& Properties::get_description() const {
     return description;
 }
 
-void Properties::set_name(const std::string& name, bool no_touch) throw (KeyValueException) {
+void Properties::set_name(const std::string& name, bool no_touch) {
     set_value("name", name, no_touch);
     this->name = name;
     if (!no_touch) {
@@ -53,7 +52,7 @@ void Properties::set_name(const std::string& name, bool no_touch) throw (KeyValu
     }
 }
 
-void Properties::set_author(const std::string& author, bool no_touch) throw (KeyValueException) {
+void Properties::set_author(const std::string& author, bool no_touch) {
     set_value("author", author, no_touch);
     this->author = author;
     if (!no_touch) {
@@ -61,7 +60,7 @@ void Properties::set_author(const std::string& author, bool no_touch) throw (Key
     }
 }
 
-void Properties::set_description(const std::string& description, bool no_touch) throw (KeyValueException) {
+void Properties::set_description(const std::string& description, bool no_touch) {
     set_value("description", description, no_touch);
     this->description = description;
     if (!no_touch) {
@@ -69,7 +68,7 @@ void Properties::set_description(const std::string& description, bool no_touch) 
     }
 }
 
-void Properties::reload_configuration() throw (KeyValueException) {
+void Properties::reload_configuration() {
     if (!filename.length()) {
         throw KeyValueException("No filename specified");
     }
@@ -78,7 +77,7 @@ void Properties::reload_configuration() throw (KeyValueException) {
     fetch();
 }
 
-void Properties::save_configuration() throw (KeyValueException) {
+void Properties::save_configuration() {
     if (!filename.length()) {
         throw KeyValueException("No filename specified");
     }

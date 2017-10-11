@@ -35,7 +35,6 @@
 static const int PageSize = 256;
 
 Font::Font(Subsystem& subsystem, FT_Library& ft, const std::string& filename, ZipReader *zip)
-    throw (KeyValueException, FontException)
     : Properties(filename + ".font", zip), subsystem(subsystem),
       i18n(subsystem.get_i18n()), ft(ft), start_page(create_new_page()),
       kerning(false), outline_monochrome(false), monochrome(false),

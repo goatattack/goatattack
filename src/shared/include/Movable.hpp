@@ -56,6 +56,7 @@ protected:
 };
 
 /* -------------------------------------------------------------------------- */
+
 class MovableColbox {
 public:
     MovableColbox(Subsystem& subsystem);
@@ -70,7 +71,7 @@ protected:
     CollisionBox colbox;
     CollisionBox damage_colbox;
 
-    void read_base_informations(Properties& props) throw (MovableException);
+    void read_base_informations(Properties& props);
 };
 
 #endif

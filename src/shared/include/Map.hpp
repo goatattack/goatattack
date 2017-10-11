@@ -39,8 +39,7 @@ private:
 
 public:
     Map(Subsystem& subsystem);
-    Map(Subsystem& subsystem, const std::string& filename, ZipReader *zip = 0)
-        throw (KeyValueException, MapException);
+    Map(Subsystem& subsystem, const std::string& filename, ZipReader *zip = 0);
     Map(const Map& rhs);
     virtual ~Map();
 

@@ -41,12 +41,11 @@ private:
     TournamentFactory& operator=(const TournamentFactory&);
 
 public:
-    TournamentFactory(Resources& resources, Subsystem& subsystem, Gui *gui)
-        throw (TournamentFactoryException);
+    TournamentFactory(Resources& resources, Subsystem& subsystem, Gui *gui);
     virtual ~TournamentFactory();
 
     Tournament *create_tournament(const MapConfiguration& config,
-        bool server, bool warmup, Players& players, ServerLogger *logger) throw (Exception);
+        bool server, bool warmup, Players& players, ServerLogger *logger);
 
     unsigned char get_tournament_id() const;
     void set_tournament_id(unsigned char id);

@@ -1,5 +1,22 @@
-#ifndef _CUBE_MATRIX4X4_HPP_
-#define _CUBE_MATRIX4X4_HPP_
+/*
+ *  This file is part of Goat Attack.
+ *
+ *  Goat Attack is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Goat Attack is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Goat Attack.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#ifndef _MATRIX4X4_HPP_
+#define _MATRIX4X4_HPP_
 
 #include <cmath>
 #include <cstring>
@@ -20,7 +37,7 @@ public:
     inline void scale(float x, float y, float z)                { Matrix4x4 m; m.load_identity(); m.v[0] = x; m.v[5] = y; m.v[10] = z; *this *= m; }
     inline void translate(float x, float y, float z)            { Matrix4x4 m; m.load_identity(); m.v[12] = x; m.v[13] = y; m.v[14] = z; *this *= m; }
     inline void rotate(float angle, float x, float y, float z)  { Matrix4x4 m; m.load_identity(); float c = std::cos(angle * Pi180); float s = std::sin(angle * Pi180); m.v[ 0] = x * x * (1 - c) + c; m.v[ 1] = x * y * (1 - c) + z * s; m.v[ 2] = x * z * (1 - c) - y * s; m.v[ 4] = y * x * (1 - c) - z * s; m.v[ 5] = y * y * (1 - c) + c; m.v[ 6] = y * z * (1 - c) + x * s; m.v[ 8] = z * x * (1 - c) + y * s; m.v[ 9] = z * y * (1 - c) - x * s; m.v[10] = z * z * (1 - c) + c; *this *= m; }
-    inline void set_projection(float fovy, float aspect, float znear, float zfar) { memset(v, 0, sizeof(v)); float tan_half_fovy = std::tan(fovy * (Pi / 360.0f)); v[0 * 4 + 0] = 1.0f / (aspect * tan_half_fovy); v[1 * 4 + 1] = 1.0f / tan_half_fovy; v[2 * 4 + 2] = - (zfar + znear) / (zfar - znear); v[2 * 4 + 3] = - 1.0f; v[3 * 4 + 2] = - (2.0f * zfar * znear)  / (zfar - znear); }
+    inline void set_projection(float fovy, float aspect, float znear, float zfar) { std::memset(v, 0, sizeof(v)); float tan_half_fovy = std::tan(fovy * (Pi / 360.0f)); v[0 * 4 + 0] = 1.0f / (aspect * tan_half_fovy); v[1 * 4 + 1] = 1.0f / tan_half_fovy; v[2 * 4 + 2] = - (zfar + znear) / (zfar - znear); v[2 * 4 + 3] = - 1.0f; v[3 * 4 + 2] = - (2.0f * zfar * znear)  / (zfar - znear); }
     inline void set_ortho(float left, float right, float bottom, float top, float znear, float zfar) { load_identity(); v[ 0] = 2.0f / (right - left); v[ 5] = 2.0f / (top - bottom); v[10] = -2.0f / (zfar - znear); v[12] = -((right + left) / (right - left)); v[13] = -((top + bottom) / (top - bottom)); v[14] = -((zfar + znear) / (zfar - znear)); }
 };
 

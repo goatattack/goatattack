@@ -91,37 +91,37 @@ public:
         RefusalReasonWrongProtocol
     };
 
-    MessageSequencer(I18N& i18n, hostport_t port, pico_size_t num_heaps, const std::string& name, const std::string& password) throw (Exception);
-    MessageSequencer(I18N& i18n, hostaddr_t server_host, hostport_t server_port) throw (Exception);
+    MessageSequencer(I18N& i18n, hostport_t port, pico_size_t num_heaps, const std::string& name, const std::string& password);
+    MessageSequencer(I18N& i18n, hostaddr_t server_host, hostport_t server_port);
     virtual ~MessageSequencer();
 
     /* actions */
-    void request_server_info(hostaddr_t host, hostport_t port) throw (Exception);
-    void login(const std::string& password, data_len_t len, const void *data) throw (Exception);
-    void login(data_len_t len, const void *data) throw (Exception);
-    void logout() throw (Exception);
+    void request_server_info(hostaddr_t host, hostport_t port);
+    void login(const std::string& password, data_len_t len, const void *data);
+    void login(data_len_t len, const void *data);
+    void logout();
 
-    void broadcast(flags_t flags, data_len_t len, const void *data) throw (Exception);
-    void push(flags_t flags, data_len_t len, const void *data) throw (Exception);
-    void push(flags_t flags, command_t cmd, data_len_t len, const void *data) throw (Exception);
-    void push(const Connection *c, flags_t flags, data_len_t len, const void *data) throw (Exception);
-    void push(const Connection *c, command_t cmd, flags_t flags, data_len_t len, const void *data) throw (Exception);
+    void broadcast(flags_t flags, data_len_t len, const void *data);
+    void push(flags_t flags, data_len_t len, const void *data);
+    void push(flags_t flags, command_t cmd, data_len_t len, const void *data);
+    void push(const Connection *c, flags_t flags, data_len_t len, const void *data);
+    void push(const Connection *c, command_t cmd, flags_t flags, data_len_t len, const void *data);
     size_t get_outq_sz(const Connection *c);
     size_t get_inq_sz(const Connection *c);
-    bool cycle() throw (Exception);
-    void kill(const Connection *c) throw (Exception);
+    bool cycle();
+    void kill(const Connection *c);
     void new_settings(hostport_t port, pico_size_t num_heaps, const std::string& name,
-        const std::string& password) throw (Exception);
+        const std::string& password);
     const SequencerHeap *get_heap(const Connection *c) const;
 
     /* events */
     virtual void event_status(hostaddr_t host, hostport_t port, const std::string& name,
         int max_clients, int cur_clients, ms_t ping_time, bool secured,
-        int protocol_version) throw (Exception) { }
-    virtual void event_access_denied(RefusalReason reason) throw (Exception) { }
-    virtual void event_login(const Connection *c, data_len_t len, void *data) throw (Exception) { }
-    virtual void event_data(const Connection *c, data_len_t len, void *data) throw (Exception) { }
-    virtual void event_logout(const Connection *c, LogoutReason reason) throw (Exception) { }
+        int protocol_version) { }
+    virtual void event_access_denied(RefusalReason reason) { }
+    virtual void event_login(const Connection *c, data_len_t len, void *data) { }
+    virtual void event_data(const Connection *c, data_len_t len, void *data) { }
+    virtual void event_logout(const Connection *c, LogoutReason reason) { }
 
 protected:
     I18N& i18n;
@@ -140,8 +140,8 @@ private:
     SequencerHeaps heaps;
     char buffer[1024];
 
-    void ack(SequencerHeap *heap, sequence_no_t seq_no) throw (Exception);
-    void process_incoming(SequencerHeap *heap, NetMessage *msg) throw (Exception);
+    void ack(SequencerHeap *heap, sequence_no_t seq_no);
+    void process_incoming(SequencerHeap *heap, NetMessage *msg);
     void sorted_insert(SequencerHeap::QueuedMessages& msg_queue, QueueMessage *smsg);
     SequencerHeap *find_heap(hostaddr_t host, hostport_t port);
     SequencerHeap *find_heap(const Connection *c);
@@ -149,7 +149,7 @@ private:
     void kill_heap_with_logout(SequencerHeap *heap, LogoutReason reason);
     void flush_queues(SequencerHeap *heap);
     void slack_send(hostaddr_t host, hostport_t port, sequence_no_t seq_no,
-        flags_t flags, command_t cmd, data_len_t len, const void *data) throw (Exception);
+        flags_t flags, command_t cmd, data_len_t len, const void *data);
     void delete_all_heaps();
 };
 

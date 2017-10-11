@@ -37,9 +37,6 @@ public:
 protected:
     bool thread_start();
     void thread_join();
-    void thread_signal(int sig);
-    void thread_cancel();
-    void thread_detach();
     virtual void thread() = 0;
 
 private:

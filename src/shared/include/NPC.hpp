@@ -39,8 +39,7 @@ private:
     NPC& operator=(const NPC&);
 
 public:
-    NPC(Subsystem& subsystem, const std::string& filename, ZipReader *zip = 0)
-        throw (KeyValueException, MovableException);
+    NPC(Subsystem& subsystem, const std::string& filename, ZipReader *zip = 0);
     virtual ~NPC();
 
     Tile *get_tile(Direction direction, NPCAnimation animation);
@@ -74,7 +73,7 @@ private:
     double ignore_owner_counter;
 
     void create_npc(NPCAnimation type, const std::string& filename,
-        int animation_speed, bool one_shot, ZipReader *zip) throw (Exception);
+        int animation_speed, bool one_shot, ZipReader *zip);
 
     void cleanup();
 };

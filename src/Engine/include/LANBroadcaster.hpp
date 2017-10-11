@@ -37,12 +37,12 @@ private:
     LANBroadcaster& operator=(const LANBroadcaster&);
 
 public:
-    LANBroadcaster(I18N& i18n, hostport_t port) throw (LANBroadcasterException, UDPSocketException);
+    LANBroadcaster(I18N& i18n, hostport_t port);
     virtual ~LANBroadcaster();
 
-    void start() throw (LANBroadcasterException);
+    void start();
     void stop();
-    void refresh() throw (Exception);
+    void refresh();
     void clear();
     Mutex& get_mutex();
 
@@ -55,7 +55,7 @@ private:
 
     virtual void event_status(hostaddr_t host, hostport_t port, const std::string& name,
         int max_clients, int cur_clients, ms_t ping_time, bool secured,
-        int protocol_version) throw (Exception);
+        int protocol_version);
 
     void cleanup();
 

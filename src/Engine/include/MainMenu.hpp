@@ -38,7 +38,7 @@ public:
     MainMenu(Resources& resources, Subsystem& subsystem, Configuration& config);
     virtual ~MainMenu();
 
-    virtual void idle() throw (Exception);
+    virtual void idle();
     virtual void on_input_event(const InputData& input);
 
 protected:

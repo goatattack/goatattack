@@ -78,6 +78,7 @@ bool Movable::get_one_shot(Properties& props, const std::string& suffix, bool de
 }
 
 /* -------------------------------------------------------------------------- */
+
 MovableColbox::MovableColbox(Subsystem& subsystem) : subsystem(subsystem) { }
 
 MovableColbox::~MovableColbox() { }
@@ -90,7 +91,7 @@ const CollisionBox& MovableColbox::get_damage_colbox() const {
     return damage_colbox;
 }
 
-void MovableColbox::read_base_informations(Properties& props) throw (MovableException) {
+void MovableColbox::read_base_informations(Properties& props) {
     colbox.x = atoi(props.get_value("colbox_x").c_str());
     colbox.y = atoi(props.get_value("colbox_y").c_str());
     colbox.width = atoi(props.get_value("colbox_width").c_str());

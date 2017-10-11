@@ -125,7 +125,7 @@ private:
     Subsystem& operator=(const Subsystem&);
 
 public:
-    Subsystem(std::ostream& stream, I18N& i18n, const std::string& window_title) throw (SubsystemException);
+    Subsystem(std::ostream& stream, I18N& i18n, const std::string& window_title);
     virtual ~Subsystem();
 
     template<class T> std::ostream& operator<<(const T& what) {

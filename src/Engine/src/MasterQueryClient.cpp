@@ -20,7 +20,7 @@
 #include "MasterQuery.hpp"
 
 const int MaxTries = 10;
-MasterQueryClient::MasterQueryClient(I18N& i18n, MasterQuery& master_query, hostaddr_t host, hostport_t port) throw (Exception)
+MasterQueryClient::MasterQueryClient(I18N& i18n, MasterQuery& master_query, hostaddr_t host, hostport_t port)
     : GameserverInformation(host, port), MessageSequencer(i18n, host, port), master_query(master_query),
       received(false), tries(0)
 {
@@ -46,7 +46,7 @@ void MasterQueryClient::timed_refresh(gametime_t& now) {
 
 void MasterQueryClient::event_status(hostaddr_t host, hostport_t port, const std::string& name,
     int max_clients, int cur_clients, ms_t ping_time, bool secured,
-    int protocol_version) throw (Exception)
+    int protocol_version)
 {
     this->server_name = name;
     this->map_name = "";

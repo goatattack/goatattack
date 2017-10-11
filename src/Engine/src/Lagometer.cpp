@@ -23,7 +23,7 @@ static const int BytesPerPixel = 4;
 static const int IntervalInMs = 500;
 static const ms_t MaxPing = 100;
 
-Lagometer::Lagometer(Subsystem& subsystem) throw (LagometerException)
+Lagometer::Lagometer(Subsystem& subsystem)
     : meter(0), width(32), height(32), height2(height / 2), height4(height / 4),
       pictop(height - 1), tpic(new unsigned char[width * height * BytesPerPixel]),
       red(new unsigned char[height2 + 1]), green(new unsigned char[height2 + 1]),
@@ -33,7 +33,7 @@ Lagometer::Lagometer(Subsystem& subsystem) throw (LagometerException)
     get_now(last_update);
 }
 
-Lagometer::Lagometer(Subsystem& subsystem, int width, int height) throw (LagometerException)
+Lagometer::Lagometer(Subsystem& subsystem, int width, int height)
     : meter(0), width(width), height(height), height2(height / 2), height4(height / 4),
       pictop(height - 1), tpic(new unsigned char[width * height * BytesPerPixel]),
       red(new unsigned char[height2 + 1]), green(new unsigned char[height2 + 1]),
@@ -119,7 +119,7 @@ TileGraphic *Lagometer::get_tilegraphic() {
     return meter;
 }
 
-void Lagometer::create(Subsystem& subsystem) throw (LagometerException) {
+void Lagometer::create(Subsystem& subsystem) {
     clear();
 
     /* clear picture */

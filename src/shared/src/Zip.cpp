@@ -21,7 +21,7 @@
 
 #include <cstring>
 
-Zip::Zip(const std::string& filename) throw (ZipException) : filename(filename), f(0) {
+Zip::Zip(const std::string& filename) : filename(filename), f(0) {
     size_t sz = filename.length();
     size_t pos = 0;
     for (int i = sz - 1; i >= 0; i--) {
@@ -47,7 +47,7 @@ const std::string& Zip::get_zip_short_filename() const {
     return short_filename;
 }
 
-const std::string& Zip::get_hash() throw (ZipException) {
+const std::string& Zip::get_hash() {
     if (!hash.length()) {
         rehash();
     }
@@ -55,7 +55,7 @@ const std::string& Zip::get_hash() throw (ZipException) {
     return hash;
 }
 
-void Zip::rehash() throw (ZipException) {
+void Zip::rehash() {
     if (!f) {
         throw ZipException("No file opened");
     }

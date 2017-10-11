@@ -46,10 +46,10 @@ typedef std::vector<Record> Records;
 
 class MasterServer {
 public:
-    MasterServer(uint16_t heartbeat_port, uint16_t query_port, const char *filename, int refresh) throw (MasterServerException);
+    MasterServer(uint16_t heartbeat_port, uint16_t query_port, const char *filename, int refresh);
     virtual ~MasterServer();
 
-    void run() throw (MasterServerException);
+    void run();
 
 private:
     UDPSocket udp_socket;

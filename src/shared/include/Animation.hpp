@@ -38,8 +38,7 @@ private:
     Animation& operator=(const Animation&);
 
 public:
-    Animation(Subsystem& subsystem, const std::string& filename, ZipReader *zip)
-        throw (KeyValueException, AnimationException);
+    Animation(Subsystem& subsystem, const std::string& filename, ZipReader *zip);
     virtual ~Animation();
 
     Tile *get_tile() const;
@@ -96,7 +95,7 @@ private:
     int damage_spread;
     bool stop_sound_if_shot;
 
-    void create_tile(const std::string& filename, ZipReader *zip) throw (Exception);
+    void create_tile(const std::string& filename, ZipReader *zip);
     void cleanup();
 };
 

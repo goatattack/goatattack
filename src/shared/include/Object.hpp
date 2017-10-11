@@ -60,8 +60,7 @@ public:
         _ObjectTypeMAX
     };
 
-    Object(Subsystem& subsystem, const std::string& filename, ZipReader *zip)
-        throw (KeyValueException, ObjectException);
+    Object(Subsystem& subsystem, const std::string& filename, ZipReader *zip);
     virtual ~Object();
 
     Tile *get_tile();
@@ -93,7 +92,7 @@ private:
     double springiness;
     bool spawnable;
 
-    void create_tile(const std::string& filename, ZipReader *zip) throw (Exception);
+    void create_tile(const std::string& filename, ZipReader *zip);
     void cleanup();
 };
 

@@ -62,30 +62,30 @@ protected:
 
 public:
     void stacked_send_data(const Connection *c, unsigned char tournament_id, command_t cmd, flags_t flags,
-        data_len_t len, const void *data) throw (Exception);
+        data_len_t len, const void *data);
 
     void stacked_broadcast_data(unsigned char tournament_id, command_t cmd, flags_t flags,
-        data_len_t len, const void *data) throw (Exception);
+        data_len_t len, const void *data);
 
     void stacked_broadcast_data_synced(unsigned char tournament_id, command_t cmd, flags_t flags,
-        data_len_t len, const void *data) throw (Exception);
+        data_len_t len, const void *data);
 
-    void flush_stacked_send_data(const Connection *c, flags_t flags) throw (Exception);
-    void flush_stacked_broadcast_data(flags_t flags) throw (Exception);
-    void flush_stacked_broadcast_data_synced(flags_t flags) throw (Exception);
+    void flush_stacked_send_data(const Connection *c, flags_t flags);
+    void flush_stacked_broadcast_data(flags_t flags);
+    void flush_stacked_broadcast_data_synced(flags_t flags);
 
     void send_data(const Connection *c, unsigned char tournament_id, command_t cmd, flags_t flags,
-        data_len_t len, const void *data) throw (Exception);
+        data_len_t len, const void *data);
 
     void broadcast_data(unsigned char tournament_id, command_t cmd, flags_t flags, data_len_t len,
-        const void *data) throw (Exception);
+        const void *data);
 
     void broadcast_data_synced(unsigned char tournament_id, command_t cmd, flags_t flags, data_len_t len,
-        const void *data) throw (Exception);
+        const void *data);
 
     void set_server(Server *server);
     void reload_config(hostport_t port, pico_size_t num_players,
-        const std::string& server_name, const std::string& password) throw (Exception);
+        const std::string& server_name, const std::string& password);
 
     hostport_t get_port() const;
 

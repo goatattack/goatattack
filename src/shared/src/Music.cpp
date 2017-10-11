@@ -20,7 +20,6 @@
 #include <cstdlib>
 
 Music::Music(Subsystem& subsystem, const std::string& filename, ZipReader *zip)
-    throw (KeyValueException, MusicException)
     : Properties(filename + ".music", zip), subsystem(subsystem), audio(0),
       do_not_play_in_music_player(false), audio_filename(filename)
 {
@@ -47,9 +46,11 @@ bool Music::get_do_not_play_in_music_player() const {
     return do_not_play_in_music_player;
 }
 
-const Audio *Music::get_audio() const throw (MusicException) {
+const Audio *Music::get_audio() const {
     return audio;
 }
+
+/* -------------------------------------------------------------------------- */
 
 ScopeMusicStopper::ScopeMusicStopper(Subsystem& subsystem, Music *music)
     : subsystem(subsystem), music(music)

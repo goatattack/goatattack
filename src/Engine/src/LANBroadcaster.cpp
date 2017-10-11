@@ -18,7 +18,7 @@
 #include "LANBroadcaster.hpp"
 #include "Scope.hpp"
 
-LANBroadcaster::LANBroadcaster(I18N& i18n, hostport_t port) throw (LANBroadcasterException, UDPSocketException)
+LANBroadcaster::LANBroadcaster(I18N& i18n, hostport_t port)
     : MessageSequencer(i18n, port, 0, "", ""), i18n(i18n), port(port), running(false)
 {
     refresh();
@@ -30,7 +30,7 @@ LANBroadcaster::~LANBroadcaster() {
     cleanup();
 }
 
-void LANBroadcaster::start() throw (LANBroadcasterException) {
+void LANBroadcaster::start() {
     if (!running) {
         running = true;
         if (!thread_start()) {
@@ -46,7 +46,7 @@ void LANBroadcaster::stop() {
     }
 }
 
-void LANBroadcaster::refresh() throw (Exception) {
+void LANBroadcaster::refresh() {
     request_server_info(INADDR_BROADCAST, port);
 }
 
@@ -60,7 +60,7 @@ Mutex& LANBroadcaster::get_mutex() {
 
 void LANBroadcaster::event_status(hostaddr_t host, hostport_t port,
     const std::string& name, int max_clients, int cur_clients, ms_t ping_time,
-    bool secured, int protocol_version) throw (Exception)
+    bool secured, int protocol_version)
 {
     GameserverInformation *info = 0;
     bool found = false;

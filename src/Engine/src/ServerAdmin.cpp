@@ -53,7 +53,6 @@ ServerAdmin::ServerAdmin(Resources& resources, ClientServer& client_server,
 ServerAdmin::~ServerAdmin() { }
 
 void ServerAdmin::execute(const Connection *c, Player *p, std::string cmd, std::string params)
-    throw (ServerAdminException)
 {
     try {
         instant_trim(cmd);
@@ -90,7 +89,7 @@ bool ServerAdmin::get_admin_server_is_on_client() const {
     return is_client;
 }
 
-void ServerAdmin::update_configuration(const Connection *c) throw (Exception) {
+void ServerAdmin::update_configuration(const Connection *c) {
     hostport_t port = atoi(properties.get_value("port").c_str());
     pico_size_t num_players = atoi(properties.get_value("num_players").c_str());
     const std::string& server_name = properties.get_value("server_name");
@@ -99,7 +98,7 @@ void ServerAdmin::update_configuration(const Connection *c) throw (Exception) {
     server.reload_config(port, num_players, server_name, server_password);
 }
 
-void ServerAdmin::send_i18n_msg(const Connection *c, I18NText id, const char *addon) throw (ServerAdminException) {
+void ServerAdmin::send_i18n_msg(const Connection *c, I18NText id, const char *addon) {
     try {
         size_t msglen;
         AutoPtr<char[]> txtptr(Tournament::create_i18n_response(id, msglen, addon));
@@ -114,12 +113,12 @@ void ServerAdmin::send_i18n_msg(const Connection *c, I18NText id, const char *ad
     }
 }
 
-void ServerAdmin::send_i18n_msg(const Connection *c, I18NText id, const std::string& p1, const std::string& p2) throw (ServerAdminException) {
+void ServerAdmin::send_i18n_msg(const Connection *c, I18NText id, const std::string& p1, const std::string& p2) {
     send_i18n_msg(c, id, (p1 + "\t" + p2).c_str());
 }
 
 /* server functions */
-void ServerAdmin::sc_op(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
+void ServerAdmin::sc_op(const Connection *c, Player *p, const std::string& params) {
     if (params != admin_password && !is_client) {
         send_i18n_msg(c, I18N_SERVE_WRONG_PASSWORD);
     } else if (p->server_admin) {
@@ -134,14 +133,14 @@ void ServerAdmin::sc_op(const Connection *c, Player *p, const std::string& param
     }
 }
 
-void ServerAdmin::sc_deop(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
+void ServerAdmin::sc_deop(const Connection *c, Player *p, const std::string& params) {
     if (check_if_authorized(c, p)) {
         p->server_admin = false;
         send_i18n_msg(0, I18N_SERVE_ADMIN_LEFT, p->get_player_name().c_str());
     }
 }
 
-void ServerAdmin::sc_list(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
+void ServerAdmin::sc_list(const Connection *c, Player *p, const std::string& params) {
     try {
         if (check_if_authorized(c, p)) {
             player_id_t id = atoi(params.c_str());
@@ -163,7 +162,7 @@ void ServerAdmin::sc_list(const Connection *c, Player *p, const std::string& par
     }
 }
 
-void ServerAdmin::sc_kick(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
+void ServerAdmin::sc_kick(const Connection *c, Player *p, const std::string& params) {
     if (check_if_authorized(c, p) && check_if_params(c, params)) {
         player_id_t id = atoi(params.c_str());
         Players& players = server.get_players();
@@ -189,15 +188,15 @@ void ServerAdmin::sc_kick(const Connection *c, Player *p, const std::string& par
     }
 }
 
-void ServerAdmin::sc_ban(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
+void ServerAdmin::sc_ban(const Connection *c, Player *p, const std::string& params) {
     send_i18n_msg(c, I18N_SERVE_NOT_IMPLEMENTED);
 }
 
-void ServerAdmin::sc_unban(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
+void ServerAdmin::sc_unban(const Connection *c, Player *p, const std::string& params) {
     send_i18n_msg(c, I18N_SERVE_NOT_IMPLEMENTED);
 }
 
-void ServerAdmin::sc_next(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
+void ServerAdmin::sc_next(const Connection *c, Player *p, const std::string& params) {
     if (check_if_authorized(c, p) && check_if_no_params(c, params)) {
         if (check_if_is_server(c)) {
             server.delete_tournament();
@@ -206,7 +205,7 @@ void ServerAdmin::sc_next(const Connection *c, Player *p, const std::string& par
     }
 }
 
-void ServerAdmin::sc_map(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
+void ServerAdmin::sc_map(const Connection *c, Player *p, const std::string& params) {
     if (check_if_authorized(c, p)) {
         StringTokens tokens = tokenize(params, ' ');
         if (tokens.size() != 3) {
@@ -239,7 +238,7 @@ void ServerAdmin::sc_map(const Connection *c, Player *p, const std::string& para
     }
 }
 
-void ServerAdmin::sc_reload(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
+void ServerAdmin::sc_reload(const Connection *c, Player *p, const std::string& params) {
     if (check_if_authorized(c, p) && check_if_no_params(c, params)) {
         if (check_if_is_server(c)) {
             try {
@@ -253,7 +252,7 @@ void ServerAdmin::sc_reload(const Connection *c, Player *p, const std::string& p
     }
 }
 
-void ServerAdmin::sc_save(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
+void ServerAdmin::sc_save(const Connection *c, Player *p, const std::string& params) {
     if (check_if_authorized(c, p) && check_if_no_params(c, params)) {
         if (check_if_is_server(c)) {
             try {
@@ -266,7 +265,7 @@ void ServerAdmin::sc_save(const Connection *c, Player *p, const std::string& par
     }
 }
 
-void ServerAdmin::sc_get(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
+void ServerAdmin::sc_get(const Connection *c, Player *p, const std::string& params) {
     if (check_if_authorized(c, p)) {
         StringTokens tokens = tokenize(params, ' ');
         if (tokens.size() != 1) {
@@ -283,7 +282,7 @@ void ServerAdmin::sc_get(const Connection *c, Player *p, const std::string& para
     }
 }
 
-void ServerAdmin::sc_set(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
+void ServerAdmin::sc_set(const Connection *c, Player *p, const std::string& params) {
     if (check_if_authorized(c, p)) {
         StringTokens tokens = tokenize(params, ' ', 2);
         if (tokens.size() != 2) {
@@ -300,7 +299,7 @@ void ServerAdmin::sc_set(const Connection *c, Player *p, const std::string& para
     }
 }
 
-void ServerAdmin::sc_reset(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
+void ServerAdmin::sc_reset(const Connection *c, Player *p, const std::string& params) {
     try {
         if (check_if_authorized(c,  p)) {
             StringTokens tokens = tokenize(params, ' ');
@@ -317,11 +316,11 @@ void ServerAdmin::sc_reset(const Connection *c, Player *p, const std::string& pa
     }
 }
 
-void ServerAdmin::sc_vote(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
+void ServerAdmin::sc_vote(const Connection *c, Player *p, const std::string& params) {
     send_i18n_msg(c, I18N_SERVE_NOT_IMPLEMENTED);
 }
 
-void ServerAdmin::sc_stats(const Connection *c, Player *p, const std::string& params) throw (ServerAdminException) {
+void ServerAdmin::sc_stats(const Connection *c, Player *p, const std::string& params) {
     if (check_if_authorized(c, p)) {
         try {
             player_id_t id = atoi(params.c_str());
@@ -359,7 +358,7 @@ void ServerAdmin::sc_stats(const Connection *c, Player *p, const std::string& pa
 }
 
 /* helper functions */
-bool ServerAdmin::check_if_authorized(const Connection *c, Player *p) throw (ServerAdminException) {
+bool ServerAdmin::check_if_authorized(const Connection *c, Player *p) {
     if (!p->server_admin) {
         send_i18n_msg(c, I18N_SERVE_NOT_AUTHORIZED);
         return false;
@@ -368,7 +367,7 @@ bool ServerAdmin::check_if_authorized(const Connection *c, Player *p) throw (Ser
     return true;
 }
 
-bool ServerAdmin::check_if_params(const Connection *c, const std::string& params) throw (ServerAdminException) {
+bool ServerAdmin::check_if_params(const Connection *c, const std::string& params) {
     if (!params.length()) {
         send_i18n_msg(c, I18N_SERVE_PARM_MISSING);
         return false;
@@ -377,7 +376,7 @@ bool ServerAdmin::check_if_params(const Connection *c, const std::string& params
     return true;
 }
 
-bool ServerAdmin::check_if_no_params(const Connection *c, const std::string& params) throw (ServerAdminException) {
+bool ServerAdmin::check_if_no_params(const Connection *c, const std::string& params) {
     if (params.length()) {
         send_i18n_msg(c, I18N_SERVE_NO_PARM_NEEDED);
         return false;
@@ -386,7 +385,7 @@ bool ServerAdmin::check_if_no_params(const Connection *c, const std::string& par
     return true;
 }
 
-bool ServerAdmin::check_if_is_server(const Connection *c) throw (ServerAdminException) {
+bool ServerAdmin::check_if_is_server(const Connection *c) {
     if (is_client) {
         send_i18n_msg(c, I18N_NO_DEDICATED_SERVER);
         return false;

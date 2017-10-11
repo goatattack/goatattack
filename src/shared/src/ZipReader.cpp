@@ -21,9 +21,7 @@
 #include <cerrno>
 #include <cstring>
 
-ZipReader::ZipReader(const std::string& filename) throw (ZipReaderException)
-    : Zip(filename)
-{
+ZipReader::ZipReader(const std::string& filename) : Zip(filename) {
     size_t sz;
     unsigned char *ptr;
 
@@ -116,7 +114,7 @@ bool ZipReader::equals_directory(const File& file, const std::string& directory)
     return false;
 }
 
-const char *ZipReader::extract(std::string filename, size_t *out_sz) throw (ZipReaderException) {
+const char *ZipReader::extract(std::string filename, size_t *out_sz) {
     std::replace(filename.begin(), filename.end(), '\\', '/');
     const File& file = get_file(filename);
 
@@ -194,11 +192,11 @@ void ZipReader::destroy(const char *data) {
     }
 }
 
-void ZipReader::throw_corrupt_file(const std::string& filename) throw (ZipReaderException) {
+void ZipReader::throw_corrupt_file(const std::string& filename) {
     throw ZipReaderException("Corrupt package file: " + filename);
 }
 
-void ZipReader::throw_inflate_failed(z_stream *z, const char *data, const std::string& filename) throw (ZipReaderException) {
+void ZipReader::throw_inflate_failed(z_stream *z, const char *data, const std::string& filename) {
     if (z) {
         inflateEnd(z);
     }
@@ -208,7 +206,7 @@ void ZipReader::throw_inflate_failed(z_stream *z, const char *data, const std::s
     throw ZipReaderException("Inflate failed: " + filename);
 }
 
-const ZipReader::File& ZipReader::get_file(const std::string& filename) throw (ZipReaderException) {
+const ZipReader::File& ZipReader::get_file(const std::string& filename) {
     for (Files::iterator it = files.begin(); it != files.end(); it++) {
         const File& file = *it;
         if (file.filename == filename) {

@@ -37,8 +37,7 @@ private:
     Lightmap& operator=(const Lightmap&);
 
 public:
-    Lightmap(Subsystem& subsystem, const std::string& filename, ZipReader *zip = 0)
-        throw (LightmapException);
+    Lightmap(Subsystem& subsystem, const std::string& filename, ZipReader *zip = 0);
     virtual ~Lightmap();
 
     Tile *get_tile(int x, int y);
@@ -52,7 +51,7 @@ private:
     int height;
     float alpha;
 
-    void create_tile(const std::string& filename, ZipReader *zip) throw (Exception);
+    void create_tile(const std::string& filename, ZipReader *zip);
     void cleanup();
 };
 
