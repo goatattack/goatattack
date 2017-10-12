@@ -27,6 +27,7 @@ const I18NText Tile::TypeDescription[] = {
     I18N_TILETYPE07, // "jump, no descend"
     I18N_TILETYPE08, // "speed race finish"
     I18N_TILETYPE09, // "hill zone"
+    I18N_TILETYPE10, // "falling only blocking (single)"
 };
 
 Tile::Tile(TileGraphic *tilegraphic, bool background, TileType tile_type,

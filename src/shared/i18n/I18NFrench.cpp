@@ -35,6 +35,7 @@ const I18N::Text I18N::all_texts_french[] = {
     { I18N_TILETYPE07, "jump, no descend" },
     { I18N_TILETYPE08, "fin de course" },
     { I18N_TILETYPE09, "zone de colline" },
+    { I18N_TILETYPE10, "bloquant juste la descente (isolé)" },
 
     { I18N_WINTITLE_GAME, "Goat Attack" },
     { I18N_WINTITLE_EDITOR, "Goat Attack - Éditeur de cartes" },

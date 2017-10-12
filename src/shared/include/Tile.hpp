@@ -43,6 +43,7 @@ public:
         TileTypeFallingOnlyBlockingNoDescending,
         TileTypeSpeedraceFinish,
         TileTypeHillZone,
+        TileTypeFallingOnlyBlockingSingle,
         _TileTypeMAX
     };
 

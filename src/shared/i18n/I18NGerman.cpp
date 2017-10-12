@@ -35,6 +35,7 @@ const I18N::Text I18N::all_texts_german[] = {
     { I18N_TILETYPE07, "springen, nicht durchfallbar" },
     { I18N_TILETYPE08, "Speed Race Ende" },
     { I18N_TILETYPE09, "Hill Zone" },
+    { I18N_TILETYPE10, "nur fallend blockierend (einzeln)" },
 
     { I18N_WINTITLE_GAME, "Goat Attack" },
     { I18N_WINTITLE_EDITOR, "Goat Attack Karteneditor" },

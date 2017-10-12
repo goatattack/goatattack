@@ -887,6 +887,7 @@ bool Tournament::tile_collision(TestType type, Player *p,
 
         case Tile::TileTypeFallingOnlyBlocking:
         case Tile::TileTypeFallingOnlyBlockingNoDescending:
+        case Tile::TileTypeFallingOnlyBlockingSingle:
             switch (type) {
                 case TestTypeNormal:
                     return false;
@@ -905,6 +906,7 @@ bool Tournament::tile_collision(TestType type, Player *p,
                         {
                             return test;
                         } else {
+                            return (tt == Tile::TileTypeFallingOnlyBlockingSingle ? test : false);
                             return false;
                         }
                     }

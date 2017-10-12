@@ -35,6 +35,7 @@ const I18N::Text I18N::all_texts_portuguese[] = {
     { I18N_TILETYPE07, "salta, não desce" },
     { I18N_TILETYPE08, "speed race fim" },
     { I18N_TILETYPE09, "hill zone" },
+    { I18N_TILETYPE10, "bloquear por cima (isolado)" },
 
     { I18N_WINTITLE_GAME, "Goat Attack" },
     { I18N_WINTITLE_EDITOR, "Goat Attack Editor de Mapa" },
