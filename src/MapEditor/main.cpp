@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
         /* load SDL subsystem */
         SubsystemSDL subsystem(stream, i18n, i18n(I18N_WINTITLE_EDITOR), config.get_bool("shading_pipeline"));
         subsystem.set_keep_pictures(true);
-        Resources resources(subsystem, STRINGIZE_VALUE_OF(DATA_DIRECTORY), true);
+        Resources resources(subsystem, STRINGIZE_VALUE_OF(DATA_DIRECTORY), true, false);
 
         /* setup base view options */
         subsystem.initialize(resources);

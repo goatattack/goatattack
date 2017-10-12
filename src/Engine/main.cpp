@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
 # else
         const char *data_directory = (parm ? parm : STRINGIZE_VALUE_OF(DATA_DIRECTORY));
 # endif
-        Resources resources(subsystem, data_directory);
+        Resources resources(subsystem, data_directory, false, true);
 #endif
         Game game(resources, subsystem, config);
         game.run(parm ? parm : "");
