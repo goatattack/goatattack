@@ -22,10 +22,10 @@ install:
 
 script:
     - autoreconf -i
-    - CPPFLAGS="-I/usr/include/freetype2" ./configure --enable-map-editor --enable-non-free-pak
+    - ./configure --enable-map-editor --enable-non-free-pak
     - make -j`nproc`
     - sudo make install-strip
     - make clean
-    - CPPFLAGS="-I/usr/include/freetype2" ./configure --enable-dedicated-server --enable-master-server
+    - ./configure --enable-dedicated-server --enable-master-server
     - make -j`nproc`
     - sudo make install-strip
