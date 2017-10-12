@@ -1,3 +1,8 @@
+0.5.0
+- appended freetype2 standard include path
+- load solely packaged maps in game
+- prevent saving packaged tilesets in map editor
+
 0.4.5
 - changed to freetype font rendering (latin, greek and cyrillic)
 - I18N support

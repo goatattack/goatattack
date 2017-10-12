@@ -1,6 +1,6 @@
 # Goat Attack
 
-[![version](https://img.shields.io/badge/version-0.4.5-lightgrey.svg)](https://github.com/goatattack/goatattack/blob/next/ChangeLog)
+[![version](https://img.shields.io/badge/version-0.5.0--dev-lightgrey.svg)](https://github.com/goatattack/goatattack/blob/next/ChangeLog)
 [![travis](https://img.shields.io/travis/goatattack/goatattack.svg)](https://travis-ci.org/goatattack/goatattack)
 [![hash](https://img.shields.io/badge/base.pak-015526bc5e36c171-orange.svg)](https://github.com/goatattack/goatattack/tree/next/data/free)
 [![license](https://img.shields.io/github/license/goatattack/goatattack.svg)](https://github.com/goatattack/goatattack/blob/next/COPYING)
