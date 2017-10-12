@@ -50,6 +50,8 @@ public:
     void set_value(const std::string& key, bool value, bool no_touch = false);
     void read(const std::string& filename, ZipReader *zip = 0);
     void save(const std::string& filename);
+    bool can_be_saved();
+    void save_test();
     bool is_modified() const;
     void touch();
     void untouch();

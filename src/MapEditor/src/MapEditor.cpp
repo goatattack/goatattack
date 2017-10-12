@@ -2044,7 +2044,12 @@ void MapEditor::ts_properties_click() {
     ww = window->get_client_width();
     wh = window->get_client_height();
 
-    Tile *tile = wmap->get_tileset_ptr()->get_tile(selected_tile_index);
+    Tileset *ts = wmap->get_tileset_ptr();
+    if (!ts->can_be_saved()) {
+        TileGraphic *lock_icon = resources.get_icon("me_pack")->get_tile()->get_tilegraphic();
+        create_picture(window, ww - lock_icon->get_width() - Spc, Spc, lock_icon);
+    }
+    Tile *tile = ts->get_tile(selected_tile_index);
     tsp_background = create_checkbox(window, Spc, Spc, i18n(I18N_ME_TP_BACKGROUND), tile->is_background(), 0, 0);
     tsp_light_blocking = create_checkbox(window, Spc, Spc + 15, i18n(I18N_ME_TP_BLOCKS_LIGHT), tile->is_light_blocking(), 0, 0);
 
@@ -2079,6 +2084,7 @@ void MapEditor::static_ts_properties_ok_click(GuiVirtualButton *sender, void *da
 
 void MapEditor::ts_properties_ok_click() {
     try {
+        wmap->get_tileset_ptr()->save_test();
         Tile *tile = wmap->get_tileset_ptr()->get_tile(selected_tile_index);
         tile->set_is_background(tsp_background->get_state());
         tile->set_light_blocking(tsp_light_blocking->get_state());

@@ -171,6 +171,14 @@ void KeyValue::save(const std::string& filename) {
     modified = false;
 }
 
+bool KeyValue::can_be_saved() {
+    return !is_zip_file();
+}
+
+void KeyValue::save_test() {
+    modify_zip_file_test();
+}
+
 bool KeyValue::is_modified() const {
     return modified;
 }
