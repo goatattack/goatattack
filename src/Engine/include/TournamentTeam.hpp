@@ -70,6 +70,7 @@ protected:
     virtual bool friendly_fire_alarm(GFriendyFireAlarm *alarm);
     virtual void draw_enemies_on_hud();
     virtual void reopen_join_window(Player *p);
+    virtual bool is_team_tournament() const;
 
     void send_team_score();
     int draw_team_stats(Font* f, int x, int y, playerflags_t flags);

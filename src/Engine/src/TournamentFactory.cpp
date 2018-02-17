@@ -72,10 +72,14 @@ Tournament *TournamentFactory::create_tournament(const MapConfiguration& config,
             break;
     }
 
-    if (tournament && server) {
-        tournament_id++;
-        if (logger) {
-            logger->log(ServerLogger::LogTypeNewMap, subsystem.get_i18n()(I18N_TNMT_NEW_MAP_LOADED));
+    if (tournament) {
+        if (server) {
+            tournament_id++;
+            if (logger) {
+                logger->log(ServerLogger::LogTypeNewMap, subsystem.get_i18n()(I18N_TNMT_NEW_MAP_LOADED));
+            }
+        } else {
+            tournament->set_server_name(server_name);
         }
     }
 
@@ -95,5 +99,12 @@ void TournamentFactory::set_tournament_server_flags(Properties& properties, Tour
         tournament->set_flag(Tournament::SettingEnableFriendlyFire, to_bool(properties.get_value("friendly_fire_alarm")));
         tournament->set_flag(Tournament::SettingEnableShotExplosives, to_bool(properties.get_value("shot_explosives")));
         tournament->set_flag(Tournament::SettingEnablePreventPick, to_bool(properties.get_value("prevent_pick")));
+    }
+}
+
+void TournamentFactory::set_server_name(Tournament *tournament, const std::string& name) {
+    server_name = name;
+    if (tournament) {
+        tournament->set_server_name(server_name);
     }
 }

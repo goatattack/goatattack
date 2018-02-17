@@ -232,7 +232,7 @@ void ServerAdmin::sc_map(const Connection *c, Player *p, const std::string& para
                 server.set_temporary_map_config(true);
 
                 server.delete_tournament();
-                send_i18n_msg(0, I18N_SERVE_MAP_LOADED, p->get_characterset_name(), config.map_name);
+                send_i18n_msg(0, I18N_SERVE_MAP_LOADED, p->get_player_name(), config.map_name);
             }
         }
     }

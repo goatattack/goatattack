@@ -233,6 +233,21 @@ Shader *Resources::get_shader(const std::string& name) {
     throw ResourcesException(i18n(I18N_RES_SHADER_NOT_FOUND, name));
 }
 
+Icon *Resources::get_flag_from_name(std::string& name) {
+    Icon *flag = 0;
+    if (name.length() && name[0] == '[') {
+        std::string::size_type pos = name.find(']', 0);
+        if (pos != std::string::npos) {
+            flag = get_flag(name.substr(1, pos - 1), true);
+            if (flag) {
+                name = name.substr(pos + 1);
+            }
+        }
+    }
+
+    return flag;
+}
+
 Icon *Resources::get_flag(const std::string& name, bool no_throw) {
     Icon *o = find_object<Icon>(flags, name);
     if (!o && !no_throw) {

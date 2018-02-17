@@ -39,6 +39,10 @@ const char *TournamentDM::tournament_type() {
     return "DM";
 }
 
+std::string TournamentDM::get_game_type_name() const {
+    return i18n(I18N_MAINMENU_GM_DM);
+}
+
 void TournamentDM::write_stats_in_server_log() {
     std::vector<Player *> ranking;
 
@@ -100,7 +104,7 @@ void TournamentDM::draw_statistics() {
     subsystem.set_color(0.25f, 0.0f, 0.0f, alpha);
     subsystem.draw_box(x + 1, y + 1, ww - 2, wh - 2);
 
-    /* draw black bars */
+    /* draw black bar */
     subsystem.set_color(0.0f, 0.0f, 0.0f, alpha);
     subsystem.draw_box(x + 10, y + 15, ww - 20, 21);
 

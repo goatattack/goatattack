@@ -35,6 +35,7 @@ public:
     virtual ~TournamentDM();
 
     virtual const char *tournament_type();
+    virtual std::string get_game_type_name() const;
     virtual void write_stats_in_server_log();
 
     virtual void frag_point(Player *pfrag, Player *pkill);

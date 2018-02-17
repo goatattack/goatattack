@@ -36,6 +36,7 @@ public:
     virtual ~TournamentCTF();
 
     virtual const char *tournament_type();
+    virtual std::string get_game_type_name() const;
     virtual void update_wearable_remaining(GTimeRemaining *remain);
 
 private:

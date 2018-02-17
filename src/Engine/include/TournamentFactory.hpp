@@ -50,12 +50,14 @@ public:
     unsigned char get_tournament_id() const;
     void set_tournament_id(unsigned char id);
     void set_tournament_server_flags(Properties& properties, Tournament *tournament);
+    void set_server_name(Tournament *tournament, const std::string& name);
 
 private:
     Resources& resources;
     Subsystem& subsystem;
     Gui *gui;
     unsigned char tournament_id;
+    std::string server_name;
 };
 
 #endif

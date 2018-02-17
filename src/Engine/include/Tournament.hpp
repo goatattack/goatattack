@@ -190,6 +190,9 @@ public:
     void show_stats(bool state);
     void update_states(ns_t ns);
     void set_lagometer(Lagometer *lagometer);
+    bool in_lobby() const;
+    void leave_lobby();
+    void set_server_name(const std::string& name);
 
     void add_animation(GAnimation *animation);
     void remove_animation(identifier_t id);
@@ -245,6 +248,7 @@ public:
     virtual void generic_data_delivery(void *data);
 
     void destroy_generic_data_list(GenericData *data);
+    virtual bool is_team_tournament() const;
 
 protected:
     static const ns_t ns_fc = 10000000;   /* for 0.01 s */
@@ -298,6 +302,8 @@ protected:
     Icon *screw3;
     Icon *screw4;
     bool last_button_a_state;
+    bool last_button_b_state;
+    bool last_button_team_select_state;
     bool warmup;
     Icon *tournament_icon;
     Icon *lives_full;
@@ -330,6 +336,8 @@ protected:
     bool has_frogs;
     double frog_respawn_counter;
     int frog_spawn_init;
+
+    std::string server_name;
 
     enum TestType {
         TestTypeNormal,
@@ -391,6 +399,7 @@ protected:
     void draw_text_animations();
     void draw_player_names();
     void draw_hud();
+    void draw_lobby();
 
     void player_dies(Player *p, I18NText id, const char *addon = 0);
     void join_handling();
@@ -416,6 +425,7 @@ protected:
     virtual void draw_player_addons();
     virtual void draw_team_colours();
     virtual void draw_statistics();
+    virtual void draw_lobby_players(int x, int y, int w, int h);
     virtual void draw_enemies_on_hud();
     virtual bool pick_item(Player *p, GameObject *obj);
     virtual bool tile_collision(TestType type, Player *p,
@@ -424,6 +434,7 @@ protected:
     virtual void frag_point(Player *pfrag, Player *pkill) = 0;
     virtual void player_join_request(Player *p);
     virtual void check_friendly_fire(identifier_t owner, Player *p);
+    virtual std::string get_game_type_name() const;
 
     template <class T> static bool erase_element(T *elem) {
         if (elem->delete_me) {

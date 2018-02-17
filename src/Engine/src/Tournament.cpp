@@ -52,7 +52,8 @@ Tournament::Tournament(Resources& resources, Subsystem& subsystem, Gui *gui, Ser
       player_afk_index(0), player_configuration(0), show_statistics(false),
       screw1(resources.get_icon("screw1")), screw2(resources.get_icon("screw2")),
       screw3(resources.get_icon("screw1")), screw4(resources.get_icon("screw2")),
-      last_button_a_state(false), warmup(warmup), tournament_icon(0),
+      last_button_a_state(false), last_button_b_state(false),
+      last_button_team_select_state(false), warmup(warmup), tournament_icon(0),
       lives_full(resources.get_icon("lives")),
       lives_half(resources.get_icon("lives_half")),
       lives_empty(resources.get_icon("lives_empty")),
@@ -891,6 +892,10 @@ void Tournament::update_wearable_remaining(GTimeRemaining *remain) { }
 
 void Tournament::check_friendly_fire(identifier_t owner, Player *p) { }
 
+std::string Tournament::get_game_type_name() const { return ""; }
+
+bool Tournament::is_team_tournament() const { return false; }
+
 bool Tournament::friendly_fire_alarm(GFriendyFireAlarm *alarm) {
     return false;
 }
@@ -946,6 +951,18 @@ void Tournament::add_i18n_response(I18NText id, const std::string& p1, const std
 
 void Tournament::set_lagometer(Lagometer *lagometer) {
     this->lagometer = lagometer;
+}
+
+bool Tournament::in_lobby() const {
+    return ((game_state.flags & GameStateFlagLobby) != 0);
+}
+
+void Tournament::leave_lobby() {
+    game_state.flags &= ~GameStateFlagLobby;
+}
+
+void Tournament::set_server_name(const std::string& name) {
+    server_name = name;
 }
 
 void Tournament::retrieve_flags() {

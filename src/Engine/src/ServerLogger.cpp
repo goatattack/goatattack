@@ -67,6 +67,7 @@ void ServerLogger::log(LogType type, const std::string& text, Player *p1, Player
                     make_quote(p1->get_player_name()).c_str());
                 break;
 
+            case LogTypeInTheLobby:
             case LogTypeWarmUp:
             case LogTypeGameBegins:
             case LogTypeGameOver:

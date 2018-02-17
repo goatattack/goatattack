@@ -70,6 +70,7 @@ public:
         LogTypePlayerNameChange,    /* 038 */
         LogTypeMapClosed,           /* 039 */
         LogTypeLeft,                /* 040 */
+        LogTypeInTheLobby,          /* 041 */
         _LogTypeMAX
     };
 

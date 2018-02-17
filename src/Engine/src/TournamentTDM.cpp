@@ -35,6 +35,10 @@ const char *TournamentTDM::tournament_type() {
     return "TDM";
 }
 
+std::string TournamentTDM::get_game_type_name() const {
+    return i18n(I18N_MAINMENU_GM_TDM);
+}
+
 void TournamentTDM::team_fire_point(Player *penem, Team team, int points) {
     if (team == TeamRed) {
         score.score_red += points;

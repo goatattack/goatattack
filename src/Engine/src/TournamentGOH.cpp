@@ -43,6 +43,10 @@ const char *TournamentGOH::tournament_type() {
     return "GOH";
 }
 
+std::string TournamentGOH::get_game_type_name() const {
+    return i18n(I18N_MAINMENU_GM_GOH);
+}
+
 void TournamentGOH::team_fire_point(Player *penem, Team team, int points) { }
 
 void TournamentGOH::score_transport_raw(void *data) {

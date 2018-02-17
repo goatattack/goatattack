@@ -157,6 +157,11 @@ const I18N::Text I18N::all_texts_french[] = {
     { I18N_TNMT_NEW_MAP_LOADED, "nouvelle carte chargée" },
     { I18N_TNMT_SPECTATING, "SPECTATEUR" },
     { I18N_TNMT_WARMUP, "ÉCHAUFFEMENT" },
+    { I18N_TNMT_LOBBY_TITLE, "LOBBY" },
+    { I18N_TNMT_LOBBY_SERVER, "SERVER" },       // TODO
+    { I18N_TNMT_LOBBY_PLAYERS, "PLAYERS" },     // TODO
+    { I18N_TNMT_LOBBY_START, "READY WITH FIRE" }, // TODO
+    { I18N_TNMT_LOBBY_SELECT_START, "SELECT TEAM, READY WITH FIRE" }, // TODO
     { I18N_TNMT_SB_CTC_TITLE, "ATTRAPEZ LA PIÈCE" },
     { I18N_TNMT_SB_PLAYER, "JOUEUR" },
     { I18N_TNMT_SB_TOTAL, "TOTAL" },
@@ -214,6 +219,7 @@ const I18N::Text I18N::all_texts_french[] = {
     { I18N_TNMT_TEAM_RED_CAP, "ÉQUIPE ROUGE" },
     { I18N_TNMT_TEAM_BLUE_CAP, "ÉQUIPE BLEUE" },
 
+    { I18N_SERVE_LOBBY, "dans le lobby" },
     { I18N_SERVE_WARM_UP, "échauffement" },
     { I18N_SERVE_GAME_BEGINS, "la partie commence" },
     { I18N_SERVE_CONNECT, "${1} s'est connecté" },

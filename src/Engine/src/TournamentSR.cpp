@@ -52,6 +52,10 @@ const char *TournamentSR::tournament_type() {
     return "SR";
 }
 
+std::string TournamentSR::get_game_type_name() const {
+    return i18n(I18N_MAINMENU_GM_SR);
+}
+
 void TournamentSR::write_stats_in_server_log() {
     int rank = 0;
     float last_best_time = 0.0f;

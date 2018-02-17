@@ -225,15 +225,17 @@ void Server::thread() {
                     if (!tournament) {
                         new_tournament = true;
                     } else {
-                        if (!tournament->get_game_state().seconds_remaining) {
-                            if (warmup) {
-                                new_tournament = true;
-                            } else {
-                                /* count down score board */
-                                score_board_counter -= diff_milliseconds;
-                                if (score_board_counter <= 0) {
-                                    score_board_counter = 0;
+                        if (!(tournament->get_game_state().flags & GameStateFlagLobby)) {
+                            if (!tournament->get_game_state().seconds_remaining) {
+                                if (warmup) {
                                     new_tournament = true;
+                                } else {
+                                    /* count down score board */
+                                    score_board_counter -= diff_milliseconds;
+                                    if (score_board_counter <= 0) {
+                                        score_board_counter = 0;
+                                        new_tournament = true;
+                                    }
                                 }
                             }
                         }
@@ -252,6 +254,7 @@ void Server::thread() {
                             gt.gametype = static_cast<unsigned char>(current_config->type);
                             gt.tournament_id = factory.get_tournament_id();
                             gt.flags |= (warmup ? TournamentFlagWarmup : 0);
+                            gt.flags |= (tournament->in_lobby() ? 0 : TournamentFlagNotInLobby);
                             gt.to_net();
                             stacked_broadcast_data_synced(factory.get_tournament_id(), GPCMapState, NetFlagsReliable, GTournamentLen, &gt);
 
@@ -290,14 +293,25 @@ void Server::thread() {
                             {
                                 Player *p = *it;
                                 if (p->client_synced) {
+                                    bool team_selected = ((p->state.server_state.flags & PlayerServerFlagTeamSelected) != 0);
                                     if (switch_to_game) {
                                         p->clear();
-                                        if (!(p->state.server_state.flags & PlayerServerFlagSpectating)) {
+                                        if (team_selected) {
+                                            p->state.server_state.flags |= PlayerServerFlagTeamSelected;
+                                            if (!(p->state.server_state.flags & PlayerServerFlagSpectating)) {
+                                                tournament->spawn_player(p);
+                                                p->state.server_state.flags &= ~PlayerServerFlagDead;
+                                            }
+                                        } else if (!(p->state.server_state.flags & PlayerServerFlagSpectating)) {
                                             tournament->spawn_player(p);
                                             p->state.server_state.flags &= ~PlayerServerFlagDead;
                                         }
                                     } else {
+                                        flags_t flags = p->state.server_state.flags & (PlayerServerFlagTeamRed | PlayerServerFlagTeamSelected);
                                         p->reset();
+                                        if (team_selected) {
+                                            p->state.server_state.flags |= flags;
+                                        }
                                     }
                                 }
                                 GPlayerInfo info;
@@ -331,14 +345,20 @@ void Server::thread() {
                             /* send ready */
                             stacked_broadcast_data_synced(factory.get_tournament_id(), GPCReady, NetFlagsReliable, 0, 0);
 
-                            /* send notification */
-                            stacked_broadcast_data_synced(factory.get_tournament_id(), (warmup ? GPCWarmUp : GPCGameBegins), NetFlagsReliable, 0, 0);
+                            /* warm up or begin */
+                            if (!tournament->in_lobby()) {
+                                /* send notification */
+                                stacked_broadcast_data_synced(factory.get_tournament_id(), (warmup ? GPCWarmUp : GPCGameBegins), NetFlagsReliable, 0, 0);
 
-                            /* server log */
-                            if (warmup) {
-                                logger.log(ServerLogger::LogTypeWarmUp, ClientServer::i18n(I18N_SERVE_WARM_UP));
+                                /* server log */
+                                if (warmup) {
+                                    logger.log(ServerLogger::LogTypeWarmUp, ClientServer::i18n(I18N_SERVE_WARM_UP));
+                                } else {
+                                    logger.log(ServerLogger::LogTypeGameBegins, ClientServer::i18n(I18N_SERVE_GAME_BEGINS));
+                                }
                             } else {
-                                logger.log(ServerLogger::LogTypeGameBegins, ClientServer::i18n(I18N_SERVE_GAME_BEGINS));
+                                /* server log */
+                                logger.log(ServerLogger::LogTypeInTheLobby, ClientServer::i18n(I18N_SERVE_LOBBY));
                             }
 
                             /* flush */
@@ -347,6 +367,7 @@ void Server::thread() {
                     } else {
                         /* broadcast */
                         done = false;
+                        bool leave_lobby = false;
                         send_counter++;
                         if (send_counter >= BroadcastCount) {
                             if (hold_disconnected_players) {
@@ -361,7 +382,9 @@ void Server::thread() {
 
                                 /* update player position and state */
                                 done = true;
-                                if (players.size()) {
+                                std::size_t psz = players.size();
+                                std::size_t prdy = 0;
+                                if (psz) {
                                     GPTAllStates stat;
                                     for (Players::iterator it = players.begin(); it != players.end(); it++) {
                                         Player *p = *it;
@@ -378,7 +401,16 @@ void Server::thread() {
                                             stat.to_net();
                                             stacked_broadcast_data_synced(factory.get_tournament_id(), GPCUpdatePlayerState, 0, GPTAllStatesLen, &stat);
                                         }
+                                        if (p->state.server_state.flags & PlayerServerFlagIsReady) {
+                                            ++prdy;
+                                        }
                                     }
+                                }
+
+                                /* if all players in lobby are ready -> start */
+                                if (tournament->in_lobby() && psz == prdy) {
+                                    tournament->leave_lobby();
+                                    leave_lobby = true;
                                 }
 
                                 /* update objects */
@@ -423,6 +455,21 @@ void Server::thread() {
                             }
                             /* flush */
                             flush_stacked_broadcast_data_synced(0);
+
+                            /* leavy lobby? */
+                            if (leave_lobby) {
+                                /* send notification */
+                                stacked_broadcast_data_synced(factory.get_tournament_id(), GPCLeaveLobby, NetFlagsReliable, 0, 0);
+                                stacked_broadcast_data_synced(factory.get_tournament_id(), (warmup ? GPCWarmUp : GPCGameBegins), NetFlagsReliable, 0, 0);
+                                flush_stacked_broadcast_data_synced(NetFlagsReliable);
+
+                                /* server log */
+                                if (warmup) {
+                                    logger.log(ServerLogger::LogTypeWarmUp, ClientServer::i18n(I18N_SERVE_WARM_UP));
+                                } else {
+                                    logger.log(ServerLogger::LogTypeGameBegins, ClientServer::i18n(I18N_SERVE_GAME_BEGINS));
+                                }
+                            }
                         }
 
                         /* special player broadcasts? */
@@ -689,6 +736,7 @@ void Server::event_data(const Connection *c, data_len_t len, void *data) {
                         memcpy(chat_msg->data, data_ptr, t->len);
                         chat_msg->to_net();
                         broadcast_data(0, GPCChatMessage, NetFlagsReliable, GChatMessageLen + t->len, chat_msg);
+                        logger.log(ServerLogger::LogTypeChatMessage, std::string(reinterpret_cast<const char *>(data_ptr), t->len), p);
                     }
                     break;
                 }
@@ -864,6 +912,38 @@ void Server::event_data(const Connection *c, data_len_t len, void *data) {
                     }
                     break;
                 }
+
+                case GPSLobbyReadyRequest:
+                {
+                    if (t->tournament_id == factory.get_tournament_id()) {
+                        if (p->client_synced) {
+                            if (tournament && tournament->get_game_state().flags & GameStateFlagLobby) {
+                                if (!(p->state.server_state.flags & PlayerServerFlagIsReady)) {
+                                    p->state.server_state.flags |= PlayerServerFlagIsReady;
+                                    p->state.server_state.flags |= PlayerServerFlagTeamSelected;
+                                }
+                            }
+                        }
+                    }
+                    break;
+                }
+
+                case GPSLobbyTeamRedSelect:
+                case GPSLobbyTeamBlueSelect:
+                {
+                    if (t->tournament_id == factory.get_tournament_id()) {
+                        if (p->client_synced) {
+                            if (tournament && tournament->get_game_state().flags & GameStateFlagLobby && tournament->is_team_tournament()) {
+                                if (t->cmd == GPSLobbyTeamRedSelect) {
+                                    p->state.server_state.flags |= PlayerServerFlagTeamRed;
+                                } else {
+                                    p->state.server_state.flags &= ~PlayerServerFlagTeamRed;
+                                }
+                            }
+                        }
+                    }
+                    break;
+                }
             }
 
             /* advance to next element */
@@ -1006,6 +1086,9 @@ bool Server::select_map() {
     }
 
     tournament = factory.create_tournament(*current_config, true, warmup, players, &logger);
+    if (switch_to_game) {
+        tournament->leave_lobby();
+    }
     factory.set_tournament_server_flags(*this, tournament);
     score_board_counter = 30000;
 

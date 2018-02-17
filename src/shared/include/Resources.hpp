@@ -113,6 +113,7 @@ public:
     Music *get_music(const std::string& name);
     Properties *get_game_settings(const std::string& name);
     Shader *get_shader(const std::string& name);
+    Icon *get_flag_from_name(std::string& name);
     Icon *get_flag(const std::string& name, bool no_throw = false);
 
     ResourceObjects& get_tilesets();

@@ -204,7 +204,7 @@ void MainMenu::idle() {
         {
             const GameserverInformation *info = *it;
             std::string server_name(info->server_name);
-            Icon *flag = get_flag_from_name(server_name);
+            Icon *flag = resources.get_flag_from_name(server_name);
             GuiListboxEntry *entry = play_lan_list->add_entry(flag, FlagWidth, server_name);
             entry->add_column((info->secured ? resources.get_icon("lock") : 0), 9, "", 16);
             sprintf(buffer, "%d/%d", info->cur_clients, info->max_clients);
@@ -233,7 +233,7 @@ void MainMenu::idle() {
             const MasterQueryClient *info = static_cast<MasterQueryClient *>(*it);
             if (info->received) {
                 std::string server_name(info->server_name);
-                Icon *flag = get_flag_from_name(server_name);
+                Icon *flag = resources.get_flag_from_name(server_name);
                 GuiListboxEntry *entry = play_wan_list->add_entry(flag, FlagWidth, server_name);
                 entry->add_column((info->secured ? resources.get_icon("lock") : 0), 9, "", 16);
                 sprintf(buffer, "%d/%d", info->cur_clients, info->max_clients);
@@ -705,7 +705,6 @@ void MainMenu::create_server_click() {
     cs_opt_shooting_explosives = create_checkbox(frsettings, 0, 129, i18n(I18N_MAINMENU_SHOOT_EXPLOSIVES), config.get_bool("shot_explosives"), 0, 0);
     cs_opt_prevent_pick = create_checkbox(frsettings, 0, 144, i18n(I18N_MAINMENU_PREVENT_PICK), config.get_bool("prevent_pick"), 0, 0);
 
-
     /* buttons */
     std::string btn_start(i18n(I18N_BUTTON_START_SERVER));
     int bw_start = f->get_text_width(btn_start) + 24;
@@ -718,7 +717,6 @@ void MainMenu::create_server_click() {
     text = i18n(I18N_BUTTON_CANCEL);
     bw = f->get_text_width(text) + 24;
     create_button(window, ww - bw - 14, wh - 46, bw, 18, text, static_close_window_click, this);
-
 }
 
 bool MainMenu::MapEntryCompare(const MapEntry& lhs, const MapEntry& rhs) {
@@ -1133,19 +1131,4 @@ void MainMenu::set_version_label() {
         Icon *beta_icon = resources.get_icon("beta");
         create_picture(main_window, mw_w / 2 + tw / 2, mw_h - 32 - Spc - 3, beta_icon->get_tile()->get_tilegraphic())->set_follow_alpha(false);
     }
-}
-
-Icon *MainMenu::get_flag_from_name(std::string& name) {
-    Icon *flag = 0;
-    if (name.length() && name[0] == '[') {
-        std::string::size_type pos = name.find(']', 0);
-        if (pos != std::string::npos) {
-            flag = resources.get_flag(name.substr(1, pos - 1), true);
-            if (flag) {
-                name = name.substr(pos + 1);
-            }
-        }
-    }
-
-    return flag;
 }

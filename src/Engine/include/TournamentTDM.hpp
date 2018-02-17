@@ -34,6 +34,7 @@ public:
     virtual ~TournamentTDM();
 
     virtual const char *tournament_type();
+    virtual std::string get_game_type_name() const;
     virtual void team_fire_point(Player *penem, Team team, int points);
 };
 

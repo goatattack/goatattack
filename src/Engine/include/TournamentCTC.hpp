@@ -28,6 +28,7 @@ public:
     virtual ~TournamentCTC();
 
     virtual const char *tournament_type();
+    virtual std::string get_game_type_name() const;
     virtual void write_stats_in_server_log();
     virtual void update_wearable_remaining(GTimeRemaining *remain);
 

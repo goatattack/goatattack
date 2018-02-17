@@ -38,6 +38,7 @@ void Client::event_status(hostaddr_t host, hostport_t port, const std::string& n
         size_t sz;
         char *p = create_text(msg, sz);
         server_events.push(ServerEvent(EventTypeStatus, 0, p, sz));
+        factory.set_server_name(tournament, name);
     }
 }
 
@@ -186,6 +187,7 @@ void Client::sevt_data(ServerEvent& evt) {
 
                 /* setup tournament */
                 bool warmup = ((tour->flags & TournamentFlagWarmup) != 0);
+                bool leave_lobby = ((tour->flags & TournamentFlagNotInLobby) != 0);
                 GamePlayType type = static_cast<GamePlayType>(tour->gametype);
                 MapConfiguration config(type, tour->map_name, tour->duration, tour->warmup);
                 tournament = factory.create_tournament(config, false, warmup, players, 0);
@@ -193,6 +195,9 @@ void Client::sevt_data(ServerEvent& evt) {
                 tournament->set_following_id(my_id);
                 tournament->set_player_configuration(&player_config);
                 tournament->set_lagometer(show_lagometer ? &lagometer : 0);
+                if (leave_lobby) {
+                    tournament->leave_lobby();
+                }
                 add_text_msg(ClientServer::i18n(I18N_CLIENT_MAP_INFO, tournament->get_map().get_description()));
 
                 /* reopen, if join request window is already open */
@@ -589,6 +594,14 @@ void Client::sevt_data(ServerEvent& evt) {
                 remain->from_net();
                 if (tournament) {
                     tournament->update_wearable_remaining(remain);
+                }
+                break;
+            }
+
+            case GPCLeaveLobby:
+            {
+                if (tournament) {
+                    tournament->leave_lobby();
                 }
                 break;
             }

@@ -55,7 +55,7 @@ public:
     double get_decoration_brightness() const;
     double get_lightmap_alpha() const;
     void create_lightmap();
-    Tile *get_preview();
+    Tile *get_preview() const;
     GamePlayType get_game_play_type() const;
     int get_frog_spawn_init() const;
 
@@ -73,6 +73,7 @@ protected:
     short **map;
     short **decoration;
     Tile *preview;
+    Tile *preview_reference;
     GamePlayType game_play_type;
     int frog_spawn_init;
     std::string zip_filename;

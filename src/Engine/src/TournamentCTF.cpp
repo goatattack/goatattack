@@ -66,6 +66,10 @@ const char *TournamentCTF::tournament_type() {
     return "CTF";
 }
 
+std::string TournamentCTF::get_game_type_name() const {
+    return i18n(I18N_MAINMENU_GM_CTF);
+}
+
 void TournamentCTF::subintegrate(ns_t ns) {
     double period_f = ns / static_cast<double>(ns_fc);
     if (server) {

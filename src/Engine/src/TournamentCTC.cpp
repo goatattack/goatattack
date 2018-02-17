@@ -71,6 +71,10 @@ const char *TournamentCTC::tournament_type() {
     return "CTC";
 }
 
+std::string TournamentCTC::get_game_type_name() const {
+    return i18n(I18N_MAINMENU_GM_CTC);
+}
+
 void TournamentCTC::write_stats_in_server_log() {
     int rank = 0;
     int total;

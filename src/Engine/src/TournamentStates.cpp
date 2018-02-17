@@ -43,6 +43,37 @@ void Tournament::update_states(ns_t ns) {
 void Tournament::integrate(ns_t ns) {
     double period_f = ns / static_cast<double>(ns_fc);
 
+    /* in the lobby? */
+    if (game_state.flags & GameStateFlagLobby) {
+        Player *me = get_me();
+        if (!server && me) {
+            if (!(me->state.server_state.flags & PlayerServerFlagIsReady)) {
+                // ready in lobby?
+                bool button_state = ((me->state.client_server_state.key_states & PlayerKeyStateFire) != 0);
+                if (button_state != last_button_b_state) {
+                    last_button_b_state = button_state;
+                    if (button_state) {
+                        add_state_response(GPSLobbyReadyRequest, 0, 0);
+                    }
+                }
+                if (is_team_tournament()) {
+                    button_state = ((me->state.client_server_state.key_states & PlayerKeyStateJump) != 0);
+                    if (button_state != last_button_team_select_state) {
+                        last_button_team_select_state = button_state;
+                        if (button_state) {
+                            if (me->state.server_state.flags & PlayerServerFlagTeamRed) {
+                                add_state_response(GPSLobbyTeamBlueSelect, 0, 0);
+                            } else {
+                                add_state_response(GPSLobbyTeamRedSelect, 0, 0);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return;
+    }
+
     /* show stats, if game is over? */
     if (!game_state.seconds_remaining) {
         if (!warmup) {

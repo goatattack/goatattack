@@ -303,39 +303,49 @@ void TournamentTeam::frag_point(Player *pfrag, Player *pkill) {
 void TournamentTeam::player_join_request(Player *p) {
     if (!p->joining) {
         p->joining = true;
-        std::string info(i18n(I18N_TNMT_SELECT_TEAM1));
-        TileGraphic *tgr = team_badge_red->get_tile()->get_tilegraphic();
-        TileGraphic *tgb = team_badge_blue->get_tile()->get_tilegraphic();
-        int vw = subsystem.get_view_width();
-        int vh = subsystem.get_view_height();
-        Font *f = resources.get_font("normal");
-        int ww = f->get_text_width(info) + 2 * Gui::Spc;
-        int bh = tgr->get_height() + 5;
-        int fh = f->get_font_height();
-        int wh = 3 * Gui::Spc + 10 + 2 * bh + 2 * fh + 10;
-        GuiButton *btn;
+        if (p->state.server_state.flags & PlayerServerFlagTeamSelected) {
+            Player *me = get_me();
+            if (me) {
+                this->spawn_player(me);
+                playerflags_t *pflags = new playerflags_t;
+                *pflags = me->state.server_state.flags & PlayerServerFlagTeamRed;
+                add_state_response(GPSJoinRequest, sizeof(playerflags_t), pflags);
+            }
+        } else {
+            std::string info(i18n(I18N_TNMT_SELECT_TEAM1));
+            TileGraphic *tgr = team_badge_red->get_tile()->get_tilegraphic();
+            TileGraphic *tgb = team_badge_blue->get_tile()->get_tilegraphic();
+            int vw = subsystem.get_view_width();
+            int vh = subsystem.get_view_height();
+            Font *f = resources.get_font("normal");
+            int ww = f->get_text_width(info) + 2 * Gui::Spc;
+            int bh = tgr->get_height() + 5;
+            int fh = f->get_font_height();
+            int wh = 3 * Gui::Spc + 10 + 2 * bh + 2 * fh + 10;
+            GuiButton *btn;
 
-        if (!nav) {
-            nav = new ButtonNavigator(*gui, *player_configuration);
+            if (!nav) {
+                nav = new ButtonNavigator(*gui, *player_configuration);
+            }
+
+            nav->clear();
+            GuiWindow *window = gui->push_window(vw / 2 - ww / 2, vh / 2 - wh / 2, ww, wh, i18n(I18N_TNMT_SELECT_TEAM2));
+            gui->create_label(window, Gui::Spc, Gui::Spc, info);
+
+            btn = gui->create_button(window, Gui::Spc, Gui::Spc + 15 + Gui::Spc, ww - (2 * Gui::Spc), bh, i18n(I18N_TNMT_TEAM_RED_CAP), static_red_team_click, this);
+            btn->show_bolts(false);
+            gui->create_picture(btn, 2, 2, tgr);
+            nav->add_button(btn);
+
+            btn = gui->create_button(window, Gui::Spc, Gui::Spc + 15 + Gui::Spc + 10 + bh, ww - (2 * Gui::Spc), bh, i18n(I18N_TNMT_TEAM_BLUE_CAP), static_blue_team_click, this);
+            btn->show_bolts(false);
+            gui->create_picture(btn, 1, 1, tgb);
+            nav->add_button(btn);
+
+            choose_team_open = true;
+            nav->install_handlers(window, 0, 0);
+            nav->set_button_focus();
         }
-
-        nav->clear();
-        GuiWindow *window = gui->push_window(vw / 2 - ww / 2, vh / 2 - wh / 2, ww, wh, i18n(I18N_TNMT_SELECT_TEAM2));
-        gui->create_label(window, Gui::Spc, Gui::Spc, info);
-
-        btn = gui->create_button(window, Gui::Spc, Gui::Spc + 15 + Gui::Spc, ww - (2 * Gui::Spc), bh, i18n(I18N_TNMT_TEAM_RED_CAP), static_red_team_click, this);
-        btn->show_bolts(false);
-        gui->create_picture(btn, 2, 2, tgr);
-        nav->add_button(btn);
-
-        btn = gui->create_button(window, Gui::Spc, Gui::Spc + 15 + Gui::Spc + 10 + bh, ww - (2 * Gui::Spc), bh, i18n(I18N_TNMT_TEAM_BLUE_CAP), static_blue_team_click, this);
-        btn->show_bolts(false);
-        gui->create_picture(btn, 1, 1, tgb);
-        nav->add_button(btn);
-
-        choose_team_open = true;
-        nav->install_handlers(window, 0, 0);
-        nav->set_button_focus();
     }
 }
 
@@ -519,6 +529,7 @@ void TournamentTeam::reopen_join_window(Player *p) {
     player_join_request(p);
 }
 
+bool TournamentTeam::is_team_tournament() const { return true; }
 
 void TournamentTeam::write_stats_in_server_log() {
     ServerLogger::LogType header_type;

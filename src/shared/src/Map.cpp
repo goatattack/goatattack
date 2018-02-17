@@ -19,19 +19,11 @@
 
 #include <cstdlib>
 
-Map::Map(Subsystem& subsystem) : subsystem(subsystem) {
-    parallax = 0;
-    decoration_brightness = 0.0f;
-    lightmap_alpha = 0.0f;
-    width = 40;
-    height = 22;
-    map = create_map(width, height);
-    decoration = create_map(width, height);
-    lightmap = 0;
-    preview = 0;
-    game_play_type = GamePlayTypeDM;
-    frog_spawn_init = 0;
-}
+Map::Map(Subsystem& subsystem) : subsystem(subsystem), width(40), height(22),
+    parallax(0), lightmap_alpha(0.0), decoration_brightness(0.0), lightmap(0),
+    map(create_map(width, height)), decoration(create_map(width, height)),
+    preview(0), preview_reference(0), game_play_type(GamePlayTypeDM),
+    frog_spawn_init(0) { }
 
 Map::Map(Subsystem& subsystem, const std::string& filename, ZipReader *zip)
     : Properties(filename + ".map", zip), subsystem(subsystem), filename(filename),
@@ -64,7 +56,8 @@ Map::Map(Subsystem& subsystem, const std::string& filename, ZipReader *zip)
         throw MapException(e.what());
     }
     lightmap = 0;
-    preview = 0;
+
+    preview = preview_reference = 0;
 
     try {
         PNG png(filename +".png", zip);
@@ -91,6 +84,7 @@ Map::Map(const Map& rhs)
       decoration_brightness(rhs.decoration_brightness),
       lightmap(0),
       preview(0),
+      preview_reference(rhs.get_preview()),
       game_play_type(rhs.game_play_type),
       frog_spawn_init(rhs.frog_spawn_init),
       zip_filename(rhs.zip_filename)
@@ -116,12 +110,8 @@ Map::Map(const Map& rhs)
 
 Map::~Map() {
     cleanup();
-    if (lightmap) {
-        delete lightmap;
-    }
-    if (preview) {
-        delete preview;
-    }
+    delete lightmap;
+    delete preview;
 }
 
 const std::string& Map::get_tileset() const {
@@ -188,8 +178,8 @@ void Map::create_lightmap() {
     lightmap->set_alpha(static_cast<float>(lightmap_alpha));
 }
 
-Tile *Map::get_preview() {
-    return preview;
+Tile *Map::get_preview() const {
+    return preview ? preview : preview_reference;
 }
 
 GamePlayType Map::get_game_play_type() const {

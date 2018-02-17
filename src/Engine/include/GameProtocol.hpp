@@ -15,7 +15,6 @@
  *  along with Goat Attack.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #ifndef _GAMEPROTOCOL_HPP_
 #define _GAMEPROTOCOL_HPP_
 
@@ -51,14 +50,6 @@ const int PlayerKeyStateDrop1 = 64;
 const int PlayerKeyStateDrop2 = 128;
 const int PlayerKeyStateDrop3 = 256;
 
-
-/* current game state */
-enum ServerState {
-    ServerStateSelectTournament = 0,
-    ServerStatePlay,
-    ServerStateOver
-};
-
 /* game protocol server to client */
 enum GPC {
     GPCServerMessage = 0,
@@ -91,6 +82,7 @@ enum GPC {
     GPCFriendlyFire,
     GPCGamePlayUnbalanced,
     GPCTimeRemaining,
+    GPCLeaveLobby,
     GPCWarmUp,
     GPCGameBegins,
     GPCGameOver,
@@ -110,7 +102,7 @@ enum GPC {
 
 /* game protocol client to server */
 enum GPS {
-    GPSUpdatePlayerClientServerState = 0,
+    GPSUpdatePlayerClientServerState = 128,
     GPSRespawnRequest,
     GPSJoinRequest,
     GPSChatMessage,
@@ -123,7 +115,10 @@ enum GPS {
     GPSPakSyncHash,
     GPSPakSyncHashFinished,
     GPSPakSyncAck,
-    GPSSpectate
+    GPSSpectate,
+    GPSLobbyReadyRequest,
+    GPSLobbyTeamRedSelect,
+    GPSLobbyTeamBlueSelect
 };
 
 const int TransportFlagMorePackets = 1;
@@ -148,6 +143,7 @@ struct GTransport {
 #pragma pack()
 
 const int TournamentFlagWarmup = 1;
+const int TournamentFlagNotInLobby = 2;
 
 // OK
 #pragma pack(1)
@@ -179,13 +175,17 @@ struct GTournamentSetting {
 };
 #pragma pack()
 
+const int GameStateFlagLobby = 1;
+
 // OK
 #pragma pack(1)
 struct GGameState {
-    GGameState() : seconds_remaining(0) { }
+    GGameState() : seconds_remaining(0), flags(GameStateFlagLobby) { }
     GGameState(scounter_t seconds_remaining)
-        : seconds_remaining(seconds_remaining) { }
+        : seconds_remaining(seconds_remaining), flags(GameStateFlagLobby) { }
+
     scounter_t seconds_remaining;
+    flags_t flags;
 
     inline void from_net() {
         seconds_remaining = ntohs(seconds_remaining);
@@ -224,12 +224,14 @@ struct GPlayerClientState {
 };
 #pragma pack()
 
-const int PlayerServerFlagSpectating = 1;
-const int PlayerServerFlagDead = 2;
-const int PlayerServerFlagTeamRed = 4;
-const int PlayerServerFlagHasOppositeFlag = 8;
-const int PlayerServerFlagHasShotgunBelt = 16;
-const int PlayerServerFlagHasCoin = 32;
+const int PlayerServerFlagIsReady = 1;
+const int PlayerServerFlagSpectating = 2;
+const int PlayerServerFlagTeamSelected = 4;
+const int PlayerServerFlagDead = 8;
+const int PlayerServerFlagTeamRed = 16;
+const int PlayerServerFlagHasOppositeFlag = 32;
+const int PlayerServerFlagHasShotgunBelt = 64;
+const int PlayerServerFlagHasCoin = 128;
 
 // OK (rearranged)
 #pragma pack(1)

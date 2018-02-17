@@ -22,38 +22,42 @@
 
 void Tournament::draw() {
     if (ready) {
-        int left_save = left;
-        int top_save = top;
-        if (screen_shaker) {
-            left = left - (screen_shaker / 2) + (rand() % screen_shaker);
-            top = top - (screen_shaker / 2) + (rand() % screen_shaker);
-            screen_shaker--;
-        }
+        if (game_state.flags & GameStateFlagLobby) {
+            draw_lobby();
+        } else {
+            int left_save = left;
+            int top_save = top;
+            if (screen_shaker) {
+                left = left - (screen_shaker / 2) + (rand() % screen_shaker);
+                top = top - (screen_shaker / 2) + (rand() % screen_shaker);
+                screen_shaker--;
+            }
 
-        draw_background();
-        draw_decoration();
-        draw_lightmaps();
-        draw_map(true);
-        draw_animations(true);
-        draw_objects();
-        draw_object_addons();
-        draw_npcs();
-        draw_players();
-        draw_player_addons();
-        draw_map(false);
-        draw_animations(false);
-        draw_enemies_on_hud();
-        draw_player_names();
-        draw_team_colours();
-        draw_text_animations();
-        draw_score();
-        draw_hud();
-        if (show_statistics) {
-            draw_statistics();
-        }
+            draw_background();
+            draw_decoration();
+            draw_lightmaps();
+            draw_map(true);
+            draw_animations(true);
+            draw_objects();
+            draw_object_addons();
+            draw_npcs();
+            draw_players();
+            draw_player_addons();
+            draw_map(false);
+            draw_animations(false);
+            draw_enemies_on_hud();
+            draw_player_names();
+            draw_team_colours();
+            draw_text_animations();
+            draw_score();
+            draw_hud();
+            if (show_statistics) {
+                draw_statistics();
+            }
 
-        left = left_save;
-        top = top_save;
+            left = left_save;
+            top = top_save;
+        }
     }
 }
 
@@ -375,6 +379,148 @@ void Tournament::draw_hud() {
             int x = view_width / 2 - tw / 2;
             int y = 50;
             subsystem.draw_text(fnt, x, y, txt);
+        }
+    }
+}
+
+void Tournament::draw_lobby() {
+    Font *font_normal = resources.get_font("normal");
+    Font *font_big = resources.get_font("big");
+    int x = 120;
+    int y = 10;
+    int vw = subsystem.get_view_width();
+    int vh = subsystem.get_view_height();
+    int ww = vw - x * 2;
+    int wh = vh - y * 2;
+
+    /* set alpha */
+    float alpha = 0.8f;
+
+    /* draw shadow */
+    subsystem.set_color(0.0f, 0.0f, 0.0f, 0.2f);
+    subsystem.draw_box(x + 7, y + 7, ww, wh);
+
+    /* draw window */
+    subsystem.set_color(0.75f, 0.5f, 0.75f, alpha);
+    subsystem.draw_box(x, y, ww, wh);
+
+    subsystem.set_color(0.25f, 0.0f, 0.25f, alpha);
+    subsystem.draw_box(x + 1, y + 1, ww - 2, wh - 2);
+
+    /* draw black bar */
+    subsystem.set_color(0.0f, 0.0f, 0.0f, alpha);
+    subsystem.draw_box(x + 10, y + 15, ww - 20, 21);
+
+    /* reset */
+    subsystem.reset_color();
+
+    /* draw screws */
+    subsystem.draw_icon(screw1, x + 5, y + 5);
+    subsystem.draw_icon(screw2, vw - (x + 5) - 8, y + 5);
+    subsystem.draw_icon(screw3, x + 5, vh - (y + 5) - 8);
+    subsystem.draw_icon(screw4, vw - (x + 5) - 8, vh - (y + 5) - 8);
+
+    /* draw title */
+    std::string title(i18n(I18N_TNMT_LOBBY_TITLE));
+    int tw = font_big->get_text_width(title);
+    subsystem.draw_text(font_big, vw / 2 - tw / 2, y + 18, title);
+
+    /* server info */
+    std::string sn(server_name);
+    Icon *flag = resources.get_flag_from_name(sn);
+    int tx = x + Gui::Spc;
+    subsystem.set_color(1.0f, 1.0f, 0.0f, 1.0f);
+    subsystem.draw_text(font_normal, tx, y + 40, i18n(I18N_TNMT_LOBBY_SERVER));
+    subsystem.reset_color();
+    Tile *preview = map.get_preview() ? map.get_preview() : resources.get_icon("map_preview")->get_tile();
+    subsystem.draw_tile(preview, tx, y + 55);
+    subsystem.draw_icon(resources.get_icon("map_border"), tx, y + 55);
+    if (flag) {
+        int flag_width = flag->get_tile()->get_tilegraphic()->get_width();
+        subsystem.draw_icon(flag, tx + 64 + 5, y + 56 + 0 * 15);
+        subsystem.draw_text(font_normal, tx + 64 + 5 + flag_width + 3, y + 55 + 0 * 15, sn);
+    } else {
+        subsystem.draw_text(font_normal, tx + 64 + 5, y + 55 + 0 * 15, sn);
+    }
+    subsystem.draw_text(font_normal, tx + 64 + 5, y + 55 + 1 * 15, map.get_description());
+    subsystem.draw_text(font_normal, tx + 64 + 5, y + 55 + 2 * 15, map.get_name());
+    subsystem.set_color(0.75f, 0.75f, 1.0f, 1.0f);
+    subsystem.draw_text(font_normal, tx + 64 + 5, y + 55 + 3 * 15 + 6, get_game_type_name());
+    subsystem.reset_color();
+
+    /* players */
+    int ty = y + 55 + 3 * 15 + 6 + 20;
+    subsystem.set_color(1.0f, 1.0f, 0.0f, 1.0f);
+    subsystem.draw_text(font_normal, tx, ty, i18n(I18N_TNMT_LOBBY_PLAYERS));
+    subsystem.reset_color();
+    draw_lobby_players(tx, ty + 15, ww - (2 * Gui::Spc), wh - ty - 46);
+
+    /* draw fire text */
+    Player *me = get_me();
+    if (!(me->state.server_state.flags & PlayerServerFlagIsReady)) {
+        if (gui && gui->get_tick_on()) {
+            std::string txt(is_team_tournament() ? i18n(I18N_TNMT_LOBBY_SELECT_START) : i18n(I18N_TNMT_LOBBY_START));
+            int tw = font_big->get_text_width(txt);
+            int x = vw / 2 - tw / 2;
+            int y = vh - 42;
+            subsystem.draw_text(font_big, x, y, txt);
+        }
+    }
+}
+
+void Tournament::draw_lobby_players(int x, int y, int w, int h) {
+    float alpha = 0.8f;
+    Font *font_normal = resources.get_font("normal");
+    bool team_play = is_team_tournament();
+    /* draw boxes */
+    int m = w / 2;
+    subsystem.set_color(0.15f, 0.15f, 0.15f, alpha);
+    subsystem.draw_box(x, y, m - 5, h);
+    subsystem.draw_box(x + m + 5, y, m - 5, h);
+    subsystem.reset_color();
+
+    /* draw player headers */
+    int px = x + 2;
+    int py = y + 2;
+    Icon *thumb = resources.get_icon("thumb");
+    Icon *team = resources.get_icon("ready_team");
+    subsystem.set_color(1.0f, 1.0f, 0.0f, 1.0f);
+    subsystem.draw_icon(thumb, px, py + 1);
+    subsystem.draw_text(font_normal, px + 15, py, i18n(I18N_TNMT_SB_PLAYER));
+    if (team_play) {
+        subsystem.draw_icon(team, px + m - 35 - 15, py);
+    }
+    subsystem.draw_text(font_normal, px + m - 35, py, i18n(I18N_TNMT_SB_PING));
+    subsystem.draw_icon(thumb, px + m + 5, py + 1);
+    subsystem.draw_text(font_normal, px + m + 5 + 15, py, i18n(I18N_TNMT_SB_PLAYER));
+    if (team_play) {
+        subsystem.draw_icon(team, px + m + 5 + m - 35 - 15, py);
+    }
+    subsystem.draw_text(font_normal, px + m + 5 + m - 35, py, i18n(I18N_TNMT_SB_PING));
+    subsystem.reset_color();
+
+    /* draw players */
+    char buffer[64];
+    int tx = px;
+    int ty = py + 15;
+    Icon *yes = resources.get_icon("yes");
+    Icon *no = resources.get_icon("no");
+    Icon *team_red = resources.get_icon("ready_red");
+    Icon *team_blue = resources.get_icon("ready_blue");
+    int text_width = m - 20 - 35 - (team_play ? 15 : 0);
+    for (Players::iterator it = players.begin(); it != players.end(); it++) {
+        Player *p = *it;
+        subsystem.draw_icon(p->state.server_state.flags & PlayerServerFlagIsReady ? yes : no, tx, ty);
+        subsystem.draw_clipped_text(font_normal, tx + 15, ty, text_width, p->get_player_name());
+        if (team_play) {
+            subsystem.draw_icon((p->state.server_state.flags & PlayerServerFlagTeamRed ? team_red : team_blue), tx + m - 35 - 15, ty);
+        }
+        std::sprintf(buffer, "%d", p->state.server_state.ping_time);
+        subsystem.draw_text(font_normal, tx + m - 35, ty, buffer);
+        ty += font_normal->get_font_height();
+        if (ty + font_normal->get_font_height() > y + h) {
+            ty = py + 15;
+            tx += m + 5;
         }
     }
 }
