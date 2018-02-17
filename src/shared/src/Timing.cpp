@@ -17,17 +17,21 @@
 
 #include "Timing.hpp"
 
+namespace {
+
 #ifdef _WIN32
 #include "Win.hpp"
-static __int64 __freq;
-static __int64 __qry;
-double __ticks;
-static double __timer_millis_mult;
+    __int64 __freq;
+    __int64 __qry;
+    double __ticks;
+    double __timer_millis_mult;
 #elif __APPLE__
 #include <mach/mach_time.h>
 mach_timebase_info_data_t __mach_timer_info;
-static double __timer_millis_mult;
+    double __timer_millis_mult;
 #endif
+
+}
 
 void init_hpet() {
 #ifdef __APPLE__
@@ -38,9 +42,6 @@ void init_hpet() {
     __timer_millis_mult = static_cast<double>(__freq);
 #endif
 }
-
-#include <iostream>
-#include <cstdio>
 
 void get_now(gametime_t& time) {
 #ifdef __unix__

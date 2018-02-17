@@ -44,7 +44,7 @@ private:
 
 public:
     Server(Resources& resources, Subsystem& subsystem, const KeyValue& kv,
-        GamePlayType type, const std::string& map_name, int duration, int warmup);
+        GamePlayType type, const std::string& map_name, int duration, int warmup, bool public_server);
 
     Server(Resources& resources, Subsystem& subsystem,
         const std::string& server_config_file);

@@ -108,6 +108,7 @@ void TCPSocket::connect(const char *ip_address, unsigned short port) {
                    if (valopt) {
                        std::string err("Cannot connect to server: ");
                        err.append(strerror(valopt));
+                       closesocket(socket);
                        throw TCPSocketException(err);
                    } else {
                        connected = true;
@@ -122,6 +123,7 @@ void TCPSocket::connect(const char *ip_address, unsigned short port) {
                 if (disconnecting) return;
             }
             if (!connected) {
+                closesocket(socket);
                 throw TCPSocketException("Cannot connect to server, timed out.");
             }
         } else {

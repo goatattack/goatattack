@@ -17,9 +17,13 @@
 
 #include "Tournament.hpp"
 
-const double SpectatorAccel = 0.2f;
-const double SpectatorDecel = 0.05f;
-const double SpecatorMaxAccel = 5.0f;
+namespace {
+
+    const double SpectatorAccel = 0.2f;
+    const double SpectatorDecel = 0.05f;
+    const double SpecatorMaxAccel = 5.0f;
+
+}
 
 void Tournament::control_spectator(Player *me, double period_f) {
     bool move_left = false;

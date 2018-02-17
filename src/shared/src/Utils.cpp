@@ -35,20 +35,24 @@
 #include "Win.hpp"
 #endif
 
+namespace {
+
+    const char *name_syllables[] = {
+        "ec", "mon", "aug", "iash", "fay", "mon", "shi", "tib", "ruk", "lar", "ka",
+        "zag", "blarg", "rash", "izen", "malo", "zak", "hon", "fu", "tot", "be",
+        "abo", "wonk", "lure", "ni", "mo", "kli", "gir", "stree", "lee", "mes",
+        "dree", "weas", "rob", "faw", "raisk", "brud", "ouro", "auri", "reym", "ski",
+        "bai", "on", "na", "nui", "han", "rol", "rays", "mon", "mian", "oro", "putt",
+        "ro", "ran", "rin", "chin", "chan", "muli", "holo", "ron", "gan", "guyn",
+        "ja", "red", "phi", "loin", "pho", "fran", "fre", "de", "ric", "sulu", "nau",
+        0
+    };
+
+}
+
 #ifdef __unix__
 const char *dir_separator = "/";
 #endif
-
-const char *name_syllables[] = {
-    "ec", "mon", "aug", "iash", "fay", "mon", "shi", "tib", "ruk", "lar", "ka",
-    "zag", "blarg", "rash", "izen", "malo", "zak", "hon", "fu", "tot", "be",
-    "abo", "wonk", "lure", "ni", "mo", "kli", "gir", "stree", "lee", "mes",
-    "dree", "weas", "rob", "faw", "raisk", "brud", "ouro", "auri", "reym", "ski",
-    "bai", "on", "na", "nui", "han", "rol", "rays", "mon", "mian", "oro", "putt",
-    "ro", "ran", "rin", "chin", "chan", "muli", "holo", "ron", "gan", "guyn",
-    "ja", "red", "phi", "loin", "pho", "fran", "fre", "de", "ric", "sulu", "nau",
-    0
-};
 
 void create_directory(const std::string& directory, const std::string& in) {
     std::string dir;

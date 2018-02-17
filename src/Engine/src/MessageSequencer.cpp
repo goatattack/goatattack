@@ -28,20 +28,24 @@
  * # tc qdisc del dev lo root
  */
 
-/* some consts to tweak */
-static const int PingTimeout = 5000;            /* 5 seconds                    */
-static const int PingInterval = 500;            /* 500 ms                       */
-static const int ShapingEnd = 4;                /* 4 * 25 ms                    */
-static const int MaxResends = 13 + ShapingEnd;  /* 2000 ms + ShapingEnd * 25 ms */
-static const int MaxThrottle = 200;             /* 200 ms                       */
-static const int StartResendIn = 25;            /* 25 ms                        */
+namespace {
 
-/* protocol v4 changed status request structure */
-static const int NewStatusProtocolVersion = 4;
+    /* some consts to tweak */
+    const int PingTimeout = 5000;            /* 5 seconds                    */
+    const int PingInterval = 500;            /* 500 ms                       */
+    const int ShapingEnd = 4;                /* 4 * 25 ms                    */
+    const int MaxResends = 13 + ShapingEnd;  /* 2000 ms + ShapingEnd * 25 ms */
+    const int MaxThrottle = 200;             /* 200 ms                       */
+    const int StartResendIn = 25;            /* 25 ms                        */
 
-/* subtract 1 of the name[1] -> c++ forbids zero arrays eg. name[0] */
-static const int MsgHeaderLength = sizeof(NetMessage) - 1 + sizeof(NetMessageData) - 1;
-static const int ServerStatusLength = sizeof(ServerStatusMsg) - 1;
+    /* protocol v4 changed status request structure */
+    const int NewStatusProtocolVersion = 4;
+
+    /* subtract 1 of the name[1] -> c++ forbids zero arrays eg. name[0] */
+    const int MsgHeaderLength = sizeof(NetMessage) - 1 + sizeof(NetMessageData) - 1;
+    const int ServerStatusLength = sizeof(ServerStatusMsg) - 1;
+
+}
 
 /* we start to resend after 25ms, retry 4 times with a delay of 25 ms, */
 /* then doubling the interval each resend.                             */
@@ -68,6 +72,7 @@ struct QueueMessage {
     data_len_t len;
     data_t *data;
 };
+
 
 MessageSequencer::MessageSequencer(I18N& i18n, hostport_t port, pico_size_t max_heaps,
     const std::string& name, const std::string& password)

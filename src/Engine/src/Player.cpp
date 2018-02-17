@@ -18,7 +18,11 @@
 #include "Player.hpp"
 #include "UTF8.hpp"
 
-static const char *CharactersetFallback = "goat";
+namespace {
+
+    const char *CharactersetFallback = "goat";
+
+}
 
 Player::Player(Resources& resources, const Connection *c, player_id_t player_id,
     const std::string& player_name, const std::string& characterset_name)

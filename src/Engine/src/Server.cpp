@@ -28,30 +28,32 @@
 #include <cstdio>
 #include <cerrno>
 
-static const ns_t CycleS = 1000000000;
+namespace {
 
-static const int CalcCyclesPerS = 60; /* 60Hz */
-static const ns_t CalcCycleNS = CycleS / CalcCyclesPerS;
+    const ns_t CycleS = 1000000000;
+    const int CalcCyclesPerS = 60; /* 60Hz */
+    const ns_t CalcCycleNS = CycleS / CalcCyclesPerS;
+    const int BroadcastsPerS = 15;
+    const int BroadcastCount = CalcCyclesPerS / BroadcastsPerS;
+    const uint16_t MasterHeartbeatPort = 25112;
+    const size_t MaxServerMsgLength = PacketMaxSize - 100;
+    const int MasterServerRefresh = 10000;
 
-static const int BroadcastsPerS = 15;
-static const int BroadcastCount = CalcCyclesPerS / BroadcastsPerS;
-
-static const uint16_t MasterHeartbeatPort = 25112;
-
-static const size_t MaxServerMsgLength = PacketMaxSize - 100;
+}
 
 /* ingame server constructor */
 Server::Server(Resources& resources, Subsystem& subsystem, const KeyValue& kv, GamePlayType type,
-    const std::string& map_name, int duration, int warmup)
+    const std::string& map_name, int duration, int warmup, bool public_server)
     : Properties(kv),
-      ClientServer(subsystem.get_i18n(), atoi(get_value("port").c_str()), atoi(get_value("num_players").c_str()), get_value("server_name"), ""),
+      ClientServer(subsystem.get_i18n(), atoi(get_value("port").c_str()), atoi(get_value("num_players").c_str()), get_value("server_name"), get_value("server_password")),
       ServerAdmin(resources, *this, *this),
       resources(resources), subsystem(subsystem),
       factory(resources, subsystem, 0),
       nbr_logout_msg(0), running(false), current_config(0), score_board_counter(0),
       warmup(false), hold_disconnected_players(atoi(get_value("hold_disconnected_player").c_str()) != 0 ? true : false),
       reconnect_kills(atoi(get_value("reconnect_kills").c_str())),
-      hdp_counter(0), master_server(0), ms_counter(0), master_socket(),
+      hdp_counter(0), master_server(public_server ? resolve_host(get_value("master_server")) : 0),
+      ms_counter(0), master_socket(),
       rotation_current_index(0),  log_file(0), logger(subsystem.get_stream(), true),
       reload_map_rotation(false), broadcast_settings(false)
 {
@@ -167,6 +169,7 @@ void Server::thread() {
 
         /* loop */
         int send_counter = 0;
+        ms_counter = MasterServerRefresh;
         while (running) {
             try {
                 /* process incoming messages */
@@ -523,7 +526,7 @@ void Server::thread() {
                 /* update master server all approx. 10 seconds */
                 if (master_server) {
                     ms_counter++;
-                    if (ms_counter >= 10000) {
+                    if (ms_counter >= MasterServerRefresh) {
                         ms_counter = 0;
                         sprintf(msbuf, "%hu", get_port());
                         master_socket.send(master_server, MasterHeartbeatPort, msbuf, strlen(msbuf));

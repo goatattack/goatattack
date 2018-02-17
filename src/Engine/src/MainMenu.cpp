@@ -29,10 +29,14 @@
 #include <cstdlib>
 #include <algorithm>
 
-static const char *TitleMusic = "norway";
-static const int FlagWidth = 18;
-static const char *AscendingArrow = "\xe2\x86\x91";
-static const char *DescendingArrow = "\xe2\x86\x93";
+namespace {
+
+    const char *TitleMusic = "norway";
+    const int FlagWidth = 18;
+    const char *AscendingArrow = "\xe2\x86\x91";
+    const char *DescendingArrow = "\xe2\x86\x93";
+
+}
 
 class BroadcasterGuard {
 private:
@@ -588,7 +592,7 @@ void MainMenu::create_server_click() {
     int vw = subsystem.get_view_width();
     int vh = subsystem.get_view_height();
     int ww = 347 + 15;
-    int wh = 308;
+    int wh = 308 + 21;
     GuiWindow *window = push_window(vw / 2 - ww / 2, vh / 2 - wh / 2, ww, wh, i18n(I18N_MAINMENU_LAN));
     window->set_cancelable(true);
 
@@ -606,19 +610,25 @@ void MainMenu::create_server_click() {
     create_label(frserver, 0, 21, i18n(I18N_MAINMENU_PORT));
     cs_server_port = create_textbox(frserver, 95, 20, 55, config.get_string("port"));
     cs_server_port->set_type(GuiTextbox::TypeInteger);
+    cs_server_public = create_checkbox(frserver, 95 + cs_server_port->get_width() + 5, 22, i18n(I18N_MAINMENU_PUBLIC_SERVER), config.get_bool("public_server"), 0, 0);
 
-    create_box(frserver, 0, 43, frserver->get_width(), 1);
+    create_label(frserver, 0, 41, i18n(I18N_MAINMENU_PASSWORD));
+    cs_server_password = create_textbox(frserver, 95, 40, 221 - 13, config.get_string("server_password"));
+    cs_server_password->set_type(GuiTextbox::TypeHidden);
+    cb_server_show_pwd = create_checkbox(frserver, 316 - 10, 42, "", false, static_show_pwd_click, this);
+
+    create_box(frserver, 0, 43 + 20, frserver->get_width(), 1);
 
     /* game modes */
     int game_mode = config.get_int("game_mode");
-    create_label(frserver, 0, 49, i18n(I18N_MAINMENU_GAME_MODE));
-    cs_dm = create_checkbox(frserver, 95, 50, i18n(I18N_MAINMENU_GM_DM), game_mode == GamePlayTypeDM, static_game_mode_click, this);
-    cs_tdm = create_checkbox(frserver, 95, 63, i18n(I18N_MAINMENU_GM_TDM), game_mode == GamePlayTypeTDM, static_game_mode_click, this);
-    cs_ctf = create_checkbox(frserver, 95, 76, i18n(I18N_MAINMENU_GM_CTF), game_mode == GamePlayTypeCTF, static_game_mode_click, this);
+    create_label(frserver, 0, 69, i18n(I18N_MAINMENU_GAME_MODE));
+    cs_dm = create_checkbox(frserver, 95, 70, i18n(I18N_MAINMENU_GM_DM), game_mode == GamePlayTypeDM, static_game_mode_click, this);
+    cs_tdm = create_checkbox(frserver, 95, 83, i18n(I18N_MAINMENU_GM_TDM), game_mode == GamePlayTypeTDM, static_game_mode_click, this);
+    cs_ctf = create_checkbox(frserver, 95, 96, i18n(I18N_MAINMENU_GM_CTF), game_mode == GamePlayTypeCTF, static_game_mode_click, this);
 
-    cs_sr = create_checkbox(frserver, 215, 50, i18n(I18N_MAINMENU_GM_SR), game_mode == GamePlayTypeSR, static_game_mode_click, this);
-    cs_ctc = create_checkbox(frserver, 215, 63, i18n(I18N_MAINMENU_GM_CTC), game_mode == GamePlayTypeCTC, static_game_mode_click, this);
-    cs_goh = create_checkbox(frserver, 215, 76, i18n(I18N_MAINMENU_GM_GOH), game_mode == GamePlayTypeGOH, static_game_mode_click, this);
+    cs_sr = create_checkbox(frserver, 215, 70, i18n(I18N_MAINMENU_GM_SR), game_mode == GamePlayTypeSR, static_game_mode_click, this);
+    cs_ctc = create_checkbox(frserver, 215, 83, i18n(I18N_MAINMENU_GM_CTC), game_mode == GamePlayTypeCTC, static_game_mode_click, this);
+    cs_goh = create_checkbox(frserver, 215, 96, i18n(I18N_MAINMENU_GM_GOH), game_mode == GamePlayTypeGOH, static_game_mode_click, this);
 
     cs_current_mode = cs_dm;
     if (game_mode == GamePlayTypeTDM) {
@@ -651,25 +661,25 @@ void MainMenu::create_server_click() {
     cs_goh->set_style(GuiCheckbox::CheckBoxStyleCircle);
     cs_goh->set_tag(GamePlayTypeGOH);
 
-    create_box(frserver, 0, 93, frserver->get_width(), 1);
+    create_box(frserver, 0, 113, frserver->get_width(), 1);
 
     /* map selector */
     Icon *no_map = resources.get_icon("map_preview");
-    cs_map_preview = create_picture(frserver, creation_tab->get_width() - 83, 116, no_map->get_tile()->get_tilegraphic());
+    cs_map_preview = create_picture(frserver, creation_tab->get_width() - 83, 136, no_map->get_tile()->get_tilegraphic());
 
     try {
         Icon *map_border = resources.get_icon("map_border");
-        create_picture(frserver, creation_tab->get_width() - 83, 116, map_border->get_tile()->get_tilegraphic());
+        create_picture(frserver, creation_tab->get_width() - 83, 136, map_border->get_tile()->get_tilegraphic());
     } catch (...) {
         /* chomp */
     }
 
-    cs_map_name = create_label(frserver, creation_tab->get_width() - 83, 115 + 68, "");
+    cs_map_name = create_label(frserver, creation_tab->get_width() - 83, 135 + 68, "");
     cs_map_name->set_clip_width(64);
 
-    create_label(frserver, 0, 99, i18n(I18N_MAINMENU_SELECT_MAP));
+    create_label(frserver, 0, 119, i18n(I18N_MAINMENU_SELECT_MAP));
     int lbh = (get_font()->get_font_height()) * 6 + 2;
-    cs_maps = create_listbox(frserver, 0, 115, 243, lbh, "", static_map_selected, this);
+    cs_maps = create_listbox(frserver, 0, 135, 243, lbh, "", static_map_selected, this);
 
     fill_map_listbox(static_cast<GamePlayType>(game_mode));
 
@@ -754,6 +764,18 @@ void MainMenu::fill_map_listbox(GamePlayType game_play_type) {
     }
 }
 
+void MainMenu::static_show_pwd_click(GuiCheckbox *sender, void *data, bool state) {
+    (reinterpret_cast<MainMenu *>(data))->show_pwd_click(state);
+}
+
+void MainMenu::show_pwd_click(bool state) {
+    if (state) {
+        cs_server_password->set_type(GuiTextbox::TypeNormal);
+    } else {
+        cs_server_password->set_type(GuiTextbox::TypeHidden);
+    }
+}
+
 void MainMenu::static_game_mode_click(GuiCheckbox *sender, void *data, bool state) {
     (reinterpret_cast<MainMenu *>(data))->game_mode_click(sender);
 }
@@ -809,6 +831,8 @@ void MainMenu::server_validate(bool close) {
         cs_server_port->set_focus();
         return;
     }
+
+    bool public_server = cs_server_public->get_state();
 
     int game_mode = static_cast<GamePlayType>(cs_current_mode->get_tag());
 
@@ -866,6 +890,8 @@ void MainMenu::server_validate(bool close) {
     /* persist */
     config.set_string("server_name", cs_server_name->get_text());
     config.set_int("port", port);
+    config.set_bool("public_server", public_server);
+    config.set_string("server_password", cs_server_password->get_text());
     config.set_int("game_mode", game_mode);
     config.set_int("num_players", max_players);
     config.set_int("duration", duration);
@@ -885,10 +911,10 @@ void MainMenu::server_validate(bool close) {
             ScopeMusicStopper stop_music(subsystem, title_music);
             GamePlayType type = static_cast<GamePlayType>(game_mode);
             Server server(resources, subsystem, config.get_key_value(), type,
-                config.get_string("map_name"), duration, warmup
+                config.get_string("map_name"), duration, warmup, public_server
             );
             ScopeServer scope_server(server);
-            Client client(resources, subsystem, INADDR_LOOPBACK, port, config, "");
+            Client client(resources, subsystem, INADDR_LOOPBACK, port, config, config.get_string("server_password"));
             client.link_mouse(*this);
             client.run();
         } catch (const Exception& e) {

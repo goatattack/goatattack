@@ -24,82 +24,84 @@
 #include <ctime>
 #include <algorithm>
 
+namespace {
+
+    template<class T> bool erase_resource_object_home_only(Resources::ResourceObject& elem) {
+        if (!elem.base_resource) {
+            delete static_cast<T *>(elem.object);
+            return true;
+        }
+
+        return false;
+    }
+
+    template<class T> bool erase_resource_object_all(Resources::ResourceObject& elem) {
+        delete static_cast<T *>(elem.object);
+        return true;
+    }
+
+    template<class T> void erase_resource_objects(Resources::ResourceObjects& elems, bool home_paks_only) {
+        if (home_paks_only) {
+            elems.erase(std::remove_if(elems.begin(), elems.end(), erase_resource_object_home_only<T>), elems.end());
+        } else {
+            elems.erase(std::remove_if(elems.begin(), elems.end(), erase_resource_object_all<T>), elems.end());
+        }
+    }
+
+    bool is_not_a_required_main_pak(const std::string& pakname) {
+        const Resources::NonDownloadableMainPak *pak = Resources::NonDownloadableMainPaks;
+        std::string pakfile = pakname + ".pak";
+        while (pak->name) {
+            if (pak->check) {
+                if (!strcmp(pak->name, pakfile.c_str())) {
+                    return false;
+                }
+            }
+            pak++;
+        }
+
+        return true;
+    }
+
+    bool erase_loaded_pak_home_only(Resources::LoadedPak& pak) {
+        return pak.from_home_dir;
+    }
+
+    void erase_loaded_pak(Resources::LoadedPaks& paks, bool home_paks_only) {
+        if (home_paks_only) {
+            paks.erase(std::remove_if(paks.begin(), paks.end(), erase_loaded_pak_home_only), paks.end());
+        } else {
+            paks.clear();
+        }
+    }
+
+    template<class T> T *find_object(Resources::ResourceObjects& objects, const std::string& name) {
+        for (Resources::ResourceObjects::iterator it = objects.begin(); it != objects.end(); it++) {
+            Resources::ResourceObject& ro = *it;
+            T *obj = static_cast<T *>(ro.object);
+            if (obj->get_name() == name) {
+                return obj;
+            }
+        }
+        return 0;
+    }
+
+    template<class T> bool check_duplicate(Subsystem& subsystem, Resources::ResourceObjects& objects, const std::string& objectgroup, const std::string& name) {
+        if (find_object<T>(objects, name)) {
+            subsystem << subsystem.get_i18n()(I18N_RES_OBJECT_FOUND_WARNING, name, objectgroup) << std::endl;
+            return true;
+        }
+        return false;
+    }
+
+}
+
 const Resources::NonDownloadableMainPak Resources::NonDownloadableMainPaks[] = {
     { "base.pak", true },
     { "base-non-free.pak", false },
     { 0, false }
 };
 
-/* static helpers */
-template<class T> static bool erase_resource_object_home_only(Resources::ResourceObject& elem) {
-    if (!elem.base_resource) {
-        delete static_cast<T *>(elem.object);
-        return true;
-    }
-
-    return false;
-}
-
-template<class T> static bool erase_resource_object_all(Resources::ResourceObject& elem) {
-    delete static_cast<T *>(elem.object);
-    return true;
-}
-
-template<class T> static void erase_resource_objects(Resources::ResourceObjects& elems, bool home_paks_only) {
-    if (home_paks_only) {
-        elems.erase(std::remove_if(elems.begin(), elems.end(), erase_resource_object_home_only<T>), elems.end());
-    } else {
-        elems.erase(std::remove_if(elems.begin(), elems.end(), erase_resource_object_all<T>), elems.end());
-    }
-}
-
-static bool is_not_a_required_main_pak(const std::string& pakname) {
-    const Resources::NonDownloadableMainPak *pak = Resources::NonDownloadableMainPaks;
-    std::string pakfile = pakname + ".pak";
-    while (pak->name) {
-        if (pak->check) {
-            if (!strcmp(pak->name, pakfile.c_str())) {
-                return false;
-            }
-        }
-        pak++;
-    }
-
-    return true;
-}
-
-static bool erase_loaded_pak_home_only(Resources::LoadedPak& pak) {
-    return pak.from_home_dir;
-}
-
-static void erase_loaded_pak(Resources::LoadedPaks& paks, bool home_paks_only) {
-    if (home_paks_only) {
-        paks.erase(std::remove_if(paks.begin(), paks.end(), erase_loaded_pak_home_only), paks.end());
-    } else {
-        paks.clear();
-    }
-}
-
-template<class T> static T *find_object(Resources::ResourceObjects& objects, const std::string& name) {
-    for (Resources::ResourceObjects::iterator it = objects.begin(); it != objects.end(); it++) {
-        Resources::ResourceObject& ro = *it;
-        T *obj = static_cast<T *>(ro.object);
-        if (obj->get_name() == name) {
-            return obj;
-        }
-    }
-    return 0;
-}
-
-template<class T> static bool check_duplicate(Subsystem& subsystem, Resources::ResourceObjects& objects, const std::string& objectgroup, const std::string& name) {
-    if (find_object<T>(objects, name)) {
-        subsystem << subsystem.get_i18n()(I18N_RES_OBJECT_FOUND_WARNING, name, objectgroup) << std::endl;
-        return true;
-    }
-    return false;
-}
-
-/* class implementation begins here */
 Resources::Resources(Subsystem& subsystem, const std::string& resource_directory, bool skip_maps, bool paks_only)
     : subsystem(subsystem), i18n(subsystem.get_i18n()),
       resource_directory(resource_directory),

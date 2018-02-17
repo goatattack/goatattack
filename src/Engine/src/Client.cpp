@@ -23,17 +23,21 @@
 #include <iostream>
 #include <algorithm>
 
-static const ns_t CycleS = 1000000000;
-static const int BroadcastsPerS = 15;
-static const ns_t UpdatePeriod = CycleS / BroadcastsPerS;
+namespace {
 
-template <class T> static bool erase_element(T *elem) {
-    if (elem->delete_me) {
-        delete elem;
-        return true;
+    const ns_t CycleS = 1000000000;
+    const int BroadcastsPerS = 15;
+    const ns_t UpdatePeriod = CycleS / BroadcastsPerS;
+
+    template <class T> bool erase_element(T *elem) {
+        if (elem->delete_me) {
+            delete elem;
+            return true;
+        }
+
+        return false;
     }
 
-    return false;
 }
 
 Client::Client(Resources& resources, Subsystem& subsystem, hostaddr_t host,

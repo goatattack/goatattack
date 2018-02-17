@@ -20,6 +20,7 @@
 #include <cstdlib>
 
 /* -------------------------------------------------------------------------- */
+
 Movable::Movable(Subsystem& subsystem) : subsystem(subsystem) { }
 
 Movable::~Movable() { }

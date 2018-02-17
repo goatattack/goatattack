@@ -25,10 +25,14 @@
 
 #include <iostream>
 
-const double AnimationMultiplier = 3.0f;
-static const ns_t ns_fc = 10000000;   /* for 0.01 s */
-static const char *left_arrow = "\xe2\x86\x90";
-static const char *right_arrow = "\xe2\x86\x92";
+namespace {
+
+    const double AnimationMultiplier = 3.0f;
+    const ns_t ns_fc = 10000000;   /* for 0.01 s */
+    const char *left_arrow = "\xe2\x86\x90";
+    const char *right_arrow = "\xe2\x86\x92";
+
+}
 
 MapEditor::SelectRect::SelectRect() : width(0), height(0), decoration(0), map(0) {
     reset();

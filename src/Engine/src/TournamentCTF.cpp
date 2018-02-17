@@ -20,8 +20,12 @@
 #include <cstdlib>
 #include <cmath>
 
-const int FlagDropInitialValue = 1000;
-const int FlagPickRefusal = 100;
+namespace {
+
+    int FlagDropInitialValue = 1000;
+    int FlagPickRefusal = 100;
+
+}
 
 TournamentCTF::TournamentCTF(Resources& resources, Subsystem& subsystem, Gui *gui,
     ServerLogger *logger, const std::string& game_file, bool server,

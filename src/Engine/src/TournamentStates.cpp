@@ -19,9 +19,13 @@
 
 #include <algorithm>
 
-static double YInitialJumpImpulse = 3.8;
-static double YVeloJumpToLanding = 2.0;
-static ns_t IntegrateMaxTimeStep = 10000000;
+namespace {
+
+    const double YInitialJumpImpulse = 3.8;
+    const double YVeloJumpToLanding = 2.0;
+    const ns_t IntegrateMaxTimeStep = 10000000;
+
+}
 
 void Tournament::update_states(ns_t ns) {
     if (!ready) {

@@ -20,7 +20,11 @@
 #include <algorithm>
 #include <cstdlib>
 
-const int CheckUnbalancedInitialValue = 10000;
+namespace {
+
+    const int CheckUnbalancedInitialValue = 10000;
+
+}
 
 TournamentTeam::TournamentTeam(Resources& resources, Subsystem& subsystem, Gui *gui,
     ServerLogger *logger, const std::string& game_file, bool server,

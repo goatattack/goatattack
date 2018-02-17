@@ -25,8 +25,12 @@
 
 #include <cstdlib>
 
-static bool to_bool(const std::string& v) {
-    return (atoi(v.c_str()) ? true : false);
+namespace {
+
+    bool to_bool(const std::string& v) {
+        return (atoi(v.c_str()) ? true : false);
+    }
+
 }
 
 TournamentFactory::TournamentFactory(Resources& resources, Subsystem& subsystem, Gui *gui)

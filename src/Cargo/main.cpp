@@ -34,7 +34,11 @@
 #include "Win.hpp"
 #endif
 
-static const int ChunkSize = 1024;
+namespace {
+
+    const int ChunkSize = 1024;
+
+}
 
 static void create_directory(const char *root, const char *dir) {
     const char *separator = dir;

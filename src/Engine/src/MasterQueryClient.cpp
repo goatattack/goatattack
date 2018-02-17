@@ -19,7 +19,12 @@
 #include "Timing.hpp"
 #include "MasterQuery.hpp"
 
-const int MaxTries = 10;
+namespace {
+
+    const int MaxTries = 10;
+
+}
+
 MasterQueryClient::MasterQueryClient(I18N& i18n, MasterQuery& master_query, hostaddr_t host, hostport_t port)
     : GameserverInformation(host, port), MessageSequencer(i18n, host, port), master_query(master_query),
       received(false), tries(0)

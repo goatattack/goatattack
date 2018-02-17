@@ -101,6 +101,9 @@ private:
 
     GuiTextbox *cs_server_name;
     GuiTextbox *cs_server_port;
+    GuiTextbox *cs_server_password;
+    GuiCheckbox *cs_server_public;
+    GuiCheckbox *cb_server_show_pwd;
     GuiCheckbox *cs_dm;
     GuiCheckbox *cs_tdm;
     GuiCheckbox *cs_ctf;
@@ -148,6 +151,9 @@ private:
     void play_connect_wan_click();
     static void static_play_refresh_wan_click(GuiVirtualButton *sender, void *data);
     void play_refresh_wan_click();
+
+    static void static_show_pwd_click(GuiCheckbox *sender, void *data, bool state);
+    void show_pwd_click(bool state);
 
     static void static_create_server_click(GuiVirtualButton *sender, void *data);
     static void static_game_mode_click(GuiCheckbox *sender, void *data, bool state);

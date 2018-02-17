@@ -32,7 +32,11 @@
 #include "Win.hpp"
 #endif
 
-static const int PageSize = 256;
+namespace {
+
+    const int PageSize = 256;
+
+}
 
 Font::Font(Subsystem& subsystem, FT_Library& ft, const std::string& filename, ZipReader *zip)
     : Properties(filename + ".font", zip), subsystem(subsystem),

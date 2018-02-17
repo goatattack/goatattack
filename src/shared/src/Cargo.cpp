@@ -33,12 +33,16 @@
 
 #include <iostream>
 
-static const size_t ChunkSize = 1024;
-static const int ZipWindowBits = 15;
-static const uint16_t ZipMinVersion = 0x14;
-static const uint16_t ZipArchiveFile = 1;
-static const uint32_t ZipExtAttribs = 0x81a40000;
-static const uint16_t ZipUnixVersion = 0x0317;
+namespace {
+
+    const size_t ChunkSize = 1024;
+    const int ZipWindowBits = 15;
+    const uint16_t ZipMinVersion = 0x14;
+    const uint16_t ZipArchiveFile = 1;
+    const uint32_t ZipExtAttribs = 0x81a40000;
+    const uint16_t ZipUnixVersion = 0x0317;
+
+}
 
 void SelectedFiles::push(const char *filename) {
     if (filename) {

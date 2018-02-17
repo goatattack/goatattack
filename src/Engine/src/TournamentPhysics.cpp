@@ -20,7 +20,11 @@
 #include <cmath>
 #include <algorithm>
 
-static double bump_sound_velocity = 0.35f;
+namespace {
+
+    const double BumpSoundVelocity = 0.35f;
+
+}
 
 bool Tournament::render_physics(double period_f, bool projectile, int damage,
     double recoil, identifier_t owner, double springiness_x, double springiness_y,
@@ -72,7 +76,7 @@ bool Tournament::render_physics(double period_f, bool projectile, int damage,
                     (i * tile_height), 0, killing))
                 {
                     newx = (tilex + 1) * tile_width - colbox.x;
-                    if (accel_x < -bump_sound_velocity && play_bump) {
+                    if (accel_x < -BumpSoundVelocity && play_bump) {
                         play_ground_bump_sound();
                     }
                     accel_x = -accel_x * springiness_x;
@@ -90,7 +94,7 @@ bool Tournament::render_physics(double period_f, bool projectile, int damage,
                 newx + colbox.x, y + height - colbox.y - 1.0f, 0, killing))
             {
                 newx = (tilex + 1) * tile_width - colbox.x;
-                if (accel_x < -bump_sound_velocity && play_bump) {
+                if (accel_x < -BumpSoundVelocity && play_bump) {
                     play_ground_bump_sound();
                 }
                 accel_x = -accel_x * springiness_x;
@@ -110,7 +114,7 @@ bool Tournament::render_physics(double period_f, bool projectile, int damage,
                     colbox.y + (i * tile_height), 0, killing))
                 {
                     newx = tilex * tile_width - colbox.width - colbox.x;
-                    if (accel_x > bump_sound_velocity && play_bump) {
+                    if (accel_x > BumpSoundVelocity && play_bump) {
                         play_ground_bump_sound();
                     }
                     accel_x = -accel_x * springiness_x;
@@ -128,7 +132,7 @@ bool Tournament::render_physics(double period_f, bool projectile, int damage,
                 newx + colbox.width + colbox.x, y + width - colbox.y - 1.0f, 0, killing))
             {
                 newx = tilex * tile_width - colbox.width - colbox.x;
-                if (accel_x > bump_sound_velocity && play_bump) {
+                if (accel_x > BumpSoundVelocity && play_bump) {
                     play_ground_bump_sound();
                 }
                 accel_x = -accel_x * springiness_x;
@@ -158,7 +162,7 @@ bool Tournament::render_physics(double period_f, bool projectile, int damage,
                     colbox.height, 0, killing))
                 {
                     newy = (tiley + 1) * tile_height + colbox.y + colbox.height - height;
-                    if (accel_y < -bump_sound_velocity && play_bump) {
+                    if (accel_y < -BumpSoundVelocity && play_bump) {
                         play_ground_bump_sound();
                     }
                     accel_y = -accel_y * springiness_y;
@@ -178,7 +182,7 @@ bool Tournament::render_physics(double period_f, bool projectile, int damage,
                 colbox.height, 0, killing))
             {
                 newy = (tiley + 1) * tile_height + colbox.y + colbox.height - height;
-                if (accel_y < -bump_sound_velocity && play_bump) {
+                if (accel_y < -BumpSoundVelocity && play_bump) {
                     play_ground_bump_sound();
                 }
                 accel_y = -accel_y * springiness_y;
@@ -201,7 +205,7 @@ bool Tournament::render_physics(double period_f, bool projectile, int damage,
                 {
                     if (!found) {
                         newy = tiley * tile_height + colbox.y - height;
-                        if (accel_y > bump_sound_velocity && play_bump) {
+                        if (accel_y > BumpSoundVelocity && play_bump) {
                             play_ground_bump_sound();
                         }
                         accel_y = -accel_y * springiness_y;
@@ -223,7 +227,7 @@ bool Tournament::render_physics(double period_f, bool projectile, int damage,
             {
                 if (!found) {
                     newy = tiley * tile_height + colbox.y - height;
-                    if (accel_y > bump_sound_velocity && play_bump) {
+                    if (accel_y > BumpSoundVelocity && play_bump) {
                         play_ground_bump_sound();
                     }
                     accel_y = -accel_y * springiness_y;

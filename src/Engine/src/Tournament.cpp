@@ -23,12 +23,16 @@
 
 #include <iostream>
 
-static const int MaxBombs = 100;
-static const int MaxFrogs = 100;
-static const int MaxArmor = 100;
-static const int MaxGrenades = 100;
-static const int MaxHealth = 100;
-static const int MaxAmmo = 100;
+namespace {
+
+    const int MaxBombs = 100;
+    const int MaxFrogs = 100;
+    const int MaxArmor = 100;
+    const int MaxGrenades = 100;
+    const int MaxHealth = 100;
+    const int MaxAmmo = 100;
+
+}
 
 Tournament::Tournament(Resources& resources, Subsystem& subsystem, Gui *gui, ServerLogger *logger,
     const std::string& game_file, bool server, const std::string& map_name,

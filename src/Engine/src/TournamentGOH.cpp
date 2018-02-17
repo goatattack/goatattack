@@ -19,7 +19,11 @@
 
 #include <cstdlib>
 
-const int HillCounterMax = 750;
+namespace {
+
+    const int HillCounterMax = 750;
+
+}
 
 TournamentGOH::TournamentGOH(Resources& resources, Subsystem& subsystem, Gui *gui,
     ServerLogger *logger, const std::string& game_file, bool server,

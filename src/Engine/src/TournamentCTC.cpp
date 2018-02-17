@@ -21,8 +21,12 @@
 #include <cmath>
 #include <algorithm>
 
-const int CoinDropInitialValue = 1000;
-const int CoinInitialSendCounter = 15;
+namespace {
+
+    int CoinDropInitialValue = 1000;
+    int CoinInitialSendCounter = 15;
+
+}
 
 TournamentCTC::TournamentCTC(Resources& resources, Subsystem& subsystem, Gui *gui,
     ServerLogger *logger, const std::string& game_file, bool server,

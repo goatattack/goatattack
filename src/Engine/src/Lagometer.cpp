@@ -19,9 +19,13 @@
 
 #include <cstdlib>
 
-static const int BytesPerPixel = 4;
-static const int IntervalInMs = 500;
-static const ms_t MaxPing = 100;
+namespace {
+
+    const int BytesPerPixel = 4;
+    const int IntervalInMs = 500;
+    const ms_t MaxPing = 100;
+
+}
 
 Lagometer::Lagometer(Subsystem& subsystem)
     : meter(0), width(32), height(32), height2(height / 2), height4(height / 4),

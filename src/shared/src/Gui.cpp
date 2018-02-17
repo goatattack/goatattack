@@ -17,10 +17,14 @@
 
 #include "Gui.hpp"
 
-static const float WindowAlphaActive = 0.8f;
-static const float WindowAlphaInactive = 0.55f;
-static const ms_t CaretBlinkInterval = 500;
-static const ms_t TickInterval = 500;
+namespace {
+
+    const float WindowAlphaActive = 0.8f;
+    const float WindowAlphaInactive = 0.55f;
+    const ms_t CaretBlinkInterval = 500;
+    const ms_t TickInterval = 500;
+
+}
 
 Gui::Gui(Resources& resources, Subsystem& subsystem, Font *font)
     : resources(resources), subsystem(subsystem), i18n(subsystem.get_i18n()),

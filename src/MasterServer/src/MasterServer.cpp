@@ -26,6 +26,14 @@
 
 #include <iostream>
 
+namespace {
+
+    template <class T> bool erase_entry(T& entry) {
+        return (entry.delete_me);
+    }
+
+}
+
 Record::Record(const std::string& address, uint16_t port)
     : address(address), port(port), last_update(time(0)), delete_me(false) { }
 
@@ -95,10 +103,6 @@ void MasterServer::add_entry(uint32_t host, char *buffer, size_t sz) {
             records.push_back(Record(address, port));
         }
     }
-}
-
-template <class T> static bool erase_entry(T& entry) {
-    return (entry.delete_me);
 }
 
 void MasterServer::delete_old_entries() {

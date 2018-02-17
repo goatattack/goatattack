@@ -27,24 +27,28 @@
 # include <png.h>
 #endif
 
-struct PNGZipStream {
-    PNGZipStream (ZipReader *zip) : zip(zip), size(0), data(0), ptr(0) { }
+namespace {
 
-    ZipReader *zip;
-    size_t size;
-    const char *data;
-    const char *ptr;
-};
+    struct PNGZipStream {
+        PNGZipStream (ZipReader *zip) : zip(zip), size(0), data(0), ptr(0) { }
 
-static void user_data_read(png_structp png_ptr, png_bytep data, png_size_t len) {
-    PNGZipStream *zs = static_cast<PNGZipStream *>(png_get_io_ptr(png_ptr));
-    size_t remain = static_cast<size_t>(zs->size) - (zs->ptr - zs->data);
-    size_t my_len = static_cast<size_t>(len);
-    if (my_len > remain) {
-        my_len = remain;
+        ZipReader *zip;
+        size_t size;
+        const char *data;
+        const char *ptr;
+    };
+
+    void user_data_read(png_structp png_ptr, png_bytep data, png_size_t len) {
+        PNGZipStream *zs = static_cast<PNGZipStream *>(png_get_io_ptr(png_ptr));
+        size_t remain = static_cast<size_t>(zs->size) - (zs->ptr - zs->data);
+        size_t my_len = static_cast<size_t>(len);
+        if (my_len > remain) {
+            my_len = remain;
+        }
+        memcpy(data, zs->ptr, my_len);
+        zs->ptr += my_len;
     }
-    memcpy(data, zs->ptr, my_len);
-    zs->ptr += my_len;
+
 }
 
 PNG::PNG(const std::string& filename, ZipReader *zip) {

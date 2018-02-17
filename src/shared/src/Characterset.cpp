@@ -19,6 +19,12 @@
 
 #include <cstdlib>
 
+namespace {
+
+    const char *FallbackSpawnAnimation = "player_spawn";
+
+}
+
 const int Characterset::Width = 32;
 const int Characterset::Height = 32;
 const CollisionBox Characterset::Colbox(9, 0, 14, 18);
@@ -33,8 +39,6 @@ const int Characterset::CoinDropOffsetX = 0;
 const int Characterset::CoinDropOffsetY = -41;
 const int Characterset::ProjectileOffsetY = 5;
 const char *Characterset::JumpSound = "jump";
-
-static const char *FallbackSpawnAnimation = "player_spawn";
 
 Characterset::Characterset(Subsystem& subsystem, const std::string& filename, ZipReader *zip)
     : Properties(filename + ".characterset", zip), Movable(subsystem)

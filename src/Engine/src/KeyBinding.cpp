@@ -17,11 +17,11 @@
 
 #include "KeyBinding.hpp"
 
-static const char *Suffixes[] = { "", "_alternative" };
+namespace {
 
-KeyBinding::KeyBinding() { }
+    const char *Suffixes[] = { "", "_alternative" };
 
-KeyBinding::~KeyBinding() { }
+}
 
 void KeyBinding::extract_from_config(const Configuration& config) {
     for (int i = 0; i < MaxBindings; i++) {

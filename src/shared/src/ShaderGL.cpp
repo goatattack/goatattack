@@ -22,7 +22,11 @@
 #include "MultiReader.hpp"
 #include "AutoPtr.hpp"
 
-static const int ErrorBuffer = 1024;
+namespace {
+
+    const int ErrorBuffer = 1024;
+
+}
 
 ShaderGL::ShaderGL(Subsystem& subsystem, const std::string& filename, ZipReader *zip)
     : Shader(filename, zip), subsystem(subsystem), program_id(0),

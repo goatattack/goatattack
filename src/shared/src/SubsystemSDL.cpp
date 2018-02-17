@@ -44,145 +44,149 @@
 #include <SDL_mixer.h>
 #endif
 
-static const int ViewWidth = 640;
-static const int ViewHeight = 340;
-static const int WindowedZoomFactor = 2;
-static const int DefaultOpenGLMajor = 3;
-static const int DefaultOpenGLMinor = 1;
+namespace {
 
-typedef std::vector<Sound *> PlayingSounds;
+    const int ViewWidth = 640;
+    const int ViewHeight = 340;
+    const int WindowedZoomFactor = 2;
+    const int DefaultOpenGLMajor = 3;
+    const int DefaultOpenGLMinor = 1;
 
-static PlayingSounds playing_sounds;
+    typedef std::vector<Sound *> PlayingSounds;
 
-static void add_playing_sound(Sound *sound) {
-    if (std::find(playing_sounds.begin(), playing_sounds.end(), sound) == playing_sounds.end()) {
-        playing_sounds.push_back(sound);
-    }
-}
+    PlayingSounds playing_sounds;
 
-static void channel_done(int c) {
-    for (PlayingSounds::iterator it = playing_sounds.begin();
-        it != playing_sounds.end(); it++)
-    {
-        Sound *sound = *it;
-        if (sound->get_playing_channel() == c) {
-            playing_sounds.erase(it);
-            break;
+    void add_playing_sound(Sound *sound) {
+        if (std::find(playing_sounds.begin(), playing_sounds.end(), sound) == playing_sounds.end()) {
+            playing_sounds.push_back(sound);
         }
     }
-}
 
-typedef std::vector<Music *> MusicPlayerMusics;
-
-Music *music_player_current_music = 0;
-int music_player_current_index = -1;
-TextMessageSystem *music_player_tms = 0;
-I18N *glbi18n = 0;
-MusicPlayerMusics music_player_musics;
-
-struct ExternalMusic {
-    ExternalMusic(const std::string& filename, const std::string& shortname)
-        : filename(filename), shortname(shortname) { }
-
-    std::string filename;
-    std::string shortname;
-};
-
-typedef std::vector<ExternalMusic> MusicPlayerExternalMusics;
-bool music_player_external = false;
-MusicPlayerExternalMusics music_player_external_musics;
-Mix_Music *music_player_external_music_handle = 0;
-int music_player_current_external_index = -1;
-time_t music_player_external_last_played = 0;
-std::string music_player_external_last_song;
-
-static void play_next_song(bool print) {
-    if (music_player_tms) {
-        if (music_player_external) {
-            if (music_player_external_music_handle) {
-                Mix_FreeMusic(music_player_external_music_handle);
-                music_player_external_music_handle = 0;
+    void channel_done(int c) {
+        for (PlayingSounds::iterator it = playing_sounds.begin();
+            it != playing_sounds.end(); it++)
+        {
+            Sound *sound = *it;
+            if (sound->get_playing_channel() == c) {
+                playing_sounds.erase(it);
+                break;
             }
-            if (time(0) - music_player_external_last_played < 2) {
-                music_player_tms->add_text_msg((*glbi18n)(I18N_MUSIC_TOO_FAST, music_player_external_last_song));
-            } else {
-                bool ok = false;
-                int count = 0;
-                int sz = static_cast<int>(music_player_external_musics.size());
-                while (count < sz) {
-                    music_player_current_external_index++;
-                    if (music_player_current_external_index >= sz) {
-                        music_player_current_external_index = 0;
-                    }
-                    const ExternalMusic& em = music_player_external_musics[music_player_current_external_index];
-                    music_player_external_music_handle = Mix_LoadMUS(em.filename.c_str());
-                    if (music_player_external_music_handle) {
-                        if (Mix_PlayMusic(music_player_external_music_handle, 0)) {
-                            Mix_FreeMusic(music_player_external_music_handle);
-                            music_player_external_music_handle = 0;
-                        } else {
-                            music_player_external_last_played = time(0);
-                            music_player_external_last_song = em.shortname;
-                            if (Mix_VolumeMusic(-1) || print) {
-                                music_player_tms->add_text_msg((*glbi18n)(I18N_MUSIC_INFO, em.shortname));
+        }
+    }
+
+    typedef std::vector<Music *> MusicPlayerMusics;
+
+    Music *music_player_current_music = 0;
+    int music_player_current_index = -1;
+    TextMessageSystem *music_player_tms = 0;
+    I18N *glbi18n = 0;
+    MusicPlayerMusics music_player_musics;
+
+    struct ExternalMusic {
+        ExternalMusic(const std::string& filename, const std::string& shortname)
+            : filename(filename), shortname(shortname) { }
+
+        std::string filename;
+        std::string shortname;
+    };
+
+    typedef std::vector<ExternalMusic> MusicPlayerExternalMusics;
+    bool music_player_external = false;
+    MusicPlayerExternalMusics music_player_external_musics;
+    Mix_Music *music_player_external_music_handle = 0;
+    int music_player_current_external_index = -1;
+    time_t music_player_external_last_played = 0;
+    std::string music_player_external_last_song;
+
+    void play_next_song(bool print) {
+        if (music_player_tms) {
+            if (music_player_external) {
+                if (music_player_external_music_handle) {
+                    Mix_FreeMusic(music_player_external_music_handle);
+                    music_player_external_music_handle = 0;
+                }
+                if (time(0) - music_player_external_last_played < 2) {
+                    music_player_tms->add_text_msg((*glbi18n)(I18N_MUSIC_TOO_FAST, music_player_external_last_song));
+                } else {
+                    bool ok = false;
+                    int count = 0;
+                    int sz = static_cast<int>(music_player_external_musics.size());
+                    while (count < sz) {
+                        music_player_current_external_index++;
+                        if (music_player_current_external_index >= sz) {
+                            music_player_current_external_index = 0;
+                        }
+                        const ExternalMusic& em = music_player_external_musics[music_player_current_external_index];
+                        music_player_external_music_handle = Mix_LoadMUS(em.filename.c_str());
+                        if (music_player_external_music_handle) {
+                            if (Mix_PlayMusic(music_player_external_music_handle, 0)) {
+                                Mix_FreeMusic(music_player_external_music_handle);
+                                music_player_external_music_handle = 0;
+                            } else {
+                                music_player_external_last_played = time(0);
+                                music_player_external_last_song = em.shortname;
+                                if (Mix_VolumeMusic(-1) || print) {
+                                    music_player_tms->add_text_msg((*glbi18n)(I18N_MUSIC_INFO, em.shortname));
+                                }
+                                ok = true;
+                                break;
                             }
-                            ok = true;
-                            break;
+                        }
+                        /* try next one */
+                        count++;
+                    }
+                    if (!ok) {
+                        music_player_tms->add_text_msg((*glbi18n)(I18N_NO_MUSIC_FOUND));
+                    }
+                }
+            } else {
+                Music *music = 0;
+                int sz = static_cast<int>(music_player_musics.size());
+                if (sz) {
+                    music_player_current_index++;
+                    if (music_player_current_index >= sz) {
+                        music_player_current_index = 0;
+                    }
+                    music = music_player_musics[music_player_current_index];
+                    if (music != music_player_current_music) {
+                        music_player_current_music = music;
+                        if (Mix_VolumeMusic(-1) || print) {
+                            music_player_tms->add_text_msg((*glbi18n)(I18N_MUSIC_INFO, music->get_description()));
                         }
                     }
-                    /* try next one */
-                    count++;
                 }
-                if (!ok) {
-                    music_player_tms->add_text_msg((*glbi18n)(I18N_NO_MUSIC_FOUND));
+                if (music_player_current_music) {
+                    const AudioSDL *audio = static_cast<const AudioSDL *>(music_player_current_music->get_audio());
+                    Mix_PlayMusic(audio->get_music(), 0);
                 }
-            }
-        } else {
-            Music *music = 0;
-            int sz = static_cast<int>(music_player_musics.size());
-            if (sz) {
-                music_player_current_index++;
-                if (music_player_current_index >= sz) {
-                    music_player_current_index = 0;
-                }
-                music = music_player_musics[music_player_current_index];
-                if (music != music_player_current_music) {
-                    music_player_current_music = music;
-                    if (Mix_VolumeMusic(-1) || print) {
-                        music_player_tms->add_text_msg((*glbi18n)(I18N_MUSIC_INFO, music->get_description()));
-                    }
-                }
-            }
-            if (music_player_current_music) {
-                const AudioSDL *audio = static_cast<const AudioSDL *>(music_player_current_music->get_audio());
-                Mix_PlayMusic(audio->get_music(), 0);
             }
         }
     }
-}
 
-static void music_finished() {
-    if (music_player_external) {
-        play_next_song(false);
-    } else {
-        if (music_player_current_music) {
+    void music_finished() {
+        if (music_player_external) {
             play_next_song(false);
+        } else {
+            if (music_player_current_music) {
+                play_next_song(false);
+            }
         }
     }
-}
 
-static const int VertexCount = 2;
-static const int TexUVCount = 2;
-static const int Stride = (VertexCount + TexUVCount);
-static const size_t StrideSize = Stride * sizeof(float);
-static const void *VertexOffset = reinterpret_cast<void *>((0) * sizeof(float));
-static const void *TexUVOffset = reinterpret_cast<void *>((0 + VertexCount) * sizeof(float));
+    const int VertexCount = 2;
+    const int TexUVCount = 2;
+    const int Stride = (VertexCount + TexUVCount);
+    const size_t StrideSize = Stride * sizeof(float);
+    const void *VertexOffset = reinterpret_cast<void *>((0) * sizeof(float));
+    const void *TexUVOffset = reinterpret_cast<void *>((0 + VertexCount) * sizeof(float));
 
 #ifdef _WIN32
-static const bool EnableShadingPipeline = false;
+    const bool EnableShadingPipeline = false;
 #else
-static const bool EnableShadingPipeline = true;
+    const bool EnableShadingPipeline = true;
 #endif
+
+}
 
 SubsystemSDL::SubsystemSDL(std::ostream& stream, I18N& i18n, const std::string& window_title, bool shading_pipeline)
     : Subsystem(stream, i18n, window_title), window(0), joyaxis(0), fullscreen(false),

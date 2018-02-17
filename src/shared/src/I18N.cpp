@@ -17,6 +17,12 @@
 
 #include "I18N.hpp"
 
+namespace {
+
+    const int FallbackCounterMax = 5;
+
+}
+
 const char *I18N::Languages[] = {
     "English",
     "Deutsch",
@@ -25,8 +31,6 @@ const char *I18N::Languages[] = {
     //"Español",
     0
 };
-
-static const int FallbackCounterMax = 5;
 
 I18N::I18N(std::ostream& stream)
     : stream(stream), current_language(all_texts_english), fallback_counter(0)

@@ -64,6 +64,7 @@ const I18N::Text I18N::all_texts_german[] = {
     { I18N_MAINMENU_ENTER_HOSTNAME, "Hostname oder IP-Adresse und Port eingeben:" },
     { I18N_MAINMENU_ADDRESS, "Adresse:" },
     { I18N_MAINMENU_PORT, "Port:" },
+    { I18N_MAINMENU_PUBLIC_SERVER, "öffentlicher Server" },
     { I18N_MAINMENU_PASSWORD, "Passwort:" },
     { I18N_MAINMENU_ENTER_PASSWORD, "Passwort eingeben:" },
     { I18N_MAINMENU_SERVER_NAME2, "Servername:" },

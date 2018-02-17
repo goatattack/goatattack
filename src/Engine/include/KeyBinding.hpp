@@ -36,9 +36,6 @@ struct MappedKey {
 
 class KeyBinding {
 public:
-    KeyBinding();
-    virtual ~KeyBinding();
-
     static const int MaxBindings = 2;
 
     void extract_from_config(const Configuration& config);
