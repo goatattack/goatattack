@@ -30,6 +30,7 @@ ServerAdmin::ServerCommand ServerAdmin::server_commands[] = {
     { "unban", &ServerAdmin::sc_unban },
     { "next", &ServerAdmin::sc_next },
     { "map", &ServerAdmin::sc_map },
+    { "maps", &ServerAdmin::sc_maps },
     { "reload", &ServerAdmin::sc_reload },
     { "save", &ServerAdmin::sc_save },
     { "get", &ServerAdmin::sc_get },
@@ -234,6 +235,26 @@ void ServerAdmin::sc_map(const Connection *c, Player *p, const std::string& para
                 server.delete_tournament();
                 send_i18n_msg(0, I18N_SERVE_MAP_LOADED, p->get_player_name(), config.map_name);
             }
+        }
+    }
+}
+
+void ServerAdmin::sc_maps(const Connection *c, Player *p, const std::string& params) {
+    if (check_if_authorized(c, p)) {
+        Resources::ResourceObjects& maps = resources.get_maps();
+        std::string msg;
+        for (Resources::ResourceObjects::iterator it = maps.begin(); it != maps.end(); ++it) {
+            Map *map = static_cast<Map *>(it->object);
+            std::string info(map->get_name() + " (" + map->get_description() + ")");
+            if (msg.length() + info.length() < 100) {
+                msg += (msg.length() ? ", " : "") + info;
+            } else {
+                server.send_data(c, 0, GPCTextMessage, NetFlagsReliable, msg.length(), msg.c_str());
+                msg.clear();
+            }
+        }
+        if (msg.length()) {
+            server.send_data(c, 0, GPCTextMessage, NetFlagsReliable, msg.length(), msg.c_str());
         }
     }
 }

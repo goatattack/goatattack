@@ -75,6 +75,7 @@ private:
     void sc_unban(const Connection *c, Player *p, const std::string& params);
     void sc_next(const Connection *c, Player *p, const std::string& params);
     void sc_map(const Connection *c, Player *p, const std::string& params);
+    void sc_maps(const Connection *c, Player *p, const std::string& params);
     void sc_reload(const Connection *c, Player *p, const std::string& params);
     void sc_save(const Connection *c, Player *p, const std::string& params);
     void sc_get(const Connection *c, Player *p, const std::string& params);
