@@ -240,8 +240,8 @@ struct GPlayerServerState {
     sscore_t score;              // 2
     score_t frags;               // 2
     score_t kills;               // 2
+    playerflags_t flags;         // 2
     nano_size_t outq_sz;         // 1
-    playerflags_t flags;         // 1
     unsigned char health;        // 1
     unsigned char ammo;          // 1
     unsigned char armor;         // 1
