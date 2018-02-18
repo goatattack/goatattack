@@ -348,7 +348,7 @@ void Tournament::integrate(ns_t ns) {
 
             bool move_jump = ((p->state.client_server_state.key_states & PlayerKeyStateJump) != 0);
 
-            /* prevent locking slidings */
+            /* prevent locked slidings */
             if (move_left && move_right) {
                 move_left = move_right = false;
             }

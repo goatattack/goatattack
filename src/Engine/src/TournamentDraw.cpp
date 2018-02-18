@@ -465,6 +465,12 @@ void Tournament::draw_lobby() {
             int y = vh - 42;
             subsystem.draw_text(font_big, x, y, txt);
         }
+    } else {
+        std::string txt(is_team_tournament() ? i18n(I18N_TNMT_LOBBY_SELECT_WAIT) : i18n(I18N_TNMT_LOBBY_START));
+        int tw = font_big->get_text_width(txt);
+        int x = vw / 2 - tw / 2;
+        int y = vh - 42;
+        subsystem.draw_text(font_big, x, y, txt);
     }
 }
 

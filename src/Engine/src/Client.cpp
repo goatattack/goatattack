@@ -363,6 +363,10 @@ void Client::set_key(MappedKey::Device dev, int param) {
             show_options_menu();
         }
     }
+
+    if (me && (me->state.client_server_state.flags & PlayerClientServerFlagWriting)) {
+        me->state.client_server_state.key_states = 0;
+    }
 }
 
 void Client::set_key(MappedKey::Device dev, int param, MappedKey& key, int flag) {

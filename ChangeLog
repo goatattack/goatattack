@@ -1,7 +1,9 @@
 0.5.0
 - appended freetype2 standard include path
-- load solely packaged maps in game
+- load packaged maps in game only
 - prevent saving packaged tilesets in map editor
+- new lobby room
+- ability to make ad hoc server public (remember to open the port on firewalls)
 
 0.4.5
 - changed to freetype font rendering (latin, greek and cyrillic)
