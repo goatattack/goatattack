@@ -197,6 +197,8 @@ void Client::sevt_data(ServerEvent& evt) {
                 tournament->set_lagometer(show_lagometer ? &lagometer : 0);
                 if (leave_lobby) {
                     tournament->leave_lobby();
+                } else {
+                    subsystem.play_sound(resources.get_sound("lobby"), 0);
                 }
                 add_text_msg(ClientServer::i18n(I18N_CLIENT_MAP_INFO, tournament->get_map().get_description()));
 
@@ -204,7 +206,6 @@ void Client::sevt_data(ServerEvent& evt) {
                 if (me && me->joining) {
                     tournament->reopen_join_window(me);
                 }
-
                 break;
             }
 

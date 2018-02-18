@@ -2,7 +2,7 @@
 
 [![version](https://img.shields.io/badge/version-0.5.0--dev-lightgrey.svg)](https://github.com/goatattack/goatattack/blob/next/ChangeLog)
 [![travis](https://img.shields.io/travis/goatattack/goatattack.svg)](https://travis-ci.org/goatattack/goatattack)
-[![hash](https://img.shields.io/badge/base.pak-fc82fd00bf17859d-orange.svg)](https://github.com/goatattack/goatattack/tree/next/data/free)
+[![hash](https://img.shields.io/badge/base.pak-364f2645bbabe41c-orange.svg)](https://github.com/goatattack/goatattack/tree/next/data/free)
 [![license](https://img.shields.io/github/license/goatattack/goatattack.svg)](https://github.com/goatattack/goatattack/blob/next/COPYING)
 
 ![alt tag](https://raw.githubusercontent.com/goatattack/goatattack/master/pictures/goatattack1.png)
