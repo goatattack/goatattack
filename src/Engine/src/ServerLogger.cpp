@@ -111,6 +111,7 @@ void ServerLogger::log(LogType type, const std::string& text, Player *p1, Player
             case LogTypeCoinDropped:
             case LogTypeJoin:
             case LogTypeLeft:
+            case LogTypeLobbyReady:
                 /* TIME LOG MAP MAP_DESC TEXT PLAYER_NAME */
                 sprintf(buffer, "%s %03d %s %s %s %s", time_buffer, type,
                     map_name.c_str(),

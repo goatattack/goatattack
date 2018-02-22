@@ -61,7 +61,7 @@ const I18N::Text I18N::all_texts_french[] = {
     { I18N_MAINMENU_LAN_TITLE, "Local" },
     { I18N_MAINMENU_LAN_SERVERS, "Serveurs locaux :" },
     { I18N_MAINMENU_CUSTOM_SERVER, "Serveur personalisé" },
-    { I18N_MAINMENU_ENTER_HOSTNAME, "Entrez ici l'adresse IP et le port :" }, 
+    { I18N_MAINMENU_ENTER_HOSTNAME, "Entrez ici l'adresse IP et le port :" },
     { I18N_MAINMENU_ADDRESS, "Adresse :" },
     { I18N_MAINMENU_PORT, "Port :" },
     { I18N_MAINMENU_PUBLIC_SERVER, "public server" },   // TODO
@@ -222,6 +222,7 @@ const I18N::Text I18N::all_texts_french[] = {
     { I18N_TNMT_TEAM_BLUE_CAP, "ÉQUIPE BLEUE" },
 
     { I18N_SERVE_LOBBY, "dans le lobby" },
+    { I18N_SERVE_LOBBY_READY, "ready" },     // TODO
     { I18N_SERVE_WARM_UP, "échauffement" },
     { I18N_SERVE_GAME_BEGINS, "la partie commence" },
     { I18N_SERVE_CONNECT, "${1} s'est connecté" },

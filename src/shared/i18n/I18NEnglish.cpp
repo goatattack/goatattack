@@ -222,6 +222,7 @@ const I18N::Text I18N::all_texts_english[] = {
     { I18N_TNMT_TEAM_BLUE_CAP, "TEAM BLUE" },
 
     { I18N_SERVE_LOBBY, "in the lobby" },
+    { I18N_SERVE_LOBBY_READY, "ready" },
     { I18N_SERVE_WARM_UP, "warm up" },
     { I18N_SERVE_GAME_BEGINS, "game begins" },
     { I18N_SERVE_CONNECT, "${1} connected" },

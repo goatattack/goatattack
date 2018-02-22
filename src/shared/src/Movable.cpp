@@ -33,7 +33,7 @@ int Movable::get_height() const {
     return height;
 }
 
-void Movable::read_base_informations(Properties& props) throw (MovableException) {
+void Movable::read_base_informations(Properties& props) {
     width = atoi(props.get_value("width").c_str());
     height = atoi(props.get_value("height").c_str());
 

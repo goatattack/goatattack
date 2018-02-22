@@ -79,7 +79,7 @@ protected:
     std::string zip_filename;
 
     short **create_map(int width, int height);
-    void fill_map() throw (Exception);
+    void fill_map();
     void fill_map_array(const char *prefix, short **into);
     void cleanup();
 };

@@ -202,7 +202,7 @@ short **Map::create_map(int width, int height) {
     return map;
 }
 
-void Map::fill_map() throw (Exception) {
+void Map::fill_map() {
     fill_map_array("decoration", decoration);
     fill_map_array("tiles", map);
 }

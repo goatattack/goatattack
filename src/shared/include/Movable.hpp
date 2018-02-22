@@ -49,7 +49,7 @@ protected:
     int width;
     int height;
 
-    void read_base_informations(Properties& props) throw (MovableException);
+    void read_base_informations(Properties& props);
     Tile *create_tile(PNG& png, int animation_speed, bool one_shot, bool desc);
     int get_speed(Properties& props, const std::string& suffix, int default_speed);
     bool get_one_shot(Properties& props, const std::string& suffix, bool default_value);

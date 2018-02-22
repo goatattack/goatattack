@@ -269,7 +269,7 @@ SubsystemSDL::SubsystemSDL(std::ostream& stream, I18N& i18n, const std::string& 
     init_gl(gl_width, gl_height);
 
     /* init audio */
-    if (!(Mix_Init(MIX_INIT_OGG | MIX_INIT_MP3) & MIX_INIT_OGG)) {
+    if (!(Mix_Init(MIX_INIT_OGG) & MIX_INIT_OGG)) {
         throw SubsystemException(i18n(I18N_SSSDL_MIXER_FAILED, std::string(Mix_GetError())));
     }
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) == -1) {

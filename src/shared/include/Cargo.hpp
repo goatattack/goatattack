@@ -58,7 +58,7 @@ public:
 
     static bool file_exists(const std::string& filename);
 
-    void pack() throw (CargoException);
+    void pack();
     size_t packaged() const;
     std::string get_hash() const;
 

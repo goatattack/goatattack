@@ -222,6 +222,7 @@ const I18N::Text I18N::all_texts_portuguese[] = {
     { I18N_TNMT_TEAM_BLUE_CAP, "EQUIPA AZUL" },
 
     { I18N_SERVE_LOBBY, "no lobby" },
+    { I18N_SERVE_LOBBY_READY, "ready" },     // TODO
     { I18N_SERVE_WARM_UP, "aquecimento" },
     { I18N_SERVE_GAME_BEGINS, "inicio do jogo" },
     { I18N_SERVE_CONNECT, "${1} conectou" },

@@ -71,6 +71,7 @@ public:
         LogTypeMapClosed,           /* 039 */
         LogTypeLeft,                /* 040 */
         LogTypeInTheLobby,          /* 041 */
+        LogTypeLobbyReady,          /* 042 */
         _LogTypeMAX
     };
 

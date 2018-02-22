@@ -924,6 +924,7 @@ void Server::event_data(const Connection *c, data_len_t len, void *data) {
                                 if (!(p->state.server_state.flags & PlayerServerFlagIsReady)) {
                                     p->state.server_state.flags |= PlayerServerFlagIsReady;
                                     p->state.server_state.flags |= PlayerServerFlagTeamSelected;
+                                    logger.log(ServerLogger::LogTypeLobbyReady, ClientServer::i18n(I18N_SERVE_LOBBY_READY, p->get_player_name()), p);
                                 }
                             }
                         }

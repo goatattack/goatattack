@@ -68,7 +68,7 @@ public:
     Gui(Resources& resources, Subsystem& subsystem, Font *font);
     virtual ~Gui();
 
-    void run() throw (Exception);
+    void run();
     void leave();
 
     virtual void idle() = 0;

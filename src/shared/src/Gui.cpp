@@ -54,7 +54,7 @@ Gui::~Gui() {
     destroy_tooltip();
 }
 
-void Gui::run() throw (Exception) {
+void Gui::run() {
     running = true;
     idleloop(-1);
     on_leave();

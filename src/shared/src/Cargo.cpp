@@ -60,7 +60,7 @@ enum FileType {
     FileTypeDirectory
 };
 
-static FileType file_status(const char *entry, size_t& file_size) throw (CargoException) {
+static FileType file_status(const char *entry, size_t& file_size) {
     FileType ft = FileTypeNone;
     file_size = 0;
 
@@ -106,7 +106,7 @@ static bool file_compare(const std::string& lhs, const std::string& rhs) {
     return (strcmp(lhs.c_str(), rhs.c_str()) < 0);
 }
 
-static void throw_deflate_failed(z_stream *z) throw (CargoException) {
+static void throw_deflate_failed(z_stream *z) {
     if (z) {
         deflateEnd(z);
     }
@@ -149,7 +149,7 @@ bool Cargo::file_exists(const std::string& filename) {
     return false;
 }
 
-void Cargo::pack() throw (CargoException) {
+void Cargo::pack() {
     /* finished? */
     if (finished) {
         throw CargoException("Pack already created.");
