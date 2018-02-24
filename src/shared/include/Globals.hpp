@@ -19,7 +19,7 @@
 #define _GLOBALS_HPP_
 
 extern const char *GameVersion;
-extern const char *UserDirectory;
+extern const char *ApplicationName;
 extern const char *ConfigFilename;
 extern const bool ProductIsBeta;
 

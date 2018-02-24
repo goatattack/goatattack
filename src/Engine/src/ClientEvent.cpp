@@ -713,7 +713,7 @@ void Client::sevt_data(ServerEvent& evt) {
                 header->from_net();
                 if (!fhnd) {
                     xfer_filename = header->filename;
-                    current_download_filename = get_home_directory() + dir_separator + UserDirectory + dir_separator + header->filename;
+                    current_download_filename = std::string(resources.get_path_manager().get_data_home()) + dir_separator + header->filename;
                     fhnd = fopen(current_download_filename.c_str(), "wb");
                     if (fhnd) {
                         total_xfer_sz = remaining_xfer_sz = header->filesize;

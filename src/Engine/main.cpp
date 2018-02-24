@@ -26,12 +26,14 @@
 #include "Globals.hpp"
 #include "Timing.hpp"
 #include "I18N.hpp"
+#include "PathManager.hpp"
 
 #ifdef __APPLE__
 #include "CoreFoundation/CoreFoundation.h"
 #endif
 
 #include <cstdio>
+#include <cstdlib>
 
 int main(int argc, char *argv[]) {
     std::ostream& stream = std::cout;
@@ -41,8 +43,11 @@ int main(int argc, char *argv[]) {
 
     init_hpet();
     start_net();
+
     try {
-        Configuration config(UserDirectory, ConfigFilename);
+        std::srand(static_cast<unsigned int>(time(0)));
+        PathManager pm(ApplicationName);
+        Configuration config(pm, ConfigFilename);
         I18N i18n(stream, static_cast<I18N::Language>(config.get_int("language")));
 
 #ifdef DEDICATED_SERVER
@@ -68,7 +73,7 @@ int main(int argc, char *argv[]) {
 # else
         const char *data_directory = (parm ? parm : STRINGIZE_VALUE_OF(DATA_DIRECTORY));
 # endif
-        Resources resources(subsystem, data_directory, false, true);
+        Resources resources(subsystem, pm, data_directory, false, true);
 #endif
         Game game(resources, subsystem, config);
         game.run(parm ? parm : "");

@@ -24,6 +24,7 @@
 #include <functional>
 #include <cctype>
 #include <cstdlib>
+#include <cstdio>
 #ifdef __unix__
 #include <unistd.h>
 #include <sys/utsname.h>
@@ -57,7 +58,11 @@ const char *dir_separator = "/";
 void create_directory(const std::string& directory, const std::string& in) {
     std::string dir;
 
-    dir = in + dir_separator + directory;
+    if (in.length()) {
+        dir = in + dir_separator + directory;
+    } else {
+        dir = directory;
+    }
 #ifdef __unix__
     int rv = mkdir(dir.c_str(), S_IRWXU);
     if (rv && errno != EEXIST) {
@@ -66,6 +71,22 @@ void create_directory(const std::string& directory, const std::string& in) {
 #elif _WIN32
     CreateDirectoryA(dir.c_str(), 0);
 #endif
+}
+
+void create_complete_directory(std::string directory) {
+    char *p = 0;
+    std::size_t len = directory.length();
+    if(directory[len - 1] == dir_separator[0]) {
+        directory[len - 1] = 0;
+    }
+    for(p = &directory[1]; *p; p++) {
+        if(*p == dir_separator[0]) {
+            *p = 0;
+            create_directory(directory, "");
+            *p = dir_separator[0];
+        }
+    }
+    create_directory(directory, "");
 }
 
 bool is_directory(const std::string& path) {

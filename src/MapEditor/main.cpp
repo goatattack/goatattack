@@ -21,6 +21,9 @@
 #include "MapEditor.hpp"
 #include "Configuration.hpp"
 #include "I18N.hpp"
+#include "PathManager.hpp"
+
+#include <cstdlib>
 
 int main(int argc, char *argv[]) {
     std::ostream& stream = std::cout;
@@ -28,14 +31,15 @@ int main(int argc, char *argv[]) {
 
     try {
         init_hpet();
-
-        Configuration config(UserDirectory, ConfigFilename);
+        std::srand(static_cast<unsigned int>(time(0)));
+        PathManager pm(ApplicationName);
+        Configuration config(pm, ConfigFilename);
         I18N i18n(stream, static_cast<I18N::Language>(config.get_int("language")));
 
         /* load SDL subsystem */
         SubsystemSDL subsystem(stream, i18n, i18n(I18N_WINTITLE_EDITOR), config.get_bool("shading_pipeline"));
         subsystem.set_keep_pictures(true);
-        Resources resources(subsystem, STRINGIZE_VALUE_OF(DATA_DIRECTORY), true, false);
+        Resources resources(subsystem, pm, STRINGIZE_VALUE_OF(DATA_DIRECTORY), true, false);
 
         /* setup base view options */
         subsystem.initialize(resources);

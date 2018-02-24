@@ -81,7 +81,7 @@ MapEditor::MapEditor(Resources& resources, Subsystem& subsystem, Configuration& 
       draw_lightmap_on_screen(true), draw_map_on_screen(true), draw_objects_on_screen(true),
       draw_light_sources(true), draw_used_tiles(false), draw_mode(DrawModeTile),
       light_source(resources.get_icon("light_source")), compile_thread(0),
-      home_workdir(get_home_directory() + dir_separator + UserDirectory),
+      home_workdir(resources.get_path_manager().get_data_home()),
       is_drawing_rect(true), is_selecting(false), use_selection(false), tile_selector_page(0)
 {
     ts_picture = 0;

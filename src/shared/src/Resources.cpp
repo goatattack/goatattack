@@ -102,19 +102,17 @@ const Resources::NonDownloadableMainPak Resources::NonDownloadableMainPaks[] = {
     { 0, false }
 };
 
-Resources::Resources(Subsystem& subsystem, const std::string& resource_directory, bool skip_maps, bool paks_only)
-    : subsystem(subsystem), i18n(subsystem.get_i18n()),
+Resources::Resources(Subsystem& subsystem, PathManager& pm, const std::string& resource_directory, bool skip_maps, bool paks_only)
+    : subsystem(subsystem), pm(pm), i18n(subsystem.get_i18n()),
       resource_directory(resource_directory),
       skip_maps(skip_maps), paks_only(paks_only), ft(0)
 {
     subsystem << i18n(I18N_RES_INIT_RESOURCES) << std::endl;
-    srand(static_cast<unsigned int>(time(0)));
-
     if (FT_Init_FreeType(&ft)) {
         throw ResourcesException(i18n(I18N_FREETYPE_FAILED));
     }
 
-    create_directory(UserDirectory, get_home_directory());
+    //create_directory(UserDirectory, get_home_directory());
 
     load_resources(false);
 }
@@ -155,6 +153,10 @@ void Resources::update_tile_index(double diff, Tileset *tileset) {
 
 const std::string& Resources::get_resource_directory() const {
     return resource_directory;
+}
+
+const PathManager& Resources::get_path_manager() const {
+    return pm;
 }
 
 Tileset *Resources::get_tileset(const std::string& name) {
@@ -641,7 +643,8 @@ void Resources::load_resources(bool home_paks_only) {
         }
 
         /* scan user directories */
-        std::string hdir = get_home_directory() + dir_separator + UserDirectory;
+        std::string hdir(pm.get_data_home());
+        //std::string hdir = get_home_directory() + dir_separator + UserDirectory;
         subsystem << i18n(I18N_RES_LOOKING_INTO,  hdir) << std::endl;
 
         /* read additional paks in home directory */
@@ -660,7 +663,8 @@ void Resources::load_resources(bool home_paks_only) {
 
         /* read open directory */
         if (!paks_only) {
-            read_all(get_home_directory() + dir_separator + UserDirectory + dir_separator, 0, false);
+            //read_all(get_home_directory() + dir_separator + UserDirectory + dir_separator, 0, false);
+            read_all(std::string(pm.get_data_home()) + dir_separator, 0, false);
         }
 
         /* check if main paks are there */

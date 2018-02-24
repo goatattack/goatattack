@@ -21,16 +21,21 @@
 #include <cstdlib>
 #include <cstdio>
 
-Configuration::Configuration(const std::string& directory, const std::string& filename)
+Configuration::Configuration(PathManager& pm, const std::string& filename)
     : save_at_exit(true)
 {
     if (!filename.length()) {
         throw ConfigurationException("No valid configuration filename.");
     }
 
+    /*
     std::string base_dir = get_home_directory();
     create_directory(directory, base_dir);
     this->filename = base_dir + "/" + directory + "/" + filename;
+    */
+    this->filename = pm.get_config_home();
+    this->filename += pm.get_dir_separator();
+    this->filename += filename;
 
     /* load file */
     if (file_exists(this->filename)) {

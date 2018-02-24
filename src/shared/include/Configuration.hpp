@@ -20,6 +20,7 @@
 
 #include "Exception.hpp"
 #include "KeyValue.hpp"
+#include "PathManager.hpp"
 
 #include <string>
 
@@ -31,7 +32,7 @@ public:
 
 class Configuration {
 public:
-    Configuration(const std::string& directory, const std::string& filename);
+    Configuration(PathManager& pm, const std::string& filename);
     ~Configuration();
 
     bool do_save_at_exit() const;

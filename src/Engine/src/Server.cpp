@@ -1132,6 +1132,9 @@ void Server::sync_client(const Connection *c, Player *p) {
         gt.duration = static_cast<scounter_t>(current_config->duration);
         gt.warmup = static_cast<scounter_t>(current_config->warmup_in_seconds);
         gt.flags |= (warmup ? TournamentFlagWarmup : 0);
+        if (tournament) {
+            gt.flags |= (tournament->in_lobby() ? 0 : TournamentFlagNotInLobby);
+        }
         gt.gametype = static_cast<unsigned char>(current_config->type);
         gt.tournament_id = factory.get_tournament_id();
         gt.to_net();

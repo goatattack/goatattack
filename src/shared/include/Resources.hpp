@@ -34,6 +34,7 @@
 #include "Sound.hpp"
 #include "Music.hpp"
 #include "Shader.hpp"
+#include "PathManager.hpp"
 
 #include <string>
 #include <map>
@@ -93,12 +94,13 @@ public:
 
     typedef std::vector<ResourceObject> ResourceObjects;
 
-    Resources(Subsystem& subystem, const std::string& resource_directory, bool skip_maps = false, bool paks_only = false);
+    Resources(Subsystem& subystem, PathManager& pm, const std::string& resource_directory, bool skip_maps = false, bool paks_only = false);
     ~Resources();
 
     void reload_resources();
     void update_tile_index(double diff, Tileset *tileset);
     const std::string& get_resource_directory() const;
+    const PathManager& get_path_manager() const;
 
     Tileset *get_tileset(const std::string& name);
     Object *get_object(const std::string& name);
@@ -135,6 +137,7 @@ public:
 
 private:
     Subsystem& subsystem;
+    PathManager& pm;
     I18N& i18n;
     std::string resource_directory;
     bool skip_maps;

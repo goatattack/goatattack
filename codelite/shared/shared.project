@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<CodeLite_Project Name="shared" InternalType="Library">
+<CodeLite_Project Name="shared" InternalType="Library" Version="10.0.0">
   <Plugins>
     <Plugin Name="qmake">
       <![CDATA[00020001N0005Debug0000000000000001N0007Release000000000000]]>
@@ -60,6 +60,7 @@
     <File Name="../../src/shared/src/ShaderGL.cpp"/>
     <File Name="../../src/shared/src/Shader.cpp"/>
     <File Name="../../src/shared/src/I18N.cpp"/>
+    <File Name="../../src/shared/src/PathManager.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="../../src/shared/include/AABB.hpp"/>
@@ -122,6 +123,7 @@
     <File Name="../../src/shared/include/I18NTexts.hpp"/>
     <File Name="../../src/shared/include/FT.hpp"/>
     <File Name="../../src/shared/include/UTF8.hpp"/>
+    <File Name="../../src/shared/include/PathManager.hpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="zlib">
     <File Name="../../src/shared/zlib/adler32.c"/>

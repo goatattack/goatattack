@@ -405,7 +405,7 @@ void EditableMap::save() {
         set_value(buffer, elgt->b);
     }
 
-    std::string save_dir = get_home_directory() + dir_separator + UserDirectory;
+    std::string save_dir(resources.get_path_manager().get_data_home());
     create_directory("maps", save_dir);
     KeyValue::save(save_dir + dir_separator + "maps" + dir_separator + get_name() + ".map");
 }

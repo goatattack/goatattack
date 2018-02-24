@@ -41,6 +41,7 @@ public:
 typedef std::vector<std::string> StringTokens;
 
 void create_directory(const std::string& directory, const std::string& in);
+void create_complete_directory(std::string directory);
 bool is_directory(const std::string& path);
 std::string get_home_directory();
 bool file_exists(const std::string& filename);
