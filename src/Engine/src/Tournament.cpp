@@ -23,16 +23,12 @@
 
 #include <iostream>
 
-namespace {
-
-    const int MaxBombs = 100;
-    const int MaxFrogs = 100;
-    const int MaxArmor = 100;
-    const int MaxGrenades = 100;
-    const int MaxHealth = 100;
-    const int MaxAmmo = 100;
-
-}
+extern const int MaxBombs = 100;
+extern const int MaxFrogs = 100;
+extern const int MaxArmor = 100;
+extern const int MaxGrenades = 100;
+extern const int MaxHealth = 100;
+extern const int MaxAmmo = 100;
 
 Tournament::Tournament(Resources& resources, Subsystem& subsystem, Gui *gui, ServerLogger *logger,
     const std::string& game_file, bool server, const std::string& map_name,
@@ -771,12 +767,16 @@ void Tournament::player_damage(identifier_t owner, Player *p, NPC *npc, int dama
 
         /* reduce armor */
         unsigned char& armor = p->state.server_state.armor;
-        if (damage >= armor) {
-            damage = damage - armor + armor / 2;
-            armor = 0;
+        if (warmup) {
+            damage = 0;
         } else {
-            armor -= damage;
-            damage /= 2;
+            if (damage >= armor) {
+                damage = damage - armor + armor / 2;
+                armor = 0;
+            } else {
+                armor -= damage;
+                damage /= 2;
+            }
         }
 
         /* reduce health */

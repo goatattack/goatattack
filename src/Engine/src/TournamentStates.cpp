@@ -27,6 +27,13 @@ namespace {
 
 }
 
+extern const int MaxBombs;
+extern const int MaxFrogs;
+extern const int MaxArmor;
+extern const int MaxGrenades;
+extern const int MaxHealth;
+extern const int MaxAmmo;
+
 void Tournament::update_states(ns_t ns) {
     if (!ready) {
         return;
@@ -318,6 +325,15 @@ void Tournament::integrate(ns_t ns) {
     /* update all player states */
     for (Players::iterator it = players.begin(); it != players.end(); it++) {
         Player *p = *it;
+
+        if (warmup && server) {
+            p->state.server_state.flags |= PlayerServerFlagHasShotgunBelt;
+            p->state.server_state.ammo = MaxAmmo;
+            p->state.server_state.armor = MaxArmor;
+            p->state.server_state.bombs = MaxBombs;
+            p->state.server_state.frogs = MaxFrogs;
+            p->state.server_state.grenades = MaxGrenades;
+        }
 
         if (p->is_alive_and_playing()) {
             const CollisionBox& colbox = Characterset::Colbox;
