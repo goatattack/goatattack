@@ -64,7 +64,7 @@ const I18N::Text I18N::all_texts_french[] = {
     { I18N_MAINMENU_ENTER_HOSTNAME, "Entrez ici l'adresse IP et le port :" },
     { I18N_MAINMENU_ADDRESS, "Adresse :" },
     { I18N_MAINMENU_PORT, "Port :" },
-    { I18N_MAINMENU_PUBLIC_SERVER, "public server" },   // TODO
+    { I18N_MAINMENU_PUBLIC_SERVER, "Serveur Public" },
     { I18N_MAINMENU_PASSWORD, "Mot de passe:" },
     { I18N_MAINMENU_ENTER_PASSWORD, "Entrer le mot de passe :" },
     { I18N_MAINMENU_SERVER_NAME2, "Nom du serveur :" },
@@ -149,7 +149,7 @@ const I18N::Text I18N::all_texts_french[] = {
     { I18N_CLIENT_JOIN_REFUSED, "VOTRE REQUÊTE DE CONNECTION A ÉTÉ REFUSÉE" },
     { I18N_CLIENT_FRIENDLY_FIRE, "TIR AMI : ATTENTION!!!" },
     { I18N_CLIENT_UNBALANCED, "JEU NON ÉQUILIBRÉ" },
-    { I18N_CLIENT_WARMUP, "merci de vous échauffer" },
+    { I18N_CLIENT_WARMUP, "échauffez-vous" },
     { I18N_CLIENT_GAME_BEGINS, "la partie commence" },
     { I18N_CLIENT_GAME_OVER, "LA PARTIE EST FINIE" },
     { I18N_CLIENT_RENAME, "${1} est maintenant connu comme ${2}" },
@@ -159,11 +159,11 @@ const I18N::Text I18N::all_texts_french[] = {
     { I18N_TNMT_SPECTATING, "SPECTATEUR" },
     { I18N_TNMT_WARMUP, "ÉCHAUFFEMENT" },
     { I18N_TNMT_LOBBY_TITLE, "LOBBY" },
-    { I18N_TNMT_LOBBY_SERVER, "SERVER" },       // TODO
-    { I18N_TNMT_LOBBY_PLAYERS, "PLAYERS" },     // TODO
-    { I18N_TNMT_LOBBY_START, "READY WITH FIRE" }, // TODO
-    { I18N_TNMT_LOBBY_SELECT_START, "SELECT TEAM, READY WITH FIRE" }, // TODO
-    { I18N_TNMT_LOBBY_SELECT_WAIT, "WAITING FOR PLAYERS" }, // TODO
+    { I18N_TNMT_LOBBY_SERVER, "SERVEUR" },
+    { I18N_TNMT_LOBBY_PLAYERS, "JOUEURS" },
+    { I18N_TNMT_LOBBY_START, "TIREZ POUR VOUS METTRE PRÊT" },
+    { I18N_TNMT_LOBBY_SELECT_START, "CHOISISSEZ UNE ÉQUIPE, TIREZ POUR VOUS METTRE PRÊT" },
+    { I18N_TNMT_LOBBY_SELECT_WAIT, "EN ATTENTE DE JOUEURS" },
     { I18N_TNMT_SB_CTC_TITLE, "ATTRAPEZ LA PIÈCE" },
     { I18N_TNMT_SB_PLAYER, "JOUEUR" },
     { I18N_TNMT_SB_TOTAL, "TOTAL" },
@@ -222,7 +222,7 @@ const I18N::Text I18N::all_texts_french[] = {
     { I18N_TNMT_TEAM_BLUE_CAP, "ÉQUIPE BLEUE" },
 
     { I18N_SERVE_LOBBY, "dans le lobby" },
-    { I18N_SERVE_LOBBY_READY, "ready" },     // TODO
+    { I18N_SERVE_LOBBY_READY, "prêt" },
     { I18N_SERVE_WARM_UP, "échauffement" },
     { I18N_SERVE_GAME_BEGINS, "la partie commence" },
     { I18N_SERVE_CONNECT, "${1} s'est connecté" },
@@ -458,8 +458,8 @@ const I18N::Text I18N::all_texts_french[] = {
     { I18N_MAINMENU_RECONNECT_KILLS1, "reconnect kills" },
     { I18N_MAINMENU_RECONNECT_KILLS2, "Reconnect Kills" },
     { I18N_MAINMENU_HOLD_DISCONNECTED_PLAYERS, "maintenir les joueurs déconnectés" },
-    { I18N_MAINMENU_FRIENDLY_FIRE, "alarme tir ami" },
-    { I18N_MAINMENU_SHOOT_EXPLOSIVES, "autoriser à tirer sur les explosis" },
+    { I18N_MAINMENU_FRIENDLY_FIRE, "notification de tir ami" },
+    { I18N_MAINMENU_SHOOT_EXPLOSIVES, "permettre le tir sur explosifs" },
     { I18N_MAINMENU_PREVENT_PICK, "ne pas prendre l'objet si l'inventaire est plein" },
     { I18N_RES_FLAG_NOT_FOUND, "drapeau ${1} introuvable" },
     { I18N_ME_SELECT, "sélectionner" },
