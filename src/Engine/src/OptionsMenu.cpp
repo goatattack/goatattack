@@ -26,8 +26,6 @@ OptionsMenu::OptionsMenu(Gui& gui, Resources& resources, Subsystem& subsystem,
     : gui(gui), resources(resources), subsystem(subsystem), i18n(subsystem.get_i18n()),
       config(config), client(client), options_visible(false), nav(gui, config), window(0) { }
 
-OptionsMenu::~OptionsMenu() { }
-
 void OptionsMenu::refresh_options(bool force_game_over, int x, int y) {
     if (options_visible) {
         options_visible = false;

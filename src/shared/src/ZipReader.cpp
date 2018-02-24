@@ -84,8 +84,6 @@ ZipReader::ZipReader(const std::string& filename) : Zip(filename) {
     }
 }
 
-ZipReader::~ZipReader() { }
-
 const ZipReader::Files& ZipReader::get_files() const {
     return files;
 }

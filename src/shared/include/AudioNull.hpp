@@ -27,7 +27,6 @@
 class AudioNull : public Audio {
 public:
     AudioNull();
-    virtual ~AudioNull();
 
     virtual void generate_audio(const std::string& filename, ZipReader *zip = 0);
     virtual void generate_music(const std::string& filename, ZipReader *zip = 0);

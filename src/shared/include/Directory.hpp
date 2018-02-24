@@ -41,7 +41,7 @@ private:
 
 public:
     Directory(const std::string& directory, const std::string& suffix, ZipReader *zip = 0);
-    virtual ~Directory();
+    ~Directory();
 
     const char *get_entry();
 

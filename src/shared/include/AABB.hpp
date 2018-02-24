@@ -45,7 +45,6 @@ struct CollisionBox {
 class AABB {
 public:
     AABB();
-    virtual ~AABB();
 
     const CollisionBox& get_colbox() const;
 

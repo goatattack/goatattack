@@ -23,7 +23,6 @@
 class TileGraphicNull : public TileGraphic {
 public:
     TileGraphicNull(int width, int height, bool keep_pictures);
-    virtual ~TileGraphicNull();
 
     virtual void reset();
     virtual void add_tile(int bytes_per_pixel, const void *pic, bool desc, bool linear = false);

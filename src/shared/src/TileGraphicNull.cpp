@@ -20,8 +20,6 @@
 TileGraphicNull::TileGraphicNull(int width, int height, bool keep_pictures)
     : TileGraphic(width, height, keep_pictures), sz(0) { }
 
-TileGraphicNull::~TileGraphicNull() { }
-
 void TileGraphicNull::reset() {
     current_index = 0;
 }

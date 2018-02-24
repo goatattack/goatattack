@@ -47,7 +47,7 @@ private:
 
 public:
     Mutex();
-    virtual ~Mutex();
+    ~Mutex();
 
     void lock();
     void unlock();

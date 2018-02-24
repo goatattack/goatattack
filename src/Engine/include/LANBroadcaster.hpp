@@ -38,7 +38,7 @@ private:
 
 public:
     LANBroadcaster(I18N& i18n, hostport_t port);
-    virtual ~LANBroadcaster();
+    ~LANBroadcaster();
 
     void start();
     void stop();

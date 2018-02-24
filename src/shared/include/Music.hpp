@@ -37,7 +37,7 @@ private:
 
 public:
     Music(Subsystem& subsystem, const std::string& filename, ZipReader *zip = 0);
-    virtual ~Music();
+    ~Music();
 
     const Audio *get_audio() const;
     bool get_do_not_play_in_music_player() const;

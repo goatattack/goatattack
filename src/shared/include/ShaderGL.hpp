@@ -35,7 +35,7 @@ public:
     typedef GLint ID;
 
     ShaderGL(Subsystem& subsystem, const std::string& filename, ZipReader *zip);
-    virtual ~ShaderGL();
+    ~ShaderGL();
 
     virtual ID get_location(const char *name);
     virtual ID get_attrib_location(const char *name);

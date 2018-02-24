@@ -30,7 +30,6 @@ public:
     Properties();
     Properties(const KeyValue& kv);
     Properties(const std::string& filename, ZipReader *zip = 0);
-    virtual ~Properties();
 
     const std::string& get_name() const;
     const std::string& get_author() const;

@@ -44,7 +44,7 @@ private:
 
 public:
     Tileset(Subsystem& subsystem, const std::string& filename, ZipReader *zip = 0);
-    virtual ~Tileset();
+    ~Tileset();
 
     int get_tile_width();
     int get_tile_height();

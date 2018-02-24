@@ -31,7 +31,6 @@ private:
 
 public:
     MasterQueryClient(I18N& i18n, MasterQuery& master_query, hostaddr_t host, hostport_t port);
-    virtual ~MasterQueryClient();
 
 public:
     MasterQuery& master_query;

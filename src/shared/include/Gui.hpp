@@ -66,7 +66,7 @@ public:
     };
 
     Gui(Resources& resources, Subsystem& subsystem, Font *font);
-    virtual ~Gui();
+    ~Gui();
 
     void run();
     void leave();

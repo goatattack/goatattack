@@ -40,7 +40,7 @@ private:
 
 public:
     MasterQuery(I18N& i18n, const std::string& masterserver, hostport_t masterport);
-    virtual ~MasterQuery();
+    ~MasterQuery();
 
     void start();
     void stop();

@@ -39,8 +39,6 @@ KeyValue::KeyValue(const std::string& filename, ZipReader *zip)
     }
 }
 
-KeyValue::~KeyValue() { }
-
 const std::string& KeyValue::get_value(const std::string& key) const {
     Entries::const_iterator it = entries.find(key);
     if (it == entries.end()) {

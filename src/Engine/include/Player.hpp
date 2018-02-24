@@ -35,7 +35,6 @@ public:
 
     Player(Resources& resources, const Connection *c, player_id_t player_id,
         const std::string& player_name, const std::string& characterset_name);
-    virtual ~Player();
 
     const std::string& get_player_name() const;
     void set_player_name(const std::string& name);

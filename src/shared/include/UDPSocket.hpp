@@ -41,7 +41,7 @@ private:
 public:
     UDPSocket();
     UDPSocket(unsigned short port);
-    virtual ~UDPSocket();
+    ~UDPSocket();
 
     ssize_t send(uint32_t host, uint16_t port, void *buffer, size_t length);
     ssize_t recv(char *buffer, size_t length, uint32_t *host, uint16_t *port);

@@ -32,7 +32,7 @@ public:
 class Configuration {
 public:
     Configuration(const std::string& directory, const std::string& filename);
-    virtual ~Configuration();
+    ~Configuration();
 
     bool do_save_at_exit() const;
     void set_save_at_exit(bool state);

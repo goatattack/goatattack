@@ -34,7 +34,7 @@
 class AudioSDL : public Audio {
 public:
     AudioSDL();
-    virtual ~AudioSDL();
+    ~AudioSDL();
 
     virtual void generate_audio(const std::string& filename, ZipReader *zip = 0);
     virtual void generate_music(const std::string& filename, ZipReader *zip = 0);

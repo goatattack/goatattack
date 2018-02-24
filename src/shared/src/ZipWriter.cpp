@@ -23,8 +23,6 @@ ZipWriter::ZipWriter(const std::string& filename)
     throw ZipWriterException("not implemented yet."); 
 }
 
-ZipWriter::~ZipWriter() { }
-
 void ZipWriter::add_file(const std::string& filename) { }
 
 void ZipWriter::remove_file(const std::string& filename) { }

@@ -26,8 +26,6 @@ ServerLogger::ServerLogger(std::ostream& stream, bool verbose)
     prepare();
 }
 
-ServerLogger::~ServerLogger() { }
-
 void ServerLogger::set_map(Map *map) {
     this->map = map;
     prepare();

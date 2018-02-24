@@ -36,7 +36,6 @@ private:
 public:
     GameserverInformation();
     GameserverInformation(hostaddr_t host, hostport_t port);
-    virtual ~GameserverInformation();
 
     hostaddr_t host;
     hostport_t port;

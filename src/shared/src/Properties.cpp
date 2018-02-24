@@ -30,8 +30,6 @@ Properties::Properties(const std::string& filename, ZipReader *zip)
     }
 }
 
-Properties::~Properties() { }
-
 const std::string& Properties::get_name() const {
     return name;
 }

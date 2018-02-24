@@ -41,8 +41,6 @@ public:
     ServerAdmin(Resources& resources, ClientServer& client_server,
         Properties& properties, const std::string& admin_password);
 
-    virtual ~ServerAdmin();
-
     void execute(const Connection *c, Player *p, std::string cmd, std::string params);
     void set_admin_server_is_on_client(bool state);
     bool get_admin_server_is_on_client() const;

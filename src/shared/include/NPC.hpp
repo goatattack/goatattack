@@ -40,7 +40,7 @@ private:
 
 public:
     NPC(Subsystem& subsystem, const std::string& filename, ZipReader *zip = 0);
-    virtual ~NPC();
+    ~NPC();
 
     Tile *get_tile(Direction direction, NPCAnimation animation);
     int get_move_init() const;

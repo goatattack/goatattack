@@ -23,7 +23,7 @@
 class ShaderNull : public Shader {
 public:
     ShaderNull(const std::string& filename, ZipReader *zip);
-    virtual ~ShaderNull();
+    ~ShaderNull();
 
     virtual ID get_location(const char *name);
     virtual ID get_attrib_location(const char *name);

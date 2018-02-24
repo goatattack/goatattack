@@ -19,8 +19,6 @@
 
 AudioNull::AudioNull() { }
 
-AudioNull::~AudioNull() { }
-
 void AudioNull::generate_audio(const std::string& filename, ZipReader *zip) { }
 
 void AudioNull::generate_music(const std::string& filename, ZipReader *zip) { }

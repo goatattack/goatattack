@@ -37,7 +37,6 @@ private:
 
 public:
     ZipWriter(const std::string& filename);
-    virtual ~ZipWriter();
 
     void add_file(const std::string& filename);
     void remove_file(const std::string& filename);

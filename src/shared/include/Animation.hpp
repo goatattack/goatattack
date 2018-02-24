@@ -39,7 +39,7 @@ private:
 
 public:
     Animation(Subsystem& subsystem, const std::string& filename, ZipReader *zip);
-    virtual ~Animation();
+    ~Animation();
 
     Tile *get_tile() const;
     int get_animation_speed() const;

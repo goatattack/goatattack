@@ -28,8 +28,6 @@ GameserverInformation::GameserverInformation(hostaddr_t host, hostport_t port)
     : host(host), port(port), max_clients(0), cur_clients(0),
       protocol_version(0), secured(false), ping_time(0) { }
 
-GameserverInformation::~GameserverInformation() { }
-
 /* compare functions */
 static bool server_info_cmp_name_asc(GameserverInformation *lhs, GameserverInformation *rhs) {
     return lhs->server_name < rhs->server_name;

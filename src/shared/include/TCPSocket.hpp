@@ -37,7 +37,7 @@ private:
 
 public:
     TCPSocket();
-    virtual ~TCPSocket();
+    ~TCPSocket();
 
     void connect(const char *ip_address, unsigned short port);
     bool activity(time_t sec, long usec);

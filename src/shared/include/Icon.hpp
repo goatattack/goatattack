@@ -37,7 +37,7 @@ private:
 
 public:
     Icon(Subsystem& subsystem, const std::string& filename, ZipReader *zip = 0, const std::string& direct = "");
-    virtual ~Icon();
+    ~Icon();
 
     Tile *get_tile();
     int get_hotspot_x() const;

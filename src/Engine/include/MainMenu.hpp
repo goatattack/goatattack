@@ -36,7 +36,7 @@ private:
 
 public:
     MainMenu(Resources& resources, Subsystem& subsystem, Configuration& config);
-    virtual ~MainMenu();
+    ~MainMenu();
 
     virtual void idle();
     virtual void on_input_event(const InputData& input);

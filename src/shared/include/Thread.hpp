@@ -32,7 +32,7 @@ private:
 
 public:
     Thread();
-    virtual ~Thread();
+    ~Thread();
 
 protected:
     bool thread_start();

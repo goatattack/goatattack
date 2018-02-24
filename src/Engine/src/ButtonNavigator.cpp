@@ -21,8 +21,6 @@ ButtonNavigator::ButtonNavigator(Gui& gui, Configuration& config)
     : gui(gui), config(config), on_cancel(0), on_cancel_data(0),
       joymotion_up(false), joymotion_down(false) { }
 
-ButtonNavigator::~ButtonNavigator() { }
-
 void ButtonNavigator::install_handlers(GuiWindow *window,
     OnCancel on_cancel, void *on_cancel_data)
 {

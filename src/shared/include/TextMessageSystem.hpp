@@ -26,7 +26,7 @@ class Icon;
 class TextMessageSystem {
 public:
     TextMessageSystem();
-    virtual ~TextMessageSystem();
+    ~TextMessageSystem();
 
     void add_text_msg(const std::string& player, const std::string& msg);
     void add_text_msg(Icon& icon, const std::string& player, const std::string& msg);

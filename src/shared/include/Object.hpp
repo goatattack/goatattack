@@ -61,7 +61,7 @@ public:
     };
 
     Object(Subsystem& subsystem, const std::string& filename, ZipReader *zip);
-    virtual ~Object();
+    ~Object();
 
     Tile *get_tile();
     void increment_tile_index(double diff) const;

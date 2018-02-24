@@ -38,7 +38,6 @@ enum Direction {
 class Movable {
 public:
     Movable(Subsystem& subsystem);
-    virtual ~Movable();
 
     int get_width() const;
     int get_height() const;

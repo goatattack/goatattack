@@ -94,7 +94,7 @@ public:
     typedef std::vector<ResourceObject> ResourceObjects;
 
     Resources(Subsystem& subystem, const std::string& resource_directory, bool skip_maps = false, bool paks_only = false);
-    virtual ~Resources();
+    ~Resources();
 
     void reload_resources();
     void update_tile_index(double diff, Tileset *tileset);

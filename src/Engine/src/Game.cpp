@@ -33,8 +33,6 @@ Game::Game(Resources& resources, Subsystem& subsystem, Configuration& config)
     subsystem << subsystem.get_i18n()(subsystem.is_dedicated_server() ? I18N_MODE_IS_DEDICATED : I18N_MODE_IS_NORMAL) << std::endl;
 }
 
-Game::~Game() { }
-
 void Game::run(const std::string& parm) {
     subsystem.initialize(resources);
 

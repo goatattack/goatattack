@@ -40,8 +40,6 @@ Player::Player(Resources& resources, const Connection *c, player_id_t player_id,
     reset();
 }
 
-Player::~Player() { }
-
 const std::string& Player::get_player_name() const {
     return player_name;
 }

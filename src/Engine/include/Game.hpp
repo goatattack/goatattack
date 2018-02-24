@@ -36,7 +36,6 @@ private:
 
 public:
     Game(Resources& resources, Subsystem& subsystem, Configuration& config);
-    virtual ~Game();
 
     void run(const std::string& parm);
 

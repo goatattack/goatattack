@@ -37,7 +37,6 @@ private:
 
 public:
     ZipReader(const std::string& filename);
-    virtual ~ZipReader();
 
     const Files& get_files() const;
     bool file_exists(std::string filename);

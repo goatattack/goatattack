@@ -37,7 +37,7 @@ private:
 
 public:
     Sound(Subsystem& subsystem, const std::string& filename, ZipReader *zip = 0);
-    virtual ~Sound();
+    ~Sound();
 
     const Audio *get_audio() const;
     int get_playing_channel() const;

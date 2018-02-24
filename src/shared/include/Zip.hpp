@@ -47,7 +47,7 @@ public:
     typedef std::vector<File> Files;
 
     Zip(const std::string& filename);
-    virtual ~Zip();
+    ~Zip();
 
     const std::string& get_zip_filename() const;
     const std::string& get_zip_short_filename() const;

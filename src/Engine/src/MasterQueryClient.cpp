@@ -32,8 +32,6 @@ MasterQueryClient::MasterQueryClient(I18N& i18n, MasterQuery& master_query, host
     get_now(last_update);
 }
 
-MasterQueryClient::~MasterQueryClient() { }
-
 void MasterQueryClient::refresh() {
     received = false;
     request_server_info(host, port);

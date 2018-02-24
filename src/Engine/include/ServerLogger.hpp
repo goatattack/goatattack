@@ -76,7 +76,6 @@ public:
     };
 
     ServerLogger(std::ostream& stream, bool verbose);
-    virtual ~ServerLogger();
 
     void set_map(Map *map);
     void log(LogType type, const std::string& text, Player *p1 = 0, Player *p2 = 0,

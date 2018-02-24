@@ -58,7 +58,7 @@ public:
     static const char *JumpSound;
 
     Characterset(Subsystem& subsystem, const std::string& filename, ZipReader *zip = 0);
-    virtual ~Characterset();
+    ~Characterset();
 
     Tile *get_tile(Direction direction, CharacterAnimation animation);
     Tile *get_armor_overlay(Direction direction, CharacterAnimation animation);

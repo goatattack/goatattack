@@ -49,7 +49,7 @@ public:
     Server(Resources& resources, Subsystem& subsystem,
         const std::string& server_config_file);
 
-    virtual ~Server();
+    ~Server();
 
     void start();
     void stop();

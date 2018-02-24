@@ -49,7 +49,7 @@ public:
 
     Tile(TileGraphic *tilegraphic, bool background, TileType tile_type,
         int animation_speed, bool one_shot, double friction);
-    virtual ~Tile();
+    ~Tile();
 
     TileGraphic *get_tilegraphic();
     bool is_background();

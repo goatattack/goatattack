@@ -43,7 +43,7 @@ public:
     };
 
     PNG(const std::string& filename, ZipReader *zip = 0);
-    virtual ~PNG();
+    ~PNG();
 
     void flip_h();
     void flip_v();

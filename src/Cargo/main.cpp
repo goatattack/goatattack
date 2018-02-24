@@ -38,78 +38,78 @@ namespace {
 
     const int ChunkSize = 1024;
 
-}
-
-static void create_directory(const char *root, const char *dir) {
-    const char *separator = dir;
-    while (true) {
-        /* find separator */
-        bool found = false;
-        while (separator) {
-            separator++;
-            if (*separator == 0) {
+    void create_directory(const char *root, const char *dir) {
+        const char *separator = dir;
+        while (true) {
+            /* find separator */
+            bool found = false;
+            while (separator) {
+                separator++;
+                if (*separator == 0) {
+                    break;
+                }
+                if (*separator == '/' || *separator == '\\') {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
                 break;
             }
-            if (*separator == '/' || *separator == '\\') {
-                found = true;
-                break;
-            }
-        }
-        if (!found) {
-            break;
-        }
 
-        /* create directory */
-        std::string new_dir(root);
-        new_dir += "/";
-        new_dir.append(dir, separator - dir);
+            /* create directory */
+            std::string new_dir(root);
+            new_dir += "/";
+            new_dir.append(dir, separator - dir);
 
 #ifndef _WIN32
-        struct stat st;
-        if (stat(new_dir.c_str(), &st) == -1) {
-            mkdir(new_dir.c_str(), 0700);
-        }
+            struct stat st;
+            if (stat(new_dir.c_str(), &st) == -1) {
+                mkdir(new_dir.c_str(), 0700);
+            }
 #else
-        modify_directory_separator(new_dir);
-        wchar_t wdir[MaxPathLength];
-        to_unicode(new_dir.c_str(), wdir, MaxPathLength);
-        int rv = CreateDirectoryW(wdir, 0);
+            modify_directory_separator(new_dir);
+            wchar_t wdir[MaxPathLength];
+            to_unicode(new_dir.c_str(), wdir, MaxPathLength);
+            int rv = CreateDirectoryW(wdir, 0);
 #endif
-    }
-}
-
-static void extract(const char *pakfile, const char *root) {
-    ZipReader zr(pakfile);
-    const Zip::Files& files = zr.get_files();
-    for (Zip::Files::const_iterator it = files.begin(); it != files.end(); it++) {
-        create_directory(root, it->filename.c_str());
-        FILE *f = 0;
-        const char *data = 0;
-        try {
-            std::string new_file(root);
-            new_file += "/" + it->filename;
-            modify_directory_separator(new_file);
-            f = fopen(new_file.c_str(), "wb");
-            if (!f) {
-                throw CargoException(std::string("Cannot open file for writing: ") + it->filename + " (" + strerror(errno) + ")");
-            }
-            size_t sz;
-            data = zr.extract(it->filename, &sz);
-            fwrite(data, 1, sz, f);
-            zr.destroy(data);
-            fclose(f);
-        } catch (const Exception& e) {
-            if (f) {
-                fclose(f);
-            }
-            if (data) {
-                zr.destroy(data);
-            }
-            throw;
         }
     }
 
-    std::cout << zr.get_files().size() << " files extracted." << std::endl;
+    void extract(const char *pakfile, const char *root) {
+        ZipReader zr(pakfile);
+        const Zip::Files& files = zr.get_files();
+        for (Zip::Files::const_iterator it = files.begin(); it != files.end(); it++) {
+            create_directory(root, it->filename.c_str());
+            FILE *f = 0;
+            const char *data = 0;
+            try {
+                std::string new_file(root);
+                new_file += "/" + it->filename;
+                modify_directory_separator(new_file);
+                f = fopen(new_file.c_str(), "wb");
+                if (!f) {
+                    throw CargoException(std::string("Cannot open file for writing: ") + it->filename + " (" + strerror(errno) + ")");
+                }
+                size_t sz;
+                data = zr.extract(it->filename, &sz);
+                fwrite(data, 1, sz, f);
+                zr.destroy(data);
+                fclose(f);
+            } catch (const Exception& e) {
+                if (f) {
+                    fclose(f);
+                }
+                if (data) {
+                    zr.destroy(data);
+                }
+                throw;
+            }
+        }
+
+        std::cout << zr.get_files().size() << " files extracted." << std::endl;
+    }
+
 }
 
 int main(int argc, char *argv[]) {

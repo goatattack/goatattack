@@ -37,7 +37,7 @@ private:
 
 public:
     Background(Subsystem& subsystem, const std::string& filename, ZipReader *zip);
-    virtual ~Background();
+    ~Background();
 
     TileGraphic *get_tilegraphic(int index);
     float get_alpha() const;

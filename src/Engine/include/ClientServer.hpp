@@ -40,7 +40,7 @@ public:
     ClientServer(I18N& i18n, hostport_t port, pico_size_t num_players,
         const std::string& server_name, const std::string& password);
     ClientServer(I18N& i18n, hostaddr_t host, hostport_t port);
-    virtual ~ClientServer();
+    ~ClientServer();
 
     Tournament *get_tournament() const;
     Players& get_players();

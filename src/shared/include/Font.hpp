@@ -50,7 +50,7 @@ public:
     };
 
     Font(Subsystem& subsystem, FT_Library& ft, const std::string& filename, ZipReader *zip = 0);
-    virtual ~Font();
+    ~Font();
 
     const Character *get_character(const char *s);
     int get_font_height() const;

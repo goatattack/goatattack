@@ -51,8 +51,6 @@ ServerAdmin::ServerAdmin(Resources& resources, ClientServer& client_server,
     : resources(resources), server(client_server), properties(properties),
       admin_password(admin_password), is_client(false) { }
 
-ServerAdmin::~ServerAdmin() { }
-
 void ServerAdmin::execute(const Connection *c, Player *p, std::string cmd, std::string params)
 {
     try {
