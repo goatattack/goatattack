@@ -463,6 +463,7 @@ const I18N::Text I18N::all_texts_french[] = {
     { I18N_MAINMENU_PREVENT_PICK, "ne pas prendre l'objet si l'inventaire est plein" },
     { I18N_RES_FLAG_NOT_FOUND, "drapeau ${1} introuvable" },
     { I18N_ME_SELECT, "sélectionner" },
+    { I18N_MAINMENU_REFUSE_JOIN_IN_GAME, "refuse joining if a game is running" }, // TODO
 
     { I18N_NONE, 0 }
 };

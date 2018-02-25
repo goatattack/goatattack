@@ -127,6 +127,7 @@ private:
     GuiCheckbox *cs_opt_friendly_fire;
     GuiCheckbox *cs_opt_shooting_explosives;
     GuiCheckbox *cs_opt_prevent_pick;
+    GuiCheckbox *cs_opt_refuse_join;
     GuiCheckbox *cs_opt_hold_disconnected_players;
     GuiTextbox *cs_opt_reconnect_kills;
 

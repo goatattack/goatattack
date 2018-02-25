@@ -110,6 +110,7 @@ private:
     ServerLogger logger;
     bool reload_map_rotation;
     bool broadcast_settings;
+    bool refuse_join;
 
     MapConfigurations map_configs;
     HeldPlayerStats held_player_stats;

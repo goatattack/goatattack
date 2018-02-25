@@ -714,6 +714,7 @@ void MainMenu::create_server_click() {
     cs_opt_friendly_fire = create_checkbox(frsettings, 0, 114, i18n(I18N_MAINMENU_FRIENDLY_FIRE), config.get_bool("friendly_fire_alarm"), 0, 0);
     cs_opt_shooting_explosives = create_checkbox(frsettings, 0, 129, i18n(I18N_MAINMENU_SHOOT_EXPLOSIVES), config.get_bool("shot_explosives"), 0, 0);
     cs_opt_prevent_pick = create_checkbox(frsettings, 0, 144, i18n(I18N_MAINMENU_PREVENT_PICK), config.get_bool("prevent_pick"), 0, 0);
+    cs_opt_refuse_join = create_checkbox(frsettings, 0, 159, i18n(I18N_MAINMENU_REFUSE_JOIN_IN_GAME), config.get_bool("refuse_join"), 0, 0);
 
     /* buttons */
     std::string btn_start(i18n(I18N_BUTTON_START_SERVER));
@@ -900,6 +901,7 @@ void MainMenu::server_validate(bool close) {
     config.set_bool("friendly_fire_alarm", cs_opt_friendly_fire->get_state());
     config.set_bool("shot_explosives", cs_opt_shooting_explosives->get_state());
     config.set_bool("prevent_pick", cs_opt_prevent_pick->get_state());
+    config.set_bool("refuse_join", cs_opt_refuse_join->get_state());
     config.set_bool("hold_disconnected_player", cs_opt_hold_disconnected_players->get_state());
     config.set_int("reconnect_kills", reconnect_kills);
 

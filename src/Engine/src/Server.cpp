@@ -55,7 +55,8 @@ Server::Server(Resources& resources, Subsystem& subsystem, const KeyValue& kv, G
       hdp_counter(0), master_server(public_server ? resolve_host(get_value("master_server")) : 0),
       ms_counter(0), master_socket(),
       rotation_current_index(0),  log_file(0), logger(subsystem.get_stream(), true),
-      reload_map_rotation(false), broadcast_settings(false)
+      reload_map_rotation(false), broadcast_settings(false),
+      refuse_join(atoi(get_value("refuse_join").c_str()) != 0 ? true : false)
 {
     setup_loaded_paks();
     map_configs.push_back(MapConfiguration(type, map_name, duration, warmup));
@@ -79,7 +80,8 @@ Server::Server(Resources& resources, Subsystem& subsystem,
       hdp_counter(0), master_server(resolve_host(get_value("master_server"))),
       ms_counter(0), master_socket(), rotation_current_index(0),
       log_file(0), logger(create_log_stream(), true),
-      reload_map_rotation(false), broadcast_settings(false)
+      reload_map_rotation(false), broadcast_settings(false),
+      refuse_join(atoi(get_value("refuse_join").c_str()) != 0 ? true : false)
 {
     setup_loaded_paks();
     load_map_rotation();
@@ -707,7 +709,13 @@ void Server::event_data(const Connection *c, data_len_t len, void *data) {
                         if (p->client_synced) {
                             playerflags_t *flags = reinterpret_cast<playerflags_t *>(data_ptr);
                             if (tournament) {
-                                if (tournament->get_game_state().seconds_remaining) {
+                                GGameState& gs = tournament->get_game_state();
+                                bool refused = refuse_join &&
+                                    (!(p->state.server_state.flags & PlayerServerFlagTeamSelected)) &&
+                                    (!(gs.flags & GameStateFlagLobby));
+                                if (refused) {
+                                    send_data(c, factory.get_tournament_id(), GPCJoinRefused, NetFlagsReliable, 0, 0);
+                                } else if (gs.seconds_remaining) {
                                     if (!tournament->player_joins(p, *flags)) {
                                         send_data(c, factory.get_tournament_id(), GPCJoinRefused, NetFlagsReliable, 0, 0);
                                     } else {
