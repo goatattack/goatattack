@@ -41,10 +41,9 @@ int main(int argc, char *argv[]) {
 
     stream << "Goat Attack " << GameVersion << std::endl;
 
-    init_hpet();
-    start_net();
-
     try {
+        init_hpet();
+        start_net();
         std::srand(static_cast<unsigned int>(time(0)));
         PathManager pm(ApplicationName);
         Configuration config(pm, ConfigFilename);

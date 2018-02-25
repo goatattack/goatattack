@@ -27,6 +27,8 @@
 
 int main(int argc, char *argv[]) {
     std::ostream& stream = std::cout;
+    const char *parm = (argc > 1 ? argv[1] : 0);
+
     stream << "Goat Attack Map Editor " << GameVersion << std::endl;
 
     try {
@@ -39,7 +41,8 @@ int main(int argc, char *argv[]) {
         /* load SDL subsystem */
         SubsystemSDL subsystem(stream, i18n, i18n(I18N_WINTITLE_EDITOR), config.get_bool("shading_pipeline"));
         subsystem.set_keep_pictures(true);
-        Resources resources(subsystem, pm, STRINGIZE_VALUE_OF(DATA_DIRECTORY), true, false);
+        const char *data_directory = (parm ? parm : STRINGIZE_VALUE_OF(DATA_DIRECTORY));
+        Resources resources(subsystem, pm, data_directory, true, false);
 
         /* setup base view options */
         subsystem.initialize(resources);
@@ -54,6 +57,8 @@ int main(int argc, char *argv[]) {
         editor.run();
     } catch (const Exception& e) {
         stream << e.what() << std::endl;
+        stream << "Ensure that you can add a data folder as parameter." << std::endl;
+        stream << "Example: " << argv[0] << " path/to/your/data/folder" << std::endl;
     }
 
     stream << "\nbye bye... :)" << std::endl;
