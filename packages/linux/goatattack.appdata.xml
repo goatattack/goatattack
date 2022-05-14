@@ -26,4 +26,8 @@
     <release version="0.4.3" date="2016-07-05" />
     <release version="0.4.2" date="2015-09-30" />
   </releases>
+  <content_rating type="oars-1.1">
+    <content_attribute id="violence-cartoon">moderate</content_attribute>
+    <content_attribute id="social-chat">intense</content_attribute>
+  </content_rating>
 </application>
