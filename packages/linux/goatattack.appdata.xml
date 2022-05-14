@@ -20,4 +20,10 @@
   </screenshots>
   <url type="homepage">http://www.goatattack.net</url>
   <updatecontact>pw@goatattack.net</updatecontact>
+  <releases>
+    <release version="0.4.5" date="2017-09-14" />
+    <release version="0.4.4" date="2016-10-02" />
+    <release version="0.4.3" date="2016-07-05" />
+    <release version="0.4.2" date="2015-09-30" />
+  </releases>
 </application>
