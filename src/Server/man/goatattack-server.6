@@ -1,4 +1,4 @@
-.TH GOATATTACK-SERVER 6 "September 2018" "goat attack" "Multiplayer shooter"
+.TH GOATATTACK-SERVER 6 "March 2023" "goat attack" "Multiplayer shooter"
 .SH NAME
 goatattack-server \- dedicated server for a multiplayer pixel art shooter game
 .SH SYNOPSIS
@@ -140,9 +140,6 @@ Kick immediately a player from the arena.
 \fB/next\fP
 Select the next map in the map rotation list.
 .TP
-\fB/next\fP
-Select the next map in the map rotation list.
-.TP
 \fB/map\fP \fI<map_name> <warmup> <duration>\fP
 Load map, warmup are in seconds, duration in minutes.
 .TP
@@ -160,6 +157,12 @@ Clears the server configuration variable.
 .TP
 \fB/save\fP
 Saves the server configuration file.
+.TP
+\fB/stats\fP
+Show all client stats (address and port, ping time in ms, receive and send sequence number for unreliable data, receive and send sequence number for reliable data, number of data in input and output queue).
+.TP
+\fB/list\fP
+Show list of all connected players (op is tagged with an asterisk).
 
 .SH LOG FILE
 If configured, a dedicated server will generate log entries on each action. Eg. if a
@@ -439,9 +442,15 @@ If a match is finished or the last player has left the arena, the current map wi
 .TP
 \fB040\fP \fILogTypeLeft\fP
 DATE TIME LOG MAP MAP_DESC TEXT PLAYER
+.TP
+\fB041\fP \fILogTypeInTheLobby\fP
+DATE TIME LOG MAP MAP_DESC TEXT
+.TP
+\fB042\fP \fILogTypeLobbyReady\fP
+DATE TIME LOG MAP MAP_DESC TEXT PLAYER
 .br
 A player left the game and spectates now. Belongs to all game modes.
 .SH MORE INFORMATIONS
-Please read the README file or visit \fIwww.goatattack.net\fR for more informations.
+Please read the README file for more informations.
 .SH AUTHORS
 Goat Attack and its manuals were written by Philippe Widmer <pw@earthwave.ch>, and are licensed under the terms of GPLv3 licenses.

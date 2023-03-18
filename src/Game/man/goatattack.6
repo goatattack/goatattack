@@ -1,4 +1,4 @@
-.TH GOATATTACK 6 "September 2016" "goat attack" "Multiplayer shooter"
+.TH GOATATTACK 6 "March 2023" "goat attack" "Multiplayer shooter"
 .SH NAME
 goatattack \- multiplayer pixel art shooter game
 .SH SYNOPSIS
@@ -8,8 +8,16 @@ Goat Attack is a fast-paced multiplayer pixel art shooter game. Optionally, you 
 .SH CONFIGURATION
 The configuration is a simple key=value file. The configuration file is stored in your home directory under
 .I ~/.goatattack
-and you should not edit this file directly unless you know what you do. You can change your settings in a running game session.
+or
+.I ~/.config/goatattack
+and you should not edit this file directly unless you know what you do. You can change your settings in a running game session with
+.I /get
+and
+.I /set
+command. You have to be
+.I /op
+to be able to do this. Have a look into the goatattack-server manual page for further informations.
 .SH MORE INFORMATIONS
-Please read the README file or visit \fIwww.goatattack.net\fR for more informations.
+Please read the README file for more informations.
 .SH AUTHORS
 Goat Attack and its manuals were written by Philippe Widmer <pw@earthwave.ch>, and are licensed under the terms of GPLv3 licenses.
