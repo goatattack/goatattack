@@ -87,8 +87,10 @@ $ git submodule update --init
 ```
 ### OSX build
 **Further OSX development put on hold, looking for OSX maintainer!**
+
 You will find the Xcode project file in the `osx` folder, open it and build the solution. You will receive a `Goat Attack.app`. At the moment, the map editor will not be built in an OSX environment.
 
 ### Windows build
 **Further Windows development put on hold, looking for OSX maintainer!**
+
 In the `windows\GoatAttack` folder, you will find the project solution file. Open it and build the entire solution. You will need all SDL-dlls and the `data` folder. Take these files from the released zip file.
