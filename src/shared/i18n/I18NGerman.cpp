@@ -464,5 +464,8 @@ const I18N::Text I18N::all_texts_german[] = {
     { I18N_RES_FLAG_NOT_FOUND, "Flagge ${1} nicht gefunden" },
     { I18N_ME_SELECT, "auswählen" },
     { I18N_MAINMENU_REFUSE_JOIN_IN_GAME, "Beitreten verweigern, wenn Spiel läuft" },
+    { I18N_MAINMENU_PROTOCOL, "Proto" },
+    { I18N_MAINMENU_COMPATIBLE_SERVERS, "Nur kompatible Server anzeigen" },
+
     { I18N_NONE, 0 }
 };

@@ -466,6 +466,8 @@ const I18N::Text I18N::all_texts_spanish[] = {
     { I18N_RES_FLAG_NOT_FOUND, "flag ${1} not found" },
     { I18N_ME_SELECT, "select" },
     { I18N_MAINMENU_REFUSE_JOIN_IN_GAME, "refuse joining if a game is running" },
+    { I18N_MAINMENU_PROTOCOL, "proto" },
+    { I18N_MAINMENU_COMPATIBLE_SERVERS, "show compatible servers only" },
 
     { I18N_NONE, 0 }
 };

@@ -19,6 +19,7 @@
 #define _MAINMENU_HPP_
 
 #include "Exception.hpp"
+#include "GuiObject.hpp"
 #include "Resources.hpp"
 #include "Subsystem.hpp"
 #include "Gui.hpp"
@@ -119,6 +120,9 @@ private:
     GuiListbox *cs_maps;
     GuiListbox *play_lan_list;
     GuiListbox *play_wan_list;
+    GuiCheckbox *play_lan_compatible;
+    GuiCheckbox *play_wan_compatible;
+
     GuiTextbox *custom_ipaddress;
     GuiTextbox *custom_port;
     GuiTextbox *custom_password;
@@ -185,6 +189,9 @@ private:
     void on_lan_entry_click(int index);
 
     static bool static_on_tab_click(GuiTab *sender, int index, void *data);
+
+    static void on_compatible_click(GuiCheckbox *sender, void *data, bool state);
+    void compatible_click(bool state);
 
     /* other functions */
     void play_click();

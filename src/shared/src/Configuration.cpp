@@ -53,6 +53,7 @@ Configuration::Configuration(PathManager& pm, const std::string& filename)
     cdef("sfx_volume", "128");
     cdef("master_server", "master.goatattack.net");
     cdef("master_port", "25113");
+    cdef("compatible_servers_only", "1");
 
     cdef("server_name", "frederic's temple");
     cdef("port", "25111");

@@ -183,6 +183,9 @@ void MainMenu::idle() {
     int vw = subsystem.get_view_width();
     int vh = subsystem.get_view_height();
 
+    /* compatible servers only? */
+    bool compatible = config.get_bool("compatible_servers_only");
+
     /* retrieving LAN server infos */
     if (lan_broadcaster) {
         /* refresh */
@@ -207,18 +210,22 @@ void MainMenu::idle() {
             it != hosts.end(); it++)
         {
             const GameserverInformation *info = *it;
-            std::string server_name(info->server_name);
-            Icon *flag = resources.get_flag_from_name(server_name);
-            GuiListboxEntry *entry = play_lan_list->add_entry(flag, FlagWidth, server_name);
-            entry->add_column((info->secured ? resources.get_icon("lock") : 0), 9, "", 16);
-            sprintf(buffer, "%d/%d", info->cur_clients, info->max_clients);
-            entry->add_column(buffer, 50);
-            sprintf(buffer, "%d", static_cast<int>(info->ping_time));
-            entry->add_column(buffer, 40);
-            entry->set_ptr_tag(info);
-            if (selected_ptr == info) {
-                lan_list_selected_entry = info;
-                play_lan_list->set_selected_index(play_lan_list->get_entry_count() - 1);
+            if (!compatible || info->protocol_version == ProtocolVersion) {
+                std::string server_name(info->server_name);
+                Icon *flag = resources.get_flag_from_name(server_name);
+                GuiListboxEntry *entry = play_lan_list->add_entry(flag, FlagWidth, server_name);
+                sprintf(buffer, "%d", info->protocol_version);
+                entry->add_column(buffer, 40);
+                entry->add_column((info->secured ? resources.get_icon("lock") : 0), 9, "", 16);
+                sprintf(buffer, "%d/%d", info->cur_clients, info->max_clients);
+                entry->add_column(buffer, 50);
+                sprintf(buffer, "%d", static_cast<int>(info->ping_time));
+                entry->add_column(buffer, 40);
+                entry->set_ptr_tag(info);
+                if (selected_ptr == info) {
+                    lan_list_selected_entry = info;
+                    play_lan_list->set_selected_index(play_lan_list->get_entry_count() - 1);
+                }
             }
         }
         play_lan_list->set_top_index(top_index);
@@ -236,17 +243,21 @@ void MainMenu::idle() {
         {
             const MasterQueryClient *info = static_cast<MasterQueryClient *>(*it);
             if (info->received) {
-                std::string server_name(info->server_name);
-                Icon *flag = resources.get_flag_from_name(server_name);
-                GuiListboxEntry *entry = play_wan_list->add_entry(flag, FlagWidth, server_name);
-                entry->add_column((info->secured ? resources.get_icon("lock") : 0), 9, "", 16);
-                sprintf(buffer, "%d/%d", info->cur_clients, info->max_clients);
-                entry->add_column(buffer, 50);
-                sprintf(buffer, "%d", static_cast<int>(info->ping_time));
-                entry->add_column(buffer, 40);
-                entry->set_ptr_tag(info);
-                if (info == wan_list_selected_entry) {
-                    play_wan_list->set_selected_index(play_wan_list->get_entry_count() - 1);
+                if (!compatible || info->protocol_version == ProtocolVersion) {
+                    std::string server_name(info->server_name);
+                    Icon *flag = resources.get_flag_from_name(server_name);
+                    GuiListboxEntry *entry = play_wan_list->add_entry(flag, FlagWidth, server_name);
+                    sprintf(buffer, "%d", info->protocol_version);
+                    entry->add_column(buffer, 40);
+                    entry->add_column((info->secured ? resources.get_icon("lock") : 0), 9, "", 16);
+                    sprintf(buffer, "%d/%d", info->cur_clients, info->max_clients);
+                    entry->add_column(buffer, 50);
+                    sprintf(buffer, "%d", static_cast<int>(info->ping_time));
+                    entry->add_column(buffer, 40);
+                    entry->set_ptr_tag(info);
+                    if (info == wan_list_selected_entry) {
+                        play_wan_list->set_selected_index(play_wan_list->get_entry_count() - 1);
+                    }
                 }
             }
         }
@@ -326,17 +337,20 @@ void MainMenu::play_click() {
     create_server_locator(0);
 
     GuiListboxEntry *title_bar;
+	bool compatible = config.get_bool("compatible_servers_only");
 
     /* LAN */
     GuiFrame *frlan = tab->create_tab(i18n(I18N_MAINMENU_LAN_TITLE));
-    create_label(frlan, 0, 0, i18n(I18N_MAINMENU_LAN_SERVERS));
-    play_lan_list = create_listbox(frlan, 0, 15, frlan->get_width(), frlan->get_height() + 2 - (15 + bh + Spc), 0, FlagWidth, i18n(I18N_MAINMENU_SERVER_NAME), static_on_lan_entry_click, this);
+	play_lan_compatible = create_checkbox(frlan, 0, 0, i18n(I18N_MAINMENU_COMPATIBLE_SERVERS), compatible, on_compatible_click, this);
+    create_label(frlan, 0, 15, i18n(I18N_MAINMENU_LAN_SERVERS));
+    play_lan_list = create_listbox(frlan, 0, 30, frlan->get_width(), frlan->get_height() + 2 - (30 + bh + Spc), 0, FlagWidth, i18n(I18N_MAINMENU_SERVER_NAME), static_on_lan_entry_click, this);
     play_lan_list->show_title_bar(true);
     play_lan_list->set_on_title_clicked(static_play_lan_sort_click, this);
     create_button(frlan, frlan->get_width() - bw_connect, frlan->get_height() - bh, bw_connect, bh, btn_connect, static_play_connect_lan_click, this);
     create_button(frlan, 0, frlan->get_height() - bh, bw_refresh, bh, btn_refresh, static_play_refresh_lan_click, this);
 
     title_bar = play_lan_list->get_title_bar();
+    title_bar->add_column(i18n(I18N_MAINMENU_PROTOCOL), 40);
     title_bar->add_column(resources.get_icon("lock"), 9, "", 16);
     title_bar->add_column(i18n(I18N_MAINMENU_PLAYERS), 50);
     title_bar->add_column(i18n(I18N_MAINMENU_PING), 40);
@@ -345,8 +359,9 @@ void MainMenu::play_click() {
 
     /* internet */
     GuiFrame *frwan = tab->create_tab(i18n(I18N_MAINMENU_INTERNET));
-    create_label(frwan, 0, 0, i18n(I18N_MAINMENU_INTERNET_SERVERS));
-    play_wan_list = create_listbox(frwan, 0, 15, frwan->get_width(), frwan->get_height() + 2 - (15 + bh + Spc), 0, FlagWidth, i18n(I18N_MAINMENU_SERVER_NAME), static_on_wan_entry_click, this);
+	play_wan_compatible = create_checkbox(frwan, 0, 0, i18n(I18N_MAINMENU_COMPATIBLE_SERVERS), compatible, on_compatible_click, this);
+    create_label(frwan, 0, 15, i18n(I18N_MAINMENU_INTERNET_SERVERS));
+    play_wan_list = create_listbox(frwan, 0, 30, frwan->get_width(), frwan->get_height() + 2 - (30 + bh + Spc), 0, FlagWidth, i18n(I18N_MAINMENU_SERVER_NAME), static_on_wan_entry_click, this);
     play_wan_list->show_title_bar(true);
     play_wan_list->set_on_title_clicked(static_play_wan_sort_click, this);
 
@@ -354,6 +369,7 @@ void MainMenu::play_click() {
     create_button(frwan, 0, frwan->get_height() - bh, bw_refresh, bh, btn_refresh, static_play_refresh_wan_click, this);
 
     title_bar = play_wan_list->get_title_bar();
+    title_bar->add_column(i18n(I18N_MAINMENU_PROTOCOL), 40);
     title_bar->add_column(resources.get_icon("lock"), 9, "", 16);
     title_bar->add_column(i18n(I18N_MAINMENU_PLAYERS), 50);
     title_bar->add_column(i18n(I18N_MAINMENU_PING), 40);
@@ -578,6 +594,16 @@ void MainMenu::play_manual() {
     } catch (const Exception& e) {
         show_messagebox(Gui::MessageBoxIconError, i18n(I18N_ERROR_TITLE), e.what());
     }
+}
+
+void MainMenu::on_compatible_click(GuiCheckbox *sender, void *data, bool state) {
+    (reinterpret_cast<MainMenu *>(data))->compatible_click(state);
+}
+
+void MainMenu::compatible_click(bool state) {
+    play_lan_compatible->set_state(state);
+    play_wan_compatible->set_state(state);
+    config.set_bool("compatible_servers_only", state);
 }
 
 /* ************************************************************************** */
