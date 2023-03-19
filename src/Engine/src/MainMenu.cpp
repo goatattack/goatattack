@@ -183,9 +183,6 @@ void MainMenu::idle() {
     int vw = subsystem.get_view_width();
     int vh = subsystem.get_view_height();
 
-    /* compatible servers only? */
-    bool compatible = config.get_bool("compatible_servers_only");
-
     /* retrieving LAN server infos */
     if (lan_broadcaster) {
         /* refresh */
@@ -199,6 +196,8 @@ void MainMenu::idle() {
             }
             last_lan_info = now;
         }
+        /* compatible servers only? */
+        bool compatible = config.get_bool("compatible_servers_only");
         /* update list */
         int top_index = play_lan_list->get_top_index();
         const void *selected_ptr = lan_list_selected_entry;
@@ -233,6 +232,8 @@ void MainMenu::idle() {
 
     /* retrieving WAN server infos */
     if (master_query) {
+        /* compatible servers only? */
+        bool compatible = config.get_bool("compatible_servers_only");
         /* update list */
         int top_index = play_wan_list->get_top_index();
         play_wan_list->clear();
